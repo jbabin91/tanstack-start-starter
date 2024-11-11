@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import * as React from 'react';
 
-import viteLogo from '/vite.svg';
 import reactLogo from '@/assets/react.svg';
+import viteLogo from '@/assets/vite.svg';
 import { Button } from '@/components/ui/button';
 
-export function App() {
-  const [count, setCount] = useState(0);
+export const Route = createFileRoute('/')({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const [count, setCount] = React.useState(0);
 
   return (
     <>

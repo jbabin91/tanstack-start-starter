@@ -1,0 +1,8 @@
+{
+  "name": "Tanstack Start Starter",
+  "short_name": "Tanstack Starter",
+  "icons": [],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
