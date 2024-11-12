@@ -13,7 +13,7 @@ function RouteComponent() {
   const [count, setCount] = React.useState(0);
 
   return (
-    <>
+    <div className="justify-center text-center">
       <div className="flex justify-center">
         <a href="https://vite.dev" rel="noreferrer" target="_blank">
           <img alt="Vite logo" className="logo" src={viteLogo} />
@@ -34,6 +34,6 @@ function RouteComponent() {
       <p className="text-[#888]">
         Click on the Vite and React logos to learn more
       </p>
-    </>
+    </div>
   );
 }

@@ -31,5 +31,5 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app.config.ts", "tailwind.config.ts"]
+  "include": ["app.config.ts", "drizzle.config.ts", "tailwind.config.ts"]
 }

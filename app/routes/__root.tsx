@@ -92,14 +92,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <Link className="[&.active]:font-bold" to="/about">
                 About
               </Link>
+              <Link className="[&.active]:font-bold" to="/todo">
+                Todo
+              </Link>
             </div>
             <div>
               <ModeToggle />
             </div>
           </div>
-          <main className="items-center justify-center text-center">
-            {children}
-          </main>
+          <main>{children}</main>
         </Providers>
         <ScrollRestoration />
         <TanstackQueryDevtools />
