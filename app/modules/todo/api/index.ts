@@ -3,13 +3,14 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  useSuspenseQuery,
 } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/start';
 import { asc, eq } from 'drizzle-orm';
 
 import { toast } from '@/components/ui/sonner';
-import { db } from '@/lib/db';
-import { todo, type TodoCreate, type TodoUpdate } from '@/lib/db/schema';
+import { db } from '@/db';
+import { todo, type TodoCreate, type TodoUpdate } from '@/db/schema';
 
 const getTodos = createServerFn('GET', async () => {
   const todos = await db.query.todo.findMany({
@@ -66,6 +67,21 @@ export function useTodo() {
     ...todoQueries.list(),
     refetchInterval: 60_000, // 1 minute refetch
     refetchIntervalInBackground: true,
+  });
+}
+
+export function useTodoSuspense() {
+  return useSuspenseQuery({
+    ...todoQueries.list(),
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: true,
+  });
+}
+
+export function useTodoById(id: string) {
+  return useQuery({
+    ...todoQueries.byId(id),
+    enabled: Boolean(id),
   });
 }
 

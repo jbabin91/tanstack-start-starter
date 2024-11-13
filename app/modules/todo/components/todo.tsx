@@ -15,7 +15,7 @@ import {
   zodResolver,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { type TodoModel, todoUpdateSchema } from '@/lib/db/schema';
+import { type TodoModel, todoUpdateSchema } from '@/db/schema';
 import { useDeleteTodo, useUpdateTodo } from '@/modules/todo/api';
 
 type TodoProps = {

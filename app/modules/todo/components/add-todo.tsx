@@ -11,7 +11,7 @@ import {
   zodResolver,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { todoCreateSchema } from '@/lib/db/schema';
+import { todoCreateSchema } from '@/db/schema';
 import { cn } from '@/lib/utils';
 import { useCreateTodo } from '@/modules/todo/api';
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { type TodoModel } from '@/lib/db/schema';
+import { type TodoModel } from '@/db/schema';
 import { AddTodo } from '@/modules/todo/components/add-todo';
 import { Todo } from '@/modules/todo/components/todo';
 
