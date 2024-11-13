@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 
-import { TodoList, todoQueries, useTodo } from '@/modules/todo';
+import { TodoList, todoQueries, useTodoSuspense } from '@/modules/todo';
 
 export const Route = createFileRoute('/todo')({
   component: RouteComponent,
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/todo')({
 });
 
 function RouteComponent() {
-  const { data } = useTodo();
+  const { data } = useTodoSuspense();
 
   return (
     <React.Fragment>
