@@ -1,8 +1,7 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 
-import { TodoList, todoQueries } from '@/modules/todo';
+import { TodoList, todoQueries, useTodo } from '@/modules/todo';
 
 export const Route = createFileRoute('/todo')({
   component: RouteComponent,
@@ -12,11 +11,11 @@ export const Route = createFileRoute('/todo')({
 });
 
 function RouteComponent() {
-  const { data } = useSuspenseQuery(todoQueries.list());
+  const { data } = useTodo();
 
   return (
     <React.Fragment>
-      <TodoList todos={data} />
+      <TodoList todos={data ?? []} />
     </React.Fragment>
   );
 }

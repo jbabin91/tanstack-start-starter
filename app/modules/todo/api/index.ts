@@ -1,6 +1,7 @@
 import {
   queryOptions,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/start';
@@ -59,6 +60,14 @@ export const todoQueries = {
       queryKey: ['todos'],
     }),
 };
+
+export function useTodo() {
+  return useQuery({
+    ...todoQueries.list(),
+    refetchInterval: 60_000, // 1 minute refetch
+    refetchIntervalInBackground: true,
+  });
+}
 
 export function useCreateTodo() {
   const queryClient = useQueryClient();
