@@ -1,5 +1,12 @@
 pnpm-lock.yaml
 
+# Vinxi
 .vinxi
 .output
+
+# Tanstack Router
 *.gen.ts
+
+# Drizzle
+drizzle/
+*.sql

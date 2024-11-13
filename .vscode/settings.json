@@ -4,5 +4,13 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.preferences.autoImportFileExcludePatterns": []
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@hookform/resolvers",
+    "@radix-ui/react-checkbox",
+    "@radix-ui/react-dropdown-menu",
+    "@radix-ui/react-label",
+    "@radix-ui/react-slot",
+    "react-hook-form",
+    "sonner"
+  ]
 }

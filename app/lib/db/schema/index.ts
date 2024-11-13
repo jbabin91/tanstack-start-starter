@@ -1,12 +1,20 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import { boolean, integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { createId } from '@paralleldrive/cuid2';
+import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { type z } from 'zod';
 
 export const todo = pgTable('todo', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
-  text: text('text').notNull(),
-  done: boolean('done').default(false).notNull(),
+  id: text().primaryKey().$defaultFn(createId),
+  text: text().notNull(),
+  done: boolean().default(false).notNull(),
+  createdAt: timestamp({ mode: 'string', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp({ mode: 'string', withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date().toISOString()),
 });
 
 export const todoSchema = createSelectSchema(todo);

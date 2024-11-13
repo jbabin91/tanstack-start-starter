@@ -9,7 +9,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       closeButton
-      richColors
       className="toaster group"
       theme={theme as ToasterProps['theme']}
       toastOptions={{
@@ -18,9 +17,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
             'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
           cancelButton:
             'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
+          // Gives the closeButton a background color, because default unstyled button is transparent
+          closeButton: 'group-[.toaster]:bg-muted group-[.toaster]:border',
           description: 'group-[.toast]:text-muted-foreground',
-          toast:
-            'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
+          toast: props.richColors
+            ? // Removed everything where shadcn+tailwind affected the colors
+              'group-[.toaster]:border group-[.toaster]:shadow-lg'
+            : 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border group-[.toaster]:shadow-lg',
         },
       }}
       {...props}
@@ -29,3 +32,4 @@ const Toaster = ({ ...props }: ToasterProps) => {
 };
 
 export { Toaster };
+export { toast } from 'sonner';
