@@ -141,6 +141,9 @@ export default tseslint.config(
       react: {
         version: 'detect',
       },
+      tailwindcss: {
+        callees: ['cn', 'cva'],
+      },
     },
   },
   configPrettier,
