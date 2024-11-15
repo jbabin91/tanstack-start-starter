@@ -5,7 +5,7 @@ import {
   Outlet,
   ScrollRestoration,
 } from '@tanstack/react-router';
-import { Body, Head, Html, Meta, Scripts } from '@tanstack/start';
+import { Meta, Scripts } from '@tanstack/start';
 
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
 import { NotFound } from '@/components/errors/not-found';
@@ -21,14 +21,6 @@ type RouterContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: RootComponent,
-  errorComponent: (props) => {
-    return (
-      <RootDocument>
-        <DefaultCatchBoundary {...props} />
-      </RootDocument>
-    );
-  },
   links: () => [
     { href: globalCss, rel: 'stylesheet' },
     {
@@ -64,7 +56,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
     }),
   ],
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    );
+  },
   notFoundComponent: () => <NotFound />,
+  component: RootComponent,
 });
 
 function RootComponent() {
@@ -77,11 +77,11 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <Html>
-      <Head>
+    <html suppressHydrationWarning lang="en">
+      <head>
         <Meta />
-      </Head>
-      <Body>
+      </head>
+      <body>
         <Providers>
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <TanstackQueryDevtools />
         <TanstackRouterDevtools />
         <Scripts />
-      </Body>
-    </Html>
+      </body>
+    </html>
   );
 }

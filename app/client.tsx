@@ -6,4 +6,4 @@ import { createRouter } from '@/lib/router.tsx';
 
 const router = createRouter();
 
-hydrateRoot(document.querySelector('#root')!, <StartClient router={router} />);
+hydrateRoot(document, <StartClient router={router} />);

@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import {
   queryOptions,
   useMutation,
@@ -6,46 +7,64 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/start';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { asc, eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { toast } from '@/components/ui/sonner';
 import { db } from '@/db';
-import { todo, type TodoCreate, type TodoUpdate } from '@/db/schema';
+import { todo, todoUpdateSchema } from '@/db/schema';
 
-const getTodos = createServerFn('GET', async () => {
+const getTodos = createServerFn({ method: 'GET' }).handler(async () => {
   const todos = await db.query.todo.findMany({
     orderBy: (todo) => asc(todo.createdAt),
   });
   return todos;
 });
 
-const getTodo = createServerFn('GET', async (id: string) => {
-  const response = await db.query.todo.findFirst({
-    where: eq(todo?.id, id),
+const todoIdSchema = z.string();
+
+const getTodoById = createServerFn({ method: 'GET' })
+  .validator(zodValidator(todoIdSchema))
+  .handler(async ({ data: id }) => {
+    const response = await db.query.todo.findFirst({
+      where: eq(todo?.id, id),
+    });
+    return response;
   });
-  return response;
-});
 
-const createTodo = createServerFn('POST', async ({ text }: TodoCreate) => {
-  const response = await db.insert(todo).values({ text }).returning();
-  return response;
-});
+const todoTextSchema = z.string();
 
-const updateTodo = createServerFn('POST', async ({ id, text, done }: TodoUpdate) => {
-  const response = await db.update(todo).set({ done, text }).where(eq(todo.id, id!)).returning();
+const createTodo = createServerFn({ method: 'POST' })
+  .validator(zodValidator(todoTextSchema))
+  .handler(async ({ data: text }) => {
+    const response = await db.insert(todo).values({ text }).returning();
+    return response;
+  });
 
-  return response;
-});
+const updateTodo = createServerFn({ method: 'POST' })
+  .validator(zodValidator(todoUpdateSchema))
+  .handler(async ({ data }) => {
+    const response = await db
+      .update(todo)
+      .set({ text: data.text, done: data.done })
+      .where(eq(todo.id, data.id!))
+      .returning();
 
-const deleteTodo = createServerFn('POST', async (id: string) => {
-  const response = await db.delete(todo).where(eq(todo.id, id)).returning();
-  return response;
-});
+    return response;
+  });
+
+const deleteTodo = createServerFn({ method: 'POST' })
+  .validator(todoIdSchema)
+  .handler(async ({ data: id }) => {
+    const response = await db.delete(todo).where(eq(todo.id, id)).returning();
+    return response;
+  });
 
 export const todoQueries = {
   byId: (id: string) =>
     queryOptions({
-      queryFn: () => getTodo(id),
+      queryFn: () => getTodoById({ data: id }),
       queryKey: ['todo', id],
     }),
   list: () =>
@@ -82,7 +101,7 @@ export function useCreateTodo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (text: string) => createTodo({ text }),
+    mutationFn: (text: string) => createTodo({ data: text }),
     onError: () => {
       toast.error('Todo could not be created');
     },
@@ -97,7 +116,7 @@ export function useUpdateTodo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (todo: TodoUpdate) => updateTodo(todo),
+    mutationFn: (todo: z.infer<typeof todoUpdateSchema>) => updateTodo({ data: todo }),
     onError: () => {
       toast.error('Todo could not be updated');
     },
@@ -117,7 +136,7 @@ export function useDeleteTodo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteTodo(id),
+    mutationFn: (id: string) => deleteTodo({ data: id }),
     onError: () => {
       toast.error('Todo could not be deleted');
     },
