@@ -61,8 +61,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     },
     ...seo({
       description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
-      title:
-        'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
+      title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
     }),
   ],
   notFoundComponent: () => <NotFound />,

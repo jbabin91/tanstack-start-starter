@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { createId } from '@paralleldrive/cuid2';
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
@@ -8,9 +7,7 @@ export const todo = pgTable('todo', {
   id: text().primaryKey().$defaultFn(createId),
   text: text().notNull(),
   done: boolean().default(false).notNull(),
-  createdAt: timestamp({ mode: 'string', withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp({ mode: 'string', withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ mode: 'string', withTimezone: true })
     .notNull()
     .defaultNow()

@@ -31,18 +31,11 @@ const createTodo = createServerFn('POST', async ({ text }: TodoCreate) => {
   return response;
 });
 
-const updateTodo = createServerFn(
-  'POST',
-  async ({ id, text, done }: TodoUpdate) => {
-    const response = await db
-      .update(todo)
-      .set({ done, text })
-      .where(eq(todo.id, id!))
-      .returning();
+const updateTodo = createServerFn('POST', async ({ id, text, done }: TodoUpdate) => {
+  const response = await db.update(todo).set({ done, text }).where(eq(todo.id, id!)).returning();
 
-    return response;
-  },
-);
+  return response;
+});
 
 const deleteTodo = createServerFn('POST', async (id: string) => {
   const response = await db.delete(todo).where(eq(todo.id, id)).returning();

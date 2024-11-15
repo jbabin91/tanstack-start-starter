@@ -34,10 +34,7 @@ export function AddTodo({ className }: AddTodoProps) {
 
   return (
     <Form {...form}>
-      <form
-        className={cn('flex gap-2', className)}
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+      <form className={cn('flex gap-2', className)} onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="text"

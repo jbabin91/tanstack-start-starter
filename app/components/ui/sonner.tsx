@@ -13,10 +13,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps['theme']}
       toastOptions={{
         classNames: {
-          actionButton:
-            'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
-          cancelButton:
-            'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
+          actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
+          cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
           // Gives the closeButton a background color, because default unstyled button is transparent
           closeButton: 'group-[.toaster]:bg-muted group-[.toaster]:border',
           description: 'group-[.toast]:text-muted-foreground',

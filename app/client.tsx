@@ -2,7 +2,7 @@
 import { StartClient } from '@tanstack/start';
 import { hydrateRoot } from 'react-dom/client';
 
-import { createRouter } from '@/router.tsx';
+import { createRouter } from '@/lib/router.tsx';
 
 const router = createRouter();
 

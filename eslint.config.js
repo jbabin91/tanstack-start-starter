@@ -58,19 +58,12 @@ export default tseslint.config(
     },
   },
   {
-    extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-    ],
+    extends: [...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.stylisticTypeChecked],
     files: ['**/*.ts?(x)'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: [
-          './tsconfig.json',
-          './tsconfig.app.json',
-          './tsconfig.node.json',
-        ],
+        project: ['./tsconfig.json', './tsconfig.app.json', './tsconfig.node.json'],
       },
     },
     rules: {
@@ -144,6 +137,12 @@ export default tseslint.config(
       tailwindcss: {
         callees: ['cn', 'cva'],
       },
+    },
+  },
+  {
+    files: ['**/db/schema/**/*.ts', '**/routes/**/*.{ts,tsx}'],
+    rules: {
+      'sort-keys-fix/sort-keys-fix': 'off',
     },
   },
   configPrettier,
