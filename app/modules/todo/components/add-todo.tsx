@@ -34,20 +34,28 @@ export function AddTodo({ className }: AddTodoProps) {
 
   return (
     <Form {...form}>
-      <form className={cn('flex gap-2', className)} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn(
+          'content-center items-center space-y-4 sm:flex sm:gap-2 sm:space-y-0',
+          className,
+        )}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <FormField
           control={form.control}
           name="text"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Add Todo Item" {...field} />
+                <Input className="w-full sm:min-w-72" placeholder="Add Todo Item" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Add</Button>
+        <Button className="w-full" type="submit">
+          Add
+        </Button>
       </form>
     </Form>
   );

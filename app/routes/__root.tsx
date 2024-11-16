@@ -10,6 +10,7 @@ import { Meta, Scripts } from '@tanstack/start';
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
 import { NotFound } from '@/components/errors/not-found';
 import { ModeToggle } from '@/components/mode-toggle';
+import { TailwindIndicator } from '@/components/utils/tailwind-indicator';
 import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools';
 import { seo } from '@/lib/seo';
@@ -102,6 +103,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <main>{children}</main>
         </Providers>
         <ScrollRestoration />
+        <TailwindIndicator />
         <TanstackQueryDevtools />
         <TanstackRouterDevtools />
         <Scripts />
