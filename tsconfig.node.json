@@ -15,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
 
+    /* Check JS */
     "allowJs": true,
     "checkJs": true,
 
@@ -31,5 +32,5 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app.config.ts", "drizzle.config.ts", "tailwind.config.ts"]
+  "include": ["app.config.ts", "drizzle.config.ts", "eslint.config.ts", "tailwind.config.ts"]
 }

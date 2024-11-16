@@ -1,10 +1,10 @@
 import { Label } from '@radix-ui/react-dropdown-menu';
-import { Check, SquarePen, X } from 'lucide-react';
 import * as React from 'react';
+import { LuCheck, LuPenSquare, LuX } from 'react-icons/lu';
 import { type z } from 'zod';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button.tsx';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormLabel,
   useForm,
   zodResolver,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@/components/ui/form.tsx';
+import { Input } from '@/components/ui/input.tsx';
 import { type TodoModel, todoUpdateSchema } from '@/db/schema';
 import { useDeleteTodo, useUpdateTodo } from '@/modules/todo/api';
 
@@ -54,10 +54,10 @@ export function Todo({ todo }: TodoProps) {
 
           <div className="flex gap-2">
             <Button size="icon" variant="outline" onClick={toggleEdit}>
-              <SquarePen className="size-4" />
+              <LuPenSquare className="size-4" />
             </Button>
             <Button size="icon" variant="outline" onClick={handleDelete}>
-              <X className="size-4 text-red-500" />
+              <LuX className="size-4 text-red-500" />
             </Button>
           </div>
         </li>
@@ -113,10 +113,10 @@ function UpdateTodoForm({ todo, toggleEdit }: UpdateTodoFormProps) {
         />
         <div className="flex gap-2">
           <Button size="icon" type="submit" variant="outline">
-            <Check className="size-4" />
+            <LuCheck className="size-4" />
           </Button>
           <Button size="icon" onClick={toggleEdit}>
-            <X className="size-4" />
+            <LuX className="size-4" />
           </Button>
         </div>
       </form>

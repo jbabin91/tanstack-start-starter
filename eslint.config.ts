@@ -5,8 +5,10 @@ import configPrettier from 'eslint-config-prettier';
 import importX from 'eslint-plugin-import-x';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
+// @ts-expect-error - Ignore
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+// @ts-expect-error - Ignore
 import sortKeysFix from 'eslint-plugin-sort-keys-fix';
 import tailwindcss from 'eslint-plugin-tailwindcss';
 import unicorn from 'eslint-plugin-unicorn';
@@ -43,6 +45,7 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
       'sort-keys-fix/sort-keys-fix': 'error',
+      'unicorn/expiring-todo-comments': 'off',
       'unicorn/filename-case': [
         'error',
         {
@@ -73,6 +76,8 @@ export default tseslint.config(
         'error',
         { fixStyle: 'inline-type-imports', prefer: 'type-imports' },
       ],
+      '@typescript-eslint/dot-notation': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
@@ -86,6 +91,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -105,6 +111,7 @@ export default tseslint.config(
     },
     plugins: {
       'jsx-a11y': jsxA11y,
+      // @ts-expect-error - Ignore
       react,
       'react-hooks': reactHooks,
       tailwindcss,
