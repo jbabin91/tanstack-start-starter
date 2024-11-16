@@ -88,6 +88,18 @@
     @apply bg-background text-foreground min-h-screen;
   }
 
+  /* Remove Arrows from Number Inputs */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
   .logo {
     @apply h-[6em] p-[1.5em];
     will-change: filter;
