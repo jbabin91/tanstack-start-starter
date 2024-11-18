@@ -22,41 +22,43 @@ type RouterContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  links: () => [
-    { href: globalCss, rel: 'stylesheet' },
-    {
-      href: '/apple-touch-icon.png',
-      rel: 'apple-touch-icon',
-      sizes: '180x180',
-    },
-    {
-      href: '/favicon-32x32.png',
-      rel: 'icon',
-      sizes: '32x32',
-      type: 'image/png',
-    },
-    {
-      href: '/favicon-16x16.png',
-      rel: 'icon',
-      sizes: '16x16',
-      type: 'image/png',
-    },
-    { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
-    { href: '/favicon.ico', rel: 'icon' },
-  ],
-  meta: () => [
-    {
-      charSet: 'utf8',
-    },
-    {
-      content: 'width=device-width, initial-scale=1',
-      name: 'viewport',
-    },
-    ...seo({
-      description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
-      title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-    }),
-  ],
+  head: () => ({
+    links: [
+      { href: globalCss, rel: 'stylesheet' },
+      {
+        href: '/apple-touch-icon.png',
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+      },
+      {
+        href: '/favicon-32x32.png',
+        rel: 'icon',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        href: '/favicon-16x16.png',
+        rel: 'icon',
+        sizes: '16x16',
+        type: 'image/png',
+      },
+      { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
+      { href: '/favicon.ico', rel: 'icon' },
+    ],
+    meta: [
+      {
+        charSet: 'utf8',
+      },
+      {
+        content: 'width=device-width, initial-scale=1',
+        name: 'viewport',
+      },
+      ...seo({
+        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+        title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
+      }),
+    ],
+  }),
   errorComponent: (props) => {
     return (
       <RootDocument>
