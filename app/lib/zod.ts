@@ -1,5 +1,5 @@
 import { type IsEqual } from 'type-fest';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 import { logger } from './logger.ts';
 
@@ -21,4 +21,20 @@ export function handleZodErrors(error: z.ZodError) {
   for (const message of formatZodErrors(error)) {
     logger.error(message);
   }
+}
+
+export function isValidZodLiteralUnion<T extends z.ZodLiteral<unknown>>(
+  literals: T[],
+): literals is [T, T, ...T[]] {
+  return literals.length >= 2;
+}
+
+export function constructZodLiteralUnionType<T extends z.Primitive>(constArray: readonly T[]) {
+  const literalsArray = constArray.map((value) => z.literal(value));
+  if (!isValidZodLiteralUnion(literalsArray)) {
+    throw new Error(
+      'Literals passed do not meet the criteria for constructing a union schema, the minimum length is 2',
+    );
+  }
+  return z.union(literalsArray);
 }

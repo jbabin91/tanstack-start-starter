@@ -1,21 +1,23 @@
+/* eslint-disable unicorn/no-single-promise-in-promise-methods */
 import { type QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   type ErrorComponentProps,
-  Link,
   Outlet,
   ScrollRestoration,
 } from '@tanstack/react-router';
 import { Meta, Scripts } from '@tanstack/start';
+import { createTranslator } from 'use-intl';
 
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary.tsx';
 import { NotFound } from '@/components/errors/not-found.tsx';
-import { ModeToggle } from '@/components/mode-toggle.tsx';
-import { Typography } from '@/components/ui/typography';
+import { Navbar } from '@/components/layout/navbar';
+import { Typography } from '@/components/ui/typography.tsx';
 import { TailwindIndicator } from '@/components/utils/tailwind-indicator.tsx';
 import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools.tsx';
 import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools.tsx';
 import { createMetadata } from '@/lib/seo.ts';
+import { i18nQueryOptions, useI18nQuery } from '@/modules/i18n';
 import { Providers } from '@/providers';
 import globalCss from '@/styles/globals.css?url';
 
@@ -24,6 +26,18 @@ type RouterContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ context }) => {
+    const [i18n] = await Promise.all([context.queryClient.ensureQueryData(i18nQueryOptions())]);
+
+    const translator = createTranslator(i18n);
+
+    return {
+      i18n: {
+        i18n,
+        translator,
+      },
+    };
+  },
   head: () => ({
     links: [
       { href: globalCss, rel: 'stylesheet' },
@@ -83,22 +97,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <RootDocument>
-      <div className="flex justify-between p-2">
-        <div className="flex items-center gap-2">
-          <Link className="[&.active]:font-bold" to="/">
-            Home
-          </Link>
-          <Link className="[&.active]:font-bold" to="/about">
-            About
-          </Link>
-          <Link className="[&.active]:font-bold" to="/todo">
-            Todo
-          </Link>
-        </div>
-        <div>
-          <ModeToggle />
-        </div>
-      </div>
+      <Navbar />
       <main>
         <Outlet />
       </main>
@@ -127,8 +126,10 @@ function NotFoundComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { data: i18n } = useI18nQuery();
+
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang={i18n.locale}>
       <head>
         <Meta />
       </head>

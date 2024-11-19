@@ -52,6 +52,7 @@
     "dotenv-cli": "^7.4.2",
     "drizzle-orm": "^0.36.3",
     "drizzle-zod": "^0.5.1",
+    "geoip": "npm:doc999tor-fast-geoip@^1.1.275",
     "next-themes": "^0.4.3",
     "postgres": "^3.4.5",
     "react": "19.0.0-rc.1",
@@ -62,6 +63,7 @@
     "react-phone-number-input": "^3.4.9",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
+    "use-intl": "^3.25.1",
     "vaul": "^1.1.1",
     "vinxi": "^0.4.3",
     "zod": "^3.23.8"
