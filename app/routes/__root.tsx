@@ -1,19 +1,21 @@
 import { type QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
+  type ErrorComponentProps,
   Link,
   Outlet,
   ScrollRestoration,
 } from '@tanstack/react-router';
 import { Meta, Scripts } from '@tanstack/start';
 
-import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
-import { NotFound } from '@/components/errors/not-found';
-import { ModeToggle } from '@/components/mode-toggle';
-import { TailwindIndicator } from '@/components/utils/tailwind-indicator';
-import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools';
-import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools';
-import { seo } from '@/lib/seo';
+import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary.tsx';
+import { NotFound } from '@/components/errors/not-found.tsx';
+import { ModeToggle } from '@/components/mode-toggle.tsx';
+import { Typography } from '@/components/ui/typography';
+import { TailwindIndicator } from '@/components/utils/tailwind-indicator.tsx';
+import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools.tsx';
+import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools.tsx';
+import { createMetadata } from '@/lib/seo.ts';
 import { Providers } from '@/providers';
 import globalCss from '@/styles/globals.css?url';
 
@@ -45,37 +47,83 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
       { href: '/favicon.ico', rel: 'icon' },
     ],
-    meta: [
-      {
-        charSet: 'utf8',
+    meta: createMetadata({
+      charSet: 'utf8',
+      viewport: {
+        width: 'device-width',
+        'initial-scale': '1',
+        'maximum-scale': '1',
+        'user-scalable': 'no',
+        'viewport-fit': 'cover',
       },
-      {
-        content: 'width=device-width, initial-scale=1',
-        name: 'viewport',
-      },
-      ...seo({
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
-        title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-      }),
-    ],
+      title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
+      description: 'TanStack Start is a type-safe, client-first, full-stack React framework.',
+      robots: 'index, follow',
+    }),
+    scripts: import.meta.env.PROD
+      ? []
+      : [
+          {
+            type: 'module',
+            children: /* js */ `
+          import RefreshRuntime from "/_build/@react-refresh"
+          RefreshRuntime.injectIntoGlobalHook(window)
+          window.$RefreshReg$ = () => {}
+          window.$RefreshSig$ = () => (type) => type
+        `,
+          },
+        ],
   }),
-  errorComponent: (props) => {
-    return (
-      <RootDocument>
-        <DefaultCatchBoundary {...props} />
-      </RootDocument>
-    );
-  },
-  notFoundComponent: () => <NotFound />,
+  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundComponent,
   component: RootComponent,
+  pendingComponent: PendingComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <div className="flex justify-between p-2">
+        <div className="flex items-center gap-2">
+          <Link className="[&.active]:font-bold" to="/">
+            Home
+          </Link>
+          <Link className="[&.active]:font-bold" to="/about">
+            About
+          </Link>
+          <Link className="[&.active]:font-bold" to="/todo">
+            Todo
+          </Link>
+        </div>
+        <div>
+          <ModeToggle />
+        </div>
+      </div>
+      <main>
+        <Outlet />
+      </main>
     </RootDocument>
   );
+}
+
+function PendingComponent() {
+  return (
+    <div className="space-y-6 p-6">
+      <Typography.H1>Loading...</Typography.H1>
+    </div>
+  );
+}
+
+function ErrorComponent(props: ErrorComponentProps) {
+  return (
+    <RootDocument>
+      <DefaultCatchBoundary {...props} />
+    </RootDocument>
+  );
+}
+
+function NotFoundComponent() {
+  return <NotFound />;
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -85,29 +133,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Meta />
       </head>
       <body>
-        <Providers>
-          <div className="flex justify-between p-2">
-            <div className="flex items-center gap-2">
-              <Link className="[&.active]:font-bold" to="/">
-                Home
-              </Link>
-              <Link className="[&.active]:font-bold" to="/about">
-                About
-              </Link>
-              <Link className="[&.active]:font-bold" to="/todo">
-                Todo
-              </Link>
-            </div>
-            <div>
-              <ModeToggle />
-            </div>
-          </div>
-          <main>{children}</main>
-        </Providers>
-        <ScrollRestoration />
+        <Providers>{children}</Providers>
         <TailwindIndicator />
         <TanstackQueryDevtools />
         <TanstackRouterDevtools />
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
