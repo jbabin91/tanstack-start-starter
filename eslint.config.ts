@@ -45,7 +45,6 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
       'sort-keys-fix/sort-keys-fix': 'error',
-      'unicorn/expiring-todo-comments': 'off',
       'unicorn/filename-case': [
         'error',
         {
@@ -76,16 +75,12 @@ export default tseslint.config(
         'error',
         { fixStyle: 'inline-type-imports', prefer: 'type-imports' },
       ],
-      '@typescript-eslint/dot-notation': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-misused-promises': [
         'error',
         { checksVoidReturn: { attributes: false } },
       ],
-      '@typescript-eslint/no-redundant-type-constituents': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -96,8 +91,6 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/only-throw-error': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
   {
