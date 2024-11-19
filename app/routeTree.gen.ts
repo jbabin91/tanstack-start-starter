@@ -11,17 +11,15 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root';
-import { Route as TodoImport } from './routes/todo';
 import { Route as AboutImport } from './routes/about';
+import { Route as AuthRouteImport } from './routes/_auth/route';
+import { Route as AppRouteImport } from './routes/_app/route';
 import { Route as IndexImport } from './routes/index';
+import { Route as AuthSignUpImport } from './routes/_auth/sign-up';
+import { Route as AuthSignInImport } from './routes/_auth/sign-in';
+import { Route as AppTodoImport } from './routes/_app/todo';
 
 // Create/Update Routes
-
-const TodoRoute = TodoImport.update({
-  id: '/todo',
-  path: '/todo',
-  getParentRoute: () => rootRoute,
-} as any);
 
 const AboutRoute = AboutImport.update({
   id: '/about',
@@ -29,10 +27,38 @@ const AboutRoute = AboutImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
+const AuthRouteRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any);
+
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any);
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any);
+
+const AuthSignUpRoute = AuthSignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+
+const AuthSignInRoute = AuthSignInImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+
+const AppTodoRoute = AppTodoImport.update({
+  id: '/todo',
+  path: '/todo',
+  getParentRoute: () => AppRouteRoute,
 } as any);
 
 // Populate the FileRoutesByPath interface
@@ -46,6 +72,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport;
       parentRoute: typeof rootRoute;
     };
+    '/_app': {
+      id: '/_app';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AppRouteImport;
+      parentRoute: typeof rootRoute;
+    };
+    '/_auth': {
+      id: '/_auth';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AuthRouteImport;
+      parentRoute: typeof rootRoute;
+    };
     '/about': {
       id: '/about';
       path: '/about';
@@ -53,56 +93,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport;
       parentRoute: typeof rootRoute;
     };
-    '/todo': {
-      id: '/todo';
+    '/_app/todo': {
+      id: '/_app/todo';
       path: '/todo';
       fullPath: '/todo';
-      preLoaderRoute: typeof TodoImport;
-      parentRoute: typeof rootRoute;
+      preLoaderRoute: typeof AppTodoImport;
+      parentRoute: typeof AppRouteImport;
+    };
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in';
+      path: '/sign-in';
+      fullPath: '/sign-in';
+      preLoaderRoute: typeof AuthSignInImport;
+      parentRoute: typeof AuthRouteImport;
+    };
+    '/_auth/sign-up': {
+      id: '/_auth/sign-up';
+      path: '/sign-up';
+      fullPath: '/sign-up';
+      preLoaderRoute: typeof AuthSignUpImport;
+      parentRoute: typeof AuthRouteImport;
     };
   }
 }
 
 // Create and export the route tree
 
+interface AppRouteRouteChildren {
+  AppTodoRoute: typeof AppTodoRoute;
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppTodoRoute: AppTodoRoute,
+};
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+);
+
+interface AuthRouteRouteChildren {
+  AuthSignInRoute: typeof AuthSignInRoute;
+  AuthSignUpRoute: typeof AuthSignUpRoute;
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+};
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+);
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
+  '': typeof AuthRouteRouteWithChildren;
   '/about': typeof AboutRoute;
-  '/todo': typeof TodoRoute;
+  '/todo': typeof AppTodoRoute;
+  '/sign-in': typeof AuthSignInRoute;
+  '/sign-up': typeof AuthSignUpRoute;
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute;
+  '': typeof AuthRouteRouteWithChildren;
   '/about': typeof AboutRoute;
-  '/todo': typeof TodoRoute;
+  '/todo': typeof AppTodoRoute;
+  '/sign-in': typeof AuthSignInRoute;
+  '/sign-up': typeof AuthSignUpRoute;
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute;
   '/': typeof IndexRoute;
+  '/_app': typeof AppRouteRouteWithChildren;
+  '/_auth': typeof AuthRouteRouteWithChildren;
   '/about': typeof AboutRoute;
-  '/todo': typeof TodoRoute;
+  '/_app/todo': typeof AppTodoRoute;
+  '/_auth/sign-in': typeof AuthSignInRoute;
+  '/_auth/sign-up': typeof AuthSignUpRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/' | '/about' | '/todo';
+  fullPaths: '/' | '' | '/about' | '/todo' | '/sign-in' | '/sign-up';
   fileRoutesByTo: FileRoutesByTo;
-  to: '/' | '/about' | '/todo';
-  id: '__root__' | '/' | '/about' | '/todo';
+  to: '/' | '' | '/about' | '/todo' | '/sign-in' | '/sign-up';
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_auth'
+    | '/about'
+    | '/_app/todo'
+    | '/_auth/sign-in'
+    | '/_auth/sign-up';
   fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  AppRouteRoute: typeof AppRouteRouteWithChildren;
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
   AboutRoute: typeof AboutRoute;
-  TodoRoute: typeof TodoRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  TodoRoute: TodoRoute,
 };
 
 export const routeTree = rootRoute
@@ -116,18 +216,41 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
-        "/todo"
+        "/_app",
+        "/_auth",
+        "/about"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/_app": {
+      "filePath": "_app/route.tsx",
+      "children": [
+        "/_app/todo"
+      ]
+    },
+    "/_auth": {
+      "filePath": "_auth/route.tsx",
+      "children": [
+        "/_auth/sign-in",
+        "/_auth/sign-up"
+      ]
+    },
     "/about": {
       "filePath": "about.tsx"
     },
-    "/todo": {
-      "filePath": "todo.tsx"
+    "/_app/todo": {
+      "filePath": "_app/todo.tsx",
+      "parent": "/_app"
+    },
+    "/_auth/sign-in": {
+      "filePath": "_auth/sign-in.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/sign-up": {
+      "filePath": "_auth/sign-up.tsx",
+      "parent": "/_auth"
     }
   }
 }

@@ -7,15 +7,16 @@ import {
 } from '@tanstack/react-router';
 import { routerWithQueryClient } from '@tanstack/react-router-with-query';
 
+import { type Authed } from '@/lib/auth.ts';
+import { createQueryClient } from '@/lib/query.ts';
 import { type FileRouteTypes, routeTree } from '@/routeTree.gen.ts';
-
-import { createQueryClient } from './query.ts';
 
 export type InferRouteContext<Route extends FileRouteTypes['to']> = ReturnType<
   typeof useRouteContext<RegisteredRouter, Route>
 >;
 
 export type RouterContext = {
+  auth: Authed | null | undefined;
   queryClient: QueryClient;
 };
 
@@ -23,6 +24,7 @@ export function createRouter() {
   const queryClient = createQueryClient();
 
   const routerContext: RouterContext = {
+    auth: undefined,
     queryClient,
   };
 

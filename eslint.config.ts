@@ -91,6 +91,7 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/only-throw-error': 'off',
     },
   },
   {

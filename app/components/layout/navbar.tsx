@@ -19,7 +19,13 @@ export function Navbar() {
           Todo
         </Link>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
+        <Link className="[&.active]:font-bold" to="/sign-in">
+          Sign In
+        </Link>
+        <Link className="[&.active]:font-bold" to="/sign-up">
+          Sign Up
+        </Link>
         <ModeToggle />
       </div>
     </div>

@@ -21,7 +21,7 @@ export function TailwindIndicator() {
 
   const { width, height } = dimensions;
 
-  if (process.env.NODE_ENV === 'production') return null;
+  if (import.meta.env.PROD) return null;
 
   return (
     <div className="fixed bottom-12 left-2 z-50 flex items-center space-x-2 rounded-full bg-gray-800 px-2.5 py-1 font-mono text-xs font-medium text-white dark:bg-white dark:text-black">

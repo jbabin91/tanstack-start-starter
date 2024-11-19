@@ -8,7 +8,7 @@ export default defineConfig({
     },
   },
   server: {
-    compatibilityDate: '2024-11-01',
+    compatibilityDate: '2024-11-19',
     preset: 'node-server',
   },
   tsr: {

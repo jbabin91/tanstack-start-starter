@@ -1,7 +1,7 @@
 import { type LiteralUnion } from 'type-fest';
 import { type IntlConfig } from 'use-intl';
 
-import { type InferRouteContext } from '@/lib/router';
+import { type InferRouteContext } from '@/lib/router.tsx';
 import { constructZodLiteralUnionType } from '@/lib/zod.ts';
 import type enMessages from '@/messages/en.ts';
 

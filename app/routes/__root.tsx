@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/no-single-promise-in-promise-methods */
-import { type QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   type ErrorComponentProps,
@@ -11,27 +9,29 @@ import { createTranslator } from 'use-intl';
 
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary.tsx';
 import { NotFound } from '@/components/errors/not-found.tsx';
-import { Navbar } from '@/components/layout/navbar';
+import { Navbar } from '@/components/layout/navbar.tsx';
 import { Typography } from '@/components/ui/typography.tsx';
 import { TailwindIndicator } from '@/components/utils/tailwind-indicator.tsx';
 import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools.tsx';
 import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools.tsx';
+import { type RouterContext } from '@/lib/router.tsx';
 import { createMetadata } from '@/lib/seo.ts';
+import { authQueryOptions } from '@/modules/auth';
 import { i18nQueryOptions, useI18nQuery } from '@/modules/i18n';
 import { Providers } from '@/providers';
 import globalCss from '@/styles/globals.css?url';
 
-type RouterContext = {
-  queryClient: QueryClient;
-};
-
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context }) => {
-    const [i18n] = await Promise.all([context.queryClient.ensureQueryData(i18nQueryOptions())]);
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const [auth, i18n] = await Promise.all([
+      queryClient.ensureQueryData(authQueryOptions()),
+      queryClient.ensureQueryData(i18nQueryOptions()),
+    ]);
 
     const translator = createTranslator(i18n);
 
     return {
+      auth,
       i18n: {
         i18n,
         translator,
