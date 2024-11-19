@@ -7,7 +7,8 @@ import {
   useRouter,
 } from '@tanstack/react-router';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button.tsx';
+import { Typography } from '@/components/ui/typography.tsx';
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
@@ -20,6 +21,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4">
+      <Typography.H1>Something went wrong</Typography.H1>
       <ErrorComponent error={error} />
       <div className="flex flex-wrap items-center gap-2">
         <Button
@@ -30,15 +32,12 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
           Try Again
         </Button>
         {isRoot ? (
-          <Link
-            className={`rounded bg-gray-600 px-2 py-1 font-extrabold uppercase text-white dark:bg-gray-700`}
-            to="/"
-          >
+          <Link className={buttonVariants({ variant: 'secondary' })} to="/">
             Home
           </Link>
         ) : (
           <Link
-            className={`rounded bg-gray-600 px-2 py-1 font-extrabold uppercase text-white dark:bg-gray-700`}
+            className={buttonVariants({ variant: 'secondary' })}
             to="/"
             onClick={(e) => {
               e.preventDefault();
