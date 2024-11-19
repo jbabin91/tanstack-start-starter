@@ -11,7 +11,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import { asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/components/ui/sonner.tsx';
 import { db } from '@/db';
 import { todo, todoUpdateSchema } from '@/db/schema';
 

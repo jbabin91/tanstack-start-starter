@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '@/assets/vite.svg';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,

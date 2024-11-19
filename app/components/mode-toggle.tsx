@@ -1,13 +1,13 @@
 import { useTheme } from 'next-themes';
 import { LuMoon, LuSun } from 'react-icons/lu';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu.tsx';
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
