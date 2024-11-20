@@ -9,6 +9,7 @@ export default defineConfig({
   },
   server: {
     compatibilityDate: '2024-11-19',
+    experimental: { asyncContext: true },
     preset: 'node-server',
   },
   tsr: {
