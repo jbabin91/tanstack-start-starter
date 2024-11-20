@@ -1,2 +1,2 @@
-export * from './auth.ts';
-export * from './todo.ts';
+export * from './auth';
+export * from './todo';

@@ -1,11 +1,12 @@
 /* eslint-disable unicorn/prefer-top-level-await */
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
+import { t } from 'i18next';
 import * as React from 'react';
 import { z } from 'zod';
 
-import { toast } from '@/components/ui/sonner.tsx';
-import { logger } from '@/lib/logger.ts';
+import { toast } from '@/components/ui/sonner';
+import { logger } from '@/lib/logger';
 
 const searchSchema = z.object({
   callbackURL: z.string().optional().catch(''),
@@ -13,11 +14,11 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_auth')({
   validateSearch: zodValidator(searchSchema),
-  beforeLoad: ({ context: { auth, i18n }, search, preload }) => {
+  beforeLoad: ({ context: { auth }, search, preload }) => {
     if (auth?.isAuthenticated) {
       if (!preload) {
         logger.info('Already authenticated, redirecting to callbackURL');
-        toast.error(i18n.translator('auth.already-authenticated-redirecting'));
+        toast.error(t('auth.already-authenticated-redirecting'));
       }
 
       throw redirect({

@@ -5,42 +5,39 @@ import {
   ScrollRestoration,
 } from '@tanstack/react-router';
 import { Meta, Scripts } from '@tanstack/start';
-import { createTranslator } from 'use-intl';
+import geistMono from 'non.geist/mono?url';
+import geist from 'non.geist?url';
 
-import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary.tsx';
-import { NotFound } from '@/components/errors/not-found.tsx';
-import { Navbar } from '@/components/layout/navbar.tsx';
-import { Typography } from '@/components/ui/typography.tsx';
-import { TailwindIndicator } from '@/components/utils/tailwind-indicator.tsx';
-import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools.tsx';
-import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools.tsx';
-import { type RouterContext } from '@/lib/router.tsx';
-import { createMetadata } from '@/lib/seo.ts';
+import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
+import { NotFound } from '@/components/errors/not-found';
+import { Navbar } from '@/components/layout/navbar';
+import { Typography } from '@/components/ui/typography';
+import { TailwindIndicator } from '@/components/utils/tailwind-indicator';
+import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools';
+import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools';
+import { type RouterContext } from '@/lib/router';
+import { createMetadata } from '@/lib/seo';
 import { authQueryOptions } from '@/modules/auth';
-import { i18nQueryOptions, useI18nQuery } from '@/modules/i18n';
+import { i18nQueryOptions } from '@/modules/i18n';
 import { Providers } from '@/providers';
 import globalCss from '@/styles/globals.css?url';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ context: { queryClient } }) => {
-    const [auth, i18n] = await Promise.all([
+    const [locale, auth] = await Promise.all([
+      queryClient.ensureQueryData(i18nQueryOptions),
       queryClient.ensureQueryData(authQueryOptions()),
-      queryClient.ensureQueryData(i18nQueryOptions()),
     ]);
-
-    const translator = createTranslator(i18n);
-
     return {
       auth,
-      i18n: {
-        i18n,
-        translator,
-      },
+      locale,
     };
   },
   head: () => ({
     links: [
       { href: globalCss, rel: 'stylesheet' },
+      { rel: 'stylesheet', href: geist },
+      { rel: 'stylesheet', href: geistMono },
       {
         href: '/apple-touch-icon.png',
         rel: 'apple-touch-icon',
@@ -126,10 +123,8 @@ function NotFoundComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { data: i18n } = useI18nQuery();
-
   return (
-    <html suppressHydrationWarning lang={i18n.locale}>
+    <html suppressHydrationWarning lang="en">
       <head>
         <Meta />
       </head>

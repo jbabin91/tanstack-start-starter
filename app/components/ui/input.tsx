@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils.ts';
+import { cn } from '@/lib/utils';
 
 // https://css-tricks.com/everything-you-ever-wanted-to-know-about-inputmode/
 const defaultInputModes: Partial<

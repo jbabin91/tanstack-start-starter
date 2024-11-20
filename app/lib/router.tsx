@@ -7,9 +7,9 @@ import {
 } from '@tanstack/react-router';
 import { routerWithQueryClient } from '@tanstack/react-router-with-query';
 
-import { type Authed } from '@/lib/auth.ts';
-import { createQueryClient } from '@/lib/query.ts';
-import { type FileRouteTypes, routeTree } from '@/routeTree.gen.ts';
+import { type Authed } from '@/lib/auth';
+import { createQueryClient } from '@/lib/query';
+import { type FileRouteTypes, routeTree } from '@/routeTree.gen';
 
 export type InferRouteContext<Route extends FileRouteTypes['to']> = ReturnType<
   typeof useRouteContext<RegisteredRouter, Route>

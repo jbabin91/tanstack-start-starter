@@ -2,8 +2,8 @@ import { Command as CommandPrimitive } from 'cmdk';
 import * as React from 'react';
 import { LuSearch } from 'react-icons/lu';
 
-import { Dialog, DialogContent } from '@/components/ui/dialog.tsx';
-import { cn } from '@/lib/utils.ts';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (

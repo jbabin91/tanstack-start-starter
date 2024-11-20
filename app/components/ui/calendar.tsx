@@ -13,8 +13,8 @@ import {
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { type Except } from 'type-fest';
 
-import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import { cn, createContextFactory } from '@/lib/utils.ts';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn, createContextFactory } from '@/lib/utils';
 
 type CalendarBaseProps = {
   /**

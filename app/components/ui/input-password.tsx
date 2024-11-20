@@ -5,10 +5,10 @@ import { type IconType } from 'react-icons/lib';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { type Except } from 'type-fest';
 
-import { PropsProvider } from '@/components/props-provider.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { cn } from '@/lib/utils.ts';
+import { PropsProvider } from '@/components/props-provider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 function InputPassword({
   className,

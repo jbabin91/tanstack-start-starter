@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
-import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import { Typography } from '@/components/ui/typography.tsx';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Typography } from '@/components/ui/typography';
 
 export function NotFound() {
   return (

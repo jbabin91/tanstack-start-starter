@@ -3,10 +3,10 @@ import * as React from 'react';
 import { type DateRange } from 'react-day-picker';
 import { LuCalendar } from 'react-icons/lu';
 
-import { Button } from '@/components/ui/button.tsx';
+import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
-import { cn } from '@/lib/utils.ts';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 function DateRangePicker({ className, ...props }: React.ComponentPropsWithRef<typeof Button>) {
   const [date, setDate] = React.useState<DateRange | undefined>();

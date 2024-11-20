@@ -7,8 +7,8 @@ import {
   useRouter,
 } from '@tanstack/react-router';
 
-import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import { Typography } from '@/components/ui/typography.tsx';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Typography } from '@/components/ui/typography';
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();

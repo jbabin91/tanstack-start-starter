@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import { z } from 'zod';
 
-import { logger } from '@/lib/logger.ts';
-import { handleZodErrors } from '@/lib/zod.ts';
+import { logger } from '@/lib/logger';
+import { handleZodErrors } from '@/lib/zod';
 
 const PUBLIC_ENV_PREFIX = 'VITE_';
 

@@ -3,8 +3,8 @@ import * as React from 'react';
 import { LuCheck, LuPenSquare, LuX } from 'react-icons/lu';
 import { type z } from 'zod';
 
-import { Button } from '@/components/ui/button.tsx';
-import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormLabel,
   useForm,
   zodResolver,
-} from '@/components/ui/form.tsx';
-import { Input } from '@/components/ui/input.tsx';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { type TodoModel, todoUpdateSchema } from '@/db/schema';
 import { useDeleteTodo, useUpdateTodo } from '@/modules/todo/api';
 

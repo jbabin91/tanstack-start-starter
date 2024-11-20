@@ -41,5 +41,7 @@
     "react-hook-form",
     "sonner",
     "vaul"
-  ]
+  ],
+  "i18n-ally.localesPaths": ["app/locales"],
+  "i18n-ally.keystyle": "nested"
 }

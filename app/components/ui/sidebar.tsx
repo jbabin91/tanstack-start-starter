@@ -4,19 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { LuPanelLeft } from 'react-icons/lu';
 
-import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Separator } from '@/components/ui/separator.tsx';
-import { Sheet, SheetContent } from '@/components/ui/sheet.tsx';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip.tsx';
-import { useIsMobile } from '@/hooks/use-is-mobile.ts';
-import { cn, createContextFactory } from '@/lib/utils.ts';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { cn, createContextFactory } from '@/lib/utils';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

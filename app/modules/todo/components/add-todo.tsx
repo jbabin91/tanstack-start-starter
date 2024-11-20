@@ -9,10 +9,10 @@ import {
   FormMessage,
   useForm,
   zodResolver,
-} from '@/components/ui/form.tsx';
-import { Input } from '@/components/ui/input.tsx';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { todoCreateSchema } from '@/db/schema';
-import { cn } from '@/lib/utils.ts';
+import { cn } from '@/lib/utils';
 import { useCreateTodo } from '@/modules/todo/api';
 
 type AddTodoProps = {

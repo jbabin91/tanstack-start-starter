@@ -1,4 +1,5 @@
 import { type Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 import tailwindAnimate from 'tailwindcss-animate';
 
 export default {
@@ -67,6 +68,10 @@ export default {
           'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+      },
+      fontFamily: {
+        mono: ['Geist Mono Variable', ...fontFamily.mono],
+        sans: ['Geist Variable', ...fontFamily.sans],
       },
       keyframes: {
         'accordion-down': {

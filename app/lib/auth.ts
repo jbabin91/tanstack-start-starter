@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { db } from '@/db';
 import { sessionSchema, userSchema } from '@/db/schema';
-import { type InferZodObjectShape } from '@/lib/zod.ts';
+import { type InferZodObjectShape } from '@/lib/zod';
 
 export const auth = betterAuth({
   secret: process.env.AUTH_SECRET,

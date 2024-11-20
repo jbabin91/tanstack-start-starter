@@ -1,18 +1,20 @@
-import { IntlProvider } from 'use-intl';
+import { useRouteContext } from '@tanstack/react-router';
+import { I18nextProvider } from 'react-i18next';
 
-import { Toaster } from '@/components/ui/sonner.tsx';
-import { useI18nQuery } from '@/modules/i18n';
+import { Toaster } from '@/components/ui/sonner';
+import i18n from '@/lib/i18n';
 
-import { ThemeProvider } from './theme-provider.tsx';
+import { ThemeProvider } from './theme-provider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const { data: i18n } = useI18nQuery();
+  const { locale } = useRouteContext({ from: '__root__' });
+
   return (
-    <IntlProvider {...i18n}>
+    <I18nextProvider i18n={i18n.cloneInstance({ lng: locale })}>
       <ThemeProvider>
         {children}
         <Toaster richColors />
       </ThemeProvider>
-    </IntlProvider>
+    </I18nextProvider>
   );
 }

@@ -9,7 +9,7 @@ import { LuChevronsUpDown } from 'react-icons/lu';
 import * as PhoneInputPrimitive from 'react-phone-number-input';
 import { type Except, type Simplify } from 'type-fest';
 
-import { Button } from '@/components/ui/button.tsx';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -17,20 +17,20 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command.tsx';
-import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+} from '@/components/ui/command';
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   ScrollAreaRoot,
   ScrollBar,
   ScrollCorner,
   ScrollViewport,
-} from '@/components/ui/scroll-area.tsx';
-import { TwemojiFlag } from '@/components/ui/twemoji.tsx';
-import { useDynamicNode } from '@/hooks/use-dynamic-node.ts';
-import { useIsMobile } from '@/hooks/use-is-mobile.ts';
-import { cn, createContextFactory } from '@/lib/utils.ts';
+} from '@/components/ui/scroll-area';
+import { TwemojiFlag } from '@/components/ui/twemoji';
+import { useDynamicNode } from '@/hooks/use-dynamic-node';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { cn, createContextFactory } from '@/lib/utils';
 
 type InputPhoneProps = Simplify<
   Except<React.ComponentProps<'input'>, 'ref' | 'onChange' | 'value'> &

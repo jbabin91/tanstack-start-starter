@@ -1,19 +1,19 @@
 import { Link } from '@tanstack/react-router';
-import { useTranslations } from 'use-intl';
+import { useTranslation } from 'react-i18next';
 
-import { ModeToggle } from '@/components/mode-toggle.tsx';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export function Navbar() {
-  const t = useTranslations('navigation');
+  const { t } = useTranslation();
 
   return (
     <div className="flex justify-between p-2">
       <div className="flex items-center gap-2">
         <Link className="[&.active]:font-bold" to="/">
-          {t('home')}
+          {t('navigation.home')}
         </Link>
         <Link className="[&.active]:font-bold" to="/about">
-          About
+          {t('navigation.about')}
         </Link>
         <Link className="[&.active]:font-bold" to="/todo">
           Todo

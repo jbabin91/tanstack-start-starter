@@ -1,7 +1,7 @@
 import { createAPIFileRoute, type StartAPIMethodCallback } from '@tanstack/start/api';
 import { status } from 'http-status';
 
-import { auth } from '@/lib/auth.ts';
+import { auth } from '@/lib/auth';
 
 export const Route = createAPIFileRoute('/api/auth/$')({
   GET: createAuthHandler(),

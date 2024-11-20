@@ -3,8 +3,8 @@ import { BsDiscord, BsGithub } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
 import { type IconBaseProps, type IconType } from 'react-icons/lib';
 
-import { type InferAuthOptions } from '@/lib/auth.ts';
-import { type ExtractUnionStrict } from '@/lib/utils.ts';
+import { type InferAuthOptions } from '@/lib/auth';
+import { type ExtractUnionStrict } from '@/lib/utils';
 
 export type SocialProviderId = InferAuthOptions<'signInSocial'>['body']['provider'];
 

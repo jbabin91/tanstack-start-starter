@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router';
 import type * as React from 'react';
 
-import { type FileRouteTypes } from '@/routeTree.gen.ts';
+import { type FileRouteTypes } from '@/routeTree.gen';
 
 type InternalLink = Exclude<FileRouteTypes['to'], ''>;
 

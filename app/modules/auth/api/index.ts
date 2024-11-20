@@ -13,12 +13,12 @@ import { type APIError } from 'better-auth/api';
 import { type LiteralUnion } from 'type-fest';
 import { getEvent, getWebRequest, setHeaders } from 'vinxi/http';
 
-import { type ValidLink } from '@/components/ui/link.tsx';
-import { type SupportedSocialProviderId } from '@/configs/social-provider.ts';
-import { auth, type Authed, type InferAuthResult } from '@/lib/auth.ts';
-import { authClient } from '@/lib/auth-client.ts';
-import { logger } from '@/lib/logger.ts';
-import { tryCatchAsync } from '@/lib/utils.ts';
+import { type ValidLink } from '@/components/ui/link';
+import { type SupportedSocialProviderId } from '@/configs/social-provider';
+import { auth, type Authed, type InferAuthResult } from '@/lib/auth';
+import { authClient } from '@/lib/auth-client';
+import { logger } from '@/lib/logger';
+import { tryCatchAsync } from '@/lib/utils';
 import { signInSchema, signUpSchema } from '@/modules/auth/schema';
 
 function handleResponse<ResponseBody = unknown>(response: Response) {
@@ -47,7 +47,7 @@ export const getAuth = createServerFn({ method: 'GET' }).handler(() => {
 });
 
 export const signUp = createServerFn({ method: 'POST' })
-  .validator(signUpSchema())
+  .validator(signUpSchema)
   .handler(async ({ data }) => {
     const request = getWebRequest();
 
@@ -67,7 +67,7 @@ export const signUp = createServerFn({ method: 'POST' })
   });
 
 export const signIn = createServerFn({ method: 'POST' })
-  .validator(signInSchema())
+  .validator(signInSchema)
   .handler(async ({ data }) => {
     const request = getWebRequest();
 

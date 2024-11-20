@@ -1,8 +1,8 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
+import { t } from 'i18next';
 import { z } from 'zod';
 
 import { type InferAuthAPIZodShape } from '@/lib/auth';
-import { tKey } from '@/lib/i18n.ts';
 
 export const NAME_MIN = 2;
 export const NAME_MAX = 10;
@@ -18,45 +18,40 @@ export const PASSWORD_ONE_LOWERCASE_REGEX = /.*[a-z].*/;
 export const PASSWORD_ONE_NUMBER_REGEX = /.*\d.*/;
 export const PASSWORD_ONE_SPECIAL_REGEX = /.*[!"#$%&'()*+,./:;<=>?@[\\\]^_{|}~-].*/;
 
-export const nameSchema = (t = tKey) =>
-  z
-    .string()
-    .min(NAME_MIN, t('auth.name-min', { min: NAME_MIN }))
-    .max(NAME_MAX, t('auth.name-max', { max: NAME_MAX }));
+export const nameSchema = z
+  .string()
+  .min(NAME_MIN, t('auth.name-min', { min: NAME_MIN }))
+  .max(NAME_MAX, t('auth.name-max', { max: NAME_MAX }));
 
-export const emailSchema = (t = tKey) => z.string().email(t('auth.email-invalid'));
+export const emailSchema = z.string().email(t('auth.email-invalid'));
 
-export const usernameSchema = (t = tKey) =>
-  z
-    .string()
-    .regex(USERNAME_REGEX, t('auth.username-regex'))
-    .min(USERNAME_MIN, t('auth.username-min', { min: USERNAME_MIN }))
-    .max(USERNAME_MAX, t('auth.username-max', { max: USERNAME_MAX }));
+export const usernameSchema = z
+  .string()
+  .regex(USERNAME_REGEX, t('auth.username-regex'))
+  .min(USERNAME_MIN, t('auth.username-min', { min: USERNAME_MIN }))
+  .max(USERNAME_MAX, t('auth.username-max', { max: USERNAME_MAX }));
 
-export const passwordSchema = (t = tKey) =>
-  z
-    .string()
-    .min(PASSWORD_MIN, t('auth.password-min', { min: PASSWORD_MIN }))
-    .max(PASSWORD_MAX, t('auth.password-max', { max: PASSWORD_MAX }));
+export const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN, t('auth.password-min', { min: PASSWORD_MIN }))
+  .max(PASSWORD_MAX, t('auth.password-max', { max: PASSWORD_MAX }));
 
-export const signUpSchema = (t = tKey) =>
-  z
-    .object<InferAuthAPIZodShape<'signUpEmail'>>({
-      name: nameSchema(t),
-      email: emailSchema(t),
-      password: passwordSchema(t),
-    })
-    .extend({
-      passwordConfirm: passwordSchema(t),
-    })
-    .refine((values) => values.password === values.passwordConfirm, {
-      path: ['passwordConfirm'],
-      message: t('auth.password-must-match'),
-    });
-
-export const signInSchema = (t = tKey) =>
-  z.object<InferAuthAPIZodShape<'signInEmail'>>({
-    email: emailSchema(t),
-    password: passwordSchema(t),
-    rememberMe: z.boolean().optional(),
+export const signUpSchema = z
+  .object<InferAuthAPIZodShape<'signUpEmail'>>({
+    name: nameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+  })
+  .extend({
+    passwordConfirm: passwordSchema,
+  })
+  .refine((values) => values.password === values.passwordConfirm, {
+    path: ['passwordConfirm'],
+    message: t('auth.password-must-match'),
   });
+
+export const signInSchema = z.object<InferAuthAPIZodShape<'signInEmail'>>({
+  email: emailSchema,
+  password: passwordSchema,
+  rememberMe: z.boolean().optional(),
+});
