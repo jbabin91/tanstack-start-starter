@@ -41,9 +41,7 @@ export const getAuth = createServerFn({ method: 'GET' }).handler(() => {
 
   const event = getEvent();
 
-  const auth: Authed | null = event.context.auth ?? null;
-
-  return { ...auth };
+  return { ...event.context.auth };
 });
 
 export const signUp = createServerFn({ method: 'POST' })

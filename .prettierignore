@@ -9,4 +9,5 @@ pnpm-lock.yaml
 
 # Drizzle
 drizzle/
+migrations/
 *.sql

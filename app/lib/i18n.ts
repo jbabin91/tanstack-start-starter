@@ -7,6 +7,7 @@ import en from '@/locales/en/translation.json';
 
 export const resources = {
   en: { translation: en },
+  'en-US': { translation: en },
 } as const;
 
 type SupportedLocale = keyof typeof resources;
