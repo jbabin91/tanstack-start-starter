@@ -52,7 +52,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "dotenv-cli": "^7.4.4",
-    "drizzle-orm": "^0.38.2",
+    "drizzle-orm": "^0.38.3",
     "drizzle-zod": "^0.6.0",
     "geoip": "npm:doc999tor-fast-geoip@^1.1.282",
     "http-status": "^2.0.0",
