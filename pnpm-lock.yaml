@@ -114,8 +114,8 @@ importers:
         specifier: ^0.38.2
         version: 0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1)
       drizzle-zod:
-        specifier: ^0.6.0
-        version: 0.6.0(drizzle-orm@0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1))(zod@3.24.1)
+        specifier: ^0.7.0
+        version: 0.7.0(drizzle-orm@0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1))(zod@3.24.1)
       geoip:
         specifier: npm:doc999tor-fast-geoip@^1.1.282
         version: doc999tor-fast-geoip@1.1.282
@@ -3329,8 +3329,8 @@ packages:
       sqlite3:
         optional: true
 
-  drizzle-zod@0.6.0:
-    resolution: {integrity: sha512-7K1k7Y/5Jw9D4cTlrHL3mRTLg3oaglbi4VvBIYmSAtMvYkgqvusPtra7cnntMCe1r1cBcwxhlEkfiNdU23lp2g==}
+  drizzle-zod@0.7.0:
+    resolution: {integrity: sha512-xgCRYYVEzRkeXTS33GSMgoowe3vKsMNBjSI+cwG1oLQVEhAWWbqtb/AAMlm7tkmV4fG/uJjEmWzdzlEmTgWOoQ==}
     peerDependencies:
       drizzle-orm: '>=0.36.0'
       zod: '>=3.0.0'
@@ -4290,6 +4290,7 @@ packages:
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -4585,6 +4586,7 @@ packages:
 
   oslo@1.2.1:
     resolution: {integrity: sha512-HfIhB5ruTdQv0XX2XlncWQiJ5SIHZ7NHZhVyHth0CSZ/xzge00etRyYy/3wp/Dsu+PkxMC+6+B2lS/GcKoewkA==}
+    deprecated: Package is no longer supported. Please see https://oslojs.dev for the successor project.
 
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
@@ -8480,7 +8482,7 @@ snapshots:
       postgres: 3.4.5
       react: 19.0.0
 
-  drizzle-zod@0.6.0(drizzle-orm@0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1))(zod@3.24.1):
+  drizzle-zod@0.7.0(drizzle-orm@0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1))(zod@3.24.1):
     dependencies:
       drizzle-orm: 0.38.2(kysely@0.27.5)(postgres@3.4.5)(react@19.0.0)(types-react@19.0.0-rc.1)
       zod: 3.24.1
