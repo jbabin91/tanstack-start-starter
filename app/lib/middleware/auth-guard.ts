@@ -1,7 +1,7 @@
 import { createMiddleware } from '@tanstack/start';
 import { getWebRequest, setResponseStatus } from '@tanstack/start/server';
 
-import { auth } from '../server/auth';
+import { auth } from '~/lib/server/auth';
 
 // https://tanstack.com/start/latest/docs/framework/react/middleware
 // This is a sample middleware that you can use in your server functions.

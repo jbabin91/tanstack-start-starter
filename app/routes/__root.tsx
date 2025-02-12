@@ -1,13 +1,11 @@
 import { type QueryClient } from '@tanstack/react-query';
-import {
-  createRootRouteWithContext,
-  Link,
-  Outlet,
-} from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { Meta, Scripts } from '@tanstack/start';
 import { Suspense } from 'react';
 
 import { DefaultCatchBoundary } from '~/components/errors/default-catch-boundary';
+import { Header } from '~/components/layout/header';
+import { Spinner } from '~/components/spinner';
 import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
 import { seo } from '~/lib/utils/seo';
@@ -33,7 +31,6 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     links: [
       { href: appCss, rel: 'stylesheet' },
-      { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
       { href: '/favicon.ico', rel: 'icon' },
     ],
     meta: [
@@ -69,29 +66,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Providers>
-          <div className="flex gap-2 p-2 text-lg">
-            <Link
-              activeOptions={{ exact: true }}
-              activeProps={{
-                className: 'font-bold',
-              }}
-              to="/"
-            >
-              Home
-            </Link>{' '}
-            <Link
-              activeProps={{
-                className: 'font-bold',
-              }}
-              // @ts-expect-error - This route does not exist
-              to="/this-route-does-not-exist"
-            >
-              This Route Does Not Exist
-            </Link>
-          </div>
-          <hr />
+          <Header />
           {children}
-          <Suspense>
+          <Suspense fallback={<Spinner />}>
             <TanstackRouterDevtools position="bottom-left" />
             <TanstackQueryDevtools buttonPosition="bottom-right" />
           </Suspense>
