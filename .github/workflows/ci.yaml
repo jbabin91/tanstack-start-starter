@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Branch Checks
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup and Install dependencies
+        uses: ./.github/actions/setup
+
+      - name: Build All
+        uses: ./.github/actions/build-all
+
+      - name: Branch Checks
+        uses: ./.github/actions/branch-checks

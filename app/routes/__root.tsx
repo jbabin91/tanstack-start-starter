@@ -1,23 +1,27 @@
-import type { QueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { type QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   Link,
   Outlet,
 } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { Meta, Scripts } from '@tanstack/start';
-import * as React from 'react';
+import { Suspense } from 'react';
 
-import { DefaultCatchBoundary } from '~/components/default-catch-boundary';
-import { NotFound } from '~/components/not-found';
+import { DefaultCatchBoundary } from '~/components/errors/default-catch-boundary';
+import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
+import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
+import { seo } from '~/lib/utils/seo';
+import { getUser } from '~/modules/users/api';
 import { Providers } from '~/providers';
 import appCss from '~/styles/app.css?url';
-import { seo } from '~/utils/seo';
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
+  beforeLoad: async () => {
+    const user = await getUser();
+    return { user };
+  },
   component: RootComponent,
   errorComponent: (props) => {
     return (
@@ -29,23 +33,6 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     links: [
       { href: appCss, rel: 'stylesheet' },
-      {
-        href: '/apple-touch-icon.png',
-        rel: 'apple-touch-icon',
-        sizes: '180x180',
-      },
-      {
-        href: '/favicon-32x32.png',
-        rel: 'icon',
-        sizes: '32x32',
-        type: 'image/png',
-      },
-      {
-        href: '/favicon-16x16.png',
-        rel: 'icon',
-        sizes: '16x16',
-        type: 'image/png',
-      },
       { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
       { href: '/favicon.ico', rel: 'icon' },
     ],
@@ -64,7 +51,6 @@ export const Route = createRootRouteWithContext<{
       }),
     ],
   }),
-  notFoundComponent: () => <NotFound />,
 });
 
 function RootComponent() {
@@ -97,38 +83,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               activeProps={{
                 className: 'font-bold',
               }}
-              to="/posts"
-            >
-              Posts
-            </Link>{' '}
-            <Link
-              activeProps={{
-                className: 'font-bold',
-              }}
-              to="/users"
-            >
-              Users
-            </Link>{' '}
-            <Link
-              activeProps={{
-                className: 'font-bold',
-              }}
-              to="/layout-a"
-            >
-              Layout
-            </Link>{' '}
-            <Link
-              activeProps={{
-                className: 'font-bold',
-              }}
-              to="/deferred"
-            >
-              Deferred
-            </Link>{' '}
-            <Link
-              activeProps={{
-                className: 'font-bold',
-              }}
               // @ts-expect-error - This route does not exist
               to="/this-route-does-not-exist"
             >
@@ -137,8 +91,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </div>
           <hr />
           {children}
-          <TanStackRouterDevtools position="bottom-right" />
-          <ReactQueryDevtools buttonPosition="bottom-left" />
+          <Suspense>
+            <TanstackRouterDevtools position="bottom-left" />
+            <TanstackQueryDevtools buttonPosition="bottom-right" />
+          </Suspense>
           <Scripts />
         </Providers>
       </body>

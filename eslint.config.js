@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import reactPlugin from '@eslint-react/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 import prettierConfig from 'eslint-config-prettier';
@@ -71,9 +72,10 @@ export default tseslint.config(
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: tseslint.parser,
       parserOptions: {
-        project: true,
+        parser: tseslint.parser,
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
@@ -137,6 +139,13 @@ export default tseslint.config(
       'react/prop-types': 'off',
     },
     settings: { react: { version: 'detect' } },
+    ...reactPlugin.configs['recommended-type-checked'],
+  },
+  {
+    files: ['**/schema/**/*.ts'],
+    rules: {
+      'sort-keys-fix/sort-keys-fix': 'off',
+    },
   },
   prettierConfig,
 );

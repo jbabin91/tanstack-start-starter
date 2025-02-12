@@ -55,9 +55,11 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // eslint-disable-next-line @eslint-react/no-nested-components
         IconLeft: ({ className, ...props }) => (
           <ChevronLeft className={cn('size-4', className)} {...props} />
         ),
+        // eslint-disable-next-line @eslint-react/no-nested-components
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn('size-4', className)} {...props} />
         ),

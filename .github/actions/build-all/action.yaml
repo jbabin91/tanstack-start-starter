@@ -1,0 +1,9 @@
+name: Build All
+description: Action to build all in the repository
+
+runs:
+  using: composite
+  steps:
+    - name: Build all
+      shell: bash
+      run: pnpm build
