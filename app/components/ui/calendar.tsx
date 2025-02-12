@@ -1,9 +1,10 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
-import { buttonVariants } from '~/components/ui/button';
 import { cn } from '~/lib/utils';
+
+import { buttonVariants } from './button';
 
 function Calendar({
   className,
@@ -57,11 +58,11 @@ function Calendar({
       components={{
         // eslint-disable-next-line @eslint-react/no-nested-components
         IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn('size-4', className)} {...props} />
+          <LuChevronLeft className={cn('size-4', className)} {...props} />
         ),
         // eslint-disable-next-line @eslint-react/no-nested-components
         IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn('size-4', className)} {...props} />
+          <LuChevronRight className={cn('size-4', className)} {...props} />
         ),
       }}
       showOutsideDays={showOutsideDays}

@@ -1,28 +1,29 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
 import * as React from 'react';
+import { LuPanelLeft } from 'react-icons/lu';
 
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { Separator } from '~/components/ui/separator';
+import { useIsMobile } from '~/hooks/use-mobile';
+import { setCookie } from '~/lib/cookies';
+import { cn } from '~/lib/utils';
+
+import { Button } from './button';
+import { Input } from './input';
+import { Separator } from './separator';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '~/components/ui/sheet';
-import { Skeleton } from '~/components/ui/skeleton';
+} from './sheet';
+import { Skeleton } from './skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '~/components/ui/tooltip';
-import { useIsMobile } from '~/hooks/use-mobile';
-import { setCookie } from '~/lib/cookies';
-import { cn } from '~/lib/utils';
+} from './tooltip';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -272,7 +273,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <LuPanelLeft />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
