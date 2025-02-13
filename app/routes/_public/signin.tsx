@@ -51,12 +51,12 @@ function RouteComponent() {
                       label="Discord"
                       className="bg-[#5865F2] hover:bg-[#5865F2]/80"
                     />
-                    {/* <SignInButton
+                    <SignInButton
                       provider="github"
                       label="GitHub"
                       className="bg-neutral-700 hover:bg-neutral-700/80"
                     />
-                    <SignInButton
+                    {/* <SignInButton
                       provider="google"
                       label="Google"
                       className="bg-[#DB4437] hover:bg-[#DB4437]/80"
