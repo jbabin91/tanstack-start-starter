@@ -5,6 +5,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "shortest",
   "typescript.preferences.autoImportFileExcludePatterns": [
+    "recharts",
     "react-day-picker",
     "@radix-ui/react-accordion",
     "@radix-ui/react-alert-dialog",
