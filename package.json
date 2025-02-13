@@ -6,7 +6,7 @@
   "scripts": {
     "auth": "pnpm dlx @better-auth/cli@latest",
     "auth:generate": "pnpm with-env pnpm auth generate --y --config ./app/lib/server/auth.ts --output ./app/lib/server/schema/auth.schema.ts && pnpm format",
-    "build": "vinxi build",
+    "build": "pnpm with-env vinxi build",
     "db:down": "docker compose down",
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "db:migrate": "pnpm with-env drizzle-kit migrate --config drizzle.config.ts",
@@ -18,7 +18,7 @@
     "lint": "eslint . --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache",
     "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache",
     "prepare": "husky",
-    "start": "vinxi start",
+    "start": "pnpm with-env vinxi start",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenvx run --"
   },
