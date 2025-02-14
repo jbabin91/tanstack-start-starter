@@ -14,7 +14,7 @@ import { authClient } from '~/lib/utils/auth-client';
 
 const REDIRECT_URL = '/dashboard';
 
-export const Route = createFileRoute('/_public/signin')({
+export const Route = createFileRoute('/_auth/signin')({
   beforeLoad: ({ context }) => {
     if (context.user) {
       throw redirect({ to: REDIRECT_URL });
