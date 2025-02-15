@@ -4,8 +4,8 @@ import * as React from 'react';
 import { LuPanelLeft } from 'react-icons/lu';
 
 import { useIsMobile } from '~/hooks/use-mobile';
-import { setCookie } from '~/lib/cookies';
 import { cn } from '~/lib/utils';
+import { setCookie } from '~/lib/utils/cookies';
 
 import { Button } from './button';
 import { Input } from './input';

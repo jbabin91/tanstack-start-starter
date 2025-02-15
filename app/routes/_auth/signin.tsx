@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { authClient } from '~/lib/client/auth-client';
 import { cn } from '~/lib/utils';
-import { authClient } from '~/lib/utils/auth-client';
 
 const REDIRECT_URL = '/dashboard';
 
