@@ -22,3 +22,9 @@ yarn.lock
 /playwright/.cache/
 
 .container/
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
+!.env.example
