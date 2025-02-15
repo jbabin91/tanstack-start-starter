@@ -142,7 +142,7 @@ export default tseslint.config(
     ...reactPlugin.configs['recommended-type-checked'],
   },
   {
-    files: ['**/schema/**/*.ts'],
+    files: ['**/routes/**/*.{ts,tsx}', '**/schema/**/*.ts'],
     rules: {
       'sort-keys-fix/sort-keys-fix': 'off',
     },
