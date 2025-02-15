@@ -1,0 +1,80 @@
+---
+description: MANDATORY: Internationalization patterns and usage
+globs: "**/*.{ts,tsx}"
+---
+
+# Internationalization
+
+## Core Concepts
+
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- See [Client Layer](mdc:.cursor/rules/client.mdc) for UI integration
+- See [API Layer](mdc:.cursor/rules/api.mdc) for server patterns
+- Use react-i18next for translations
+- Use i18next for translation management
+- Support multiple languages
+- Handle fallback languages
+
+## Translation Structure
+
+```typescript
+// Translation types
+type Translation = {
+  common: {
+    buttons: {
+      submit: string;
+      cancel: string;
+    };
+    errors: {
+      required: string;
+      invalid: string;
+    };
+  };
+  features: {
+    auth: {
+      login: {
+        title: string;
+        description: string;
+      };
+    };
+  };
+};
+
+// Usage in components
+function LoginForm() {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <h1>{t('features.auth.login.title')}</h1>
+      <p>{t('features.auth.login.description')}</p>
+    </div>
+  );
+}
+```
+
+## Translation Files
+
+- Organize by feature
+- Use nested structure for clarity
+- Include type definitions
+- Example:
+
+  ```sh
+  app/
+    └── i18n/
+        ├── en/
+        │   ├── common.json
+        │   └── features/
+        │       └── auth.json
+        └── es/
+            ├── common.json
+            └── features/
+                └── auth.json
+  ```
+
+## Best Practices
+
+- Use translation keys that match feature structure
+- Include pluralization rules
+- Handle number and date formatting
+- Provide context for translators

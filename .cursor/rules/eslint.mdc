@@ -1,0 +1,120 @@
+---
+description: MANDATORY: ESLint rules and code style guidelines
+globs: "**/*.{ts,tsx,js,jsx}"
+---
+
+# ESLint Rules
+
+## Core Rules
+
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- Use Standard.js rules
+- Use TypeScript rules
+- Use React rules
+- Use TypeScript-ESLint recommended and stylistic rules
+- Follow Prettier formatting
+- Enforce consistent imports and exports sorting
+- Enforce consistent file naming (camelCase, kebabCase, or pascalCase)
+
+## TypeScript Rules
+
+- Use type imports with inline style
+
+  ```typescript
+  // ✅ Good
+  import type { User } from './types';
+  import { type Config } from './config';
+
+  // ❌ Bad
+  import { User } from './types';
+  import { Config } from './config';
+  ```
+
+- Use type definitions over interfaces
+
+  ```typescript
+  // ✅ Good
+  type User = {
+    id: string;
+    name: string;
+  };
+
+  // ❌ Bad
+  interface User {
+    id: string;
+    name: string;
+  }
+  ```
+
+- Ignore unused variables with underscore prefix
+
+  ```typescript
+  // ✅ Good
+  function handler(_event: Event) {
+    // ...
+  }
+
+  // ❌ Bad
+  function handler(event: Event) {
+    // ...
+  }
+  ```
+
+## React Rules
+
+- Use JSX Runtime
+- Follow React Hooks rules
+- Follow accessibility (a11y) guidelines
+- Sort JSX props:
+
+  ```tsx
+  // ✅ Good
+  <Button
+    ref={buttonRef}
+    className="btn"
+    disabled={isLoading}
+    type="submit"
+    onClick={handleClick}
+  >
+    Submit
+  </Button>
+
+  // ❌ Bad
+  <Button
+    onClick={handleClick}
+    disabled={isLoading}
+    className="btn"
+    type="submit"
+    ref={buttonRef}
+  >
+    Submit
+  </Button>
+  ```
+
+## Import Rules
+
+- Sort imports consistently
+- No duplicate imports
+- Add newline after imports
+- Group imports:
+
+  ```typescript
+  // 1. React imports
+  import { useState } from 'react';
+
+  // 2. External libraries
+  import { useQuery } from '@tanstack/react-query';
+  import { z } from 'zod';
+
+  // 3. Internal absolute imports
+  import { type User } from '~/types';
+
+  // 4. Internal relative imports
+  import { UserCard } from './UserCard';
+  ```
+
+## Special Cases
+
+- Sort keys rule is disabled for:
+  - Route files
+  - Schema files

@@ -1,0 +1,76 @@
+---
+description: Commit message guidelines
+globs:
+---
+
+# Commit Message Conventions
+
+We follow a structured approach to commit messages to maintain a clean and meaningful git history.
+
+## Message Structure
+
+```sh
+<type>: <subject>
+```
+
+## Types
+
+- `feat`: New features (e.g., "feat: add sso support")
+- `fix`: Bug fixes (e.g., "fix: handle timeout errors")
+- `docs`: Documentation changes (e.g., "docs: update api endpoints")
+- `style`: Code style/formatting (e.g., "style: format with prettier")
+- `refactor`: Code refactoring (e.g., "refactor: extract config")
+- `test`: Changes to tests (e.g., "test: add auth unit tests")
+- `chore`: Maintenance tasks (e.g., "chore: bump versions")
+
+## Best Practices
+
+### Subject Line
+
+- Use imperative mood ("add" not "added")
+- Keep it under 50 characters
+- Don't end with period
+- Keep it all lowercase
+
+### Examples
+
+#### Feature Addition
+
+```sh
+feat: add password reset functionality
+```
+
+#### Bug Fix
+
+```sh
+fix: resolve token expiration issue
+```
+
+#### Database Refactoring
+
+```sh
+refactor: split reports table to separate raw payload storage
+```
+
+#### Dependency Updates
+
+```sh
+chore: bump package versions
+```
+
+## Breaking Changes
+
+For breaking changes, add `!` after type and include BREAKING CHANGE in body:
+
+```sh
+feat!: Change authentication flow
+
+BREAKING CHANGE: new token format is incompatible with old clients
+```
+
+## Core Rules
+
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for development workflow
+- Use conventional commits
+- Include scope
+- Keep messages clear

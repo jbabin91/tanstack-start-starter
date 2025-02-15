@@ -1,0 +1,285 @@
+---
+description: MANDATORY: React, UI, and form handling patterns
+globs: "**/*.{tsx,css}"
+---
+
+# Client Layer
+
+## Core Concepts
+
+- Use React 19 features
+- Use Shadcn UI components
+- Use Tailwind for styling
+- Avoid unnecessary state
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- See [API Layer](mdc:.cursor/rules/api.mdc) for data fetching
+
+## Component Patterns
+
+### Basic Components
+
+```typescript
+function UserCard({ user }: { user: User }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <UserDetails user={user} />
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Form Components
+
+```typescript
+function UserForm() {
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: { name: '', email: '' },
+  });
+
+  const mutation = useMutation({
+    mutationFn: $createUser,
+    onSuccess: () => {
+      toast.success('User created');
+      navigate('/users');
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? 'Creating...' : 'Create User'}
+      </Button>
+    </Form>
+  );
+}
+```
+
+### Error Handling
+
+```typescript
+import { ErrorBoundary, useErrorBoundary } from 'react-error-boundary';
+import { Alert, AlertTitle, AlertDescription } from '~/components/ui/alert';
+import { Button } from '~/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
+
+// Reusable error fallback component
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  return (
+    <Card className="w-[420px] mx-auto mt-8">
+      <CardHeader>
+        <CardTitle>
+          {error instanceof ApiError ? 'API Error' : 'Application Error'}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error instanceof ApiError ? error.message : 'An unexpected error occurred'}
+          </AlertDescription>
+        </Alert>
+        <Button
+          variant="secondary"
+          onClick={resetErrorBoundary}
+          className="w-full"
+        >
+          Try Again
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Error Boundary
+function AppErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        // Reset the state of your app so the error doesn't happen again
+      }}
+      onError={(error, info) => {
+        // Log the error to an error reporting service
+        console.error('Error caught by boundary:', error);
+        console.error('Component stack:', info.componentStack);
+      }}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
+
+// Form Error Handling
+function handleError(error: unknown) {
+  const { showBoundary } = useErrorBoundary();
+
+  if (error instanceof ValidationError) {
+    // Use form error message component from shadcn/ui
+    form.setError('root', {
+      message: error.message,
+      type: 'custom'
+    });
+  } else if (error instanceof ApiError) {
+    showBoundary(error);
+  } else {
+    // Log unexpected errors
+    console.error(error);
+    showBoundary(new Error('An unexpected error occurred'));
+  }
+}
+
+// Usage with Suspense
+function UserProfile() {
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        // Refetch data or reset state
+        refetch();
+      }}
+    >
+      <Suspense
+        fallback={
+          <Card className="w-full h-[200px] animate-pulse">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="h-4 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded w-3/4" />
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
+        <UserProfileContent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+## Form Handling
+
+### Form State
+
+- Use form.watch() for field watching
+- Use form.setValue() for updates
+- Use form.reset() for form reset
+- Use form.setError() for errors
+
+### Complex Forms
+
+```typescript
+type UserFormData = {
+  personal: { name: string; email: string };
+  address: { street: string; city: string };
+};
+
+function ComplexForm() {
+  const form = useForm<UserFormData>();
+  return (
+    <Form {...form}>
+      <PersonalInfoFields control={form.control} />
+      <AddressFields control={form.control} />
+    </Form>
+  );
+}
+```
+
+## UI Components
+
+### Adding New Components
+
+```bash
+pnpm dlx shadcn@canary add <component-name>
+```
+
+### Styling Patterns
+
+```typescript
+// Use consistent class naming
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-md text-sm font-medium',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        destructive:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+      },
+      size: {
+        default: 'h-10 px-4 py-2',
+        sm: 'h-9 px-3',
+        lg: 'h-11 px-8',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  },
+);
+```
+
+## Best Practices
+
+1. Component Structure
+
+- Keep components focused
+- Use composition over inheritance
+- Extract reusable logic to hooks
+- Implement proper TypeScript types
+- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) file organization
+
+2. State Management
+
+- Use TanStack Query for server state
+- Use minimal local state
+- Avoid useEffect when possible
+- Keep state close to usage
+
+3. Performance
+
+- React compiler handles optimization
+- No need for memo/callback/useMemo
+- Use proper keys for lists
+- Implement proper loading states
+
+4. Accessibility
+
+- Use semantic HTML
+- Implement ARIA attributes
+- Support keyboard navigation
+- Test with screen readers
+
+5. Forms
+
+- Use controlled components sparingly
+- Implement proper validation
+- Handle all form states
+- Show clear error messages
+
+6. Styling
+
+- Use Tailwind utility classes
+- Avoid inline styles
+- Follow design system
+- Maintain responsive design

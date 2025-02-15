@@ -1,0 +1,462 @@
+---
+description: MANDATORY: API layer patterns including queries, mutations, and server functions
+globs: "**/*.{ts,tsx,server.ts}"
+---
+
+# API Layer
+
+## Core Concepts
+
+- Use TanStack Query for data fetching
+- Use TanStack Start for server functions
+- Handle errors consistently
+- Validate all inputs
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- See [Data Layer](mdc:.cursor/rules/data.mdc) for database operations
+
+## Query Patterns
+
+### Basic Queries
+
+```typescript
+export const useUserQueryOptions = (id: string) => {
+  return queryOptions({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ data: { id } }),
+  });
+};
+
+// With Pagination & Cache
+export const useUsersQueryOptions = ({ page = 1, pageSize = 10 }) => {
+  return queryOptions({
+    queryKey: ['users', { page, pageSize }],
+    queryFn: () => $getUsers({ data: { page, pageSize } }),
+    placeholderData: keepPreviousData,
+  });
+};
+
+// Infinite query pattern
+export const useInfinitePostsQuery = () => {
+  return useInfiniteQuery({
+    queryKey: ['posts', 'infinite'],
+    queryFn: ({ pageParam = 0 }) => $getPosts({ page: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+};
+```
+
+### Mutations
+
+```typescript
+export const useCreateUserMutation = () => {
+  return useMutation({
+    mutationFn: (data: CreateUserData) => $createUser({ data }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+// Detailed invalidation patterns
+export const useUpdateUserMutation = () => {
+  return useMutation({
+    mutationFn: (data: UpdateUserData) => $updateUser({ data }),
+    onSuccess: (_, variables) => {
+      // Invalidate specific user and lists that contain this user
+      queryClient.invalidateQueries({ queryKey: ['user', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      // Invalidate related queries
+      queryClient.invalidateQueries({
+        queryKey: ['userPreferences', variables.id],
+      });
+    },
+  });
+};
+
+// Optimistic update pattern
+export const useUpdateTodoMutation = () => {
+  return useMutation({
+    mutationFn: (data: UpdateTodoData) => $updateTodo({ data }),
+    onMutate: async (newTodo) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['todo', newTodo.id] });
+      // Snapshot previous value
+      const previousTodo = queryClient.getQueryData(['todo', newTodo.id]);
+      // Optimistically update
+      queryClient.setQueryData(['todo', newTodo.id], newTodo);
+      // Return context with snapshot
+      return { previousTodo };
+    },
+    onError: (err, newTodo, context) => {
+      // Rollback on error
+      queryClient.setQueryData(['todo', newTodo.id], context.previousTodo);
+    },
+  });
+};
+```
+
+## Server Functions
+
+// See Data Layer for database operation patterns
+
+### Basic Pattern
+
+```typescript
+const $createUser = createServerFn()
+  .validator(userSchema)
+  .handler(async ({ data }) => {
+    try {
+      const user = await db.insert(users).values(data);
+      return { success: true, data: user };
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return {
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: error.message },
+        };
+      }
+      throw error;
+    }
+  });
+```
+
+### Response Types
+
+```typescript
+// Pagination response type
+type PaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+};
+
+// Paginated API response
+type PaginatedApiResponse<T> = ApiResponse<PaginatedResponse<T>>;
+
+// Detailed error types
+type ValidationError = {
+  code: 'VALIDATION_ERROR';
+  message: string;
+  fields?: Record<string, string>;
+};
+
+type DatabaseError = {
+  code: 'DB_ERROR';
+  message: string;
+  cause?: string;
+};
+
+type AuthError = {
+  code: 'AUTH_ERROR';
+  message: string;
+  redirect?: string;
+};
+
+// Error factories
+const createValidationError = (
+  message: string,
+  fields?: Record<string, string>,
+): ValidationError => ({
+  code: 'VALIDATION_ERROR',
+  message,
+  fields,
+});
+
+const createDatabaseError = (
+  message: string,
+  cause?: string,
+): DatabaseError => ({
+  code: 'DB_ERROR',
+  message,
+  cause,
+});
+
+const createAuthError = (message: string, redirect?: string): AuthError => ({
+  code: 'AUTH_ERROR',
+  message,
+  redirect,
+});
+
+type ErrorCode = 'VALIDATION_ERROR' | 'DB_ERROR' | 'AUTH_ERROR' | 'API_ERROR';
+
+type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: { message: string; code: ErrorCode };
+};
+
+// Custom error classes
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public code: ErrorCode,
+    public status: number = 400,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+export class ValidationError extends ApiError {
+  constructor(
+    message: string,
+    public fields?: Record<string, string>,
+  ) {
+    super(message, 'VALIDATION_ERROR', 400);
+    this.name = 'ValidationError';
+  }
+}
+
+export class AuthError extends ApiError {
+  constructor(
+    message: string,
+    public redirect?: string,
+  ) {
+    super(message, 'AUTH_ERROR', 401);
+    this.name = 'AuthError';
+  }
+}
+
+// Zod schema examples
+const userSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2),
+  role: z.enum(['user', 'admin']),
+  preferences: z
+    .object({
+      theme: z.enum(['light', 'dark']).default('light'),
+      notifications: z.boolean().default(true),
+    })
+    .optional(),
+});
+
+// Partial schema for updates
+const userUpdateSchema = userSchema.partial();
+
+// Array schema with refinements
+const batchUsersSchema = z
+  .array(userSchema)
+  .min(1)
+  .max(100)
+  .refine((users) => new Set(users.map((u) => u.email)).size === users.length, {
+    message: 'Duplicate emails are not allowed',
+  });
+
+// Custom error classes
+export class RateLimitError extends ApiError {
+  constructor(
+    message: string,
+    public retryAfter: number,
+  ) {
+    super(message, 'RATE_LIMIT_ERROR', 429);
+    this.name = 'RateLimitError';
+  }
+}
+```
+
+## Authentication
+
+### Auth Setup
+
+```typescript
+// app/lib/server/auth.ts
+import { createAuth } from '@better-auth/core';
+
+export const auth = createAuth({
+  providers: ['discord', 'github', 'google'],
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/login',
+  },
+});
+
+// Export auth utilities
+export const { getSession, requireSession } = auth;
+```
+
+```typescript
+// app/lib/utils/auth-client.ts
+import { createAuthClient } from '@better-auth/react';
+
+export const { AuthProvider, useAuth, useSession } = createAuthClient();
+```
+
+### Session Handling
+
+```typescript
+import { useSession } from '~/lib/utils/auth-client';
+import { requireSession } from '~/lib/server/auth';
+
+// Protected route
+export const Route = createFileRoute('/protected')({
+  beforeLoad: async () => {
+    await requireSession();
+  },
+});
+
+// Logout handling
+export const Route = createFileRoute('/logout')({
+  loader: async () => {
+    await auth.signOut();
+    return redirect('/');
+  },
+});
+```
+
+```typescript
+// Component with auth check
+function ProtectedComponent() {
+  // Access session data
+  const { session, isLoading } = useSession();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!session) {
+    return <Navigate to="/login" />;
+  }
+
+  return (
+    <div>
+      <h1>Welcome {session.user.name}</h1>
+    </div>
+  );
+}
+```
+
+- Support multiple auth providers:
+  - Discord
+  - Github
+  - Google
+  - Email/Password
+
+## Error Handling
+
+- Use try/catch for async operations
+- Return typed ApiResponse
+- Use error boundaries in UI
+- Handle auth errors with redirects
+
+## Best Practices
+
+1. File Organization
+
+- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) directory structure
+- Group by feature in `feature-name/api/feature-name.api.ts`
+- Keep related endpoints in same file
+
+2. Naming
+
+- Server functions: prefix with `$` (e.g., `$getUser`)
+- Queries: `use[Resource]QueryOptions`
+- Mutations: `use[Action][Resource]Mutation`
+
+3. Query Keys
+
+- Include all dependencies: `['users', { page, filter }]`
+- Keep consistent across related queries
+
+4. Validation
+
+- Always validate inputs
+- Use zod schemas
+- Return validation errors in ApiResponse
+
+5. Authentication
+
+- Always use `requireAuthSession()` for protected routes
+- Handle session expiry
+- Implement proper refresh flow
+
+### OAuth Handling
+
+```typescript
+export const Route = createFileRoute('/auth/callback/:provider')({
+  loader: async ({ params }) => {
+    const { provider } = params;
+    try {
+      await handleOAuthCallback(provider);
+      return redirect('/dashboard');
+    } catch (error) {
+      return redirect('/login?error=oauth_failed');
+    }
+  },
+});
+```
+
+## Testing
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { createServerFn } from '@tanstack/start';
+
+describe('User API', () => {
+  it('should create user', async () => {
+    const $createUser = createServerFn()
+      .validator(userSchema)
+      .handler(async ({ data }) => {
+        // Test implementation
+        return { success: true, data };
+      });
+
+    const result = await $createUser({
+      data: { name: 'Test', email: 'test@example.com' },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data.name).toBe('Test');
+  });
+});
+```
+
+```typescript
+// Error logging middleware
+export const errorLogger = async (
+  error: unknown,
+  { route, params }: { route: string; params: Record<string, unknown> },
+) => {
+  if (error instanceof ApiError) {
+    // Log expected errors with context
+    console.error({
+      type: error.name,
+      code: error.code,
+      message: error.message,
+      route,
+      params,
+    });
+    return;
+  }
+
+  // Log unexpected errors with stack
+  console.error({
+    type: 'UnexpectedError',
+    error,
+    route,
+    params,
+    stack: error instanceof Error ? error.stack : undefined,
+  });
+};
+```
+
+```typescript
+// Error boundary with retry logic
+export const withRetry = (fn: () => Promise<any>, maxRetries = 3) => {
+  let attempts = 0;
+  const attempt = async (): Promise<any> => {
+    try {
+      return await fn();
+    } catch (error) {
+      attempts++;
+      if (attempts === maxRetries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempts));
+      return attempt();
+    }
+  };
+  return attempt();
+};
+```

@@ -1,0 +1,241 @@
+---
+description: MANDATORY: Testing patterns and best practices
+globs: "**/*.test.{ts,tsx}"
+---
+
+# Testing
+
+## Core Concepts
+
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for testing strategy
+- See [Client Layer](mdc:.cursor/rules/client.mdc) for component testing
+- See [API Layer](mdc:.cursor/rules/api.mdc) for API testing
+- See [Data Layer](mdc:.cursor/rules/data.mdc) for database testing
+- Use Vitest for unit and integration tests
+- Use React Testing Library for component tests
+- Use MSW for API mocking
+- Follow AAA pattern (Arrange, Act, Assert)
+
+## Test Organization
+
+```typescript
+import { describe, expect, it } from 'vitest';
+
+describe('Feature: User Management', () => {
+  describe('Component: UserForm', () => {
+    it('should render form fields', () => {
+      // Arrange
+      render(<UserForm />);
+
+      // Act
+      const nameInput = screen.getByLabelText('Name');
+      const emailInput = screen.getByLabelText('Email');
+
+      // Assert
+      expect(nameInput).toBeInTheDocument();
+      expect(emailInput).toBeInTheDocument();
+    });
+
+    it('should handle form submission', async () => {
+      // Arrange
+      const onSubmit = vi.fn();
+      render(<UserForm onSubmit={onSubmit} />);
+
+      // Act
+      await userEvent.type(screen.getByLabelText('Name'), 'John Doe');
+      await userEvent.type(screen.getByLabelText('Email'), 'john@example.com');
+      await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+      // Assert
+      expect(onSubmit).toHaveBeenCalledWith({
+        name: 'John Doe',
+        email: 'john@example.com',
+      });
+    });
+  });
+});
+```
+
+## API Mocking
+
+```typescript
+import { http, HttpResponse } from 'msw';
+
+export const handlers = [
+  http.get('/api/users', () => {
+    return HttpResponse.json([
+      { id: '1', name: 'John' },
+      { id: '2', name: 'Jane' },
+    ]);
+  }),
+
+  http.post('/api/users', async ({ request }) => {
+    const data = await request.json();
+    return HttpResponse.json({ id: '3', ...data });
+  }),
+];
+```
+
+## Database Mocking
+
+```typescript
+import { db } from '~/lib/db';
+import { users } from '~/drizzle/schema';
+import { eq } from 'drizzle-orm';
+
+// Mock the entire db object
+vi.mock('~/lib/db', () => ({
+  db: {
+    insert: vi.fn(),
+    select: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
+    transaction: vi.fn(),
+  },
+}));
+
+describe('User Repository', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should insert user', async () => {
+    const userData = { name: 'John', email: 'john@example.com' };
+    vi.mocked(db.insert).mockResolvedValueOnce([userData]);
+
+    const result = await createUser(userData);
+    expect(result).toEqual(userData);
+    expect(db.insert).toHaveBeenCalledWith(users).values(userData);
+  });
+
+  it('should select user', async () => {
+    const user = { id: '1', name: 'John', email: 'john@example.com' };
+    vi.mocked(db.select).mockResolvedValueOnce([user]);
+
+    const result = await getUserById('1');
+    expect(result).toEqual(user);
+    expect(db.select)
+      .toHaveBeenCalledWith()
+      .from(users)
+      .where(eq(users.id, '1'));
+  });
+
+  it('should handle transaction', async () => {
+    vi.mocked(db.transaction).mockImplementationOnce(async (callback) => {
+      const tx = { ...db };
+      return callback(tx);
+    });
+
+    await someTransactionFunction();
+    expect(db.transaction).toHaveBeenCalled();
+  });
+});
+```
+
+## Test File Location
+
+- Place test files next to the code they test
+- Use `.test.ts` or `.test.tsx` extension
+- Group related tests in describe blocks
+- Use clear, descriptive test names
+
+## Best Practices
+
+- Test component behavior, not implementation
+- Use screen queries that match how users find elements
+- Prefer user-event over fireEvent for interactions
+- Mock only what's necessary
+- Use setup functions for common test scenarios
+- Test error states and edge cases
+
+## TanStack Testing
+
+```typescript
+// Router Testing
+describe('Route: Users', () => {
+  beforeEach(() => {
+    // Setup router test environment
+    router.navigate('/users');
+  });
+
+  it('should validate search params', () => {
+    const params = { page: '1', sort: 'desc' };
+    const result = Route.validateSearch(params);
+    expect(result.success).toBe(true);
+  });
+
+  it('should render route component', () => {
+    render(<RouterProvider router={router} />);
+    expect(screen.getByRole('heading')).toHaveTextContent('Users');
+  });
+});
+
+// Query Testing
+describe('Query: Users', () => {
+  it('should handle error states', async () => {
+    server.use(
+      http.get('/api/users', () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    const { result } = renderHook(() => useQuery(userQueryOptions()));
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+// Mutation Testing
+describe('Mutation: CreateUser', () => {
+  it('should create user', async () => {
+    const { result } = renderHook(() =>
+      useMutation({ mutationFn: $createUser }),
+    );
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        name: 'John',
+        email: 'john@example.com',
+      });
+    });
+
+    expect(result.current.isSuccess).toBe(true);
+  });
+});
+
+// Server Function Testing
+describe('Server Function: CreateUser', () => {
+  it('should validate input', async () => {
+    // Test validation
+    const result = await $createUser({ data: invalidData });
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('should handle database errors', async () => {
+    // Mock database error
+    vi.mocked(db.insert).mockRejectedValueOnce(
+      new DatabaseError('Unique constraint'),
+    );
+
+    const result = await $createUser({ data: validData });
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('DB_ERROR');
+  });
+});
+```
+
+## Test Setup
+
+```typescript
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import { server } from './mocks/server';
+
+// Setup MSW
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => {
+  cleanup();
+  server.resetHandlers();
+});
+afterAll(() => server.close());
+```

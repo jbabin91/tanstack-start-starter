@@ -1,0 +1,104 @@
+---
+description: MANDATORY: Core project concepts, structure, and development workflow
+globs: "*"
+---
+
+# Core Concepts
+
+## Project Structure
+
+```sh
+app/
+├── components/                         # Shared UI components
+├── features/                           # Feature-specific code
+│   ├── _shared/                        # Shared features
+│   │   └── shared-feature-name/
+│   │       ├── api/                    # API layer
+│   │       ├── domain/                 # Business logic
+│   │       ├── emails/                 # Email templates
+│   │       └── ui/                     # UI components
+│   └── feature-name/
+│       ├── api/                        # API layer
+│       ├── domain/                     # Business logic
+│       ├── ui/                         # UI components
+│       └── tests/                      # Feature tests
+├── drizzle/                           # Database schemas
+│   └── schema/                         # Table definitions
+├── lib/                               # Core utilities
+│   ├── client/                         # Client-side core
+│   ├── server/                         # Server-side core
+│   └── shared/                         # Isomorphic utilities
+├── providers/                         # Shared Providers
+├── routes/                            # Route components
+└── styles/                            # Global styles
+```
+
+## Technology Stack
+
+### Core Technologies
+
+- React 19 for UI
+- TypeScript for type safety
+- TanStack Router for routing
+- TanStack Query for data fetching
+- TanStack Start for server functions
+- Drizzle for database operations
+
+### UI Layer
+
+- Shadcn UI for components
+- Tailwind CSS for styling
+- Radix UI for primitives
+
+### Data Layer
+
+- PostgreSQL for database
+- Drizzle ORM for queries
+- Zod for validation
+
+## File Organization
+
+### Naming Conventions
+
+- Components: `component-name.tsx`
+- API Layer: `feature-name.api.ts`
+- Forms: `feature-name.form.tsx`
+- Database: `table-name.schema.ts`
+- Tests: `feature-name.test.ts`
+
+### Directory Structure
+
+- Use lowercase with dashes
+- Group by feature first
+- Keep related files close
+- Follow consistent patterns
+
+## Development Workflow
+
+### Code Style
+
+- Use ESLint for linting
+- Follow commit conventions
+- Write meaningful tests
+- Document complex logic
+
+### Best Practices
+
+- Follow layer-specific guidelines:
+  - [API Layer](mdc:.cursor/rules/api.mdc)
+  - [Client Layer](mdc:.cursor/rules/client.mdc)
+  - [Data Layer](mdc:.cursor/rules/data.mdc)
+
+### Testing Strategy
+
+- Unit tests with Vitest
+- Component tests with RTL
+- Integration tests for flows
+- E2E tests for critical paths
+
+### Documentation
+
+- Use JSDoc for functions
+- Document API endpoints
+- Keep README files updated
+- Include setup instructions

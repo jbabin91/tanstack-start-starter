@@ -1,0 +1,264 @@
+---
+description: MANDATORY: Database schema, operations, and data layer patterns
+globs: "**/*.{schema.ts,server.ts}"
+---
+
+# Data Layer
+
+## Core Concepts
+
+- Use Drizzle ORM for database operations
+- Keep business logic in server files
+- Handle errors consistently
+- Use proper typing
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- See [API Layer](mdc:.cursor/rules/api.mdc) for server functions
+
+## Schema Patterns
+
+### Table Definitions
+
+```typescript
+// Base schema for shared fields
+const baseEntitySchema = {
+  id: text().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .$defaultFn(() => sql`CURRENT_TIMESTAMP AT TIME ZONE 'UTC'`),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .$defaultFn(() => sql`CURRENT_TIMESTAMP AT TIME ZONE 'UTC'`)
+    .$onUpdate(() => sql`CURRENT_TIMESTAMP AT TIME ZONE 'UTC'`),
+};
+
+// Table definition with base schema
+export const users = pgTable('users', {
+  ...baseEntitySchema,
+  email: text().notNull().unique(),
+  name: text().notNull(),
+});
+
+// Table with indexes
+export const posts = pgTable(
+  'posts',
+  {
+    ...baseEntitySchema,
+    title: text('title').notNull(),
+    slug: text('slug').notNull(),
+  },
+  (table) => ({
+    titleIdx: index('title_idx').on(table.title),
+    slugIdx: uniqueIndex('slug_idx').on(table.slug),
+  }),
+);
+```
+
+### Relations
+
+```typescript
+export const postsRelations = relations(posts, ({ one }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+}));
+
+// Complex relations with cascade
+export const userPreferences = pgTable('user_preferences', {
+  userId: text()
+    .primaryKey()
+    .references(() => users.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+    }),
+  theme: text().notNull().default('light'),
+  notifications: boolean().notNull().default(true),
+});
+
+// Composite keys
+export const userRoles = pgTable(
+  'user_roles',
+  {
+    userId: text()
+      .notNull()
+      .references(() => users.id),
+    roleId: text()
+      .notNull()
+      .references(() => roles.id),
+    assignedAt: timestamp('assigned_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey(table.userId, table.roleId),
+  }),
+);
+
+// Many-to-many relations
+export const userRolesRelations = relations(userRoles, ({ one }) => ({
+  user: one(users, {
+    fields: [userRoles.userId],
+    references: [users.id],
+  }),
+  role: one(roles, {
+    fields: [userRoles.roleId],
+    references: [roles.id],
+  }),
+}));
+```
+
+## Database Operations
+
+### Basic Operations
+
+```typescript
+// Prepared statements
+const getUserByEmail = db.query.users
+  .findFirst({
+    where: eq(users.email, sql.placeholder('email')),
+  })
+  .prepare();
+
+// Usage
+const user = await getUserByEmail.execute({ email: 'user@example.com' });
+
+// Create with validation
+const $createUser = createServerFn()
+  .validator(insertUserSchema)
+  .handler(async ({ data }) => {
+    try {
+      const user = await db.insert(users).values(data);
+      return { success: true, data: user };
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        return {
+          success: false,
+          error: { code: 'DB_ERROR', message: error.message },
+        };
+      }
+      throw error;
+    }
+  });
+
+// Query with relations
+const $getPostWithUser = createServerFn()
+  .validator(z.string())
+  .handler(async ({ data: postId }) => {
+    const post = await db.query.posts.findFirst({
+      where: eq(posts.id, postId),
+      with: {
+        user: true,
+      },
+    });
+    return { success: true, data: post };
+  });
+```
+
+### Transactions
+
+```typescript
+const $createPostWithTags = createServerFn()
+  .validator(postWithTagsSchema)
+  .handler(async ({ data }) => {
+    return await db.transaction(async (tx) => {
+      const post = await tx.insert(posts).values(data.post);
+      const tags = await tx.insert(tags).values(data.tags);
+      return { success: true, data: { post, tags } };
+    });
+  });
+
+// Batch operations
+const $batchUpdateUsers = createServerFn()
+  .validator(batchUpdateSchema)
+  .handler(async ({ data }) => {
+    return await db.transaction(async (tx) => {
+      const updates = await Promise.all(
+        data.map((user) =>
+          tx.update(users).set(user).where(eq(users.id, user.id)),
+        ),
+      );
+      return { success: true, data: updates };
+    });
+  });
+```
+
+## Error Handling
+
+### Database Errors
+
+```typescript
+try {
+  const result = await db.insert(users).values(data);
+  return { success: true, data: result };
+} catch (error) {
+  if (error instanceof UniqueConstraintError) {
+    return {
+      success: false,
+      error: {
+        code: 'DB_ERROR',
+        message: 'Email already exists',
+      },
+    };
+  }
+  throw error;
+}
+```
+
+## Best Practices
+
+1. Schema Organization
+
+- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) directory structure
+- Place schemas in `app/drizzle/schema`
+- One file per table or related tables
+- Export all schemas from `index.ts`
+- Use consistent naming conventions
+
+2. Database Operations
+
+- Use transactions for multi-table operations
+- Handle all potential errors
+- Return typed responses
+- Validate inputs with zod
+
+3. Performance
+
+- Use proper indexes
+- Optimize queries with relations
+- Handle N+1 query problems
+- Use pagination for large datasets
+
+4. Security
+
+- Never trust user input
+- Use parameterized queries
+- Handle sensitive data properly
+- Implement proper access control
+
+5. Migrations
+
+- Keep migrations small and focused
+- Use descriptive migration names
+- Test migrations thoroughly
+- Have rollback plans
+
+### Migration Example
+
+```typescript
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+
+export async function up(db: Database) {
+  await db.schema
+    .createTable('posts')
+    .addColumn('id', serial('id').primaryKey())
+    .addColumn('title', text('title').notNull())
+    .addColumn('content', text('content').notNull())
+    .addColumn(
+      'created_at',
+      timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    )
+    .execute();
+}
+
+export async function down(db: Database) {
+  await db.schema.dropTable('posts').execute();
+}
+```
