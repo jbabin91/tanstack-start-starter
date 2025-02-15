@@ -4,7 +4,7 @@ export default defineConfig({
   extends: ['@commitlint/config-conventional'],
   prompt: {
     alias: {
-      b: 'chore(repo): bump dependencies',
+      b: 'chore: bump dependencies',
     },
     allowBreakingChanges: ['feat', 'fix'],
     allowCustomIssuePrefix: false,
