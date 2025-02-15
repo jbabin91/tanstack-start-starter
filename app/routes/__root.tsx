@@ -8,14 +8,16 @@ import { Header } from '~/components/layout/header';
 import { Spinner } from '~/components/spinner';
 import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
+import { getUser } from '~/features/users/api';
 import { seo } from '~/lib/utils/seo';
-import { getUser } from '~/modules/users/api';
 import { Providers } from '~/providers';
 import appCss from '~/styles/app.css?url';
 
-export const Route = createRootRouteWithContext<{
+type RouterContext = {
   queryClient: QueryClient;
-}>()({
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
     const user = await getUser();
     return { user };
