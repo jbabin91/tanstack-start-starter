@@ -1,0 +1,71 @@
+---
+description: MANDATORY: State management patterns including URL, server, global, form, and component state
+globs: app/**/*
+---
+# State Management Guidelines
+
+## Core Concepts
+
+- Use TanStack Router for URL-driven state.
+- Keep URL state clean and shareable
+- Validate all URL parameters with Zod
+- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
+- See [Client Layer](mdc:.cursor/rules/client.mdc) for UI patterns
+
+## URL State (TanStack Router)
+
+### Basic Route with Search Params
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { zodValidator } from '@tanstack/zod-adapter'
+import { z } from 'zod'
+
+const usersSearchSchema = z.object({
+  page: z.coerce.number().default(1),
+  sort: z.enum(['asc', 'desc']).default('desc'),
+  filter: z.string().optional(),
+})
+
+export const Route = createFileRoute('/users')({
+  validateSearch: zodValidator(usersSearchSchema),
+  component: UsersPage,
+});
+```
+
+### Usage in Components
+
+```tsx
+function UsersPage() {
+  const { page, sort, filter } = Route.useSearch();
+
+  return (
+    <div>
+      <UserTable page={page} sort={sort} filter={filter} />
+      <Pagination currentPage={page} />
+    </div>
+  );
+}
+```
+
+### URL State Best Practices
+
+1. When to Use URL State
+- Pagination state
+- Sort/filter parameters
+- Selected item IDs
+- View modes or layouts
+- Search queries
+
+2. When Not to Use URL State
+- Temporary UI state (modals, dropdowns)
+- Form input values (unless part of a multi-step flow)
+- Authentication tokens
+- Application preferences
+
+3. Implementation Guidelines
+- Always validate search params with Zod
+- Provide sensible defaults
+- Keep URLs clean and readable
+- Use semantic parameter names
+- Handle invalid parameters gracefully
