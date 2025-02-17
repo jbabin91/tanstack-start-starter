@@ -3,74 +3,118 @@ description: Commit message guidelines
 globs:
 ---
 
-# Commit Message Conventions
+# Commit Conventions
 
-We follow a structured approach to commit messages to maintain a clean and meaningful git history.
+See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup and general best practices.
 
-## Message Structure
+## Commit Message Format
 
 ```sh
-<type>: <subject>
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
 ```
 
-## Types
+### Type
 
-- `feat`: New features (e.g., "feat: add sso support")
-- `fix`: Bug fixes (e.g., "fix: handle timeout errors")
-- `docs`: Documentation changes (e.g., "docs: update api endpoints")
-- `style`: Code style/formatting (e.g., "style: format with prettier")
-- `refactor`: Code refactoring (e.g., "refactor: extract config")
-- `test`: Changes to tests (e.g., "test: add auth unit tests")
-- `chore`: Maintenance tasks (e.g., "chore: bump versions")
+Must be one of the following:
+
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `chore`: Changes to the build process or auxiliary tools
+- `revert`: Reverts a previous commit
+
+### Scope
+
+The scope should be the name of the module affected (folder name or other boundary).
+
+### Subject
+
+The subject contains a succinct description of the change:
+
+- Use the imperative, present tense: "change" not "changed" nor "changes"
+- Don't capitalize first letter
+- No dot (.) at the end
+
+### Body
+
+The body should include the motivation for the change and contrast this with previous behavior.
+
+### Footer
+
+The footer should contain any information about Breaking Changes and is also the place to reference GitHub issues that this commit closes.
+
+## Examples
+
+```sh
+feat(auth): add login with github
+
+Add GitHub OAuth provider and implement login flow.
+Update auth configuration to support multiple providers.
+Add tests for GitHub authentication.
+
+Closes #123
+```
+
+```sh
+fix(api): handle validation errors in user creation
+
+Properly handle and format validation errors from the API.
+Add error messages for each validation case.
+Update error handling documentation.
+
+Fixes #456
+```
+
+```sh
+refactor(components): update button styles
+
+Replace old button styles with new design system.
+Implement new hover and focus states.
+Add loading state animation.
+
+BREAKING CHANGE: Button API has changed. 'variant' prop now accepts different values.
+```
 
 ## Best Practices
 
-### Subject Line
+1. Commit Structure
 
-- Use imperative mood ("add" not "added")
-- Keep it under 50 characters
-- Don't end with period
-- Keep it all lowercase
+   - Use conventional commits format
+   - Include scope when possible
+   - Write clear subjects
+   - Add detailed body for complex changes
 
-### Examples
+2. Message Content
 
-#### Feature Addition
+   - Be descriptive but concise
+   - Use imperative mood
+   - Reference issues when relevant
+   - Document breaking changes
 
-```sh
-feat: add password reset functionality
-```
+3. Commit Organization
 
-#### Bug Fix
+   - Make atomic commits
+   - Group related changes
+   - Separate refactoring from features
+   - Keep commits focused
 
-```sh
-fix: resolve token expiration issue
-```
+4. Workflow
 
-#### Database Refactoring
+   - Commit early and often
+   - Write messages in present tense
+   - Review commits before pushing
+   - Squash related commits
 
-```sh
-refactor: split reports table to separate raw payload storage
-```
-
-#### Dependency Updates
-
-```sh
-chore: bump package versions
-```
-
-## Breaking Changes
-
-For breaking changes, add `!` after type and include BREAKING CHANGE in body:
-
-```sh
-feat!: Change authentication flow
-
-BREAKING CHANGE: new token format is incompatible with old clients
-```
-
-## Core Rules
-
-- See [Core Concepts](mdc:.cursor/rules/core.mdc) for development workflow
-- Use conventional commits
-- Include scope
-- Keep messages clear
+5. Documentation
+   - Update docs with code changes
+   - Include migration guides
+   - Document breaking changes
+   - Keep changelog updated

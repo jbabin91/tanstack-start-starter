@@ -1,0 +1,814 @@
+# Accessibility Guidelines
+
+## Core Concepts
+
+- WCAG 2.1 Level AA compliance
+- Semantic HTML
+- Keyboard navigation
+- Screen reader support
+- Color contrast
+- Focus management
+- Responsive design
+- Error handling
+
+## Semantic HTML
+
+### Document Structure
+
+```typescript
+// app/components/layout/page.tsx
+export function Page({ children }: { children: React.ReactNode }) {
+  return (
+    <div role="document">
+      <header role="banner">
+        <nav role="navigation" aria-label="Main">
+          <MainNavigation />
+        </nav>
+      </header>
+
+      <main role="main" id="main-content" tabIndex={-1}>
+        {children}
+      </main>
+
+      <footer role="contentinfo">
+        <FooterContent />
+      </footer>
+    </div>
+  );
+}
+```
+
+### Semantic Components
+
+```typescript
+// app/components/ui/accordion.tsx
+export function Accordion({
+  items,
+}: {
+  items: Array<{ id: string; title: string; content: React.ReactNode }>;
+}) {
+  return (
+    <div className="accordion">
+      {items.map((item) => (
+        <div key={item.id}>
+          <h3>
+            <button
+              aria-expanded={item.isExpanded}
+              aria-controls={`content-${item.id}`}
+              onClick={() => toggle(item.id)}
+            >
+              {item.title}
+              <span className="visually-hidden">
+                {item.isExpanded ? 'Collapse' : 'Expand'}
+              </span>
+            </button>
+          </h3>
+          <div
+            id={`content-${item.id}`}
+            role="region"
+            aria-labelledby={`heading-${item.id}`}
+            hidden={!item.isExpanded}
+          >
+            {item.content}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Keyboard Navigation
+
+### Focus Management
+
+```typescript
+// app/lib/hooks/use-focus-trap.ts
+export function useFocusTrap(ref: React.RefObject<HTMLElement>) {
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const focusableElements = element.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+
+    const firstFocusable = focusableElements[0] as HTMLElement;
+    const lastFocusable = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          lastFocusable.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          firstFocusable.focus();
+          e.preventDefault();
+        }
+      }
+    }
+
+    element.addEventListener('keydown', handleKeyDown);
+    return () => element.removeEventListener('keydown', handleKeyDown);
+  }, [ref]);
+}
+```
+
+### Skip Links
+
+```typescript
+// app/components/ui/skip-link.tsx
+export function SkipLink() {
+  return (
+    <a
+      href="#main-content"
+      className={cn(
+        'sr-only focus:not-sr-only',
+        'focus:fixed focus:top-4 focus:left-4',
+        'focus:p-4 focus:bg-white focus:z-50',
+      )}
+    >
+      Skip to main content
+    </a>
+  );
+}
+```
+
+## Screen Reader Support
+
+### ARIA Patterns
+
+```typescript
+// app/components/ui/dialog.tsx
+export function Dialog({
+  isOpen,
+  onClose,
+  title,
+  children,
+}: DialogProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      ref={dialogRef}
+      hidden={!isOpen}
+      className={cn('dialog', isOpen && 'dialog--open')}
+    >
+      <header>
+        <h2 id="dialog-title">{title}</h2>
+        <button
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="dialog__close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+      <div className="dialog__content">{children}</div>
+    </div>
+  );
+}
+```
+
+### Live Regions
+
+```typescript
+// app/components/ui/alert.tsx
+export function Alert({
+  message,
+  type = 'info',
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'error';
+}) {
+  return (
+    <div
+      role="alert"
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      className={cn('alert', `alert--${type}`)}
+    >
+      {message}
+    </div>
+  );
+}
+
+// Toast notifications
+export function Toast({ message }: { message: string }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="toast"
+    >
+      {message}
+    </div>
+  );
+}
+```
+
+## Color and Contrast
+
+### Color Utilities
+
+```typescript
+// app/lib/utils/color.ts
+export const colorContrastRatios = {
+  normal: 4.5, // WCAG AA for normal text
+  large: 3, // WCAG AA for large text
+  enhanced: 7, // WCAG AAA for normal text
+  enhancedLarge: 4.5, // WCAG AAA for large text
+};
+
+export function getContrastRatio(
+  foreground: string,
+  background: string,
+): number {
+  const fg = getLuminance(foreground);
+  const bg = getLuminance(background);
+
+  return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+}
+
+export function isAccessible(
+  foreground: string,
+  background: string,
+  size: 'normal' | 'large' = 'normal',
+): boolean {
+  const ratio = getContrastRatio(foreground, background);
+  return (
+    ratio >=
+    (size === 'large' ? colorContrastRatios.large : colorContrastRatios.normal)
+  );
+}
+```
+
+### Theme Configuration
+
+```typescript
+// app/lib/theme/colors.ts
+export const colors = {
+  primary: {
+    50: '#f0f9ff',
+    100: '#e0f2fe',
+    // ... ensure all combinations meet contrast requirements
+  },
+  error: {
+    light: '#fef2f2',
+    main: '#dc2626',
+    dark: '#991b1b',
+  },
+  success: {
+    light: '#f0fdf4',
+    main: '#16a34a',
+    dark: '#166534',
+  },
+} as const;
+
+// Validate color combinations
+Object.entries(colors).forEach(([name, variants]) => {
+  Object.entries(variants).forEach(([shade, color]) => {
+    if (!isAccessible(color, colors.background)) {
+      console.warn(
+        `Color ${name}.${shade} does not meet contrast requirements`,
+      );
+    }
+  });
+});
+```
+
+## Forms and Validation
+
+### Accessible Form Controls
+
+```typescript
+// app/components/ui/form.tsx
+export function FormField({
+  id,
+  label,
+  error,
+  required,
+  children,
+}: FormFieldProps) {
+  const fieldId = useId();
+  const errorId = `${fieldId}-error`;
+
+  return (
+    <div className="form-field">
+      <label
+        htmlFor={fieldId}
+        className={cn('form-label', required && 'form-label--required')}
+      >
+        {label}
+        {required && (
+          <span className="sr-only">(Required)</span>
+        )}
+      </label>
+
+      {React.cloneElement(children, {
+        id: fieldId,
+        'aria-required': required,
+        'aria-invalid': !!error,
+        'aria-describedby': error ? errorId : undefined,
+      })}
+
+      {error && (
+        <div
+          id={errorId}
+          className="form-error"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Error Messaging
+
+```typescript
+// app/components/ui/form-error.tsx
+export function FormError({ errors }: { errors: FieldError[] }) {
+  if (errors.length === 0) return null;
+
+  return (
+    <div
+      role="alert"
+      aria-live="polite"
+      className="form-errors"
+    >
+      <h2 className="sr-only">Form Errors</h2>
+      <ul>
+        {errors.map((error, index) => (
+          <li key={index}>
+            <a href={`#${error.field}`}>
+              {error.message}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Testing
+
+### Accessibility Testing
+
+```typescript
+// tests/accessibility/a11y.test.ts
+import { axe, toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
+
+describe('Accessibility', () => {
+  it('should have no accessibility violations', async () => {
+    const { container } = render(<MyComponent />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('should be keyboard navigable', async () => {
+    render(<MyComponent />);
+
+    const button = screen.getByRole('button');
+    expect(button).toHaveFocus();
+
+    userEvent.tab();
+    expect(screen.getByRole('link')).toHaveFocus();
+  });
+});
+```
+
+## Responsive Design
+
+### Responsive Patterns
+
+```typescript
+// app/components/ui/responsive-table.tsx
+export function ResponsiveTable({ data }: { data: TableData[] }) {
+  return (
+    <div className="responsive-table" role="region" aria-label="Data table">
+      <table>
+        <caption>Data Table</caption>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th key={column.key} scope="col">
+                {column.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row) => (
+            <tr key={row.id}>
+              {columns.map((column) => (
+                <td key={column.key} data-label={column.label}>
+                  {row[column.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+```
+
+## Documentation
+
+### Accessibility Checklist
+
+```typescript
+// docs/accessibility-checklist.md
+export const accessibilityChecklist = {
+  semantic: [
+    'Use semantic HTML elements',
+    'Implement proper heading hierarchy',
+    'Use landmarks appropriately',
+    'Provide alt text for images',
+  ],
+  keyboard: [
+    'Ensure all interactive elements are focusable',
+    'Implement logical tab order',
+    'Provide visible focus indicators',
+    'Support keyboard shortcuts',
+  ],
+  aria: [
+    'Use ARIA labels where necessary',
+    'Implement proper ARIA roles',
+    'Manage focus for modals/dialogs',
+    'Use live regions for updates',
+  ],
+  visual: [
+    'Ensure sufficient color contrast',
+    'Support high contrast mode',
+    'Make content readable at 200% zoom',
+    'Support reduced motion',
+  ],
+} as const;
+```
+
+### Dialog Example
+
+```typescript
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+
+function AccessibleDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Open Dialog</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              defaultValue="Pedro Duarte"
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              Username
+            </Label>
+            <Input
+              id="username"
+              defaultValue="@peduarte"
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+```
+
+### Alert Example
+
+```typescript
+import { Alert, AlertTitle, AlertDescription } from "~/components/ui/alert";
+import { AlertCircle, Terminal, Check } from "lucide-react";
+
+function AccessibleAlerts() {
+  return (
+    <div className="space-y-4">
+      <Alert variant="default">
+        <Terminal className="h-4 w-4" />
+        <AlertTitle>Heads up!</AlertTitle>
+        <AlertDescription>
+          You can add components and dependencies to your app using the cli.
+        </AlertDescription>
+      </Alert>
+
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Your session has expired. Please log in again.
+        </AlertDescription>
+      </Alert>
+
+      <Alert variant="success">
+        <Check className="h-4 w-4" />
+        <AlertTitle>Success</AlertTitle>
+        <AlertDescription>
+          Your changes have been saved successfully.
+        </AlertDescription>
+      </Alert>
+    </div>
+  );
+}
+```
+
+### Form Example
+
+```typescript
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
+import { Label } from "~/components/ui/label";
+import { useToast } from "~/components/ui/use-toast";
+import { createForm } from "@tanstack/react-form";
+import { z } from "zod";
+
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+  email: z.string().email(),
+  bio: z.string().max(160).optional(),
+});
+
+function AccessibleForm() {
+  const { toast } = useToast();
+  const form = createForm({
+    defaultValues: {
+      username: "",
+      email: "",
+      bio: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        await submitForm(values);
+        toast({
+          title: "Success",
+          description: "Your profile has been updated.",
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update profile. Please try again.",
+        });
+      }
+    },
+  });
+
+  return (
+    <Form {...form.props} className="space-y-8">
+      <FormField
+        name="username"
+        render={(field) => (
+          <FormItem>
+            <FormLabel>Username</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter username" {...field.props} />
+            </FormControl>
+            <FormDescription>
+              This is your public display name.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="email"
+        render={(field) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input
+                type="email"
+                placeholder="Enter email"
+                {...field.props}
+              />
+            </FormControl>
+            <FormDescription>
+              We'll never share your email with anyone else.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="bio"
+        render={(field) => (
+          <FormItem>
+            <FormLabel>Bio</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder="Tell us about yourself"
+                className="resize-none"
+                {...field.props}
+              />
+            </FormControl>
+            <FormDescription>
+              You can @mention other users and organizations.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <Button type="submit" disabled={form.isSubmitting}>
+        {form.isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Updating...
+          </>
+        ) : (
+          "Update profile"
+        )}
+      </Button>
+    </Form>
+  );
+}
+```
+
+### Navigation Example
+
+```typescript
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "~/components/ui/navigation-menu";
+
+function AccessibleNavigation() {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li className="row-span-3">
+                <NavigationMenuLink asChild>
+                  <a
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    href="/"
+                  >
+                    <div className="mb-2 mt-4 text-lg font-medium">
+                      shadcn/ui
+                    </div>
+                    <p className="text-sm leading-tight text-muted-foreground">
+                      Beautifully designed components built with Radix UI and
+                      Tailwind CSS.
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+              </li>
+              <ListItem href="/docs" title="Introduction">
+                Re-usable components built using Radix UI and Tailwind CSS.
+              </ListItem>
+              <ListItem href="/docs/installation" title="Installation">
+                How to install dependencies and structure your app.
+              </ListItem>
+              <ListItem href="/docs/primitives/typography" title="Typography">
+                Styles for headings, paragraphs, lists...etc
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+}
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
+```
+
+### Tabs Example
+
+```typescript
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "~/components/ui/tabs";
+import { Card, CardContent } from "~/components/ui/card";
+
+function AccessibleTabs() {
+  return (
+    <Tabs defaultValue="account" className="w-[400px]">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="account">Account</TabsTrigger>
+        <TabsTrigger value="password">Password</TabsTrigger>
+      </TabsList>
+      <TabsContent value="account">
+        <Card>
+          <CardContent className="space-y-2">
+            <div className="space-y-1">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" defaultValue="Pedro Duarte" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" defaultValue="@peduarte" />
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="password">
+        <Card>
+          <CardContent className="space-y-2">
+            <div className="space-y-1">
+              <Label htmlFor="current">Current password</Label>
+              <Input id="current" type="password" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="new">New password</Label>
+              <Input id="new" type="password" />
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+}
+```

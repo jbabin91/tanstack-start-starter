@@ -1,0 +1,326 @@
+# Security Guidelines
+
+## Core Concepts
+
+- Defense in depth
+- Least privilege principle
+- Input validation
+- Output encoding
+- Secure by default
+- Regular security audits
+
+## Input Validation
+
+### Request Validation
+
+```typescript
+// app/lib/validation/request.ts
+export const validateRequest = <T>(schema: z.ZodType<T>) => {
+  return async (req: Request): Promise<ValidationResult<T>> => {
+    try {
+      const data = await req.json();
+      const validated = await schema.parseAsync(data);
+      return { success: true, data: validated };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request data',
+            details: error.errors,
+          },
+        };
+      }
+      throw error;
+    }
+  };
+};
+```
+
+### Content Security
+
+```typescript
+// app/lib/security/content.ts
+export const sanitizeHtml = (dirty: string): string => {
+  return DOMPurify.sanitize(dirty, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
+    ALLOWED_ATTR: ['href', 'title', 'target'],
+    ALLOW_DATA_ATTR: false,
+    ADD_ATTR: ['target="_blank"'],
+    FORBID_TAGS: ['style', 'script'],
+    FORBID_ATTR: ['style', 'onerror', 'onload'],
+  });
+};
+
+export const validateFileUpload = async (
+  file: File,
+): Promise<ValidationResult> => {
+  const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+
+  if (!validTypes.includes(file.type)) {
+    return {
+      success: false,
+      error: 'Invalid file type',
+    };
+  }
+
+  if (file.size > maxSize) {
+    return {
+      success: false,
+      error: 'File too large',
+    };
+  }
+
+  // Additional checks (magic numbers, etc.)
+  const header = await readFileHeader(file);
+  if (!isValidImageHeader(header)) {
+    return {
+      success: false,
+      error: 'Invalid file content',
+    };
+  }
+
+  return { success: true };
+};
+```
+
+## Rate Limiting
+
+### API Rate Limiting
+
+```typescript
+// app/lib/security/rate-limit.ts
+export const createRateLimiter = (options: {
+  windowMs: number;
+  max: number;
+  keyGenerator?: (req: Request) => string;
+}) => {
+  const limiter = new Map<string, number[]>();
+
+  return async (req: Request): Promise<RateLimitResult> => {
+    const key = options.keyGenerator?.(req) ?? req.ip;
+    const now = Date.now();
+
+    // Clean old requests
+    limiter.set(
+      key,
+      (limiter.get(key) ?? []).filter(
+        (timestamp) => now - timestamp < options.windowMs,
+      ),
+    );
+
+    const requests = limiter.get(key) ?? [];
+
+    if (requests.length >= options.max) {
+      return {
+        allowed: false,
+        resetTime: requests[0] + options.windowMs,
+      };
+    }
+
+    requests.push(now);
+    limiter.set(key, requests);
+
+    return { allowed: true };
+  };
+};
+
+export const apiRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+```
+
+## Encryption
+
+### Data Encryption
+
+```typescript
+// app/lib/security/encryption.ts
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+
+export const encryption = {
+  algorithm: 'aes-256-gcm',
+  keyLength: 32,
+  ivLength: 16,
+  tagLength: 16,
+};
+
+export async function encrypt(
+  data: string,
+  key: Buffer,
+): Promise<EncryptedData> {
+  const iv = randomBytes(encryption.ivLength);
+  const cipher = createCipheriv(encryption.algorithm, key, iv);
+
+  const encrypted = Buffer.concat([
+    cipher.update(data, 'utf8'),
+    cipher.final(),
+  ]);
+
+  const tag = cipher.getAuthTag();
+
+  return {
+    encrypted: encrypted.toString('base64'),
+    iv: iv.toString('base64'),
+    tag: tag.toString('base64'),
+  };
+}
+
+export async function decrypt(
+  encryptedData: EncryptedData,
+  key: Buffer,
+): Promise<string> {
+  const decipher = createDecipheriv(
+    encryption.algorithm,
+    key,
+    Buffer.from(encryptedData.iv, 'base64'),
+  );
+
+  decipher.setAuthTag(Buffer.from(encryptedData.tag, 'base64'));
+
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(encryptedData.encrypted, 'base64')),
+    decipher.final(),
+  ]);
+
+  return decrypted.toString('utf8');
+}
+```
+
+## Security Headers
+
+### Header Configuration
+
+```typescript
+// app/lib/security/headers.ts
+export const securityHeaders = {
+  'Content-Security-Policy': [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    'block-all-mixed-content',
+    'upgrade-insecure-requests',
+  ].join('; '),
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': [
+    'accelerometer=()',
+    'camera=()',
+    'geolocation=()',
+    'gyroscope=()',
+    'magnetometer=()',
+    'microphone=()',
+    'payment=()',
+    'usb=()',
+  ].join(', '),
+};
+```
+
+## Security Monitoring
+
+### Audit Logging
+
+```typescript
+// app/lib/security/audit.ts
+export const auditLog = async (event: {
+  type: AuditEventType;
+  userId: string;
+  action: string;
+  resource: string;
+  metadata?: Record<string, unknown>;
+}) => {
+  await db.insert(auditLogs).values({
+    ...event,
+    timestamp: new Date(),
+    ip: getClientIP(),
+    userAgent: getUserAgent(),
+  });
+};
+
+export const sensitiveOperations = {
+  USER_CREATE: 'user.create',
+  USER_DELETE: 'user.delete',
+  ROLE_CHANGE: 'role.change',
+  PASSWORD_CHANGE: 'password.change',
+  LOGIN_ATTEMPT: 'auth.login_attempt',
+  API_KEY_CREATE: 'api_key.create',
+} as const;
+```
+
+## Security Testing
+
+### Vulnerability Scanning
+
+```typescript
+// scripts/security/vulnerability-scan.ts
+export const securityScanConfig = {
+  dependencies: {
+    maximumRisk: 'medium',
+    failOnVulnerabilities: true,
+  },
+  staticAnalysis: {
+    patterns: ['SQL_INJECTION', 'XSS', 'COMMAND_INJECTION', 'PATH_TRAVERSAL'],
+    ignorePatterns: [],
+  },
+  secretScanning: {
+    patterns: ['API_KEY', 'PASSWORD', 'TOKEN', 'PRIVATE_KEY'],
+  },
+};
+```
+
+## Incident Response
+
+### Security Incident Handling
+
+```typescript
+// app/lib/security/incident.ts
+export const handleSecurityIncident = async (incident: {
+  type: IncidentType;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  metadata: Record<string, unknown>;
+}) => {
+  // 1. Log incident
+  await db.insert(securityIncidents).values({
+    ...incident,
+    timestamp: new Date(),
+    status: 'open',
+  });
+
+  // 2. Notify security team
+  if (incident.severity === 'high' || incident.severity === 'critical') {
+    await notifySecurityTeam(incident);
+  }
+
+  // 3. Take immediate action
+  await handleIncidentAction(incident);
+
+  // 4. Create incident report
+  await createIncidentReport(incident);
+};
+
+export const incidentResponseProcedures = {
+  BRUTE_FORCE_ATTEMPT: async (metadata: Record<string, unknown>) => {
+    const { ip, userId } = metadata;
+    await blockIP(ip as string);
+    await lockAccount(userId as string);
+  },
+  DATA_LEAK_DETECTED: async (metadata: Record<string, unknown>) => {
+    const { dataType, affectedUsers } = metadata;
+    await revokeCompromisedTokens(affectedUsers as string[]);
+    await notifyAffectedUsers(affectedUsers as string[], dataType as string);
+  },
+} as const;
+```

@@ -5,33 +5,92 @@ globs: "**/*.{ts,tsx,server.ts}"
 
 # API Layer
 
-## Core Concepts
+See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup and general best practices.
 
-- Use TanStack Query for data fetching
-- Use TanStack Start for server functions
-- Handle errors consistently
-- Validate all inputs
-- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
-- See [Data Layer](mdc:.cursor/rules/data.mdc) for database operations
+## Server Functions
 
-## Query Patterns
-
-### Basic Queries
+### Basic Patterns
 
 ```typescript
-export const useUserQueryOptions = (id: string) => {
+// Basic server function
+const $getUser = createServerFn()
+  .input(z.object({ id: z.string().uuid() }))
+  .query(async ({ input }) => {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, input.id),
+    });
+    if (!user) throw new NotFoundError('User not found');
+    return user;
+  });
+
+// Paginated server function
+const $getUsers = createServerFn()
+  .input(
+    z.object({
+      page: z.number().min(1).default(1),
+      sort: z.enum(['asc', 'desc']).default('desc'),
+    }),
+  )
+  .query(async ({ input }) => {
+    const { page, sort } = input;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      db.query.users.findMany({
+        limit,
+        offset,
+        orderBy: [desc(users.createdAt)],
+      }),
+      db.query.users.count(),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      pageSize: limit,
+      hasMore: offset + items.length < total,
+    };
+  });
+
+// Mutation server function
+const $createUser = createServerFn()
+  .input(
+    z.object({
+      name: z.string().min(2),
+      email: z.string().email(),
+    }),
+  )
+  .mutation(async ({ input }) => {
+    try {
+      const user = await db.insert(users).values(input);
+      return user;
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        throw new ValidationError('Email already exists');
+      }
+      throw error;
+    }
+  });
+```
+
+### Query Patterns
+
+```typescript
+// Query options factory
+export const userQueryOptions = (id: string) => {
   return queryOptions({
     queryKey: ['user', id],
-    queryFn: () => $getUser({ data: { id } }),
+    queryFn: () => $getUser({ id }),
   });
 };
 
-// With Pagination & Cache
-export const useUsersQueryOptions = ({ page = 1, pageSize = 10 }) => {
+// Paginated query options
+export const usersQueryOptions = ({ page = 1, sort = 'desc' as const }) => {
   return queryOptions({
-    queryKey: ['users', { page, pageSize }],
-    queryFn: () => $getUsers({ data: { page, pageSize } }),
-    placeholderData: keepPreviousData,
+    queryKey: ['users', { page, sort }],
+    queryFn: () => $getUsers({ page, sort }),
   });
 };
 
@@ -45,153 +104,49 @@ export const useInfinitePostsQuery = () => {
 };
 ```
 
-### Mutations
+### Mutation Patterns
 
 ```typescript
+// Basic mutation
 export const useCreateUserMutation = () => {
   return useMutation({
-    mutationFn: (data: CreateUserData) => $createUser({ data }),
+    mutationFn: (data: CreateUserData) => $createUser(data),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 };
 
-// Detailed invalidation patterns
+// Optimistic update mutation
 export const useUpdateUserMutation = () => {
   return useMutation({
-    mutationFn: (data: UpdateUserData) => $updateUser({ data }),
-    onSuccess: (_, variables) => {
-      // Invalidate specific user and lists that contain this user
+    mutationFn: (data: UpdateUserData) => $updateUser(data),
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries({ queryKey: ['user', newUser.id] });
+      const previousUser = queryClient.getQueryData(['user', newUser.id]);
+      queryClient.setQueryData(['user', newUser.id], newUser);
+      return { previousUser };
+    },
+    onError: (err, newUser, context) => {
+      queryClient.setQueryData(['user', newUser.id], context.previousUser);
+    },
+    onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      // Invalidate related queries
-      queryClient.invalidateQueries({
-        queryKey: ['userPreferences', variables.id],
-      });
-    },
-  });
-};
-
-// Optimistic update pattern
-export const useUpdateTodoMutation = () => {
-  return useMutation({
-    mutationFn: (data: UpdateTodoData) => $updateTodo({ data }),
-    onMutate: async (newTodo) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['todo', newTodo.id] });
-      // Snapshot previous value
-      const previousTodo = queryClient.getQueryData(['todo', newTodo.id]);
-      // Optimistically update
-      queryClient.setQueryData(['todo', newTodo.id], newTodo);
-      // Return context with snapshot
-      return { previousTodo };
-    },
-    onError: (err, newTodo, context) => {
-      // Rollback on error
-      queryClient.setQueryData(['todo', newTodo.id], context.previousTodo);
     },
   });
 };
 ```
 
-## Server Functions
+## Error Handling
 
-// See Data Layer for database operation patterns
-
-### Basic Pattern
+### Error Types
 
 ```typescript
-const $createUser = createServerFn()
-  .validator(userSchema)
-  .handler(async ({ data }) => {
-    try {
-      const user = await db.insert(users).values(data);
-      return { success: true, data: user };
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        return {
-          success: false,
-          error: { code: 'VALIDATION_ERROR', message: error.message },
-        };
-      }
-      throw error;
-    }
-  });
-```
-
-### Response Types
-
-```typescript
-// Pagination response type
-type PaginatedResponse<T> = {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
-};
-
-// Paginated API response
-type PaginatedApiResponse<T> = ApiResponse<PaginatedResponse<T>>;
-
-// Detailed error types
-type ValidationError = {
-  code: 'VALIDATION_ERROR';
-  message: string;
-  fields?: Record<string, string>;
-};
-
-type DatabaseError = {
-  code: 'DB_ERROR';
-  message: string;
-  cause?: string;
-};
-
-type AuthError = {
-  code: 'AUTH_ERROR';
-  message: string;
-  redirect?: string;
-};
-
-// Error factories
-const createValidationError = (
-  message: string,
-  fields?: Record<string, string>,
-): ValidationError => ({
-  code: 'VALIDATION_ERROR',
-  message,
-  fields,
-});
-
-const createDatabaseError = (
-  message: string,
-  cause?: string,
-): DatabaseError => ({
-  code: 'DB_ERROR',
-  message,
-  cause,
-});
-
-const createAuthError = (message: string, redirect?: string): AuthError => ({
-  code: 'AUTH_ERROR',
-  message,
-  redirect,
-});
-
-type ErrorCode = 'VALIDATION_ERROR' | 'DB_ERROR' | 'AUTH_ERROR' | 'API_ERROR';
-
-type ApiResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: { message: string; code: ErrorCode };
-};
-
-// Custom error classes
-export class ApiError extends Error {
+// Base error type
+class ApiError extends Error {
   constructor(
     message: string,
-    public code: ErrorCode,
+    public code: string,
     public status: number = 400,
   ) {
     super(message);
@@ -199,7 +154,8 @@ export class ApiError extends Error {
   }
 }
 
-export class ValidationError extends ApiError {
+// Validation error
+class ValidationError extends ApiError {
   constructor(
     message: string,
     public fields?: Record<string, string>,
@@ -209,7 +165,16 @@ export class ValidationError extends ApiError {
   }
 }
 
-export class AuthError extends ApiError {
+// Not found error
+class NotFoundError extends ApiError {
+  constructor(message: string) {
+    super(message, 'NOT_FOUND', 404);
+    this.name = 'NotFoundError';
+  }
+}
+
+// Auth error
+class AuthError extends ApiError {
   constructor(
     message: string,
     public redirect?: string,
@@ -218,201 +183,9 @@ export class AuthError extends ApiError {
     this.name = 'AuthError';
   }
 }
-
-// Zod schema examples
-const userSchema = z.object({
-  email: z.string().email(),
-  name: z.string().min(2),
-  role: z.enum(['user', 'admin']),
-  preferences: z
-    .object({
-      theme: z.enum(['light', 'dark']).default('light'),
-      notifications: z.boolean().default(true),
-    })
-    .optional(),
-});
-
-// Partial schema for updates
-const userUpdateSchema = userSchema.partial();
-
-// Array schema with refinements
-const batchUsersSchema = z
-  .array(userSchema)
-  .min(1)
-  .max(100)
-  .refine((users) => new Set(users.map((u) => u.email)).size === users.length, {
-    message: 'Duplicate emails are not allowed',
-  });
-
-// Custom error classes
-export class RateLimitError extends ApiError {
-  constructor(
-    message: string,
-    public retryAfter: number,
-  ) {
-    super(message, 'RATE_LIMIT_ERROR', 429);
-    this.name = 'RateLimitError';
-  }
-}
 ```
 
-## Authentication
-
-### Auth Setup
-
-```typescript
-// app/lib/server/auth.ts
-import { createAuth } from '@better-auth/core';
-
-export const auth = createAuth({
-  providers: ['discord', 'github', 'google'],
-  session: {
-    strategy: 'jwt',
-  },
-  pages: {
-    signIn: '/login',
-  },
-});
-
-// Export auth utilities
-export const { getSession, requireSession } = auth;
-```
-
-```typescript
-// app/lib/utils/auth-client.ts
-import { createAuthClient } from '@better-auth/react';
-
-export const { AuthProvider, useAuth, useSession } = createAuthClient();
-```
-
-### Session Handling
-
-```typescript
-import { useSession } from '~/lib/utils/auth-client';
-import { requireSession } from '~/lib/server/auth';
-
-// Protected route
-export const Route = createFileRoute('/protected')({
-  beforeLoad: async () => {
-    await requireSession();
-  },
-});
-
-// Logout handling
-export const Route = createFileRoute('/logout')({
-  loader: async () => {
-    await auth.signOut();
-    return redirect('/');
-  },
-});
-```
-
-```typescript
-// Component with auth check
-function ProtectedComponent() {
-  // Access session data
-  const { session, isLoading } = useSession();
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!session) {
-    return <Navigate to="/login" />;
-  }
-
-  return (
-    <div>
-      <h1>Welcome {session.user.name}</h1>
-    </div>
-  );
-}
-```
-
-- Support multiple auth providers:
-  - Discord
-  - Github
-  - Google
-  - Email/Password
-
-## Error Handling
-
-- Use try/catch for async operations
-- Return typed ApiResponse
-- Use error boundaries in UI
-- Handle auth errors with redirects
-
-## Best Practices
-
-1. File Organization
-
-- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) directory structure
-- Group by feature in `feature-name/api/feature-name.api.ts`
-- Keep related endpoints in same file
-
-2. Naming
-
-- Server functions: prefix with `$` (e.g., `$getUser`)
-- Queries: `use[Resource]QueryOptions`
-- Mutations: `use[Action][Resource]Mutation`
-
-3. Query Keys
-
-- Include all dependencies: `['users', { page, filter }]`
-- Keep consistent across related queries
-
-4. Validation
-
-- Always validate inputs
-- Use zod schemas
-- Return validation errors in ApiResponse
-
-5. Authentication
-
-- Always use `requireAuthSession()` for protected routes
-- Handle session expiry
-- Implement proper refresh flow
-
-### OAuth Handling
-
-```typescript
-export const Route = createFileRoute('/auth/callback/:provider')({
-  loader: async ({ params }) => {
-    const { provider } = params;
-    try {
-      await handleOAuthCallback(provider);
-      return redirect('/dashboard');
-    } catch (error) {
-      return redirect('/login?error=oauth_failed');
-    }
-  },
-});
-```
-
-## Testing
-
-```typescript
-import { describe, it, expect, vi } from 'vitest';
-import { createServerFn } from '@tanstack/start';
-
-describe('User API', () => {
-  it('should create user', async () => {
-    const $createUser = createServerFn()
-      .validator(userSchema)
-      .handler(async ({ data }) => {
-        // Test implementation
-        return { success: true, data };
-      });
-
-    const result = await $createUser({
-      data: { name: 'Test', email: 'test@example.com' },
-    });
-
-    expect(result.success).toBe(true);
-    expect(result.data.name).toBe('Test');
-  });
-});
-```
+### Error Logging
 
 ```typescript
 // Error logging middleware
@@ -443,6 +216,8 @@ export const errorLogger = async (
 };
 ```
 
+### Error Retry
+
 ```typescript
 // Error boundary with retry logic
 export const withRetry = (fn: () => Promise<any>, maxRetries = 3) => {
@@ -459,4 +234,170 @@ export const withRetry = (fn: () => Promise<any>, maxRetries = 3) => {
   };
   return attempt();
 };
+```
+
+## Response Types
+
+```typescript
+// Pagination response type
+type PaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+};
+
+// API response type
+type ApiResponse<T> = {
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+    fields?: Record<string, string>;
+  };
+};
+
+// Zod schemas
+const userSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2),
+  role: z.enum(['user', 'admin']),
+  preferences: z
+    .object({
+      theme: z.enum(['light', 'dark']).default('light'),
+      notifications: z.boolean().default(true),
+    })
+    .optional(),
+});
+
+// Partial schema for updates
+const userUpdateSchema = userSchema.partial();
+
+// Array schema with refinements
+const batchUsersSchema = z
+  .array(userSchema)
+  .min(1)
+  .max(100)
+  .refine((users) => new Set(users.map((u) => u.email)).size === users.length, {
+    message: 'Duplicate emails are not allowed',
+  });
+```
+
+## Authentication
+
+### Auth Setup
+
+```typescript
+// app/lib/server/auth.ts
+import { createAuth } from '@better-auth/core';
+
+export const auth = createAuth({
+  providers: ['discord', 'github', 'google'],
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/login',
+  },
+});
+
+// Export auth utilities
+export const { getSession, requireSession } = auth;
+```
+
+### Session Handling
+
+```typescript
+// Protected route
+export const Route = createFileRoute('/protected')({
+  beforeLoad: async () => {
+    await requireSession();
+  },
+});
+
+// Logout handling
+export const Route = createFileRoute('/logout')({
+  loader: async () => {
+    await auth.signOut();
+    return redirect('/');
+  },
+});
+```
+
+### OAuth Handling
+
+```typescript
+export const Route = createFileRoute('/auth/callback/:provider')({
+  loader: async ({ params }) => {
+    const { provider } = params;
+    try {
+      await handleOAuthCallback(provider);
+      return redirect('/dashboard');
+    } catch (error) {
+      return redirect('/login?error=oauth_failed');
+    }
+  },
+});
+```
+
+## Best Practices
+
+1. Server Functions
+
+   - Always validate inputs
+   - Handle errors consistently
+   - Return typed responses
+   - Use proper error types
+
+2. Queries
+
+   - Use consistent key structure
+   - Handle loading states
+   - Implement error boundaries
+   - Cache appropriately
+
+3. Mutations
+
+   - Validate before sending
+   - Handle optimistic updates
+   - Show loading states
+   - Provide feedback
+
+4. Error Handling
+
+   - Use proper error types
+   - Log errors appropriately
+   - Implement retries
+   - Show user feedback
+
+5. Authentication
+   - Protect routes properly
+   - Handle session expiry
+   - Implement refresh flow
+   - Secure sensitive data
+
+## Testing
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { createServerFn } from '@tanstack/start';
+
+describe('User API', () => {
+  it('should create user', async () => {
+    const $createUser = createServerFn()
+      .validator(userSchema)
+      .handler(async ({ data }) => {
+        // Test implementation
+        return { success: true, data };
+      });
+
+    const result = await $createUser({
+      data: { name: 'Test', email: 'test@example.com' },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data.name).toBe('Test');
+  });
+});
 ```

@@ -5,18 +5,12 @@ globs: "**/*.{schema.ts,server.ts}"
 
 # Data Layer
 
-## Core Concepts
-
-- Use Drizzle ORM for database operations
-- Keep business logic in server files
-- Handle errors consistently
-- Use proper typing
-- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
-- See [API Layer](mdc:.cursor/rules/api.mdc) for server functions
+See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup and general best practices.
+See [API Layer](mdc:.cursor/rules/api.mdc) for server functions and error handling.
 
 ## Schema Patterns
 
-### Table Definitions
+### Base Schema
 
 ```typescript
 // Base schema for shared fields
@@ -30,8 +24,12 @@ const baseEntitySchema = {
     .$defaultFn(() => sql`CURRENT_TIMESTAMP AT TIME ZONE 'UTC'`)
     .$onUpdate(() => sql`CURRENT_TIMESTAMP AT TIME ZONE 'UTC'`),
 };
+```
 
-// Table definition with base schema
+### Table Definitions
+
+```typescript
+// Basic table with base schema
 export const users = pgTable('users', {
   ...baseEntitySchema,
   email: text().notNull().unique(),
@@ -51,31 +49,8 @@ export const posts = pgTable(
     slugIdx: uniqueIndex('slug_idx').on(table.slug),
   }),
 );
-```
 
-### Relations
-
-```typescript
-export const postsRelations = relations(posts, ({ one }) => ({
-  user: one(users, {
-    fields: [posts.userId],
-    references: [users.id],
-  }),
-}));
-
-// Complex relations with cascade
-export const userPreferences = pgTable('user_preferences', {
-  userId: text()
-    .primaryKey()
-    .references(() => users.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-    }),
-  theme: text().notNull().default('light'),
-  notifications: boolean().notNull().default(true),
-});
-
-// Composite keys
+// Table with composite key
 export const userRoles = pgTable(
   'user_roles',
   {
@@ -91,6 +66,30 @@ export const userRoles = pgTable(
     pk: primaryKey(table.userId, table.roleId),
   }),
 );
+```
+
+### Relations
+
+```typescript
+// One-to-many relation
+export const postsRelations = relations(posts, ({ one }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+}));
+
+// One-to-one relation with cascade
+export const userPreferences = pgTable('user_preferences', {
+  userId: text()
+    .primaryKey()
+    .references(() => users.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+    }),
+  theme: text().notNull().default('light'),
+  notifications: boolean().notNull().default(true),
+});
 
 // Many-to-many relations
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
@@ -107,10 +106,10 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
 
 ## Database Operations
 
-### Basic Operations
+### Prepared Statements
 
 ```typescript
-// Prepared statements
+// Prepared statement for common queries
 const getUserByEmail = db.query.users
   .findFirst({
     where: eq(users.email, sql.placeholder('email')),
@@ -119,42 +118,12 @@ const getUserByEmail = db.query.users
 
 // Usage
 const user = await getUserByEmail.execute({ email: 'user@example.com' });
-
-// Create with validation
-const $createUser = createServerFn()
-  .validator(insertUserSchema)
-  .handler(async ({ data }) => {
-    try {
-      const user = await db.insert(users).values(data);
-      return { success: true, data: user };
-    } catch (error) {
-      if (error instanceof DatabaseError) {
-        return {
-          success: false,
-          error: { code: 'DB_ERROR', message: error.message },
-        };
-      }
-      throw error;
-    }
-  });
-
-// Query with relations
-const $getPostWithUser = createServerFn()
-  .validator(z.string())
-  .handler(async ({ data: postId }) => {
-    const post = await db.query.posts.findFirst({
-      where: eq(posts.id, postId),
-      with: {
-        user: true,
-      },
-    });
-    return { success: true, data: post };
-  });
 ```
 
 ### Transactions
 
 ```typescript
+// Basic transaction
 const $createPostWithTags = createServerFn()
   .validator(postWithTagsSchema)
   .handler(async ({ data }) => {
@@ -165,7 +134,7 @@ const $createPostWithTags = createServerFn()
     });
   });
 
-// Batch operations
+// Batch operations in transaction
 const $batchUpdateUsers = createServerFn()
   .validator(batchUpdateSchema)
   .handler(async ({ data }) => {
@@ -180,11 +149,10 @@ const $batchUpdateUsers = createServerFn()
   });
 ```
 
-## Error Handling
-
-### Database Errors
+### Error Handling
 
 ```typescript
+// Handle database errors
 try {
   const result = await db.insert(users).values(data);
   return { success: true, data: result };
@@ -202,45 +170,9 @@ try {
 }
 ```
 
-## Best Practices
+## Migrations
 
-1. Schema Organization
-
-- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) directory structure
-- Place schemas in `app/drizzle/schema`
-- One file per table or related tables
-- Export all schemas from `index.ts`
-- Use consistent naming conventions
-
-2. Database Operations
-
-- Use transactions for multi-table operations
-- Handle all potential errors
-- Return typed responses
-- Validate inputs with zod
-
-3. Performance
-
-- Use proper indexes
-- Optimize queries with relations
-- Handle N+1 query problems
-- Use pagination for large datasets
-
-4. Security
-
-- Never trust user input
-- Use parameterized queries
-- Handle sensitive data properly
-- Implement proper access control
-
-5. Migrations
-
-- Keep migrations small and focused
-- Use descriptive migration names
-- Test migrations thoroughly
-- Have rollback plans
-
-### Migration Example
+### Migration File
 
 ```typescript
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
@@ -262,3 +194,49 @@ export async function down(db: Database) {
   await db.schema.dropTable('posts').execute();
 }
 ```
+
+### Migration Best Practices
+
+1. Keep migrations small and focused
+2. Use descriptive names (e.g., `001_create_users.ts`)
+3. Always include down migrations
+4. Test migrations thoroughly
+5. Back up data before running in production
+6. Use transactions for safety
+7. Handle data transformations carefully
+
+## Best Practices
+
+1. Schema Design
+
+   - Use appropriate data types
+   - Add proper constraints
+   - Implement indexes wisely
+   - Follow naming conventions
+
+2. Query Optimization
+
+   - Use prepared statements
+   - Implement proper indexes
+   - Handle N+1 query problems
+   - Use pagination for large datasets
+
+3. Data Integrity
+
+   - Use transactions when needed
+   - Implement proper constraints
+   - Handle cascading carefully
+   - Validate data at boundaries
+
+4. Security
+
+   - Never trust user input
+   - Use parameterized queries
+   - Handle sensitive data properly
+   - Implement proper access control
+
+5. Performance
+   - Monitor query performance
+   - Use appropriate indexes
+   - Implement caching when needed
+   - Handle large datasets properly

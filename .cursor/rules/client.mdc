@@ -5,98 +5,228 @@ globs: "**/*.{tsx,css}"
 
 # Client Layer
 
-## Core Concepts
-
-- Use React 19 features
-- Use Shadcn UI components
-- Use Tailwind for styling
-- Avoid unnecessary state
-- See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup
-- See [API Layer](mdc:.cursor/rules/api.mdc) for data fetching
+See [Core Concepts](mdc:.cursor/rules/core.mdc) for project setup, naming conventions, and general best practices.
 
 ## Component Patterns
 
-### Basic Components
+### 1. Base Component Pattern
 
 ```typescript
-function UserCard({ user }: { user: User }) {
+type BaseProps = {
+  className?: string;
+  children?: React.ReactNode;
+};
+
+// Basic UI Component
+type ButtonProps = BaseProps & {
+  variant?: 'default' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  onClick?: () => void;
+};
+
+export function Button({
+  variant = 'default',
+  size = 'md',
+  isLoading,
+  className,
+  children,
+  onClick,
+}: ButtonProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{user.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <UserDetails user={user} />
-      </CardContent>
-    </Card>
+    <button
+      className={cn(
+        buttonVariants({ variant, size }),
+        className
+      )}
+      onClick={onClick}
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <Loader2 className="size-4 animate-spin me-2" />
+      ) : children}
+    </button>
   );
 }
 ```
 
-### Form Components
+### 2. Data Display Pattern
 
 ```typescript
-function UserForm() {
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
-    defaultValues: { name: '', email: '' },
-  });
+type DataDisplayProps<T> = BaseProps & {
+  data: T;
+  isLoading?: boolean;
+  error?: Error;
+  renderItem: (item: T) => React.ReactNode;
+};
 
-  const mutation = useMutation({
-    mutationFn: $createUser,
-    onSuccess: () => {
-      toast.success('User created');
-      navigate('/users');
+export function DataDisplay<T>({
+  data,
+  isLoading,
+  error,
+  renderItem,
+  className,
+}: DataDisplayProps<T>) {
+  if (isLoading) {
+    return <LoadingSkeleton className={className} />;
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage
+        error={error}
+        className={className}
+      />
+    );
+  }
+
+  return (
+    <div className={cn("space-y-4", className)}>
+      {renderItem(data)}
+    </div>
+  );
+}
+```
+
+### 3. Form Pattern
+
+```typescript
+type FormProps<T> = BaseProps & {
+  defaultValues?: Partial<T>;
+  onSubmit: (data: T) => Promise<void>;
+  onSuccess?: () => void;
+};
+
+export function Form<T>({
+  defaultValues,
+  onSubmit,
+  onSuccess,
+  children,
+  className,
+}: FormProps<T>) {
+  const form = createForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      try {
+        await onSubmit(value);
+        toast.success('Success');
+        onSuccess?.();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Error');
+      }
     },
   });
 
   return (
-    <Form {...form}>
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <Button type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Creating...' : 'Create User'}
-      </Button>
-    </Form>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+      className={cn("space-y-4", className)}
+    >
+      {children}
+    </form>
   );
 }
 ```
 
-### Error Handling
+### 4. Layout Pattern
 
 ```typescript
-import { ErrorBoundary, useErrorBoundary } from 'react-error-boundary';
-import { Alert, AlertTitle, AlertDescription } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
+type LayoutProps = BaseProps & {
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
+  sidebar?: React.ReactNode;
+};
 
-// Reusable error fallback component
+export function Layout({
+  header,
+  footer,
+  sidebar,
+  children,
+  className,
+}: LayoutProps) {
+  return (
+    <div className={cn("min-h-screen", className)}>
+      {header && (
+        <header className="sticky top-0 z-10 bg-background border-b">
+          {header}
+        </header>
+      )}
+      <div className="flex flex-1 min-h-0">
+        {sidebar && (
+          <aside className="w-64 border-e">
+            {sidebar}
+          </aside>
+        )}
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+      {footer && (
+        <footer className="border-t">
+          {footer}
+        </footer>
+      )}
+    </div>
+  );
+}
+```
+
+## Error Handling
+
+### Error Boundary Pattern
+
+```typescript
+import { ErrorBoundary as ReactErrorBoundary, type FallbackProps } from 'react-error-boundary';
+
+type ErrorBoundaryProps = {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+};
+
+export function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
+  return (
+    <ReactErrorBoundary
+      FallbackComponent={fallback ? () => <>{fallback}</> : ErrorFallback}
+      onReset={() => {
+        queryClient.clear();
+      }}
+      onError={(error) => {
+        logError(error);
+      }}
+    >
+      {children}
+    </ReactErrorBoundary>
+  );
+}
+
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <Card className="w-[420px] mx-auto mt-8">
       <CardHeader>
         <CardTitle>
-          {error instanceof ApiError ? 'API Error' : 'Application Error'}
+          {error instanceof ApiError ? error.code : 'Application Error'}
         </CardTitle>
+        <CardDescription>
+          {error instanceof ApiError
+            ? error.message
+            : 'An unexpected error occurred'}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {error instanceof ApiError ? error.message : 'An unexpected error occurred'}
-          </AlertDescription>
-        </Alert>
+      <CardContent>
+        {error instanceof ValidationError && (
+          <ul className="list-disc pl-4 space-y-1">
+            {Object.entries(error.fields).map(([field, message]) => (
+              <li key={field} className="text-destructive">
+                {message}
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+      <CardFooter>
         <Button
           variant="secondary"
           onClick={resetErrorBoundary}
@@ -104,182 +234,193 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         >
           Try Again
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }
-
-// Error Boundary
-function AppErrorBoundary({ children }: { children: React.ReactNode }) {
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => {
-        // Reset the state of your app so the error doesn't happen again
-      }}
-      onError={(error, info) => {
-        // Log the error to an error reporting service
-        console.error('Error caught by boundary:', error);
-        console.error('Component stack:', info.componentStack);
-      }}
-    >
-      {children}
-    </ErrorBoundary>
-  );
-}
-
-// Form Error Handling
-function handleError(error: unknown) {
-  const { showBoundary } = useErrorBoundary();
-
-  if (error instanceof ValidationError) {
-    // Use form error message component from shadcn/ui
-    form.setError('root', {
-      message: error.message,
-      type: 'custom'
-    });
-  } else if (error instanceof ApiError) {
-    showBoundary(error);
-  } else {
-    // Log unexpected errors
-    console.error(error);
-    showBoundary(new Error('An unexpected error occurred'));
-  }
-}
-
-// Usage with Suspense
-function UserProfile() {
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => {
-        // Refetch data or reset state
-        refetch();
-      }}
-    >
-      <Suspense
-        fallback={
-          <Card className="w-full h-[200px] animate-pulse">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="h-4 bg-muted rounded" />
-                <div className="h-4 bg-muted rounded w-3/4" />
-              </div>
-            </CardContent>
-          </Card>
-        }
-      >
-        <UserProfileContent />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
 ```
 
-## Form Handling
-
-### Form State
-
-- Use form.watch() for field watching
-- Use form.setValue() for updates
-- Use form.reset() for form reset
-- Use form.setError() for errors
-
-### Complex Forms
+## Toast Patterns
 
 ```typescript
-type UserFormData = {
-  personal: { name: string; email: string };
-  address: { street: string; city: string };
-};
-
-function ComplexForm() {
-  const form = useForm<UserFormData>();
-  return (
-    <Form {...form}>
-      <PersonalInfoFields control={form.control} />
-      <AddressFields control={form.control} />
-    </Form>
+// Promise toast for async operations
+function handleAsyncAction() {
+  toast.promise(
+    async () => {
+      const result = await someAsyncOperation();
+      return result;
+    },
+    {
+      loading: 'Processing your request...',
+      success: (data) => `Successfully processed ${data.name}`,
+      error: (err) => err.message || 'An error occurred',
+    }
   );
+}
+
+// Custom toast with action buttons
+function handleDeletion(id: string) {
+  toast('Are you sure you want to delete this?', {
+    action: {
+      label: 'Delete',
+      onClick: () => deleteItem(id),
+    },
+    cancel: {
+      label: 'Cancel',
+      onClick: () => toast.dismiss(),
+    },
+  });
+}
+
+// Progress toast for file uploads
+function handleFileUpload(file: File) {
+  const toastId = toast('Uploading file...', {
+    duration: Infinity,
+    icon: <Loader2 className="size-4 animate-spin" />,
+  });
+
+  uploadFile(file, {
+    onProgress: (progress) => {
+      toast(
+        <div className="w-full">
+          <div className="mb-2">Uploading {file.name}</div>
+          <div className="size-2 w-full bg-secondary rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>,
+        { id: toastId }
+      );
+    },
+    onSuccess: () => {
+      toast.success('File uploaded successfully', { id: toastId });
+    },
+    onError: (error) => {
+      toast.error(`Upload failed: ${error.message}`, { id: toastId });
+    },
+  });
 }
 ```
 
-## UI Components
-
-### Adding New Components
-
-```bash
-pnpm dlx shadcn@canary add <component-name>
-```
-
-### Styling Patterns
+## Form Validation
 
 ```typescript
-// Use consistent class naming
-const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-      },
-      size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 px-3',
-        lg: 'h-11 px-8',
-      },
+const userFormSchema = z.object({
+  personal: z.object({
+    name: z.string().min(2),
+    email: z.string().email(),
+  }),
+  address: z.object({
+    street: z.string(),
+    city: z.string(),
+  }),
+});
+
+function ComplexUserForm() {
+  const form = createForm({
+    defaultValues: {
+      personal: { name: '', email: '' },
+      address: { street: '', city: '' },
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+    onSubmit: async ({ value }) => {
+      try {
+        await $createUser(value);
+        toast.success('User created successfully');
+        navigate({ to: '/users' });
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to create user");
+      }
     },
-  },
-);
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Create User</CardTitle>
+        <CardDescription>Add a new user to the system</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-6"
+        >
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Personal Information</h3>
+            <Separator />
+            <div className="space-y-4">
+              <Field
+                name="personal.name"
+                children={(field) => (
+                  <FormField
+                    label="Name"
+                    error={field.state.meta.touchedErrors?.[0]}
+                    description="Enter your full name"
+                  >
+                    <Input
+                      placeholder="Enter name"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className={cn(
+                        field.state.meta.touchedErrors && "border-destructive"
+                      )}
+                    />
+                  </FormField>
+                )}
+              />
+              <Field
+                name="personal.email"
+                children={(field) => (
+                  <FormField
+                    label="Email"
+                    error={field.state.meta.touchedErrors?.[0]}
+                    description="We'll never share your email"
+                  >
+                    <Input
+                      type="email"
+                      placeholder="Enter email"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className={cn(
+                        field.state.meta.touchedErrors && "border-destructive"
+                      )}
+                    />
+                  </FormField>
+                )}
+              />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          onClick={() => navigate({ to: '/users' })}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={form.state.isSubmitting}
+          onClick={() => form.handleSubmit()}
+        >
+          {form.state.isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            'Create User'
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
 ```
-
-## Best Practices
-
-1. Component Structure
-
-- Keep components focused
-- Use composition over inheritance
-- Extract reusable logic to hooks
-- Implement proper TypeScript types
-- Follow [Core Concepts](mdc:.cursor/rules/core.mdc) file organization
-
-2. State Management
-
-- Use TanStack Query for server state
-- Use minimal local state
-- Avoid useEffect when possible
-- Keep state close to usage
-
-3. Performance
-
-- React compiler handles optimization
-- No need for memo/callback/useMemo
-- Use proper keys for lists
-- Implement proper loading states
-
-4. Accessibility
-
-- Use semantic HTML
-- Implement ARIA attributes
-- Support keyboard navigation
-- Test with screen readers
-
-5. Forms
-
-- Use controlled components sparingly
-- Implement proper validation
-- Handle all form states
-- Show clear error messages
-
-6. Styling
-
-- Use Tailwind utility classes
-- Avoid inline styles
-- Follow design system
-- Maintain responsive design

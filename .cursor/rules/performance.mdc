@@ -1,0 +1,267 @@
+# Performance Guidelines
+
+## Core Web Vitals
+
+### Targets
+
+- LCP (Largest Contentful Paint): < 2.5s
+- FID (First Input Delay): < 100ms
+- CLS (Cumulative Layout Shift): < 0.1
+- TTI (Time to Interactive): < 3.8s
+- TBT (Total Blocking Time): < 200ms
+
+## Monitoring Setup
+
+### Web Vitals Tracking
+
+```typescript
+// app/lib/monitoring/performance.ts
+import { onCLS, onFID, onLCP } from 'web-vitals';
+
+export function reportWebVitals() {
+  onCLS((metric) => sendToAnalytics(metric));
+  onFID((metric) => sendToAnalytics(metric));
+  onLCP((metric) => sendToAnalytics(metric));
+}
+
+function sendToAnalytics(metric: MetricType) {
+  const body = {
+    name: metric.name,
+    value: metric.value,
+    rating: metric.rating, // 'good' | 'needs-improvement' | 'poor'
+    delta: metric.delta,
+    id: metric.id,
+    navigationType: metric.navigationType,
+  };
+
+  // Use Navigator.sendBeacon() for better reliability
+  const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+  navigator.sendBeacon('/analytics', blob);
+}
+```
+
+## Bundle Size Management
+
+### Size Limits
+
+```typescript
+// scripts/bundle-size-limits.ts
+export const bundleSizeLimits = {
+  initial: {
+    javascript: 150_000, // 150kb
+    css: 50_000, // 50kb
+  },
+  async: {
+    javascript: 100_000, // 100kb per chunk
+    css: 30_000, // 30kb per chunk
+  },
+  image: {
+    hero: 200_000, // 200kb
+    thumbnail: 50_000, // 50kb
+  },
+};
+```
+
+### Bundle Analysis
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
+
+export default defineConfig({
+  plugins: [
+    process.env.ANALYZE &&
+      visualizer({
+        filename: './stats.html',
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+      }),
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            'react',
+            'react-dom',
+            '@tanstack/react-router',
+            '@tanstack/react-query',
+          ],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover'],
+        },
+      },
+    },
+  },
+});
+```
+
+## Image Optimization
+
+### Image Guidelines
+
+```typescript
+// app/lib/utils/image-optimization.ts
+export const imageOptimizationRules = {
+  formats: ['webp', 'avif'],
+  sizes: {
+    thumbnail: { width: 150, height: 150 },
+    preview: { width: 300, height: 300 },
+    full: { width: 1200, height: 800 },
+  },
+  quality: {
+    webp: 80,
+    avif: 70,
+    jpeg: 85,
+  },
+};
+
+// Image component with optimization
+export function OptimizedImage({
+  src,
+  alt,
+  size = 'full',
+}: OptimizedImageProps) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={imageOptimizationRules.sizes[size].width}
+      height={imageOptimizationRules.sizes[size].height}
+      loading="lazy"
+      decoding="async"
+      {...generateSrcSet(src)}
+    />
+  );
+}
+```
+
+## Code Splitting
+
+### Route-based Splitting
+
+```typescript
+// app/routes/_index.tsx
+import { lazy } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+
+const HeavyComponent = lazy(() => import('~/components/heavy-component'));
+
+export const Route = createFileRoute('/')({
+  component: () => (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <HeavyComponent />
+    </Suspense>
+  ),
+});
+```
+
+### Component-based Splitting
+
+```typescript
+// app/components/data-grid/index.tsx
+export const DataGrid = lazy(() =>
+  import('./data-grid-component').then((module) => ({
+    default: module.DataGrid,
+  })),
+);
+```
+
+## Caching Strategy
+
+### HTTP Cache Headers
+
+```typescript
+// app/lib/server/cache-control.ts
+export const cacheControl = {
+  static: 'public, max-age=31536000, immutable',
+  dynamic: 'public, max-age=3600, stale-while-revalidate=86400',
+  api: 'private, no-cache, no-store, must-revalidate',
+};
+
+// Usage in server function
+export const $getData = createServerFn()
+  .input(z.object({ id: z.string() }))
+  .handler(async ({ input }) => {
+    // Set cache headers
+    setHeader('Cache-Control', cacheControl.dynamic);
+    // ... implementation
+  });
+```
+
+### Query Caching
+
+```typescript
+// app/lib/query/cache-config.ts
+export const queryConfig = {
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 60, // 1 hour
+      retry: 3,
+    },
+  },
+};
+
+// Usage in route
+export const Route = createFileRoute('/data')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(
+      queryOptions({
+        queryKey: ['data'],
+        queryFn: () => $getData(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
+      }),
+    ),
+});
+```
+
+## Performance Testing
+
+### Lighthouse CI Configuration
+
+```javascript
+// lighthouse.config.js
+module.exports = {
+  ci: {
+    collect: {
+      numberOfRuns: 3,
+      url: ['http://localhost:3000/', 'http://localhost:3000/dashboard'],
+      staticDistDir: './dist',
+    },
+    assert: {
+      assertions: {
+        'categories:performance': ['error', { minScore: 0.9 }],
+        'categories:accessibility': ['error', { minScore: 0.9 }],
+        'categories:best-practices': ['error', { minScore: 0.9 }],
+        'categories:seo': ['error', { minScore: 0.9 }],
+      },
+    },
+  },
+};
+```
+
+### Load Testing
+
+```typescript
+// tests/performance/load-test.ts
+import { check } from 'k6';
+import http from 'k6/http';
+
+export const options = {
+  vus: 10,
+  duration: '30s',
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% of requests should be below 500ms
+    http_req_failed: ['rate<0.01'], // Less than 1% of requests should fail
+  },
+};
+
+export default function () {
+  const res = http.get('http://test.k6.io');
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+  });
+}
+```
