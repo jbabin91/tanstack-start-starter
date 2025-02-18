@@ -8,7 +8,7 @@ import { Header } from '~/components/layout/header';
 import { Spinner } from '~/components/spinner';
 import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
-import { getUser } from '~/features/users/api';
+import { $getUser } from '~/features/users/api';
 import { seo } from '~/lib/utils/seo';
 import { Providers } from '~/providers';
 import appCss from '~/styles/app.css?url';
@@ -19,7 +19,7 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
-    const user = await getUser();
+    const user = await $getUser();
     return { user };
   },
   component: RootComponent,
