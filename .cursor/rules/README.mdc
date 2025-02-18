@@ -1,0 +1,83 @@
+---
+description:
+globs:
+---
+
+# TanStack Start Development Patterns
+
+Welcome to the TanStack Start development patterns guide. This documentation provides comprehensive patterns and best practices for building modern React applications.
+
+## Quick Navigation
+
+### Core Patterns
+
+- [@system Architecture](../core/architecture.mdc) - System design, project structure, and core patterns
+- [@guide Standards](../core/standards.mdc) - Development standards and best practices
+
+### Application Development
+
+- [@ui Frontend](../app/frontend.mdc) - React components, state management, and UI patterns
+- [@api Backend](../app/backend.mdc) - API design, data management, and server patterns
+
+### Quality Assurance
+
+- [@test Testing](../quality/testing.mdc) - Testing strategies and implementation
+- [@a11y Accessibility](../quality/accessibility.mdc) - Accessibility and internationalization
+
+### Operations
+
+- [@security Security](../ops/security.mdc) - Authentication, authorization, and data protection
+- [@ops Infrastructure](../ops/infrastructure.mdc) - Deployment, monitoring, and maintenance
+
+## Pattern Categories
+
+### Frontend Development
+
+- React 19 best practices
+- TypeScript optimization
+- Component patterns
+- State management
+- UI frameworks
+- Form handling
+- Performance optimization
+
+### Backend Development
+
+- API design
+- Data fetching
+- Database operations
+- Validation
+- Error handling
+- Type safety
+
+### Quality Standards
+
+- Testing strategies
+- Accessibility
+- Internationalization
+- Performance metrics
+- Code quality
+
+### Security & Operations
+
+- Authentication
+- Authorization
+- Deployment
+- Monitoring
+- Maintenance
+
+## Getting Started
+
+1. Start with [@system Architecture](../core/architecture.mdc) for system overview
+2. Review [@guide Standards](../core/standards.mdc) for development practices
+3. Explore specific patterns based on your needs
+
+## Best Practices Overview
+
+- Use TypeScript with strict mode
+- Follow functional programming patterns
+- Implement proper error handling
+- Ensure code quality and testing
+- Maintain security standards
+- Focus on performance
+- Ensure accessibility

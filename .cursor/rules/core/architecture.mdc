@@ -1,0 +1,260 @@
+---
+description: 'System architecture, project structure, and core patterns'
+globs: '**/*.{ts,tsx,js,jsx}'
+---
+
+# System Architecture
+
+## Quick Links
+
+- Project Structure
+- Technology Stack
+- Development Patterns
+- Performance Optimization
+- Error Handling
+- Decision Trees
+
+## Overview
+
+TanStack Start follows a modern React architecture optimized for scalability, maintainability, and developer experience. This guide covers core architectural patterns and best practices.
+
+## Technology Stack
+
+### Core Technologies
+
+- React 19 with automatic batching
+- TypeScript with strict mode
+- TanStack Router for type-safe routing
+- TanStack Query for data fetching
+- TanStack Form for form handling
+- TanStack Start for server functions
+- Drizzle ORM for database operations
+
+### UI Layer
+
+- Tailwind CSS for styling
+- Shadcn UI for components
+- Radix UI for primitives
+
+### State Management
+
+- Zustand for global state
+- TanStack Query for server state
+- React hooks for local state
+
+## Project Structure
+
+```sh
+app/
+├── components/           # Shared UI components
+│   ├── ui/              # Shadcn UI components
+│   └── features/        # Feature-specific components
+├── lib/                 # Core utilities
+│   ├── utils/          # Helper functions
+│   ├── hooks/          # Custom hooks
+│   └── types/          # Shared types
+├── features/           # Feature modules
+│   └── [feature]/
+│       ├── api/        # Server functions & queries
+│       ├── components/ # Feature components
+│       ├── hooks/      # Feature hooks
+│       ├── utils/      # Feature utilities
+│       └── types/      # Feature-specific types
+└── routes/             # Route components
+    └── [feature]/      # Feature routes
+```
+
+## Decision Trees
+
+### Component Selection
+
+1. Is it a primitive UI element?
+
+   - Yes → Use Radix UI primitive
+   - No → Continue to next question
+
+2. Is it a common UI pattern?
+
+   - Yes → Use Shadcn UI component
+   - No → Continue to next question
+
+3. Is it feature-specific?
+   - Yes → Create in feature/components
+   - No → Create in shared components
+
+### State Management Selection
+
+1. Should state be shareable via URL?
+
+   - Yes → Use URL state (primary)
+   - No → Continue to next question
+
+2. Is it server data?
+
+   - Yes → Use TanStack Query
+   - No → Continue to next question
+
+3. Is it form state?
+
+   - Yes → Use TanStack Form
+   - No → Continue to next question
+
+4. Is it global UI state?
+   - Yes → Use Zustand (minimal)
+   - No → Use local state
+
+### API Design Selection
+
+1. Is it a data query?
+
+   - Yes → Use TanStack Query
+   - No → Continue to next question
+
+2. Is it a data mutation?
+
+   - Yes → Use TanStack Mutation
+   - No → Continue to next question
+
+3. Is it a real-time update?
+   - Yes → Use WebSocket/SSE
+   - No → Use REST/GraphQL
+
+## Development Patterns
+
+### Component Architecture
+
+```typescript
+// Feature-based component organization
+features/
+  users/
+    components/
+      UserList.tsx       # Main component
+      UserCard.tsx       # Sub-component
+      UserForm.tsx       # Form component
+    hooks/
+      useUsers.ts        # Data hooks
+    api/
+      queries.ts         # API queries
+      mutations.ts       # API mutations
+    types/
+      index.ts          # Feature types
+```
+
+### State Management Pattern
+
+```typescript
+// Global state with Zustand
+import { create } from 'zustand';
+
+type UIStore = {
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+};
+
+export const useUIStore = create<UIStore>((set) => ({
+  theme: 'light',
+  setTheme: (theme) => set({ theme }),
+}));
+
+// Server state with TanStack Query
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => fetchUsers(),
+  });
+}
+```
+
+## Performance Optimization
+
+### Code Splitting
+
+```typescript
+// Route-based code splitting
+const UserProfile = lazy(() => import('./features/users/UserProfile'));
+
+// Component-based code splitting
+const HeavyComponent = lazy(() => import('./components/HeavyComponent'));
+```
+
+### Performance Patterns
+
+- Implement proper memoization
+- Use lazy loading for routes and components
+- Optimize bundle size
+- Implement proper caching strategies
+- Monitor and optimize render cycles
+
+## Error Handling
+
+### Global Error Boundary
+
+```typescript
+function GlobalErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary
+      fallback={({ error }) => (
+        <ErrorPage
+          error={error}
+          reset={() => window.location.reload()}
+        />
+      )}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
+```
+
+### Error Handling Patterns
+
+- Use type-safe error handling
+- Implement proper error boundaries
+- Handle async errors properly
+- Provide user-friendly error messages
+- Log errors appropriately
+
+## Implementation Checklists
+
+### Component Implementation
+
+- [ ] Proper type definitions
+- [ ] Error boundaries
+- [ ] Loading states
+- [ ] Error states
+- [ ] Accessibility
+- [ ] Tests
+- [ ] Documentation
+
+### API Implementation
+
+- [ ] Type safety
+- [ ] Error handling
+- [ ] Validation
+- [ ] Rate limiting
+- [ ] Authentication
+- [ ] Authorization
+- [ ] Tests
+
+### Security Implementation
+
+- [ ] Input validation
+- [ ] Authentication
+- [ ] Authorization
+- [ ] Data protection
+- [ ] Error handling
+- [ ] Security headers
+
+### Testing Implementation
+
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] E2E tests
+- [ ] Performance tests
+- [ ] Security tests
+
+## Related Patterns
+
+- [Standards](./standards.mdc) for development standards
+- [Code Style](./code-style.mdc) for formatting standards
+- [State Management](../state-management.mdc) for detailed state patterns

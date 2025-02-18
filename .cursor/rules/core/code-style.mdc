@@ -1,0 +1,182 @@
+---
+description: 'High-level code style and formatting standards'
+globs: '**/*.{ts,tsx,js,jsx,md,mdc}'
+---
+
+# Code Style and Formatting Standards
+
+## Overview
+
+These guidelines provide formatting standards and style conventions for code consistency. For implementation details, see [ESLint Rules](../core/eslint-rules.mdc).
+
+## Core Standards
+
+### Formatting Rules
+
+1. **Quotes and Strings**
+
+   - Use single quotes for strings (per Prettier config)
+   - Use template literals for interpolation
+   - Use backticks for multiline strings
+   - Use double quotes for JSX attributes
+
+2. **Plugins**
+
+   - Use `prettier-plugin-packagejson` for package.json formatting
+   - Use `prettier-plugin-tailwindcss` for Tailwind CSS class sorting
+
+3. **Line Length and Wrapping**
+
+   - Default to Prettier's line wrapping
+   - Break long lines at logical points
+   - Indent wrapped lines one level
+   - Keep JSX attributes on new lines when wrapping
+
+4. **Spacing**
+   - Follow Prettier's default spacing rules
+   - One blank line between logical sections
+   - No multiple empty lines
+
+### Code Style
+
+1. **Naming Conventions** {#naming-conventions}
+
+   ```typescript
+   // PascalCase for types and components
+   type UserProfile = {
+     id: string;
+     name: string;
+   };
+
+   // camelCase for variables and functions
+   const getUserData = () => {};
+
+   // UPPER_CASE for constants
+   const MAX_RETRIES = 3;
+
+   // kebab-case for files and directories
+   // my-component/
+   //   index.tsx
+   //   styles.module.css
+   ```
+
+2. **TypeScript Patterns** {#typescript-patterns}
+
+   ```typescript
+   // Prefer type over interface for better union support
+   type User = {
+     id: string;
+     name: string;
+     email: string;
+   };
+
+   // Use type for unions/intersections
+   type Status = 'idle' | 'loading' | 'success' | 'error';
+   type UserWithRole = User & { role: string };
+
+   // Use const assertions for literal types
+   const config = {
+     api: '/api',
+     version: '1.0.0',
+   } as const;
+
+   // Use satisfies for type checking
+   const theme = {
+     primary: 'blue',
+     secondary: 'gray',
+   } satisfies Record<string, string>;
+
+   // Use type parameters for generics
+   type Result<T> =
+     | {
+         data: T;
+         error: null;
+       }
+     | {
+         data: null;
+         error: Error;
+       };
+   ```
+
+3. **Import Organization**
+
+   ```typescript
+   // 1. React and runtime imports
+   import { useState } from 'react';
+
+   // 2. External libraries
+   import { useQuery } from '@tanstack/react-query';
+
+   // 3. Internal absolute imports
+   import { type User } from '~/types';
+
+   // 4. Internal relative imports
+   import { UserCard } from './UserCard';
+
+   // 5. Asset imports
+   import styles from './styles.module.css';
+   ```
+
+4. **Component Organization**
+
+   ```typescript
+   function MyComponent() {
+     // 1. Hooks
+     const [state, setState] = useState();
+
+     // 2. Derived values
+     const isValid = state.length > 0;
+
+     // 3. Event handlers
+     const handleClick = () => {};
+
+     // 4. Effects
+     useEffect(() => {}, []);
+
+     // 5. Render
+     return <div />;
+   }
+   ```
+
+### Configuration
+
+```javascript
+// .prettierrc.js
+/** @type {import("prettier").Config} */
+export default {
+  plugins: ['prettier-plugin-packagejson', 'prettier-plugin-tailwindcss'],
+  singleQuote: true,
+};
+```
+
+## Tools and Automation
+
+### Editor Integration
+
+1. **VS Code Settings**
+
+   ```json
+   {
+     "editor.defaultFormatter": "esbenp.prettier-vscode",
+     "editor.formatOnSave": true,
+     "editor.codeActionsOnSave": {
+       "source.fixAll.eslint": true
+     }
+   }
+   ```
+
+2. **Git Hooks**
+
+   ```json
+   {
+     "lint-staged": {
+       "*.{ts,tsx}": ["eslint --fix", "prettier --write"]
+     }
+   }
+   ```
+
+## Related Patterns
+
+- [Standards](../core/standards.mdc) for development standards
+- [ESLint Rules](../core/eslint-rules.mdc) for linting configuration
+- [Documentation](../core/documentation-standards.mdc) for documentation guidelines

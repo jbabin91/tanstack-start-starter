@@ -1,0 +1,233 @@
+---
+description: 'ESLint configuration, rules, and best practices for code quality'
+globs: '**/*.{js,ts,tsx,eslintrc,eslintrc.*}'
+---
+
+# ESLint Rules and Configuration
+
+## Overview
+
+Our ESLint configuration ensures consistent code quality, prevents common errors, and maintains a high standard of code quality across the project.
+
+## Core Concepts
+
+1. **Code Quality**
+
+   - Static analysis
+   - Error prevention
+   - Style enforcement
+   - Best practices
+   - Type safety
+
+2. **Configuration Structure**
+   - Base configuration
+   - TypeScript rules
+   - React rules
+   - Import rules
+   - Custom rules
+
+## Implementation
+
+### Base Configuration
+
+```javascript
+// eslint.config.js
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'prettier',
+  ],
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-hooks',
+    'jsx-a11y',
+    'import',
+    'prettier',
+  ],
+};
+```
+
+### Rule Categories
+
+#### 1. TypeScript Rules
+
+```javascript
+// TypeScript specific rules
+rules: {
+  '@typescript-eslint/no-explicit-any': 'error',
+  '@typescript-eslint/explicit-module-boundary-types': 'error',
+  '@typescript-eslint/no-unused-vars': ['error', {
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+  }],
+  '@typescript-eslint/consistent-type-imports': ['error', {
+    prefer: 'type-imports',
+  }],
+  '@typescript-eslint/no-non-null-assertion': 'error',
+  '@typescript-eslint/naming-convention': [
+    'error',
+    {
+      selector: 'typeAlias',
+      format: ['PascalCase'],
+    },
+  ],
+}
+```
+
+#### 2. React Rules
+
+```javascript
+// React specific rules
+rules: {
+  'react/function-component-definition': ['error', {
+    namedComponents: 'function-declaration',
+    unnamedComponents: 'arrow-function',
+  }],
+  'react/jsx-boolean-value': ['error', 'never'],
+  'react/jsx-curly-brace-presence': ['error', {
+    props: 'never',
+    children: 'never',
+  }],
+  'react/jsx-fragments': ['error', 'syntax'],
+  'react/jsx-no-useless-fragment': 'error',
+  'react/jsx-pascal-case': 'error',
+  'react/jsx-sort-props': ['error', {
+    callbacksLast: true,
+    shorthandFirst: true,
+    reservedFirst: true,
+  }],
+  'react-hooks/rules-of-hooks': 'error',
+  'react-hooks/exhaustive-deps': 'warn',
+}
+```
+
+#### 3. Import Rules
+
+```javascript
+// Import organization rules
+rules: {
+  'import/order': ['error', {
+    groups: [
+      ['builtin', 'external'],  // 1. React and runtime imports
+      'external',               // 2. External libraries
+      'internal',               // 3. Internal absolute imports
+      ['parent', 'sibling'],    // 4. Internal relative imports
+      'object',                 // 5. Asset imports
+    ],
+    'newlines-between': 'always',
+    alphabetize: {
+      order: 'asc',
+      caseInsensitive: true,
+    },
+  }],
+  'import/no-duplicates': 'error',
+  'import/no-unresolved': 'error',
+  'import/no-cycle': 'error',
+  'import/no-useless-path-segments': 'error',
+  'import/no-self-import': 'error',
+}
+```
+
+#### 4. Formatting Rules
+
+```javascript
+// Code formatting rules
+rules: {
+  'prettier/prettier': ['error', {
+    printWidth: 80,
+    tabWidth: 2,
+    useTabs: false,
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'all',
+    bracketSpacing: true,
+    jsxBracketSameLine: false,
+    arrowParens: 'always',
+  }],
+  'no-multiple-empty-lines': ['error', {
+    max: 1,
+    maxEOF: 0,
+  }],
+  'eol-last': ['error', 'always'],
+  'comma-dangle': ['error', 'always-multiline'],
+}
+```
+
+## Best Practices
+
+### 1. Rule Selection
+
+- Use recommended configs as baseline
+- Enable strict TypeScript rules
+- Customize rules for project needs
+- Document rule overrides
+- Regular rule updates and reviews
+
+### 2. Configuration Management
+
+- Consistent settings across project
+- Clear documentation for custom rules
+- IDE integration setup
+- Git hooks configuration
+- CI/CD integration
+
+### 3. Maintenance
+
+- Regular dependency updates
+- Periodic rule reviews
+- Team feedback incorporation
+- Performance monitoring
+- Documentation updates
+
+### 4. Integration
+
+- Editor support configuration
+- Git hooks setup
+- CI/CD pipeline integration
+- Team workflow alignment
+- Automated fixes implementation
+
+## Tools and Automation
+
+### Development Tools
+
+- VS Code ESLint
+- ESLint CLI
+- Prettier
+- Git hooks
+- IDE extensions
+
+### Automation Tools
+
+- Husky
+- lint-staged
+- GitHub Actions
+- ESLint formatters
+- ESLint plugins
+
+## Related Patterns
+
+- [Code Style](../core/code-style.mdc) for formatting standards
+- [Standards](../core/standards.mdc) for development standards
+- [Documentation](../core/documentation-standards.mdc) for documentation guidelines
