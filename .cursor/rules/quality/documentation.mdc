@@ -1,0 +1,240 @@
+---
+description: 'Documentation standards and best practices'
+globs: '**/*.{ts,tsx,md}'
+---
+
+# Documentation Standards
+
+## Overview
+
+Our documentation standards ensure clear, maintainable, and useful documentation across the project.
+
+## Code Documentation
+
+### JSDoc Comments
+
+```typescript
+/**
+ * Fetches user data from the API
+ * @param {string} id - The user's unique identifier
+ * @param {FetchOptions} options - Optional fetch configuration
+ * @returns {Promise<User>} The user data
+ * @throws {NotFoundError} When user doesn't exist
+ * @throws {ValidationError} When id is invalid
+ */
+async function getUser(id: string, options?: FetchOptions): Promise<User> {
+  // Implementation
+}
+```
+
+### Component Documentation
+
+````typescript
+/**
+ * Displays user profile information with editable fields
+ *
+ * @example
+ * ```tsx
+ * <UserProfile
+ *   user={user}
+ *   onUpdate={handleUpdate}
+ *   isEditable={true}
+ * />
+ * ```
+ */
+interface UserProfileProps {
+  /** The user data to display */
+  user: User;
+  /** Called when user data is updated */
+  onUpdate: (user: User) => Promise<void>;
+  /** Whether the profile is editable */
+  isEditable?: boolean;
+}
+````
+
+### Type Documentation
+
+```typescript
+/**
+ * Represents a user in the system
+ * @see UserProfile for display component
+ * @see UserForm for edit component
+ */
+interface User {
+  /** Unique identifier */
+  id: string;
+  /** User's full name */
+  name: string;
+  /** User's email address */
+  email: string;
+  /** User's role in the system */
+  role: UserRole;
+  /** When the user was created */
+  createdAt: Date;
+}
+```
+
+## Project Documentation
+
+### README Structure
+
+```markdown
+# Project Name
+
+Brief description of the project.
+
+## Features
+
+- Key feature 1
+- Key feature 2
+- Key feature 3
+
+## Getting Started
+
+### Prerequisites
+
+List of prerequisites.
+
+### Installation
+
+Step-by-step installation guide.
+
+### Development
+
+Development workflow instructions.
+
+## Architecture
+
+High-level architecture overview.
+
+## Contributing
+
+Contribution guidelines.
+
+## License
+
+Project license information.
+```
+
+### API Documentation
+
+```markdown
+# API Documentation
+
+## Endpoints
+
+### GET /api/users
+
+Fetches a list of users.
+
+#### Parameters
+
+| Name   | Type   | Description    |
+| ------ | ------ | -------------- |
+| page   | number | Page number    |
+| limit  | number | Items per page |
+| search | string | Search query   |
+
+#### Response
+
+\`\`\`typescript
+{
+items: User[];
+total: number;
+page: number;
+limit: number;
+}
+\`\`\`
+```
+
+## Documentation Types
+
+### 1. Code Documentation
+
+- Function documentation
+- Component documentation
+- Type documentation
+- Hook documentation
+- Utility documentation
+
+### 2. API Documentation
+
+- Endpoint documentation
+- Parameter documentation
+- Response documentation
+- Error documentation
+- Example requests
+
+### 3. Architecture Documentation
+
+- System overview
+- Component architecture
+- Data flow
+- Security model
+- Performance considerations
+
+### 4. User Documentation
+
+- User guides
+- Feature documentation
+- Configuration guides
+- Troubleshooting
+- FAQs
+
+## Best Practices
+
+### General
+
+- Keep documentation up to date
+- Use clear language
+- Include examples
+- Link related docs
+- Version documentation
+
+### Code Comments
+
+- Explain why, not what
+- Document edge cases
+- Note assumptions
+- Include examples
+- Reference related code
+
+### API Documentation
+
+- Clear descriptions
+- Complete parameters
+- Response examples
+- Error scenarios
+- Authentication requirements
+
+### Architecture Documentation
+
+- Clear diagrams
+- Component relationships
+- Data flow
+- Security considerations
+- Performance notes
+
+## Tools
+
+### Documentation Generation
+
+- TypeDoc for API docs
+- Storybook for components
+- Swagger for REST API
+- Markdown for guides
+- Diagrams as code
+
+### Documentation Testing
+
+- Dead link checking
+- Code example testing
+- API documentation testing
+- Screenshot testing
+- Accessibility testing
+
+## Related Patterns
+
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for code standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for review process
+- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for code quality

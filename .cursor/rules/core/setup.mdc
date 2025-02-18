@@ -1,0 +1,251 @@
+---
+description: Project setup, initialization, and structure patterns
+globs: '*'
+---
+
+# Project Setup
+
+## Project Structure
+
+```sh
+app/
+├── components/           # Shared UI components
+│   ├── ui/              # Shadcn UI components
+│   └── features/        # Feature-specific components
+├── lib/                 # Core utilities
+│   ├── utils/          # Helper functions
+│   ├── hooks/          # Custom hooks
+│   └── types/          # Shared types
+├── features/           # Feature modules
+│   └── [feature]/
+│       ├── api/        # Server functions & queries
+│       │   ├── queries.ts    # TanStack Query hooks
+│       │   └── mutations.ts  # TanStack Mutations
+│       ├── components/ # Feature components
+│       │   ├── index.ts      # Component exports
+│       │   └── [Component]/  # Component files
+│       ├── hooks/     # Feature hooks
+│       │   └── index.ts      # Hook exports
+│       ├── utils/     # Feature utilities
+│       └── types/     # Feature-specific types
+└── routes/             # Route components
+    └── [feature]/      # Feature routes
+```
+
+## Technology Stack
+
+### Core Technologies
+
+- React 19 with automatic batching
+- TypeScript with strict mode
+- TanStack Router for type-safe routing
+- TanStack Query for data fetching
+- TanStack Form for form handling
+- TanStack Start for server functions
+- Drizzle ORM for database operations
+
+### UI Layer
+
+- Shadcn UI for components
+- Tailwind CSS v4 for styling
+- Radix UI for primitives
+
+### Data Layer
+
+- PostgreSQL for database
+- Drizzle ORM for queries
+- Zod for validation
+
+## Project Initialization
+
+### 1. Create Project
+
+```bash
+# Create new project
+pnpm create tanstack-start my-app
+
+# Install dependencies
+cd my-app
+pnpm install
+```
+
+### 2. Environment Setup
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Generate environment types
+pnpm env-types
+```
+
+### 3. Database Setup
+
+```bash
+# Create database
+pnpm db:create
+
+# Run migrations
+pnpm db:migrate
+
+# Generate types
+pnpm db:types
+```
+
+## Configuration Files
+
+### TypeScript Configuration
+
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    },
+    "plugins": [
+      {
+        "name": "@tanstack/router-transformer"
+      }
+    ]
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+```
+
+### ESLint Configuration
+
+```javascript
+// .eslintrc.js
+module.exports = {
+  extends: ['next', 'prettier', 'plugin:@typescript-eslint/recommended'],
+  plugins: ['@typescript-eslint'],
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/no-explicit-any': 'error',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+  },
+};
+```
+
+### Prettier Configuration
+
+```javascript
+// .prettierrc.js
+module.exports = {
+  semi: true,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 80,
+  tabWidth: 2,
+};
+```
+
+## Development Scripts
+
+```json
+{
+  "scripts": {
+    "dev": "tanstack-start dev",
+    "build": "tanstack-start build",
+    "start": "tanstack-start start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "drizzle-kit push:pg",
+    "db:types": "drizzle-kit generate:pg",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  }
+}
+```
+
+## Git Configuration
+
+### Git Ignore
+
+```gitignore
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build
+dist
+.next
+out
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Testing
+coverage
+playwright-report
+
+# Misc
+.DS_Store
+*.pem
+```
+
+### Git Hooks
+
+```bash
+#!/bin/sh
+# .husky/pre-commit
+
+pnpm lint-staged
+```
+
+```json
+// package.json
+{
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md}": ["prettier --write"]
+  }
+}
+```
+
+## VS Code Configuration
+
+```json
+// .vscode/settings.json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
+```
+
+## Related Patterns
+
+- [Architecture](mdc:.cursor/rules/core/architecture.mdc) for application structure
+- [Conventions](mdc:.cursor/rules/core/conventions.mdc) for coding standards
+- [Workflow](mdc:.cursor/rules/core/workflow.mdc) for development process
+- [Testing](mdc:.cursor/rules/quality/testing.mdc) for test setup

@@ -1,0 +1,12 @@
+---
+description: MANDATORY: Core project concepts, structure, and development workflow
+globs: "*"
+---
+
+# Core Project Concepts
+
+## Project Overview
+
+This project follows a modern React stack with TypeScript, focusing on maintainability, type safety, and developer experience.
+
+[Rest of the content from core/index.mdc...]

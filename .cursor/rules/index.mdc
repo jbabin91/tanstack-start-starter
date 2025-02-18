@@ -1,0 +1,127 @@
+---
+description: 'Main index of all patterns and best practices'
+globs: '*'
+---
+
+# TanStack Start Project Patterns
+
+This documentation provides comprehensive patterns and best practices for building applications with TanStack Start. The patterns are organized into logical sections for easy navigation and understanding.
+
+## Core Patterns
+
+Core patterns form the foundation of the project:
+
+- [Core Overview](mdc:.cursor/rules/core/overview.mdc) - Core concepts and patterns
+- [Setup](mdc:.cursor/rules/core/setup.mdc) - Project initialization and structure
+- [Architecture](mdc:.cursor/rules/core/architecture.mdc) - Application architecture
+- [Conventions](mdc:.cursor/rules/core/conventions.mdc) - Coding standards
+- [Development](mdc:.cursor/rules/core/development.mdc) - Development workflow
+- [Error Handling](mdc:.cursor/rules/core/errors.mdc) - Error patterns
+
+## Frontend Patterns
+
+Frontend patterns for building the user interface:
+
+- [Frontend Overview](mdc:.cursor/rules/frontend/overview.mdc) - Frontend patterns overview
+- [Components](mdc:.cursor/rules/frontend/components.mdc) - Component patterns
+- [Routing](mdc:.cursor/rules/frontend/routing.mdc) - Routing with TanStack Router
+- [State](mdc:.cursor/rules/frontend/state.mdc) - State management
+- [Forms](mdc:.cursor/rules/frontend/forms.mdc) - Form handling
+- [Styling](mdc:.cursor/rules/frontend/styling.mdc) - UI/UX patterns
+- [Internationalization](mdc:.cursor/rules/frontend/i18n.mdc) - i18n patterns
+
+## Data Patterns
+
+Patterns for managing data and state:
+
+- [Data Overview](mdc:.cursor/rules/data/overview.mdc) - Data patterns overview
+- [Schema](mdc:.cursor/rules/data/schema.mdc) - Database schema
+- [Queries](mdc:.cursor/rules/data/queries.mdc) - Query patterns
+- [Mutations](mdc:.cursor/rules/data/mutations.mdc) - Mutation patterns
+- [Validation](mdc:.cursor/rules/data/validation.mdc) - Data validation
+- [State](mdc:.cursor/rules/data/state.mdc) - State management
+
+## API Patterns
+
+Patterns for building and consuming APIs:
+
+- [API Overview](mdc:.cursor/rules/api/index.mdc) - API patterns index
+- [Server Functions](mdc:.cursor/rules/api/server-functions.mdc) - Server function patterns
+- [Error Handling](mdc:.cursor/rules/api/error-handling.mdc) - API error patterns
+- [Validation](mdc:.cursor/rules/api/validation.mdc) - API validation
+- [Security](mdc:.cursor/rules/api/security.mdc) - API security
+
+## Security Patterns
+
+Security best practices and patterns:
+
+- [Security Overview](mdc:.cursor/rules/security/index.mdc) - Security patterns index
+- [Authentication](mdc:.cursor/rules/security/authentication.mdc) - Auth patterns
+- [Authorization](mdc:.cursor/rules/security/authorization.mdc) - Access control
+- [Data Protection](mdc:.cursor/rules/security/data-protection.mdc) - Data security
+- [Headers](mdc:.cursor/rules/security/headers.mdc) - Security headers
+
+## Testing Patterns
+
+Patterns for testing and quality assurance:
+
+- [Testing Overview](mdc:.cursor/rules/testing/index.mdc) - Testing patterns index
+- [Unit Tests](mdc:.cursor/rules/testing/unit.mdc) - Unit testing
+- [Integration Tests](mdc:.cursor/rules/testing/integration.mdc) - Integration testing
+- [E2E Tests](mdc:.cursor/rules/testing/e2e.mdc) - End-to-end testing
+- [Performance Tests](mdc:.cursor/rules/testing/performance.mdc) - Performance testing
+
+## Performance Patterns
+
+Patterns for optimizing application performance:
+
+- [Performance Overview](mdc:.cursor/rules/performance/index.mdc) - Performance patterns index
+- [Optimization](mdc:.cursor/rules/performance/optimization.mdc) - Performance optimization
+- [Monitoring](mdc:.cursor/rules/performance/monitoring.mdc) - Performance monitoring
+- [Caching](mdc:.cursor/rules/performance/caching.mdc) - Caching strategies
+- [Load Testing](mdc:.cursor/rules/performance/load-testing.mdc) - Load testing
+
+## Quality Patterns
+
+Patterns for maintaining code quality:
+
+- [Quality Overview](mdc:.cursor/rules/quality/overview.mdc) - Quality patterns overview
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) - Style guidelines
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) - Documentation standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) - Code review process
+- [Monitoring](mdc:.cursor/rules/quality/monitoring.mdc) - Application monitoring
+- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) - Linting rules
+
+## Deployment Patterns
+
+Patterns for deployment and operations:
+
+- [Deployment Overview](mdc:.cursor/rules/deployment/overview.mdc) - Deployment patterns overview
+- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) - Pipeline patterns
+- [Environments](mdc:.cursor/rules/deployment/environments.mdc) - Environment setup
+- [Release](mdc:.cursor/rules/deployment/release.mdc) - Release process
+- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) - Infrastructure setup
+- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) - Deployment monitoring
+
+## Quick Start
+
+For new projects, start with:
+
+1. [Core Overview](mdc:.cursor/rules/core/overview.mdc) - Understand core concepts
+2. [Setup](mdc:.cursor/rules/core/setup.mdc) - Initialize your project
+3. [Architecture](mdc:.cursor/rules/core/architecture.mdc) - Learn the architecture
+4. [Development](mdc:.cursor/rules/core/development.mdc) - Start development
+
+## Contributing
+
+When adding new patterns:
+
+1. Follow the established directory structure
+2. Use the MDC format for documentation
+3. Include practical examples
+4. Link to related patterns
+5. Update relevant index files
+
+## Version Control
+
+These patterns are versioned with the project. See [Commit Conventions](mdc:.cursor/rules/deployment/commit-conventions.mdc) for contribution guidelines.

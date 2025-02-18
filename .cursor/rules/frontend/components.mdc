@@ -1,0 +1,255 @@
+---
+description: Component patterns and best practices with Shadcn UI and Radix
+globs: '**/*.tsx'
+---
+
+# Component Patterns
+
+## Component Types
+
+1. **UI Components**
+
+   - Buttons, Inputs, Cards
+   - Layout components
+   - Navigation elements
+   - Feedback components
+
+2. **Feature Components**
+
+   - Business logic
+   - Data fetching
+   - State management
+   - User interactions
+
+3. **Layout Components**
+
+   - Page layouts
+   - Grid systems
+   - Container components
+   - Responsive layouts
+
+4. **Composite Components**
+   - Forms
+   - Data tables
+   - Complex UIs
+   - Multi-step flows
+
+## Component Structure
+
+### Base Component
+
+```typescript
+// app/components/[ComponentName]/index.ts
+export { ComponentName } from './ComponentName';
+export type { ComponentProps } from './types';
+
+// app/components/[ComponentName]/types.ts
+export interface ComponentProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+// app/components/[ComponentName]/ComponentName.tsx
+import { cn } from '~/lib/utils';
+import { ComponentProps } from './types';
+import { useComponentLogic } from './use-component-logic';
+
+export function ComponentName({
+  className,
+  children,
+  ...props
+}: ComponentProps) {
+  const { state, handlers } = useComponentLogic(props);
+
+  return (
+    <div className={cn('base-styles', className)} {...props}>
+      {children}
+    </div>
+  );
+}
+```
+
+### Component with Logic
+
+```typescript
+// Feature component with data and logic
+export function UserProfile({ userId }: { userId: string }) {
+  // Data fetching
+  const { data: user, isLoading, error } = useUser(userId);
+
+  // Event handlers
+  const handleUpdate = useCallback(async (data: UpdateUserData) => {
+    // Handle update
+  }, []);
+
+  // Loading state
+  if (isLoading) {
+    return <UserProfileSkeleton />;
+  }
+
+  // Error state
+  if (error) {
+    return <ErrorCard error={error} />;
+  }
+
+  // Empty state
+  if (!user) {
+    return <EmptyState message="User not found" />;
+  }
+
+  // Success state
+  return (
+    <Card>
+      <UserInfo user={user} onUpdate={handleUpdate} />
+    </Card>
+  );
+}
+```
+
+## Component Patterns
+
+### Data Display
+
+```typescript
+// Table with sorting and pagination
+export function DataTable<TData>({
+  data,
+  columns,
+  pagination,
+}: DataTableProps<TData>) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <div className="relative">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext(),
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {pagination && (
+        <DataTablePagination {...pagination} />
+      )}
+    </div>
+  );
+}
+```
+
+### Feedback Components
+
+```typescript
+// Loading states
+export function LoadingSpinner({
+  size = 'md',
+  className
+}: LoadingSpinnerProps) {
+  return (
+    <div
+      className={cn(
+        'animate-spin rounded-full border-2 border-current border-t-transparent',
+        {
+          'h-4 w-4': size === 'sm',
+          'h-6 w-6': size === 'md',
+          'h-8 w-8': size === 'lg',
+        },
+        className
+      )}
+      role="status"
+      aria-label="Loading"
+    />
+  );
+}
+
+// Empty state with action
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+}: EmptyStateProps) {
+  return (
+    <div className="flex flex-col items-center p-8 text-center">
+      <Icon className="h-12 w-12 text-muted-foreground" />
+      <h3 className="mt-4 font-medium">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
+      {action && <div className="mt-4">{action}</div>}
+    </div>
+  );
+}
+```
+
+## Component Best Practices
+
+1. **Component Design**
+
+   - Single responsibility
+   - Composable interfaces
+   - Proper prop types
+   - Consistent styling
+   - Accessibility first
+
+2. **State Management**
+
+   - Controlled vs uncontrolled
+   - Prop drilling vs context
+   - Server state vs client state
+   - Form state handling
+   - Loading states
+
+3. **Performance**
+
+   - Proper memoization
+   - Lazy loading
+   - Code splitting
+   - Bundle optimization
+   - Render optimization
+
+4. **Error Handling**
+
+   - Error boundaries
+   - Loading states
+   - Empty states
+   - Error messages
+   - Recovery actions
+
+5. **Accessibility**
+   - ARIA attributes
+   - Keyboard navigation
+   - Screen reader support
+   - Color contrast
+   - Focus management
+
+## Related Patterns
+
+- [Routing](mdc:.cursor/rules/frontend/routing.mdc) for route components
+- [Forms](mdc:.cursor/rules/frontend/forms.mdc) for form components
+- [Styling](mdc:.cursor/rules/frontend/styling.mdc) for UI patterns
+- [State](mdc:.cursor/rules/data/state.mdc) for state management

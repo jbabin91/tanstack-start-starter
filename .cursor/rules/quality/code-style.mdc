@@ -1,0 +1,132 @@
+---
+description: 'Code style guidelines and standards'
+globs: '**/*.{ts,tsx}'
+---
+
+# Code Style Guidelines
+
+## Overview
+
+Our code style guidelines ensure consistency and maintainability across the codebase.
+
+## TypeScript/JavaScript Standards
+
+### File Organization
+
+- One component per file
+- Clear file naming (PascalCase for components)
+- Logical grouping of related files
+- Consistent directory structure
+
+### Code Structure
+
+- Function declarations using `function` keyword
+- Consistent use of arrow functions for callbacks
+- Clear separation of concerns
+- Logical grouping of methods
+
+### Naming Conventions
+
+- PascalCase for components and types
+- camelCase for variables and functions
+- UPPER_CASE for constants
+- Descriptive and meaningful names
+- Prefix boolean variables with is/has/should
+
+### Formatting
+
+- 2 space indentation
+- Single quotes for strings
+- Semicolons required
+- No trailing commas
+- Maximum line length of 80 characters
+
+### Component Structure
+
+```typescript
+// Imports
+import { type FC } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+// Types
+interface Props {
+  id: string;
+  name: string;
+}
+
+// Component
+export const MyComponent: FC<Props> = ({ id, name }) => {
+  // Hooks
+  const query = useQuery({ ... });
+
+  // Handlers
+  const handleClick = () => {
+    // ...
+  };
+
+  // Render
+  return (
+    <div>
+      {/* JSX */}
+    </div>
+  );
+};
+```
+
+## Best Practices
+
+### General
+
+- Keep functions small and focused
+- Use early returns
+- Avoid nested conditionals
+- Use guard clauses
+- Prefer immutability
+
+### TypeScript
+
+- Use strict type checking
+- Avoid `any` type
+- Use interface for objects
+- Use type for unions/intersections
+- Document complex types
+
+### React
+
+- Use functional components
+- Follow hooks rules
+- Implement proper error boundaries
+- Use proper prop types
+- Implement proper cleanup
+
+### Testing
+
+- Clear test descriptions
+- One assertion per test
+- Proper test isolation
+- Consistent testing patterns
+- Meaningful test coverage
+
+## Tools and Enforcement
+
+### ESLint
+
+- Strict mode enabled
+- React plugin rules
+- TypeScript rules
+- Import sorting
+- Error prevention
+
+### Prettier
+
+- Automatic formatting
+- Consistent style
+- IDE integration
+- Pre-commit hooks
+- CI/CD checks
+
+## Related Patterns
+
+- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for linting configuration
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for code review process

@@ -1,0 +1,297 @@
+---
+description: State management patterns with TanStack Router, Zustand, TanStack Query, and TanStack Form
+globs: '**/*.{ts,tsx}'
+---
+
+# State Management Patterns
+
+## State Hierarchy
+
+1. **URL State** (TanStack Router)
+
+   - Source of truth for route state
+   - Search parameters
+   - Route parameters
+   - Navigation state
+   - Shareable state
+
+2. **Global State** (Zustand)
+
+   - Authentication
+   - Theme preferences
+   - Feature flags
+   - App settings
+   - Global UI state
+
+3. **Server State** (TanStack Query)
+
+   - Remote data
+   - Cache management
+   - Mutations
+   - Real-time updates
+   - Optimistic updates
+
+4. **Form State** (TanStack Form)
+
+   - Form values
+   - Validation
+   - Submission
+   - Field arrays
+   - Form errors
+
+5. **Local State** (React)
+   - Component state
+   - UI interactions
+   - Temporary data
+   - Derived state
+
+## State Patterns
+
+### URL State (TanStack Router)
+
+```typescript
+// Route with search params and nested data
+export const Route = createFileRoute('/users')({
+  validateSearch: z.object({
+    sort: z.enum(['asc', 'desc']).default('desc'),
+    filter: z.enum(['all', 'active', 'inactive']).default('all'),
+    page: z.coerce.number().min(1).default(1),
+    query: z.string().optional(),
+  }),
+
+  // Loader with dependent data
+  loader: async ({ search, context: { queryClient } }) => ({
+    users: await queryClient.ensureQueryData(
+      queryOptions({
+        queryKey: ['users', search],
+        queryFn: () => $getUsers(search),
+      }),
+    ),
+    filters: await queryClient.ensureQueryData(
+      queryOptions({
+        queryKey: ['filters'],
+        queryFn: () => $getFilters(),
+      }),
+    ),
+  }),
+
+  // Component with URL state management
+  component: UsersPage,
+});
+
+function UsersPage() {
+  const { search, setSearch } = useSearch();
+  const { users, filters } = useLoaderData();
+
+  // URL-driven filters
+  const handleFilterChange = (filter: string) => {
+    setSearch({ filter, page: 1 }); // Reset page on filter change
+  };
+
+  // URL-driven search
+  const handleSearch = useDebouncedCallback((query: string) => {
+    setSearch({ query, page: 1 }); // Reset page on search
+  }, 300);
+
+  return (
+    <div>
+      <SearchInput
+        value={search.query}
+        onChange={handleSearch}
+      />
+      <FilterTabs
+        value={search.filter}
+        onChange={handleFilterChange}
+        filters={filters}
+      />
+      <DataTable data={users.items} />
+      <Pagination
+        page={search.page}
+        onChange={(page) => setSearch({ page })}
+      />
+    </div>
+  );
+}
+```
+
+### Global State (Zustand)
+
+```typescript
+// Auth store with persistence
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  setUser: (user: User | null) => void;
+  logout: () => Promise<void>;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      logout: async () => {
+        await $logout();
+        set({ user: null, isAuthenticated: false });
+        queryClient.clear();
+        router.navigate('/login');
+      },
+    }),
+    { name: 'auth' },
+  ),
+);
+
+// Settings store with system sync
+interface SettingsState {
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  setTheme: (theme: Theme) => void;
+  setLanguage: (language: string) => void;
+}
+
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set) => ({
+      theme: 'system',
+      language: 'en',
+      setTheme: (theme) => {
+        set({ theme });
+        document.documentElement.setAttribute('data-theme', theme);
+      },
+      setLanguage: (language) => {
+        set({ language });
+        document.documentElement.setAttribute('lang', language);
+      },
+    }),
+    { name: 'settings' },
+  ),
+);
+```
+
+### Server State (TanStack Query)
+
+```typescript
+// Query with dependent data
+export function useUser(id: string) {
+  // Primary query
+  const userQuery = useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser(id),
+  });
+
+  // Dependent query
+  const postsQuery = useQuery({
+    queryKey: ['user.posts', id],
+    queryFn: () => $getUserPosts(id),
+    enabled: !!userQuery.data,
+  });
+
+  return {
+    user: userQuery.data,
+    posts: postsQuery.data,
+    isLoading: userQuery.isLoading || postsQuery.isLoading,
+  };
+}
+
+// Mutation with optimistic updates
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: $updateUser,
+    onMutate: async ({ id, data }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['user', id] });
+
+      // Snapshot previous value
+      const previousData = queryClient.getQueryData(['user', id]);
+
+      // Optimistically update
+      queryClient.setQueryData(['user', id], (old: User) => ({
+        ...old,
+        ...data,
+      }));
+
+      return { previousData };
+    },
+    onError: (error, { id }, context) => {
+      // Revert on error
+      queryClient.setQueryData(['user', id], context?.previousData);
+    },
+    onSettled: (_, __, { id }) => {
+      // Refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['user', id] });
+    },
+  });
+}
+```
+
+### Form State (TanStack Form)
+
+```typescript
+// Form with validation and submission
+export function UserForm() {
+  const form = createForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      role: 'user' as const,
+    },
+    validatorSchema: userSchema,
+    onSubmit: async ({ value }) => {
+      try {
+        await $createUser(value);
+        toast.success('User created successfully');
+        router.navigate('/users');
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          form.setErrors(error.fields);
+          return;
+        }
+        throw error;
+      }
+    },
+  });
+
+  return (
+    <form.Provider>
+      <form onSubmit={form.handleSubmit} className="space-y-4">
+        <form.Field name="name">
+          {(field) => (
+            <FormField label="Name" error={field.state.meta.errors?.[0]}>
+              <Input {...field.props} />
+            </FormField>
+          )}
+        </form.Field>
+
+        <form.Field name="email">
+          {(field) => (
+            <FormField label="Email" error={field.state.meta.errors?.[0]}>
+              <Input {...field.props} type="email" autoComplete="email" />
+            </FormField>
+          )}
+        </form.Field>
+
+        <form.Field name="role">
+          {(field) => (
+            <FormField label="Role" error={field.state.meta.errors?.[0]}>
+              <Select
+                {...field.props}
+                options={[
+                  { label: 'User', value: 'user' },
+                  { label: 'Admin', value: 'admin' },
+                ]}
+              />
+            </FormField>
+          )}
+        </form.Field>
+
+        <Button type="submit" disabled={form.state.isSubmitting}>
+          {form.state.isSubmitting ? 'Creating...' : 'Create User'}
+        </Button>
+      </form>
+    </form.Provider>
+  );
+}
+```

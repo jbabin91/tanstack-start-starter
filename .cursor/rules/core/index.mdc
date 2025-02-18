@@ -1,9 +1,13 @@
 ---
-description: MANDATORY: Core project concepts, structure, and development workflow
-globs: "*"
+description: 'Core project concepts, structure, and development workflow'
+globs: '*'
 ---
 
 # Core Project Concepts
+
+## Project Overview
+
+This project follows a modern React stack with TypeScript, focusing on maintainability, type safety, and developer experience.
 
 ## Project Structure
 
@@ -40,8 +44,8 @@ app/
 - TypeScript with strict mode
 - TanStack Router for type-safe routing
 - TanStack Query for data fetching
-- TanStack Start for server functions
 - TanStack Form for form handling
+- TanStack Start for server functions
 - Drizzle ORM for database operations
 
 ### UI Layer
@@ -56,104 +60,70 @@ app/
 - Drizzle ORM for queries
 - Zod for validation
 
-## Development Standards
+## Base Patterns
 
-### Code Organization
+### Component Pattern
 
-1. Feature-First Organization
+```typescript
+type BaseProps = {
+  className?: string;
+  children?: React.ReactNode;
+};
 
-   - Group related code by feature
-   - Keep feature-specific code isolated
-   - Share common code through lib/
+// Base component template
+export function Component({
+  className,
+  children,
+  ...props
+}: BaseProps) {
+  return (
+    <div className={cn("base-styles", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+```
 
-2. Type Safety
+### Data Pattern
 
-   - Use TypeScript strict mode
-   - Define clear interfaces
-   - Validate data at boundaries
+```typescript
+// Base entity type
+type BaseEntity = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
-3. State Management Hierarchy
+// Base response type
+type ApiResponse<T> = {
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    fields?: Record<string, string>;
+  };
+};
 
-   1. URL State (TanStack Router)
-   2. Server State (TanStack Query)
-   3. Form State (TanStack Form)
-   4. Local State (React useState)
+// Base query options
+type BaseQueryOptions = {
+  select?: string[];
+  include?: Record<string, boolean>;
+  where?: Record<string, unknown>;
+};
+```
 
-4. Code Splitting
-   - Split code by routes
-   - Lazy load heavy components
-   - Optimize bundle size
+## Naming Conventions
 
-### Naming Conventions
+### Files and Directories
 
-1. Files and Directories
+- Components: `PascalCase.tsx`
+- Utilities: `camelCase.ts`
+- Server Functions: `$camelCase.ts`
+- Hooks: `use[Name].ts`
+- Routes: `$paramName.tsx` or `route.tsx`
+- Directories: `kebab-case`
 
-   - Components: `PascalCase.tsx`
-   - Utilities: `camelCase.ts`
-   - Server Functions: `$camelCase`
-   - Hooks: `use[Name]`
-   - Routes: `$paramName.tsx` or `route.tsx`
-   - Directories: `kebab-case`
-
-2. Component Props
-
-   ```typescript
-   type ComponentProps = {
-     /** Description of children prop */
-     children: React.ReactNode;
-     /** Description of className prop */
-     className?: string;
-   };
-   ```
-
-3. Function Names
-   - Actions: `handleClick`, `onSubmit`
-   - Queries: `useUserQuery`
-   - Mutations: `useCreateUser`
-   - Server Functions: `$getUser`
-
-### Best Practices
-
-1. Component Design
-
-   - Single responsibility
-   - Composable interfaces
-   - Clear prop contracts
-   - Consistent patterns
-
-2. Data Flow
-
-   - Unidirectional data flow
-   - Predictable state updates
-   - Clear data dependencies
-
-3. Error Handling
-
-   - Use error boundaries
-   - Handle API errors
-   - Validate user input
-   - Provide feedback
-
-4. Performance
-
-   - Optimize renders
-   - Handle loading states
-   - Manage data caching
-
-5. Testing
-
-   - Unit tests with Vitest
-   - Component tests with RTL
-   - Integration tests for flows
-   - E2E tests for critical paths
-
-6. Documentation
-   - Use JSDoc for functions
-   - Document API endpoints
-   - Keep README files updated
-   - Include setup instructions
-
-### Standard.js Rules
+### Code Style
 
 - Use 2 space indentation
 - Use spaces over tabs
@@ -222,3 +192,17 @@ import { UserCard } from './UserCard';
    - Environment checks
    - Monitoring setup
    - Error tracking
+
+## Cross-Cutting Concerns
+
+For specific patterns and implementations, see:
+
+- [API Layer](mdc:.cursor/rules/api/index.mdc) for server functions and API patterns
+- [Frontend Layer](mdc:.cursor/rules/frontend/index.mdc) for UI components and forms
+- [Data Layer](mdc:.cursor/rules/data/index.mdc) for database operations
+- [Error Handling](mdc:.cursor/rules/core/errors.mdc) for error patterns
+- [State Management](mdc:.cursor/rules/frontend/state.mdc) for state patterns
+- [Testing](mdc:.cursor/rules/testing/index.mdc) for testing strategies
+- [Security](mdc:.cursor/rules/security/index.mdc) for security practices
+- [Performance](mdc:.cursor/rules/performance/index.mdc) for optimization
+- [i18n](mdc:.cursor/rules/frontend/i18n.mdc) for internationalization

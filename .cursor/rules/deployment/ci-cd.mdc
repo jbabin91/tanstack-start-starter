@@ -1,0 +1,164 @@
+---
+description: 'CI/CD pipeline patterns and best practices'
+globs: '.github/workflows/*.yml'
+---
+
+# CI/CD Pipeline Patterns
+
+## Overview
+
+Our CI/CD pipeline ensures reliable and consistent deployments through automated processes.
+
+## Pipeline Stages
+
+### 1. Build
+
+- Code checkout
+- Dependency installation
+- Type checking
+- Build process
+- Asset optimization
+
+### 2. Test
+
+- Unit tests
+- Integration tests
+- E2E tests
+- Coverage reports
+- Performance tests
+
+### 3. Quality
+
+- Linting
+- Code formatting
+- Security scanning
+- Dependency audits
+- Bundle analysis
+
+### 4. Deploy
+
+- Environment selection
+- Configuration management
+- Deployment process
+- Health checks
+- Rollback preparation
+
+## GitHub Actions Configuration
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run type-check
+      - name: Build
+        run: npm run build
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: |
+          npm run test:unit
+          npm run test:integration
+          npm run test:e2e
+
+  quality:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint
+        run: npm run lint
+      - name: Security scan
+        run: npm audit
+
+  deploy:
+    needs: [test, quality]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: npm run deploy
+```
+
+## Best Practices
+
+### Pipeline Design
+
+- Fast feedback loops
+- Parallel execution
+- Fail fast principle
+- Clear stage dependencies
+- Comprehensive testing
+
+### Security
+
+- Secrets management
+- Access control
+- Vulnerability scanning
+- Dependency audits
+- Security gates
+
+### Automation
+
+- Automated testing
+- Automated deployments
+- Automated rollbacks
+- Health checks
+- Monitoring alerts
+
+### Documentation
+
+- Pipeline documentation
+- Deployment guides
+- Troubleshooting guides
+- Release notes
+- Change logs
+
+## Environment Management
+
+### Development
+
+- Feature branches
+- Local testing
+- Development deployments
+- Quick feedback
+- Debug capabilities
+
+### Staging
+
+- Integration testing
+- Performance testing
+- User acceptance
+- Release candidates
+- Pre-production validation
+
+### Production
+
+- Blue-green deployments
+- Canary releases
+- Monitoring
+- Alerting
+- Rollback procedures
+
+## Related Patterns
+
+- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment setup
+- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
+- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure setup
+- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring

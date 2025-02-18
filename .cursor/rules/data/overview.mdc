@@ -1,0 +1,116 @@
+---
+description: 'Data patterns and best practices for database operations and state management'
+globs: '**/data/**/*.{ts,tsx}'
+---
+
+# Data Patterns Overview
+
+## Architecture
+
+Our data layer architecture focuses on type-safe database operations and efficient state management:
+
+- Type-safe database queries
+- Optimized data fetching
+- Robust state management
+- Data validation
+- Cache optimization
+
+## Core Technologies
+
+- PostgreSQL for database
+- Drizzle ORM for queries
+- TanStack Query for data fetching
+- Zod for validation
+- Zustand for state
+
+## Pattern Categories
+
+### 1. Schema Management
+
+- Table definitions
+- Relationships
+- Migrations
+- Indexes
+- Constraints
+
+### 2. Query Patterns
+
+- Type-safe queries
+- Joins and relations
+- Pagination
+- Filtering
+- Sorting
+
+### 3. Mutation Patterns
+
+- Create operations
+- Update operations
+- Delete operations
+- Batch operations
+- Transactions
+
+### 4. State Management
+
+- Server state
+- Cache management
+- Optimistic updates
+- Real-time sync
+- Offline data
+
+### 5. Validation
+
+- Schema validation
+- Runtime validation
+- Type inference
+- Custom validators
+- Error handling
+
+### 6. Performance
+
+- Query optimization
+- Cache strategies
+- Batch operations
+- Connection pooling
+- Load balancing
+
+## Best Practices
+
+### 1. Schema Design
+
+- Type safety first
+- Clear relationships
+- Proper indexing
+- Data integrity
+- Performance optimization
+
+### 2. Query Optimization
+
+- Efficient joins
+- Proper indexes
+- Query caching
+- Batch operations
+- Connection management
+
+### 3. State Management
+
+- Cache invalidation
+- Optimistic updates
+- Error recovery
+- Real-time sync
+- Offline support
+
+### 4. Data Security
+
+- Input validation
+- Query sanitization
+- Access control
+- Data encryption
+- Audit logging
+
+## Related Patterns
+
+- [Schema](mdc:.cursor/rules/data/schema.mdc) for database schema
+- [Queries](mdc:.cursor/rules/data/queries.mdc) for query patterns
+- [Mutations](mdc:.cursor/rules/data/mutations.mdc) for mutation patterns
+- [Validation](mdc:.cursor/rules/data/validation.mdc) for data validation
+- [State](mdc:.cursor/rules/data/state.mdc) for state management

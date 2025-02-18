@@ -1,0 +1,162 @@
+---
+description: Development workflow and guidelines
+globs: '*'
+---
+
+# Development Workflow
+
+## Development Process
+
+1. **Planning**
+
+   - Break down requirements
+   - Design component structure
+   - Plan data flow
+   - Consider edge cases
+   - Document decisions
+
+2. **Implementation**
+
+   - Follow type-safe patterns
+   - Write clean, maintainable code
+   - Handle errors gracefully
+   - Add proper documentation
+   - Use consistent naming
+
+3. **Testing**
+
+   - Write unit tests
+   - Add integration tests
+   - Test edge cases
+   - Verify accessibility
+   - Check performance
+
+4. **Review**
+
+   - Code review
+   - Self-review checklist
+   - Performance audit
+   - Accessibility audit
+   - Security review
+
+5. **Deployment**
+   - Build optimization
+   - Environment checks
+   - Monitoring setup
+   - Error tracking
+   - Performance monitoring
+
+## Development Guidelines
+
+### Code Organization
+
+1. **Feature Structure**
+
+   ```sh
+   feature/
+   ├── api/          # API layer
+   ├── components/   # UI components
+   ├── hooks/        # Custom hooks
+   ├── utils/        # Utilities
+   └── types/        # Type definitions
+   ```
+
+2. **File Organization**
+
+   ```typescript
+   // 1. Imports
+   import { dependencies } from 'external';
+
+   // 2. Types
+   type ComponentProps = {};
+
+   // 3. Constants
+   const CONSTANTS = {};
+
+   // 4. Helper Functions
+   function helper() {}
+
+   // 5. Component/Hook
+   export function Component() {}
+
+   // 6. Styles (if not using Tailwind)
+   const styles = {};
+   ```
+
+### Development Best Practices
+
+1. **Code Quality**
+
+   - Write self-documenting code
+   - Use meaningful variable names
+   - Keep functions small and focused
+   - Follow DRY principles
+   - Use TypeScript effectively
+
+2. **Performance**
+
+   - Optimize bundle size
+   - Implement code splitting
+   - Use proper caching
+   - Monitor performance
+   - Profile when needed
+
+3. **Testing**
+
+   - Write tests first (TDD)
+   - Cover edge cases
+   - Test error scenarios
+   - Add integration tests
+   - Monitor test coverage
+
+4. **Documentation**
+   - Add JSDoc comments
+   - Document complex logic
+   - Keep README updated
+   - Document API changes
+   - Add usage examples
+
+## Tools and Configuration
+
+### VSCode Setup
+
+```json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
+```
+
+### Git Workflow
+
+1. **Branch Naming**
+
+   - feature/feature-name
+   - fix/issue-description
+   - chore/task-description
+   - docs/documentation-update
+
+2. **Commit Messages**
+
+   ```sh
+   type(scope): description
+
+   - feat: new feature
+   - fix: bug fix
+   - docs: documentation
+   - style: formatting
+   - refactor: code restructure
+   - test: adding tests
+   - chore: maintenance
+   ```
+
+## Related Patterns
+
+- [Setup](mdc:.cursor/rules/core/setup.mdc) for project setup
+- [Architecture](mdc:.cursor/rules/core/architecture.mdc) for patterns
+- [Testing](mdc:.cursor/rules/testing/unit.mdc) for testing guidelines
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards

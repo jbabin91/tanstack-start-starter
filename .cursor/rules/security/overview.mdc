@@ -1,0 +1,115 @@
+---
+description: 'Security patterns and best practices for application protection'
+globs: '**/security/**/*.{ts,tsx}'
+---
+
+# Security Patterns Overview
+
+## Architecture
+
+Our security architecture follows a defense-in-depth approach:
+
+- Authentication and authorization
+- Data protection
+- Input validation
+- Security headers
+- Rate limiting
+
+## Core Technologies
+
+- JWT for authentication
+- RBAC for authorization
+- Zod for validation
+- HTTP security headers
+- Rate limiting middleware
+
+## Pattern Categories
+
+### 1. Authentication
+
+- JWT handling
+- Session management
+- Password security
+- Multi-factor auth
+- OAuth/OIDC integration
+
+### 2. Authorization
+
+- Role-based access control
+- Permission management
+- Policy enforcement
+- Resource protection
+- Access auditing
+
+### 3. Data Protection
+
+- Input sanitization
+- Output encoding
+- Data encryption
+- PII handling
+- Secure storage
+
+### 4. Infrastructure Security
+
+- Security headers
+- CORS policies
+- Rate limiting
+- DDoS protection
+- SSL/TLS configuration
+
+### 5. Security Monitoring
+
+- Audit logging
+- Security alerts
+- Intrusion detection
+- Vulnerability scanning
+- Incident response
+
+### 6. Compliance
+
+- Data privacy
+- GDPR compliance
+- Cookie policies
+- Terms of service
+- Privacy policies
+
+## Best Practices
+
+### 1. Authentication
+
+- Secure password handling
+- Token management
+- Session security
+- MFA implementation
+- OAuth best practices
+
+### 2. Authorization
+
+- Principle of least privilege
+- Role-based access
+- Resource isolation
+- Policy enforcement
+- Access auditing
+
+### 3. Data Security
+
+- Input validation
+- Output encoding
+- Encryption at rest
+- Encryption in transit
+- Secure key management
+
+### 4. Infrastructure
+
+- Security headers
+- Rate limiting
+- CORS policies
+- Error handling
+- Secure logging
+
+## Related Patterns
+
+- [Authentication](mdc:.cursor/rules/security/authentication.mdc) for auth patterns
+- [Authorization](mdc:.cursor/rules/security/authorization.mdc) for access control
+- [Data Protection](mdc:.cursor/rules/security/data-protection.mdc) for data security
+- [Headers](mdc:.cursor/rules/security/headers.mdc) for security headers

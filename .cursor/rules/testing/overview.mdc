@@ -1,0 +1,115 @@
+---
+description: 'Testing patterns and best practices for ensuring code quality'
+globs: '**/*.test.{ts,tsx}'
+---
+
+# Testing Patterns Overview
+
+## Architecture
+
+Our testing architecture follows a comprehensive approach:
+
+- Unit testing
+- Integration testing
+- End-to-end testing
+- Performance testing
+- Accessibility testing
+
+## Core Technologies
+
+- Vitest for unit testing
+- React Testing Library
+- Playwright for E2E
+- MSW for API mocking
+- Testing utilities
+
+## Pattern Categories
+
+### 1. Unit Testing
+
+- Component testing
+- Hook testing
+- Utility testing
+- State testing
+- Error testing
+
+### 2. Integration Testing
+
+- API integration
+- Database testing
+- Service integration
+- State integration
+- Cache testing
+
+### 3. End-to-End Testing
+
+- User flows
+- Critical paths
+- Cross-browser testing
+- Mobile testing
+- Visual regression
+
+### 4. Performance Testing
+
+- Load testing
+- Stress testing
+- Memory leaks
+- Bundle size
+- Runtime performance
+
+### 5. Test Infrastructure
+
+- Test setup
+- Test utilities
+- Test data
+- Mocking
+- CI integration
+
+### 6. Test Monitoring
+
+- Coverage tracking
+- Performance metrics
+- Test analytics
+- Failure analysis
+- Quality metrics
+
+## Best Practices
+
+### 1. Test Organization
+
+- Clear structure
+- Consistent naming
+- Proper isolation
+- Shared utilities
+- Maintainable setup
+
+### 2. Test Coverage
+
+- Critical paths
+- Edge cases
+- Error scenarios
+- Performance
+- Accessibility
+
+### 3. Test Efficiency
+
+- Fast execution
+- Parallel running
+- Minimal setup
+- Proper cleanup
+- Resource management
+
+### 4. Test Quality
+
+- Readable tests
+- Reliable tests
+- Maintainable tests
+- Useful failures
+- Clear documentation
+
+## Related Patterns
+
+- [Unit Tests](mdc:.cursor/rules/testing/unit.mdc) for unit testing
+- [Integration Tests](mdc:.cursor/rules/testing/integration.mdc) for integration testing
+- [E2E Tests](mdc:.cursor/rules/testing/e2e.mdc) for end-to-end testing
+- [Performance Tests](mdc:.cursor/rules/testing/performance.mdc) for performance testing

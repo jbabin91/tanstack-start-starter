@@ -1,0 +1,116 @@
+---
+description: 'Markdown style guide and linting rules'
+globs: '**/*.{md,mdc}'
+---
+
+# Markdown Style Guide
+
+## Overview
+
+This guide defines our markdown style rules for consistent documentation.
+
+## File Structure
+
+### 1. Frontmatter
+
+```yaml
+---
+description: 'Use single quotes for strings'
+globs: '**/*.{md,mdc}'
+---
+```
+
+### 2. Document Structure
+
+- One H1 (`#`) per document
+- Proper heading hierarchy (H1 -> H2 -> H3)
+- Sections in logical order
+- Clear section transitions
+- No duplicate headings
+
+## Formatting Rules
+
+### 1. Headings
+
+- Blank line before headings
+- Blank line after headings
+- No trailing spaces
+- No punctuation at end
+- Proper hierarchy levels
+- Clear, concise text
+
+### 2. Lists
+
+- Blank line before lists
+- Use `-` for unordered lists
+- Consistent indentation (2 spaces)
+- No trailing spaces
+- Proper item alignment
+- Clear item text
+
+### 3. Code Blocks
+
+- Specify language
+- Proper indentation
+- No trailing spaces
+- Clear examples
+- Meaningful comments
+- Consistent style
+
+### 4. Links
+
+- Use reference style for internal links
+- MDC format for rule links
+- Clear link text
+- No trailing spaces
+- Proper spacing
+- Working references
+
+### 5. Spacing
+
+- Single blank line between sections
+- No multiple blank lines
+- No trailing spaces
+- Use spaces, not tabs
+- Consistent indentation
+- Clean line endings
+
+## Best Practices
+
+### 1. Content Organization
+
+- Clear hierarchy
+- Logical grouping
+- Consistent structure
+- Progressive disclosure
+- Related content links
+
+### 2. Writing Style
+
+- Clear language
+- Consistent tone
+- Technical accuracy
+- Proper terminology
+- Concise explanations
+
+### 3. Code Examples
+
+- Clear purpose
+- Minimal examples
+- Proper context
+- Consistent style
+- Helpful comments
+
+### 4. Documentation
+
+- Up-to-date content
+- Version alignment
+- Clear updates
+- Proper references
+- Maintained links
+
+## Related Patterns
+
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for code standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for review process

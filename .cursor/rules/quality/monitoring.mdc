@@ -1,0 +1,305 @@
+---
+description: 'Application monitoring and quality metrics'
+globs: '**/monitoring/**/*.{ts,tsx}'
+---
+
+# Application Monitoring
+
+## Overview
+
+Our application monitoring ensures high quality through continuous observation and measurement.
+
+## Monitoring Types
+
+### 1. Performance Monitoring
+
+```typescript
+// Performance tracking
+export function trackPerformance(metric: PerformanceMetric) {
+  performance.mark(`${metric.name}-start`);
+
+  return () => {
+    performance.mark(`${metric.name}-end`);
+    performance.measure(
+      metric.name,
+      `${metric.name}-start`,
+      `${metric.name}-end`
+    );
+  };
+}
+
+// Component performance wrapper
+export function withPerformanceTracking<P extends object>(
+  Component: React.ComponentType<P>,
+  metricName: string
+) {
+  return function PerformanceTrackedComponent(props: P) {
+    const endMark = trackPerformance({ name: metricName });
+
+    useEffect(() => {
+      return endMark;
+    }, []);
+
+    return <Component {...props} />;
+  };
+}
+```
+
+### 2. Error Monitoring
+
+```typescript
+// Error boundary with monitoring
+export class MonitoredErrorBoundary extends React.Component<ErrorBoundaryProps> {
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    // Log to monitoring service
+    errorMonitor.captureError(error, {
+      context: info,
+      severity: 'error',
+      source: 'react',
+    });
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
+// API error monitoring
+export function monitorApiErrors() {
+  return async (error: unknown) => {
+    if (error instanceof ApiError) {
+      errorMonitor.captureError(error, {
+        severity: 'error',
+        source: 'api',
+        context: {
+          endpoint: error.endpoint,
+          status: error.status,
+        },
+      });
+    }
+  };
+}
+```
+
+### 3. User Behavior Monitoring
+
+```typescript
+// User interaction tracking
+export function trackUserInteraction(event: UserEvent) {
+  analytics.track(event.name, {
+    component: event.component,
+    action: event.action,
+    value: event.value,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+// Page view tracking
+export function trackPageView(route: string) {
+  analytics.pageView({
+    route,
+    timestamp: new Date().toISOString(),
+    referrer: document.referrer,
+  });
+}
+```
+
+## Metrics Collection
+
+### 1. Performance Metrics
+
+- Page load time
+- Time to interactive
+- First contentful paint
+- Largest contentful paint
+- Cumulative layout shift
+
+### 2. Error Metrics
+
+- Error rate
+- Error types
+- Error locations
+- Error impact
+- Resolution time
+
+### 3. User Metrics
+
+- Page views
+- User flows
+- Feature usage
+- User satisfaction
+- Conversion rates
+
+### 4. System Metrics
+
+- CPU usage
+- Memory usage
+- Network latency
+- Cache hit rate
+- Database performance
+
+## Monitoring Setup
+
+### 1. Client Monitoring
+
+```typescript
+// Monitor setup
+export function setupMonitoring(config: MonitorConfig) {
+  // Performance monitoring
+  setupPerformanceMonitoring({
+    sampleRate: config.performanceSampleRate,
+    metrics: ['FCP', 'LCP', 'CLS', 'FID'],
+  });
+
+  // Error monitoring
+  setupErrorMonitoring({
+    dsn: config.errorDsn,
+    environment: config.environment,
+    release: config.version,
+  });
+
+  // Analytics
+  setupAnalytics({
+    key: config.analyticsKey,
+    userId: config.userId,
+    userProperties: config.userProperties,
+  });
+}
+```
+
+### 2. Server Monitoring
+
+```typescript
+// Server metrics
+export function setupServerMonitoring(app: Express) {
+  // Request monitoring
+  app.use(
+    requestMonitoring({
+      metrics: ['latency', 'status', 'path'],
+    }),
+  );
+
+  // Database monitoring
+  setupDatabaseMonitoring({
+    queryLatency: true,
+    connectionPool: true,
+    slowQueries: true,
+  });
+
+  // System monitoring
+  setupSystemMonitoring({
+    cpu: true,
+    memory: true,
+    disk: true,
+    network: true,
+  });
+}
+```
+
+## Alerting
+
+### 1. Alert Configuration
+
+```typescript
+// Alert setup
+export const alerts = {
+  // Error rate alert
+  errorRate: {
+    condition: 'rate(errors[5m]) > 0.1',
+    severity: 'critical',
+    notification: ['slack', 'email'],
+  },
+
+  // Performance alert
+  performance: {
+    condition: 'avg(page_load_time[5m]) > 3000',
+    severity: 'warning',
+    notification: ['slack'],
+  },
+
+  // System alert
+  system: {
+    condition: 'max(cpu_usage[5m]) > 80',
+    severity: 'warning',
+    notification: ['slack', 'pager'],
+  },
+};
+```
+
+### 2. Alert Handling
+
+```typescript
+// Alert handler
+export function handleAlert(alert: Alert) {
+  switch (alert.severity) {
+    case 'critical':
+      notifyTeam(alert);
+      createIncident(alert);
+      break;
+    case 'warning':
+      notifyTeam(alert);
+      break;
+    case 'info':
+      logAlert(alert);
+      break;
+  }
+}
+```
+
+## Best Practices
+
+### 1. Implementation
+
+- Use appropriate sampling
+- Monitor key metrics
+- Set meaningful thresholds
+- Implement proper logging
+- Handle sensitive data
+
+### 2. Data Collection
+
+- Collect relevant data
+- Respect privacy
+- Manage storage
+- Enable filtering
+- Support aggregation
+
+### 3. Analysis
+
+- Regular review
+- Trend analysis
+- Anomaly detection
+- Performance optimization
+- User experience improvement
+
+### 4. Response
+
+- Clear procedures
+- Quick resolution
+- Root cause analysis
+- Prevention measures
+- Team communication
+
+## Tools
+
+### Monitoring Tools
+
+- Error tracking (Sentry)
+- Performance monitoring (New Relic)
+- Analytics (Google Analytics)
+- Log management (ELK Stack)
+- APM solutions
+
+### Analysis Tools
+
+- Dashboards
+- Alerts
+- Reports
+- Visualizations
+- Debugging tools
+
+## Related Patterns
+
+- [Performance](mdc:.cursor/rules/performance/monitoring.mdc) for performance monitoring
+- [Deployment](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
+- [Security](mdc:.cursor/rules/security/monitoring.mdc) for security monitoring

@@ -1,0 +1,197 @@
+---
+description: 'Formatting standards with Prettier and Markdown lint'
+globs: '**/*.{ts,tsx,md,mdc}'
+---
+
+# Formatting Standards
+
+## Prettier Configuration
+
+### Base Configuration
+
+```javascript
+// .prettierrc.js
+module.exports = {
+  semi: true,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  bracketSpacing: true,
+  jsxBracketSameLine: false,
+  arrowParens: 'always',
+  endOfLine: 'lf',
+};
+```
+
+### File-Specific Overrides
+
+```javascript
+// .prettierrc.js overrides
+module.exports = {
+  overrides: [
+    {
+      files: '*.{md,mdc}',
+      options: {
+        parser: 'markdown',
+        proseWrap: 'always',
+        printWidth: 80,
+        tabWidth: 2,
+        endOfLine: 'lf',
+      },
+    },
+    {
+      files: '*.{ts,tsx}',
+      options: {
+        parser: 'typescript',
+        semi: true,
+        trailingComma: 'all',
+        endOfLine: 'lf',
+      },
+    },
+  ],
+};
+```
+
+## Markdown Lint Rules
+
+### File Structure
+
+```markdown
+---
+description: 'Use single quotes for strings'
+globs: 'pattern'
+---
+
+# Title (H1)
+
+## Section (H2)
+
+### Subsection (H3)
+
+Content with proper spacing.
+```
+
+### Rule Configuration
+
+````javascript
+// .markdownlint.json
+{
+  "default": true,
+  "MD001": true,           // Heading levels should only increment by one level
+  "MD002": true,           // First heading should be a top-level heading
+  "MD003": {              // Heading style
+    "style": "atx"        // Use # style headings
+  },
+  "MD004": {              // Unordered list style
+    "style": "dash"       // Use - for unordered lists
+  },
+  "MD005": true,          // Consistent list indentation
+  "MD006": true,          // Consider starting lists at beginning of line
+  "MD007": {              // Unordered list indentation
+    "indent": 2           // Use 2 spaces for indentation
+  },
+  "MD009": {              // No trailing spaces
+    "br_spaces": 2,       // Allow 2 spaces for line break
+    "list_item_empty_lines": false
+  },
+  "MD010": {              // No hard tabs
+    "code_blocks": false  // Allow tabs in code blocks
+  },
+  "MD011": true,          // Reversed link syntax
+  "MD012": {              // Multiple consecutive blank lines
+    "maximum": 1          // Allow at most 1 blank line
+  },
+  "MD013": {              // Line length
+    "line_length": 80,    // Max line length
+    "code_blocks": false, // Don't check code blocks
+    "tables": false       // Don't check tables
+  },
+  "MD014": true,          // Dollar signs used before commands
+  "MD018": true,          // Space after hash on atx style heading
+  "MD019": true,          // No multiple spaces after hash on atx style heading
+  "MD020": true,          // No space inside hashes on closed atx style heading
+  "MD021": true,          // No multiple spaces inside hashes on closed atx style
+  "MD022": true,          // Headings should be surrounded by blank lines
+  "MD023": true,          // Headings must start at beginning of line
+  "MD024": {              // Multiple headings with same content
+    "allow_different_nesting": true
+  },
+  "MD025": true,          // Single title/h1 tag
+  "MD026": true,          // Trailing punctuation in heading
+  "MD027": true,          // Multiple spaces after blockquote symbol
+  "MD028": true,          // Blank line inside blockquote
+  "MD029": {              // Ordered list item prefix
+    "style": "one"        // Use 1. for all items
+  },
+  "MD030": true,          // Spaces after list markers
+  "MD031": true,          // Fenced code blocks should be surrounded by blank lines
+  "MD032": true,          // Lists should be surrounded by blank lines
+  "MD033": {              // Inline HTML
+    "allowed_elements": ["br", "img"]
+  },
+  "MD034": true,          // Bare URL used
+  "MD035": {              // Horizontal rule style
+    "style": "---"        // Use --- for horizontal rules
+  },
+  "MD036": true,          // Emphasis used instead of heading
+  "MD037": true,          // Spaces inside emphasis markers
+  "MD038": true,          // Spaces inside code span elements
+  "MD039": true,          // Spaces inside link text
+  "MD040": true,          // Fenced code blocks should have a language specified
+  "MD041": true,          // First line in file should be a top-level heading
+  "MD042": true,          // No empty links
+  "MD043": false,         // Required heading structure
+  "MD044": false,         // Proper names should have proper capitalization
+  "MD045": true,          // Images should have alternate text
+  "MD046": {              // Code block style
+    "style": "fenced"     // Use ``` for code blocks
+  },
+  "MD047": true,          // Files should end with a single newline character
+  "MD048": {              // Code fence style
+    "style": "backtick"   // Use ``` for code fences
+  }
+}
+````
+
+## Best Practices
+
+### 1. File Organization
+
+- One topic per file
+- Clear file naming
+- Proper frontmatter
+- Consistent structure
+- Logical sections
+
+### 2. Content Formatting
+
+- Proper heading hierarchy
+- Consistent list formatting
+- Code block language specification
+- Proper link formatting
+- Clean spacing
+
+### 3. Code Examples
+
+- Language specification
+- Proper indentation
+- Clear comments
+- Meaningful examples
+- Consistent style
+
+### 4. Documentation
+
+- Clear descriptions
+- Proper quotes
+- Valid globs
+- Related patterns
+- Version control
+
+## Related Patterns
+
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for code standards
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for review process
+- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for code quality

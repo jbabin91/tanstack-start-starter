@@ -1,0 +1,353 @@
+---
+description: UI/UX patterns with Tailwind CSS v4 and Shadcn UI
+globs: '**/*.{ts,tsx,css}'
+---
+
+# Styling Patterns
+
+## Style Types
+
+1. **Core Styles**
+
+   - Typography
+   - Colors
+   - Spacing
+   - Layout
+
+2. **Component Styles**
+
+   - Buttons
+   - Forms
+   - Cards
+   - Navigation
+
+3. **Utility Styles**
+
+   - Container Queries
+   - Scroll Timeline
+   - View Transitions
+   - Cascade Layers
+
+4. **Theme Styles**
+   - Light/Dark modes
+   - Color schemes
+   - Brand styles
+   - Custom themes
+
+## Style Structure
+
+### Tailwind Configuration
+
+```css
+/* styles/tailwind.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@config {
+  theme {
+    /* Container Queries */
+    containerSize: {
+      sm: 40rem;
+      md: 48rem;
+      lg: 64rem;
+      xl: 80rem;
+    };
+    container: {
+      center: true;
+      padding: 2rem;
+      screens: {
+        "2xl": 1400px;
+      };
+    };
+    extend: {
+      /* Scroll Timeline */
+      scrollTimeline: {
+        "page-scroll": {
+          source: selector;
+          target: main;
+          axis: block;
+        };
+      };
+      /* View Transitions */
+      viewTransition: {
+        "slide-up": {
+          old: { transform: translateY(0); opacity: 1; };
+          new: { transform: translateY(-100%); opacity: 0; };
+        };
+        fade: {
+          old: { opacity: 1; };
+          new: { opacity: 0; };
+        };
+      };
+      /* Modern Color Format */
+      colors: {
+        border: oklch(var(--border));
+        input: oklch(var(--input));
+        ring: oklch(var(--ring));
+        background: oklch(var(--background));
+        foreground: oklch(var(--foreground));
+        primary: {
+          DEFAULT: oklch(var(--primary));
+          foreground: oklch(var(--primary-foreground));
+        };
+        secondary: {
+          DEFAULT: oklch(var(--secondary));
+          foreground: oklch(var(--secondary-foreground));
+        };
+        destructive: {
+          DEFAULT: oklch(var(--destructive));
+          foreground: oklch(var(--destructive-foreground));
+        };
+        muted: {
+          DEFAULT: oklch(var(--muted));
+          foreground: oklch(var(--muted-foreground));
+        };
+        accent: {
+          DEFAULT: oklch(var(--accent));
+          foreground: oklch(var(--accent-foreground));
+        };
+      };
+      /* Modern Border Radius */
+      borderRadius: {
+        lg: var(--radius);
+        md: calc(var(--radius) - 2px);
+        sm: calc(var(--radius) - 4px);
+      };
+      /* Modern Animation */
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0; opacity: 0; };
+          to: { height: var(--radix-accordion-content-height); opacity: 1; };
+        };
+      };
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out forwards";
+      };
+    };
+  };
+  /* New Tailwind v4 Features */
+  plugins: [
+    "@tailwindcss/container-queries";
+    "@tailwindcss/scroll-timeline";
+    "@tailwindcss/view-transitions";
+  ];
+}
+
+/* Base Layer */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --primary: 0.6 0.4 270;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0.2 0.4 240;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0.2 0.1 240;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0.3 0.2 250;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 0.7 350;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0.6 0.4 270;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 0.6 0.4 270;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0.2 0.4 240;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0.2 0.1 240;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0.3 0.2 250;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 0.7 350;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0.6 0.4 270;
+  }
+}
+
+/* Components Layer */
+@layer components {
+  .btn {
+    @apply ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+}
+
+/* Utilities Layer */
+@layer utilities {
+  .scroll-reveal {
+    @apply scroll-timeline-[--reveal] scroll-timeline-axis-y animate-[slide-up_1s_scroll-timeline-[--reveal]] will-change-transform;
+  }
+}
+```
+
+### Modern Component Styles
+
+```typescript
+// Styled component with container queries and view transitions
+export function Card({
+  variant = 'default',
+  size = 'default',
+  className,
+  ...props
+}: CardProps) {
+  return (
+    <div
+      className={cn(
+        // Base styles with container query
+        '@container (min-width: 640px) {grid-cols-2}',
+        'view-transition-name:card',
+        'grid gap-4 p-6 rounded-lg border bg-card text-card-foreground shadow-sm',
+        // Variant styles using modern color format
+        {
+          'bg-[oklch(var(--primary))] text-[oklch(var(--primary-foreground))]':
+            variant === 'primary',
+          'bg-[oklch(var(--secondary))] text-[oklch(var(--secondary-foreground))]':
+            variant === 'secondary',
+        },
+        // Size styles with modern spacing
+        {
+          'gap-4 p-6': size === 'default',
+          'gap-2 p-4': size === 'sm',
+          'gap-6 p-8': size === 'lg',
+        },
+        // Scroll-linked animations
+        'scroll-timeline-[--reveal] scroll-timeline-axis-y',
+        'animate-[fade-in_1s_scroll-timeline-[--reveal]]',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+## Modern Style Patterns
+
+### Container Queries and View Transitions
+
+```typescript
+// Responsive layout with container queries
+export function Layout({ children }: LayoutProps) {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Container query context */}
+      <div className="@container">
+        {/* Responsive grid with container queries */}
+        <div className="grid gap-4
+          @sm:grid-cols-1
+          @md:grid-cols-2
+          @lg:grid-cols-3
+          @xl:grid-cols-4"
+        >
+          {/* View transition wrapper */}
+          <div className="view-transition-group:cards">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Scroll-linked Animations
+
+```typescript
+// Scroll-linked animation component
+export function ScrollReveal({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative overflow-hidden">
+      <div className="scroll-timeline-[--reveal] scroll-timeline-axis-y
+        animate-[slide-up_1s_scroll-timeline-[--reveal]]
+        will-change-transform"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+### Cascade Layers
+
+```css
+/* styles/main.css */
+@layer reset, base, components, utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    /* ... other tokens */
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    /* ... other tokens */
+  }
+}
+
+@layer components {
+  .btn {
+    @apply ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+}
+```
+
+## Modern Best Practices
+
+1. **Design System**
+
+   - Container queries for component-based design
+   - Scroll-linked animations for engagement
+   - View transitions for smooth navigation
+   - Modern color formats (OKLCH)
+   - Cascade layers for style organization
+
+2. **Responsive Design**
+
+   - Container queries over media queries
+   - Fluid typography with modern clamp()
+   - Scroll-driven animations
+   - View transitions
+   - Modern layout patterns
+
+3. **Performance**
+
+   - Modern CSS optimization
+   - Container query optimization
+   - View transition optimization
+   - Layer-based CSS organization
+   - Reduced paint operations
+
+4. **Accessibility**
+
+   - Reduced motion preferences
+   - High contrast modes
+   - Focus visible states
+   - Modern color contrasts
+   - Prefers-contrast media queries
+
+5. **Maintainability**
+   - Cascade layers
+   - Modern CSS nesting
+   - Container query patterns
+   - Style scoping
+   - Modern CSS variables
+
+## Related Patterns
+
+- [Components](mdc:.cursor/rules/frontend/components.mdc) for component patterns
+- [Forms](mdc:.cursor/rules/frontend/forms.mdc) for form styling
+- [Accessibility](mdc:.cursor/rules/quality/accessibility.mdc) for a11y patterns
+- [Performance](mdc:.cursor/rules/performance/optimization.mdc) for style optimization

@@ -1,0 +1,300 @@
+---
+description: Project architecture, structure, and design patterns
+globs: '**/*.{ts,tsx}'
+---
+
+# Architecture Patterns
+
+## Project Structure
+
+```sh
+src/
+├── app/                # Application core
+│   ├── providers/     # Global providers
+│   ├── layouts/       # Layout components
+│   └── styles/        # Global styles
+├── features/          # Feature modules
+│   ├── auth/         # Authentication
+│   ├── users/        # User management
+│   └── dashboard/    # Dashboard
+├── shared/           # Shared code
+│   ├── components/   # Reusable components
+│   ├── hooks/        # Custom hooks
+│   ├── utils/        # Utilities
+│   └── types/        # Type definitions
+├── server/           # Server-side code
+│   ├── db/          # Database
+│   ├── api/         # API routes
+│   └── middleware/  # Server middleware
+└── config/          # Configuration
+    ├── env.ts       # Environment
+    └── constants.ts # Constants
+```
+
+## Layer Architecture
+
+### 1. Presentation Layer
+
+```typescript
+// pages/users/[id].tsx
+export default function UserPage() {
+  // 1. Data hooks
+  const { data: user } = useUser();
+  const { mutate } = useUpdateUser();
+
+  // 2. UI state
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 3. Event handlers
+  const handleSubmit = async (data: UserFormData) => {
+    await mutate(data);
+    setIsEditing(false);
+  };
+
+  // 4. Render
+  return (
+    <UserLayout>
+      <UserProfile
+        user={user}
+        isEditing={isEditing}
+        onSubmit={handleSubmit}
+      />
+    </UserLayout>
+  );
+}
+```
+
+### 2. Application Layer
+
+```typescript
+// features/users/api/queries.ts
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['users', id],
+    queryFn: () => $getUser(id),
+  });
+}
+
+// features/users/api/mutations.ts
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: $updateUser,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['users', data.id],
+      });
+    },
+  });
+}
+```
+
+### 3. Domain Layer
+
+```typescript
+// features/users/types/index.ts
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt: Date;
+}
+
+export const userSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(2),
+  role: z.enum(['USER', 'ADMIN']),
+  createdAt: z.date(),
+});
+```
+
+### 4. Infrastructure Layer
+
+```typescript
+// server/db/schema/users.ts
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name').notNull(),
+  role: text('role', { enum: ['USER', 'ADMIN'] }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// server/api/users/$getUser.ts
+export async function $getUser(id: string) {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, id),
+  });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  return user;
+}
+```
+
+## Design Patterns
+
+### 1. Repository Pattern
+
+```typescript
+// server/repositories/users.ts
+export class UserRepository {
+  async findById(id: string): Promise<User> {
+    return db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
+  }
+
+  async create(data: NewUser): Promise<User> {
+    return db.insert(users).values(data).returning();
+  }
+
+  async update(id: string, data: Partial<User>): Promise<User> {
+    return db.update(users).set(data).where(eq(users.id, id)).returning();
+  }
+}
+```
+
+### 2. Factory Pattern
+
+```typescript
+// shared/factories/query.ts
+export function createQueryKeys<T extends string>(scope: T) {
+  return {
+    all: [scope] as const,
+    lists: () => [...keys.all, 'list'] as const,
+    list: (filters: string) => [...keys.lists(), { filters }] as const,
+    details: () => [...keys.all, 'detail'] as const,
+    detail: (id: string) => [...keys.details(), id] as const,
+  };
+}
+
+// features/users/api/keys.ts
+export const userKeys = createQueryKeys('users');
+```
+
+### 3. Builder Pattern
+
+```typescript
+// shared/builders/query.ts
+export class QueryBuilder<T> {
+  private query: Query<T>;
+
+  constructor(baseQuery: Query<T>) {
+    this.query = baseQuery;
+  }
+
+  withPagination(page: number, limit: number) {
+    this.query.limit = limit;
+    this.query.offset = (page - 1) * limit;
+    return this;
+  }
+
+  withSort(field: keyof T, direction: 'asc' | 'desc') {
+    this.query.orderBy = [{ field, direction }];
+    return this;
+  }
+
+  withFilter(filter: Partial<T>) {
+    this.query.where = filter;
+    return this;
+  }
+
+  build(): Query<T> {
+    return this.query;
+  }
+}
+```
+
+### 4. Observer Pattern
+
+```typescript
+// shared/observers/events.ts
+export class EventEmitter {
+  private listeners: Map<string, Function[]>;
+
+  constructor() {
+    this.listeners = new Map();
+  }
+
+  on(event: string, callback: Function) {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)?.push(callback);
+  }
+
+  emit(event: string, data: unknown) {
+    this.listeners.get(event)?.forEach((callback) => {
+      callback(data);
+    });
+  }
+}
+```
+
+### 5. Strategy Pattern
+
+```typescript
+// shared/strategies/validation.ts
+interface ValidationStrategy {
+  validate(data: unknown): boolean;
+  getError(): string;
+}
+
+class EmailValidation implements ValidationStrategy {
+  validate(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  getError(): string {
+    return 'Invalid email format';
+  }
+}
+
+class PasswordValidation implements ValidationStrategy {
+  validate(password: string): boolean {
+    return password.length >= 8;
+  }
+
+  getError(): string {
+    return 'Password must be at least 8 characters';
+  }
+}
+```
+
+## Best Practices
+
+1. **Separation of Concerns**
+
+   - Keep layers independent
+   - Use clear boundaries
+   - Follow single responsibility
+
+2. **Dependency Injection**
+
+   - Use dependency inversion
+   - Avoid tight coupling
+   - Make testing easier
+
+3. **Error Handling**
+
+   - Use domain-specific errors
+   - Implement proper error boundaries
+   - Handle edge cases
+
+4. **State Management**
+   - Use appropriate state solutions
+   - Implement proper caching
+   - Handle loading states
+
+## Related Patterns
+
+- [Setup](mdc:.cursor/rules/core/setup.mdc) for project setup
+- [Conventions](mdc:.cursor/rules/core/conventions.mdc) for code style
+- [API](mdc:.cursor/rules/api/endpoints.mdc) for API patterns
+- [Data](mdc:.cursor/rules/data/schema.mdc) for data patterns

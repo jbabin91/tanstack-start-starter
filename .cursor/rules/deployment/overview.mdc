@@ -1,0 +1,115 @@
+---
+description: 'Deployment patterns and best practices for reliable releases'
+globs: '**/deployment/**/*.{ts,tsx}'
+---
+
+# Deployment Patterns Overview
+
+## Architecture
+
+Our deployment architecture ensures reliable and consistent releases through:
+
+- CI/CD pipelines
+- Environment management
+- Release strategies
+- Monitoring
+- Rollback procedures
+
+## Core Technologies
+
+- GitHub Actions for CI/CD
+- Docker for containerization
+- Kubernetes for orchestration
+- Monitoring tools
+- Infrastructure as Code
+
+## Pattern Categories
+
+### 1. CI/CD Pipeline
+
+- Build process
+- Testing stages
+- Deployment stages
+- Quality gates
+- Notifications
+
+### 2. Environment Management
+
+- Development
+- Staging
+- Production
+- Feature environments
+- Testing environments
+
+### 3. Release Strategy
+
+- Feature flags
+- Blue-green deployment
+- Canary releases
+- Rolling updates
+- Rollback procedures
+
+### 4. Infrastructure
+
+- Container orchestration
+- Load balancing
+- Auto-scaling
+- High availability
+- Disaster recovery
+
+### 5. Monitoring
+
+- Application metrics
+- Infrastructure metrics
+- Error tracking
+- Performance monitoring
+- User analytics
+
+### 6. Security
+
+- Secrets management
+- Access control
+- Vulnerability scanning
+- Compliance checks
+- Audit logging
+
+## Best Practices
+
+1. **CI/CD**
+
+   - Automated testing
+   - Code quality checks
+   - Security scanning
+   - Performance testing
+   - Documentation
+
+2. **Release Management**
+
+   - Version control
+   - Change management
+   - Release notes
+   - Feature flags
+   - Rollback plan
+
+3. **Infrastructure**
+
+   - Infrastructure as Code
+   - Immutable infrastructure
+   - Auto-scaling
+   - Load balancing
+   - Monitoring
+
+4. **Security**
+   - Secrets management
+   - Access control
+   - Vulnerability scanning
+   - Compliance
+   - Auditing
+
+## Related Patterns
+
+- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline configuration
+- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment setup
+- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
+- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure setup
+- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring

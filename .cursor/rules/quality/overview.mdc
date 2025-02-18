@@ -1,0 +1,115 @@
+---
+description: 'Quality patterns and best practices for maintaining code quality'
+globs: '**/quality/**/*.{ts,tsx}'
+---
+
+# Quality Patterns Overview
+
+## Architecture
+
+Our quality architecture ensures high standards through:
+
+- Code quality
+- Documentation
+- Testing
+- Monitoring
+- Continuous improvement
+
+## Core Technologies
+
+- ESLint for linting
+- Prettier for formatting
+- TypeScript for types
+- Documentation tools
+- Monitoring tools
+
+## Pattern Categories
+
+### 1. Code Quality
+
+- Linting rules
+- Code formatting
+- Type safety
+- Code reviews
+- Best practices
+
+### 2. Documentation
+
+- Code comments
+- API documentation
+- Component docs
+- Architecture docs
+- Usage examples
+
+### 3. Code Reviews
+
+- Review process
+- Review checklist
+- Feedback guidelines
+- Code standards
+- Quality metrics
+
+### 4. Quality Monitoring
+
+- Error tracking
+- Performance monitoring
+- Usage analytics
+- Health checks
+- Quality metrics
+
+### 5. Continuous Improvement
+
+- Technical debt
+- Refactoring
+- Optimization
+- Learning
+- Feedback
+
+### 6. Quality Metrics
+
+- Code coverage
+- Performance metrics
+- Error rates
+- User feedback
+- Team velocity
+
+## Best Practices
+
+1. **Code Standards**
+
+   - Consistent style
+   - Strong typing
+   - Clean code
+   - Documentation
+   - Testing
+
+2. **Review Process**
+
+   - Clear guidelines
+   - Constructive feedback
+   - Knowledge sharing
+   - Quality focus
+   - Team learning
+
+3. **Documentation**
+
+   - Clear structure
+   - Up-to-date
+   - Examples
+   - Best practices
+   - Maintenance
+
+4. **Monitoring**
+   - Error tracking
+   - Performance
+   - User behavior
+   - System health
+   - Quality metrics
+
+## Related Patterns
+
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for style guidelines
+- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for review process
+- [Monitoring](mdc:.cursor/rules/quality/monitoring.mdc) for quality monitoring
+- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for linting rules

@@ -1,0 +1,253 @@
+---
+description: 'ESLint configuration and rules'
+globs: '**/*.{js,ts,tsx}'
+---
+
+# ESLint Configuration
+
+## Overview
+
+Our ESLint configuration ensures consistent code quality and prevents common errors.
+
+## Base Configuration
+
+```javascript
+// eslint.config.js
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'prettier',
+  ],
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-hooks',
+    'jsx-a11y',
+    'import',
+    'prettier',
+  ],
+};
+```
+
+## Rule Categories
+
+### 1. TypeScript Rules
+
+```javascript
+// TypeScript specific rules
+rules: {
+  '@typescript-eslint/no-explicit-any': 'error',
+  '@typescript-eslint/explicit-module-boundary-types': 'error',
+  '@typescript-eslint/no-unused-vars': ['error', {
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+  }],
+  '@typescript-eslint/consistent-type-imports': ['error', {
+    prefer: 'type-imports',
+  }],
+  '@typescript-eslint/no-non-null-assertion': 'error',
+  '@typescript-eslint/naming-convention': [
+    'error',
+    {
+      selector: 'interface',
+      format: ['PascalCase'],
+      prefix: ['I'],
+    },
+    {
+      selector: 'typeAlias',
+      format: ['PascalCase'],
+    },
+  ],
+}
+```
+
+### 2. React Rules
+
+```javascript
+// React specific rules
+rules: {
+  'react/function-component-definition': ['error', {
+    namedComponents: 'function-declaration',
+    unnamedComponents: 'arrow-function',
+  }],
+  'react/jsx-boolean-value': ['error', 'never'],
+  'react/jsx-curly-brace-presence': ['error', {
+    props: 'never',
+    children: 'never',
+  }],
+  'react/jsx-fragments': ['error', 'syntax'],
+  'react/jsx-no-useless-fragment': 'error',
+  'react/jsx-pascal-case': 'error',
+  'react/jsx-sort-props': ['error', {
+    callbacksLast: true,
+    shorthandFirst: true,
+    reservedFirst: true,
+  }],
+  'react-hooks/rules-of-hooks': 'error',
+  'react-hooks/exhaustive-deps': 'warn',
+}
+```
+
+### 3. Import Rules
+
+```javascript
+// Import organization rules
+rules: {
+  'import/order': ['error', {
+    groups: [
+      'builtin',
+      'external',
+      'internal',
+      'parent',
+      'sibling',
+      'index',
+      'object',
+      'type',
+    ],
+    'newlines-between': 'always',
+    alphabetize: {
+      order: 'asc',
+      caseInsensitive: true,
+    },
+  }],
+  'import/no-duplicates': 'error',
+  'import/no-unresolved': 'error',
+  'import/no-cycle': 'error',
+  'import/no-useless-path-segments': 'error',
+  'import/no-self-import': 'error',
+}
+```
+
+### 4. Formatting Rules
+
+```javascript
+// Code formatting rules
+rules: {
+  'prettier/prettier': ['error', {
+    printWidth: 80,
+    tabWidth: 2,
+    useTabs: false,
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'all',
+    bracketSpacing: true,
+    jsxBracketSameLine: false,
+    arrowParens: 'always',
+  }],
+  'no-multiple-empty-lines': ['error', {
+    max: 1,
+    maxEOF: 0,
+  }],
+  'eol-last': ['error', 'always'],
+  'comma-dangle': ['error', 'always-multiline'],
+}
+```
+
+## Configuration Files
+
+### 1. ESLint Config
+
+```javascript
+// .eslintrc.js
+module.exports = {
+  extends: ['./eslint.config.js'],
+  rules: {
+    // Project-specific overrides
+  },
+};
+```
+
+### 2. Prettier Config
+
+```javascript
+// .prettierrc.js
+module.exports = {
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  semi: true,
+  singleQuote: true,
+  trailingComma: 'all',
+  bracketSpacing: true,
+  jsxBracketSameLine: false,
+  arrowParens: 'always',
+};
+```
+
+## Best Practices
+
+### 1. Rule Selection
+
+- Use recommended configs
+- Enable strict rules
+- Customize for project
+- Document overrides
+- Regular updates
+
+### 2. Configuration
+
+- Consistent settings
+- Clear documentation
+- IDE integration
+- Git hooks
+- CI/CD checks
+
+### 3. Maintenance
+
+- Regular updates
+- Rule reviews
+- Team feedback
+- Performance checks
+- Documentation
+
+### 4. Integration
+
+- Editor support
+- Git hooks
+- CI/CD pipeline
+- Team workflow
+- Automated fixes
+
+## Tools
+
+### Development Tools
+
+- VS Code ESLint
+- ESLint CLI
+- Prettier
+- Git hooks
+- IDE extensions
+
+### Automation Tools
+
+- Husky
+- lint-staged
+- GitHub Actions
+- ESLint formatters
+- ESLint plugins
+
+## Related Patterns
+
+- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for style guidelines
+- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for review process
+- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline integration
