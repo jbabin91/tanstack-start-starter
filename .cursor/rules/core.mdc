@@ -1,255 +1,99 @@
 ---
 description: 'Core concepts, project setup, and architectural patterns'
 globs: 'app/**/*.{ts,tsx}'
-version: '1.0.0'
-last_updated: '2024-02-18'
 ---
 
-# Core Patterns & Architecture
+# Core Project Concepts
+
+## Quick Navigation
+
+- @Project Setup - Project initialization and configuration
+- @Architecture - Application architecture and patterns
+- @Development Workflow - Development process
+- @Error Handling - Error handling patterns
+- @Conventions - Coding standards
 
 ## Project Structure
 
-The project follows a feature-based architecture with clear separation of concerns:
-
 ```sh
 app/
-├── api/                # API layer with client config & middleware
-├── components/         # Shared UI components (Shadcn UI)
-├── config/            # Global configuration
-├── constants/         # Global constants
-├── cache/            # Cache management
-├── db/               # Database configuration
-├── docs/             # Documentation
-├── features/         # Feature-based modules
-├── i18n/             # Internationalization
-├── lib/              # Core shared code
-├── monitoring/       # Performance monitoring
-├── providers/        # App providers
-├── routes/           # File-based routing
-├── styles/           # Global styles
-└── testing/          # Test utilities
+├── components/           # Shared UI components
+│   ├── ui/              # Shadcn UI components
+│   └── features/        # Feature-specific components
+├── lib/                 # Core utilities
+│   ├── utils/          # Helper functions
+│   ├── hooks/          # Custom hooks
+│   └── types/          # Shared types
+├── features/           # Feature modules
+│   └── [feature]/
+│       ├── api/        # Server functions & queries
+│       ├── components/ # Feature components
+│       ├── hooks/     # Feature hooks
+│       ├── utils/     # Feature utilities
+│       └── types/     # Feature-specific types
+└── routes/             # Route components
+    └── [feature]/      # Feature routes
 ```
 
-## Feature Organization
+See @Architecture for detailed structure explanation.
 
-Each feature follows this structure for maintainability:
+## Technology Stack
 
-```sh
-features/[feature]/
-├── components/        # UI components
-├── api/              # API code by domain
-├── config/           # Feature config
-├── errors/           # Feature-specific errors
-├── hooks/            # React hooks
-└── types.ts          # Feature types
-```
+### Core Technologies
 
-## Core Technologies
+- React 19 with automatic batching
+- TypeScript with strict mode
+- TanStack Router for type-safe routing
+- TanStack Query for data fetching
+- TanStack Form for form handling
+- TanStack Start for server functions
+- Drizzle ORM for database operations
 
-- **Framework**: React 19 with TypeScript
-- **Routing**: TanStack Router for type-safe routing
-- **Data Management**: TanStack Query for server state
-- **State Management**: Zustand for client state
-- **UI Components**: Shadcn UI + Radix UI Primitives
-- **Styling**: Tailwind CSS
-- **Form Handling**: TanStack Form + Zod validation
-- **API Layer**: Type-safe server functions
-- **Database**: PostgreSQL with type-safe client
-- **Testing**: Vitest + Testing Library
-- **Development**: TypeScript + ESLint + Prettier
+See @Setup for version details.
 
-## Project Setup
+### UI Layer
 
-1. Create new project:
+See @Frontend Documentation for UI patterns and implementation details.
 
-```bash
-pnpm create tanstack-start my-app
-cd my-app
-```
+### Data Layer
 
-2. Install dependencies:
+See @Data Layer Documentation for data patterns and implementation details.
 
-```bash
-pnpm install
-```
+## Pattern Documentation
 
-3. Configure environment:
+Each pattern follows a standardized structure. See @Documentation Standards for the template.
 
-```bash
-cp .env.example .env
-```
+## Decision Trees
 
-4. Setup database:
+Find decision trees for common scenarios in:
 
-```bash
-pnpm db:create
-pnpm db:migrate
-```
+- @Component Selection
+- @State Management
+- @API Design
+- @Testing Strategy
 
-5. Start development:
+## Quick References
 
-```bash
-pnpm dev
-```
+### Implementation Checklists
 
-## Configuration Standards
+- @Component Implementation
+- @API Implementation
+- @Security Implementation
+- @Testing Implementation
 
-### TypeScript Configuration
+### Common Solutions
 
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "~/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-```
+- @Error Handling
+- @Performance Optimization
+- @Security Measures
 
-### ESLint Configuration
+## Related Documentation
 
-The project uses a modern ESLint configuration with flat config format, enforcing:
+See @Main Index for a complete list of all patterns and documentation sections.
 
-- **TypeScript Best Practices**
+## Development Guidelines
 
-  - Strict type checking
-  - Consistent type imports/exports
-  - Type-safe code patterns
-
-- **React Patterns**
-
-  - Hooks rules
-  - JSX accessibility
-  - Prop types validation
-  - Component organization
-
-- **Code Style**
-
-  - Import sorting and organization
-  - Consistent file naming (camelCase, PascalCase, kebab-case)
-  - Proper spacing and formatting
-  - Code quality rules
-
-- **File Organization**
-  - Feature-based structure
-  - Consistent import ordering
-  - Clear module boundaries
-  - Type-safe patterns
-
-The complete ESLint configuration is provided in the project template.
-
-## Coding Standards
-
-### File Organization
-
-- One component per file
-- Co-locate tests with implementation
-- Group related files in feature directories
-- Use index files for public exports
-
-### Naming Conventions
-
-- Components: PascalCase (UserProfile.tsx)
-- Hooks: camelCase with 'use' prefix (useUserProfile.ts)
-- Utilities: camelCase (formatDate.ts)
-- Types/Interfaces: PascalCase (UserProfileProps)
-- Constants: SCREAMING_SNAKE_CASE
-
-### Component Structure
-
-```typescript
-import { type ReactNode } from 'react';
-import { cn } from '~/lib/utils';
-
-interface ButtonProps {
-  children: ReactNode;
-  variant?: 'primary' | 'secondary';
-  className?: string;
-}
-
-export function Button({
-  children,
-  variant = 'primary',
-  className
-}: ButtonProps) {
-  return (
-    <button
-      className={cn(
-        'rounded-md px-4 py-2',
-        variant === 'primary' ? 'bg-blue-500' : 'bg-gray-500',
-        className
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-```
-
-## Development Tools
-
-The project includes pre-configured development tools and editor settings in the `.vscode` directory of the template, providing:
-
-- Optimized VS Code configuration
-- Recommended extensions
-- ESLint and Prettier integration
-- TypeScript and Tailwind CSS support
-
-## Best Practices
-
-### Component Design
-
-- Use functional components
-- Implement proper prop types
-- Keep components focused and small
-- Use composition over inheritance
-- Implement error boundaries
-
-### State Management
-
-- Use TanStack Query for server state
-- Use Zustand for complex client state
-- Keep state close to where it's used
-- Implement proper loading states
-- Handle errors gracefully
-
-### Performance
-
-- Implement proper code splitting
-- Use React.lazy for dynamic imports
-- Optimize images and assets
-- Implement proper caching strategies
-- Monitor and optimize bundle size
-
-### Security
-
-- Validate all inputs
-- Implement proper CSRF protection
-- Use secure headers
-- Sanitize user content
-- Implement proper authentication
-
-## Related Patterns
-
-- [Frontend](./frontend.mdc) for UI implementation
-- [Data](./data.mdc) for data management
-- [API](./api.mdc) for server functions
-- [Security](./security.mdc) for security patterns
-- [Testing](./testing.mdc) for testing strategies
-- [Error Handling](./core/error-handling.mdc) for error patterns and best practices
+- @Conventions - Coding standards and naming conventions
+- @Development Workflow - Development process and guidelines
+- @Error Handling - Error handling patterns and best practices
+- @Quick Start - Getting started with new projects

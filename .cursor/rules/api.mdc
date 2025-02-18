@@ -109,6 +109,6 @@ Our API architecture follows a server function approach with TanStack Start:
 
 ## Related Patterns
 
-- [Data Layer](../data/schema-design.mdc) for database schema
-- [Authentication](../security/authentication-patterns.mdc) for auth implementation
-- [Error Handling](../core/error-handling.mdc) for error patterns
+- [Data Layer](mdc:../data/schema-design.mdc) for database schema
+- [Authentication](mdc:../security/authentication-patterns.mdc) for auth implementation
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns

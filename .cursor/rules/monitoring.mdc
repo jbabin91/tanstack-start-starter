@@ -1,6 +1,6 @@
 ---
-description: 'Deployment monitoring and observability with Coolify'
-globs: '**/deployment/**/*.{ts,tsx}'
+description: 'Application monitoring and quality metrics'
+globs: '**/monitoring/**/*.{ts,tsx}'
 ---
 
 # Deployment Monitoring
@@ -345,25 +345,20 @@ export const logManagement = {
 
 ## Tools Integration
 
-### 1. Monitoring Tools
+## Coolify dashboard
 
-- Coolify dashboard
-- Prometheus metrics
-- Grafana dashboards
+- Prometheus Dashboards
 - Log aggregation
-- APM solutions
+- Alert Tools
 
-### 2. Alert Tools
-
-- Slack integration
-- Email notifications
+- Slack intl notifications
 - PagerDuty
 - Custom webhooks
 - SMS alerts
 
 ## Related Patterns
 
-- [CI/CD](./ci-cd.mdc) for pipeline monitoring
-- [Environments](./environments.mdc) for environment monitoring
-- [Release](./release.mdc) for release monitoring
-- [Infrastructure](./infrastructure.mdc) for infrastructure monitoring
+- @CI/CD for pipeline monitoring
+- @Environments for environment monitoring
+- @Release for release monitoring
+- @Infrastructure for infrastructure monitoring

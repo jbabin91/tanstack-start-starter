@@ -261,7 +261,7 @@ export const featureFlags = {
 
 ## Related Patterns
 
-- [CI/CD](./ci-cd.mdc) for pipeline configuration
-- [Environments](./environments.mdc) for environment setup
-- [Infrastructure](./infrastructure.mdc) for infrastructure setup
-- [Monitoring](./monitoring.mdc) for deployment monitoring
+- [CI/CD](mdc:ci-cd.mdc) for pipeline configuration
+- [Environments](mdc:environments.mdc) for environment setup
+- [Infrastructure](mdc:infrastructure.mdc) for infrastructure setup
+- [Monitoring](mdc:monitoring.mdc) for deployment monitoring

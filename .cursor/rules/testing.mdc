@@ -109,7 +109,7 @@ Our testing architecture follows a comprehensive approach:
 
 ## Related Patterns
 
-- [Unit Testing](./unit-testing.mdc) for unit testing
-- [Integration Testing](./integration-testing.mdc) for integration testing
-- [E2E Testing](./e2e-testing.mdc) for end-to-end testing
-- [Performance Testing](./performance-testing.mdc) for performance testing
+- [Unit Testing](mdc:unit-testing.mdc) for unit testing
+- [Integration Testing](mdc:integration-testing.mdc) for integration testing
+- [E2E Testing](mdc:e2e-testing.mdc) for end-to-end testing
+- [Performance Testing](mdc:performance-testing.mdc) for performance testing
