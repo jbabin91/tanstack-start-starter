@@ -1,7 +1,0 @@
-## Related Patterns
-
-- [Unit Testing](./unit-testing.mdc) for unit tests
-- [Integration Testing](./integration-testing.mdc) for integration tests
-- [Performance Testing](./performance-testing.mdc) for performance tests
-- [Error Handling](../core/error-handling.mdc) for error testing
-- [API Testing](../api/testing-patterns.mdc) for API tests

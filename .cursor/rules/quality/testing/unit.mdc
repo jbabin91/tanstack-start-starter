@@ -1,7 +1,0 @@
-## Related Patterns
-
-- [Integration Testing](./integration-testing.mdc) for integration tests
-- [E2E Testing](./e2e-testing.mdc) for end-to-end tests
-- [Component Patterns](../frontend/component-patterns.mdc) for component testing
-- [Error Handling](../core/error-handling.mdc) for error testing
-- [API Testing](../api/testing-patterns.mdc) for API tests
