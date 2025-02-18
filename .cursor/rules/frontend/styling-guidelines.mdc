@@ -347,7 +347,7 @@ export function ScrollReveal({ children }: { children: React.ReactNode }) {
 
 ## Related Patterns
 
-- [Components](mdc:.cursor/rules/frontend/components.mdc) for component patterns
-- [Forms](mdc:.cursor/rules/frontend/forms.mdc) for form styling
-- [Accessibility](mdc:.cursor/rules/quality/accessibility.mdc) for a11y patterns
-- [Performance](mdc:.cursor/rules/performance/optimization.mdc) for style optimization
+- [Component Patterns](./component-patterns.mdc) for component patterns
+- [Form Handling](./form-handling.mdc) for form styling
+- [Accessibility](./accessibility.mdc) for a11y patterns
+- [Performance](../performance/optimization-patterns.mdc) for style optimization

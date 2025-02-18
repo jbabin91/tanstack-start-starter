@@ -7,9 +7,64 @@ globs: '.github/workflows/*.yml'
 
 ## Overview
 
-Our CI/CD pipeline ensures reliable and consistent deployments through automated processes.
+Our CI/CD pipeline uses Coolify with GitHub App integration for automated deployments.
 
-## Pipeline Stages
+## Deployment Configuration
+
+### 1. Coolify GitHub App Setup
+
+```yaml
+# Coolify Integration Configuration
+coolify:
+  type: 'github-app'
+  integration:
+    name: '@Coolify'
+    scope: 'private'
+    repository_type: 'Private Repository (with GitHub App)'
+    auto_deploy: true
+    features:
+      - Automatic commit deployments
+      - Pull request preview environments
+      - Branch protection rules
+      - Deployment status updates
+      - Automatic cleanup
+      - Real-time monitoring
+
+  # Environment Configuration
+  environments:
+    production:
+      branch: main
+      domain: ${PRODUCTION_DOMAIN}
+      auto_deploy: false
+      requires_approval: true
+      force_https: true
+      health_check: true
+
+    staging:
+      branch: develop
+      domain: ${STAGING_DOMAIN}
+      auto_deploy: true
+      requires_approval: false
+      preview_deployments: true
+      force_https: true
+      health_check: true
+
+  # Preview Deployments
+  preview:
+    enabled: true
+    url_template: '{{pr_id}}.{{domain}}'
+    auto_deploy: true
+    cleanup_on_close: true
+
+  # Build Configuration
+  build:
+    pack: 'nixpacks'
+    command: 'pnpm build'
+    static_site: true
+    cache: true
+```
+
+### 2. Pipeline Stages
 
 ### 1. Build
 
@@ -158,7 +213,42 @@ jobs:
 
 ## Related Patterns
 
-- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment setup
-- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
-- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure setup
-- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
+- [Environments](./environments.mdc) for environment setup
+- [Release](./release.mdc) for release process
+- [Infrastructure](./infrastructure.mdc) for infrastructure setup
+- [Monitoring](./monitoring.mdc) for deployment monitoring
+
+## GitHub App Integration
+
+```yaml
+# Coolify GitHub App Configuration
+coolify:
+  integration:
+    type: 'github-app'
+    name: '@Coolify'
+    scope: 'private'
+    features:
+      - Auto-deployment on push
+      - Branch protection rules
+      - Deployment status updates
+      - PR environment previews
+      - Automatic cleanup
+
+  # Deployment triggers
+  triggers:
+    push:
+      branches: [main, develop]
+    pull_request:
+      types: [opened, synchronize]
+
+  # Environment configuration
+  environments:
+    production:
+      branch: main
+      auto_deploy: false
+      requires_approval: true
+    staging:
+      branch: develop
+      auto_deploy: true
+      requires_approval: false
+```

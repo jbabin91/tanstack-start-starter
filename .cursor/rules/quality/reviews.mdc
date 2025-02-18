@@ -1,15 +1,33 @@
 ---
-description: 'Code review process and best practices'
-globs: '.github/pull_request_template.md'
+description: 'Comprehensive code review process, guidelines, and best practices'
+globs: '{.github/pull_request_template.md,**/*.{ts,tsx,js,jsx}}'
 ---
 
 # Code Review Process
 
 ## Overview
 
-Our code review process ensures code quality, knowledge sharing, and maintainability.
+Our code review process ensures code quality, knowledge sharing, and maintainability through systematic review procedures and clear guidelines.
 
-## Pull Request Template
+## Core Concepts
+
+1. **Review Principles**
+
+   - Quality assurance
+   - Knowledge sharing
+   - Maintainability
+   - Team collaboration
+   - Continuous improvement
+
+2. **Process Structure**
+   - Preparation
+   - Review
+   - Feedback
+   - Resolution
+
+## Implementation
+
+### Pull Request Template
 
 ```markdown
 ## Description
@@ -39,187 +57,46 @@ Our code review process ensures code quality, knowledge sharing, and maintainabi
 - [ ] No unnecessary dependencies added
 ```
 
-## Review Process
-
-### 1. Preparation
-
-#### Author Responsibilities
-
-- Create feature branch
-- Write clear commit messages
-- Follow coding standards
-- Add/update tests
-- Update documentation
-
-#### PR Requirements
-
-- Clear description
-- Linked issues
-- Test coverage
-- Documentation
-- Clean commits
-
-### 2. Review
-
-#### Reviewer Responsibilities
-
-- Code correctness
-- Design quality
-- Test coverage
-- Documentation
-- Performance impact
-
-#### Review Focus Areas
-
-- Business logic
-- Error handling
-- Security concerns
-- Performance
-- Maintainability
-
-### 3. Feedback
-
-#### Providing Feedback
-
-- Be constructive
-- Explain reasoning
-- Suggest solutions
-- Share knowledge
-- Be timely
-
-#### Feedback Categories
-
-- Critical (must fix)
-- Major (should fix)
-- Minor (nice to fix)
-- Nitpick (optional)
-
-### 4. Resolution
-
-#### Addressing Feedback
-
-- Acknowledge feedback
-- Discuss alternatives
-- Make changes
-- Request re-review
-- Update tests
-
-#### Merging Requirements
-
-- All comments resolved
-- CI/CD passing
-- Required approvals
-- Documentation updated
-- Tests passing
+// ... existing process sections ...
 
 ## Best Practices
 
-### For Authors
+### 1. For Authors
 
-#### Code Quality
+- Keep PRs focused and small
+- Provide clear descriptions
+- Self-review before submission
+- Respond promptly to feedback
+- Update tests and documentation
 
-- Follow style guide
-- Write clear code
-- Add proper tests
-- Update documentation
-- Self-review first
+### 2. For Reviewers
 
-#### PR Size
-
-- Keep PRs small
-- Single responsibility
-- Clear scope
-- Logical commits
-- Easy to review
-
-#### Communication
-
-- Clear descriptions
-- Proactive updates
-- Timely responses
-- Ask for clarification
-- Be open to feedback
-
-### For Reviewers
-
-#### Review Approach
-
-- Be thorough
-- Be timely
-- Be constructive
-- Share knowledge
+- Be thorough but timely
+- Provide constructive feedback
 - Focus on important issues
+- Share knowledge
+- Consider edge cases
 
-#### Code Analysis
+### 3. Code Quality Focus
 
-- Logic correctness
-- Error handling
-- Performance
-- Security
-- Maintainability
+- Business logic correctness
+- Error handling completeness
+- Performance implications
+- Security considerations
+- Maintainability aspects
 
-#### Testing Review
+### 4. Process Efficiency
 
-- Test coverage
-- Test quality
-- Edge cases
-- Error scenarios
-- Performance tests
-
-## Review Checklist
-
-### Code Quality
-
-- [ ] Follows style guide
-- [ ] Clear and maintainable
-- [ ] No code smells
-- [ ] Proper error handling
-- [ ] Efficient implementation
-
-### Testing
-
-- [ ] Sufficient coverage
-- [ ] Edge cases covered
-- [ ] Error scenarios tested
-- [ ] Performance tested
-- [ ] Integration tested
-
-### Security
-
-- [ ] Input validation
-- [ ] Authentication/Authorization
-- [ ] Data protection
-- [ ] Error handling
-- [ ] Security headers
-
-### Documentation
-
-- [ ] Code comments
-- [ ] API documentation
-- [ ] README updates
-- [ ] Change log
-- [ ] Migration guide (if needed)
-
-## Tools and Automation
-
-### Code Review Tools
-
-- GitHub pull requests
-- Review comments
-- Status checks
-- Branch protection
-- Automated checks
-
-### Automated Checks
-
-- Linting
-- Type checking
-- Test coverage
-- Bundle size
-- Performance metrics
+- Use automated checks
+- Follow review checklists
+- Maintain clear communication
+- Track review metrics
+- Regular process improvement
 
 ## Related Patterns
 
-- [Code Style](mdc:.cursor/rules/quality/code-style.mdc) for style guidelines
-- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
-- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for code quality checks
+- [Code Style](../quality/code-style.mdc) for style guidelines
+- [Documentation Standards](../quality/documentation-standards.mdc) for documentation requirements
+- [ESLint Rules](../quality/eslint-rules.mdc) for automated checks
+- [Testing Standards](../testing/testing-standards.mdc) for test requirements
+- [CI/CD Pipeline](../deployment/ci-cd-pipeline.mdc) for automation

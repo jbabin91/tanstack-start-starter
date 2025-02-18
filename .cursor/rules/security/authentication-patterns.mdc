@@ -1,0 +1,137 @@
+---
+description: 'Authentication patterns and best practices for secure user authentication'
+globs: '**/auth/**/*.{ts,tsx}'
+---
+
+# Authentication Patterns
+
+## Overview
+
+Our authentication system uses a token-based approach with secure session management:
+
+- JWT for stateless authentication
+- Secure cookie storage
+- CSRF protection
+- Rate limiting
+- Session management
+
+## Core Technologies
+
+- JWT for tokens
+- HTTP-only cookies
+- CSRF tokens
+- Rate limiting
+- Session tracking
+
+## Implementation
+
+### 1. Token Management
+
+```typescript
+// auth/tokens.ts
+export function createAuthTokens(user: User) {
+  const accessToken = jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' },
+  );
+
+  const refreshToken = jwt.sign(
+    { userId: user.id, tokenVersion: user.tokenVersion },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' },
+  );
+
+  return { accessToken, refreshToken };
+}
+```
+
+### 2. Authentication Middleware
+
+```typescript
+// auth/middleware.ts
+export const authMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (!token) {
+      throw new AuthenticationError('No token provided');
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = payload;
+    next();
+  } catch (error) {
+    next(new AuthenticationError('Invalid token'));
+  }
+};
+```
+
+### 3. Session Management
+
+```typescript
+// auth/session.ts
+export function handleSession(req: Request, res: Response) {
+  const { accessToken, refreshToken } = createAuthTokens(req.user);
+
+  // Set HTTP-only cookies
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+}
+```
+
+## Best Practices
+
+### 1. Token Security
+
+- Use short-lived access tokens
+- Implement token refresh flow
+- Store tokens in HTTP-only cookies
+- Implement CSRF protection
+- Use secure token generation
+
+### 2. Session Management
+
+- Implement session timeouts
+- Track active sessions
+- Allow session revocation
+- Handle concurrent sessions
+- Implement remember me
+
+### 3. Error Handling
+
+- Clear error messages
+- Proper logging
+- Rate limiting
+- Account lockout
+- Suspicious activity detection
+
+### 4. Security Headers
+
+- Set secure headers
+- CSRF tokens
+- Content Security Policy
+- XSS protection
+- Frame options
+
+## Related Patterns
+
+- [Authorization](./authorization-patterns.mdc) for access control
+- [Data Protection](./data-protection.mdc) for data security
+- [Security Headers](./security-headers.mdc) for HTTP security
+- [Error Handling](../core/error-handling.mdc) for auth errors
+- [API Security](../api/security-patterns.mdc) for API protection

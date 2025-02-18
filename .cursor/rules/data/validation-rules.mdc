@@ -282,11 +282,11 @@ const userRegistrationSchema = z.object({
 
 ## Related Patterns
 
-- [Schema Design](mdc:schema-design.mdc) for database schema
-- [Query Patterns](mdc:query-patterns.mdc) for data fetching
-- [Mutation Patterns](mdc:mutation-patterns.mdc) for data modifications
-- [Form Handling](mdc:../frontend/form-handling.mdc) for form validation
-- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+- [Schema Design](./schema-design.mdc) for database schema
+- [Query Patterns](./query-patterns.mdc) for data fetching
+- [Mutation Patterns](./mutation-patterns.mdc) for data modifications
+- [Form Handling](../frontend/form-handling.mdc) for form validation
+- [Error Handling](../core/error-handling.mdc) for error patterns
 
 type UserSchema = {
 id: number;

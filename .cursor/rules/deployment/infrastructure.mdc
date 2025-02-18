@@ -307,7 +307,7 @@ export const backupConfig = {
 
 ## Related Patterns
 
-- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline configuration
-- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment setup
-- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
-- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
+- [CI/CD](./ci-cd.mdc) for pipeline configuration
+- [Environments](./environments.mdc) for environment setup
+- [Release](./release.mdc) for release process
+- [Monitoring](./monitoring.mdc) for deployment monitoring

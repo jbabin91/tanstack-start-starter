@@ -1,43 +1,49 @@
 ---
-description: Query patterns and best practices with TanStack Query and Drizzle ORM
+description: Query patterns and server state management with TanStack Query
 globs: '**/queries/**/*.{ts,tsx}'
 ---
 
 # Query Patterns
 
-## Core Principles
+## Core Concepts
 
-1. **Type Safety**
+1. **Server State Management**
 
-   - Use TypeScript for query definitions
-   - Leverage TanStack Query types
-   - Implement proper error types
-   - Maintain type inference
+   - Cache management
+   - Stale-while-revalidate
+   - Background updates
+   - Optimistic updates
+   - Error handling
 
-2. **Performance**
-
-   - Implement proper caching
-   - Use query invalidation
-   - Optimize query keys
-   - Handle pagination efficiently
-
-3. **Error Handling**
-
-   - Implement retry logic
-   - Handle network errors
-   - Provide error boundaries
-   - Support fallback states
-
-4. **Data Freshness**
-
-   - Configure stale times
-   - Implement background updates
-   - Handle cache invalidation
-   - Support real-time updates
+2. **Query Configuration**
+   - Stale time
+   - Cache time
+   - Retry logic
+   - Error handling
+   - Prefetching
 
 ## Implementation
 
-### 1. Basic Queries
+### 1. Query Client Setup
+
+```typescript
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+  },
+});
+```
+
+### 2. Basic Queries
 
 ```typescript
 import { useQuery } from '@tanstack/react-query';
@@ -104,163 +110,23 @@ export function usePosts(userId: number) {
 }
 ```
 
-### 2. Relational Queries
+### 3. Dependent Queries
 
 ```typescript
-// User with posts query
-export function useUserWithPosts(id: number) {
+// User posts query
+export function useUserPosts(userId: string | undefined) {
   return useQuery({
-    queryKey: ['user', id, 'with-posts'],
-    queryFn: async () => {
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.id, id))
-        .leftJoin(posts, eq(posts.authorId, users.id));
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      return user;
-    },
-  });
-}
-
-// Posts with author query
-export function usePostsWithAuthor() {
-  return useQuery({
-    queryKey: ['posts-with-authors'],
-    queryFn: async () => {
-      return db
-        .select({
-          post: posts,
-          author: users,
-        })
-        .from(posts)
-        .leftJoin(users, eq(users.id, posts.authorId));
-    },
-  });
-}
-```
-
-### 3. Pagination
-
-```typescript
-// Paginated query hook
-export function usePaginatedPosts(page: number, limit: number) {
-  return useQuery<PaginatedResponse<Post>>({
-    queryKey: ['posts', 'paginated', { page, limit }],
-    queryFn: async () => {
-      const offset = (page - 1) * limit;
-
-      const [posts, [{ count }]] = await Promise.all([
-        db
-          .select()
-          .from(posts)
-          .limit(limit)
-          .offset(offset)
-          .orderBy(posts.createdAt),
-        db.select({ count: sql`count(*)` }).from(posts),
-      ]);
-
-      return {
-        posts,
-        pagination: {
-          total: Number(count),
-          pages: Math.ceil(Number(count) / limit),
-          current: page,
-        },
-      };
-    },
-    keepPreviousData: true,
-  });
-}
-```
-
-### 4. Infinite Queries
-
-```typescript
-// Infinite query hook
-export function useInfinitePosts(limit: number) {
-  return useInfiniteQuery<InfiniteResponse<Post>>({
-    queryKey: ['posts', 'infinite', { limit }],
-    queryFn: async ({ pageParam = 0 }) => {
-      const posts = await db
-        .select()
-        .from(posts)
-        .limit(limit)
-        .offset(pageParam * limit)
-        .orderBy(posts.createdAt);
-
-      return {
-        posts,
-        nextCursor: posts.length === limit ? pageParam + 1 : undefined,
-      };
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
-}
-```
-
-## Best Practices
-
-### 1. Query Keys
-
-- Use consistent key structure
-- Include relevant parameters
-- Keep keys serializable
-- Document key patterns
-- Consider cache implications
-
-### 2. Error Handling
-
-- Implement retry logic
-- Use error boundaries
-- Provide fallback UI
-- Handle edge cases
-- Log errors appropriately
-
-### 3. Caching Strategy
-
-- Configure stale times
-- Set cache time
-- Handle invalidation
-- Implement prefetching
-- Use optimistic updates
-
-### 4. Performance
-
-- Implement pagination
-- Use infinite queries
-- Configure placeholders
-- Handle suspense
-- Optimize network calls
-
-## Query Composition
-
-### 1. Dependent Queries
-
-```typescript
-// Dependent query hook
-type UserPostsResult = {
-  user: User | undefined;
-  posts: Post[] | undefined;
-  isLoading: boolean;
-  error: Error | null;
-};
-
-export function useUserPosts(userId: number | undefined): UserPostsResult {
-  const userQuery = useUser(userId);
-
-  const postsQuery = useQuery({
     queryKey: ['posts', userId],
-    queryFn: async () => {
-      if (!userId) throw new Error('User ID required');
-      return db.select().from(posts).where(eq(posts.authorId, userId));
-    },
-    enabled: !!userId && !userQuery.error,
+    queryFn: () => getPosts(userId!),
+    enabled: !!userId,
+    select: (posts) => posts.sort((a, b) => b.date - a.date),
   });
+}
+
+// User with posts
+export function useUserWithPosts(userId: string) {
+  const userQuery = useUser(userId);
+  const postsQuery = useUserPosts(userId);
 
   return {
     user: userQuery.data,
@@ -271,56 +137,116 @@ export function useUserPosts(userId: number | undefined): UserPostsResult {
 }
 ```
 
-### 2. Parallel Queries
+### 4. Infinite Queries
 
 ```typescript
-// Parallel queries hook
-type DashboardData = {
-  user: User | undefined;
-  posts: Post[] | undefined;
-  notifications: Notification[] | undefined;
-};
-
-type DashboardResult = {
-  data: DashboardData;
-  isLoading: boolean;
-  error: Error | undefined;
-};
-
-export function useDashboardData(userId: number): DashboardResult {
-  const queries = useQueries({
-    queries: [
-      {
-        queryKey: ['user', userId],
-        queryFn: () => getUser(userId),
-      },
-      {
-        queryKey: ['posts', userId],
-        queryFn: () => getUserPosts(userId),
-      },
-      {
-        queryKey: ['notifications', userId],
-        queryFn: () => getUserNotifications(userId),
-      },
-    ],
+// Infinite posts query
+export function useInfinitePosts() {
+  return useInfiniteQuery({
+    queryKey: ['posts', 'infinite'],
+    queryFn: ({ pageParam = 1 }) => getPosts({ page: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    select: (data) => ({
+      posts: data.pages.flatMap((page) => page.items),
+      hasMore: data.pages[data.pages.length - 1].hasMore,
+    }),
   });
+}
+```
 
-  return {
-    data: {
-      user: queries[0].data,
-      posts: queries[1].data,
-      notifications: queries[2].data,
-    },
-    isLoading: queries.some((q) => q.isLoading),
-    error: queries.find((q) => q.error)?.error,
+### 5. Prefetching
+
+```typescript
+// Prefetch configuration
+export async function prefetchInitialData() {
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ['user'],
+      queryFn: getCurrentUser,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['settings'],
+      queryFn: getSettings,
+    }),
+  ]);
+}
+
+// Prefetch on hover
+export function usePrefetchUser() {
+  const queryClient = useQueryClient();
+
+  return (userId: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['user', userId],
+      queryFn: () => getUser(userId),
+    });
   };
 }
 ```
 
+### 6. Suspense Mode
+
+```typescript
+// Suspense-enabled query
+export function UserProfile({ userId }: { userId: string }) {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <UserData userId={userId} />
+    </Suspense>
+  );
+}
+
+function UserData({ userId }: { userId: string }) {
+  const { data: user } = useUser(userId);
+  const { data: posts } = useUserPosts(userId);
+
+  return (
+    <div>
+      <UserInfo user={user} />
+      <UserPosts posts={posts} />
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+### 1. Query Keys
+
+- Use array keys for better organization
+- Include all dependencies
+- Keep keys consistent
+- Document key structure
+- Handle dynamic keys
+
+### 2. Cache Management
+
+- Set appropriate stale time
+- Configure cache time
+- Handle cache invalidation
+- Implement prefetching
+- Manage cache updates
+
+### 3. Error Handling
+
+- Implement retry logic
+- Handle network errors
+- Show error states
+- Provide fallbacks
+- Log errors properly
+
+### 4. Performance
+
+- Use suspense mode
+- Implement prefetching
+- Configure polling
+- Handle background updates
+- Monitor query performance
+
 ## Related Patterns
 
-- [Schema Design](mdc:schema-design.mdc) for database schema
-- [Mutation Patterns](mdc:mutation-patterns.mdc) for data modifications
-- [State Patterns](mdc:state-patterns.mdc) for state management
-- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
-- [Form Handling](mdc:../frontend/form-handling.mdc) for form integration
+- [Schema Design](./schema-design.mdc) for database schema
+- [Mutation Patterns](./mutation-patterns.mdc) for data modifications
+- [State Patterns](./state-patterns.mdc) for state management
+- [Error Handling](../core/error-handling.mdc) for error patterns
+- [Form Handling](../frontend/form-handling.mdc) for form integration

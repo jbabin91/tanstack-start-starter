@@ -312,8 +312,8 @@ export function DynamicForm() {
 
 ## Related Patterns
 
-- [Component Patterns](mdc:component-patterns.mdc) for form components
-- [Validation Rules](mdc:../data/validation-rules.mdc) for input validation
-- [State Patterns](mdc:../data/state-patterns.mdc) for form state
-- [Mutation Patterns](mdc:../data/mutation-patterns.mdc) for form submission
-- [Accessibility](mdc:accessibility.mdc) for form accessibility
+- [Component Patterns](./component-patterns.mdc) for form components
+- [Validation Rules](../data/validation-rules.mdc) for input validation
+- [State Patterns](../data/state-patterns.mdc) for form state
+- [Mutation Patterns](../data/mutation-patterns.mdc) for form submission
+- [Accessibility](./accessibility.mdc) for form accessibility

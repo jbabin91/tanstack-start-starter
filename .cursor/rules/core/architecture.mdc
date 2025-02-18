@@ -430,8 +430,8 @@ Each feature contains its own isolated logic:
 
 ## Related Patterns
 
-- [Setup](mdc:setup.mdc) for project setup
-- [Development](mdc:development-workflow.mdc) for workflow
+- [Setup](./setup.mdc) for project setup
+- [Development](./development-workflow.mdc) for workflow
 
 ### Constants Organization Example
 
@@ -1062,8 +1062,8 @@ Each feature contains its own isolated logic:
 
 ## Related Patterns
 
-- [Setup](mdc:setup.mdc) for project setup
-- [Development](mdc:development-workflow.mdc) for workflow
+- [Setup](./setup.mdc) for project setup
+- [Development](./development-workflow.mdc) for workflow
 
 ### Constants Organization Example
 
@@ -1403,7 +1403,3 @@ Benefits of this enhanced structure:
    - Component documentation
    - Pattern documentation
    - Setup guides
-
-```
-
-```

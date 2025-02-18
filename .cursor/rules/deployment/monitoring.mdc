@@ -363,7 +363,7 @@ export const logManagement = {
 
 ## Related Patterns
 
-- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline monitoring
-- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment monitoring
-- [Release](mdc:.cursor/rules/deployment/release.mdc) for release monitoring
-- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure monitoring
+- [CI/CD](./ci-cd.mdc) for pipeline monitoring
+- [Environments](./environments.mdc) for environment monitoring
+- [Release](./release.mdc) for release monitoring
+- [Infrastructure](./infrastructure.mdc) for infrastructure monitoring

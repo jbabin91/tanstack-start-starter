@@ -186,8 +186,8 @@ export const useSettingsStore = create<SettingsState>()(
 
 ## Related Patterns
 
-- [Component Patterns](mdc:component-patterns.mdc) for component state
-- [Form Handling](mdc:form-handling.mdc) for form state
-- [Query Patterns](mdc:../data/query-patterns.mdc) for data fetching
-- [Mutation Patterns](mdc:../data/mutation-patterns.mdc) for data updates
-- [Error Handling](mdc:../core/error-handling.mdc) for error states
+- [Component Patterns](./component-patterns.mdc) for component state
+- [Form Handling](./form-handling.mdc) for form state
+- [Query Patterns](../data/query-patterns.mdc) for data fetching
+- [Mutation Patterns](../data/mutation-patterns.mdc) for data updates
+- [Error Handling](../core/error-handling.mdc) for error states

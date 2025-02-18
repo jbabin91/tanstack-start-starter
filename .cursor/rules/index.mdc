@@ -1,128 +1,195 @@
 ---
-description: 'Main index of all patterns and best practices'
+description: 'Comprehensive patterns and best practices for TanStack Start projects'
 globs: '*'
 ---
 
-# TanStack Start Project Patterns
+# TanStack Start Patterns
 
-This documentation provides comprehensive patterns and best practices for building applications with TanStack Start. The patterns are organized into logical sections for easy navigation and understanding.
+A comprehensive guide to building scalable applications with TanStack Start.
 
-## Core Patterns
+## 🚀 Quick Navigation
 
-Core patterns form the foundation of the project:
+### Core Patterns
 
-- [Core Overview](mdc:core/overview.mdc) - Core concepts and patterns
-- [Setup](mdc:core/setup.mdc) - Project initialization and structure
-- [Architecture](mdc:core/architecture.mdc) - Application architecture
-- [Conventions](mdc:core/conventions.mdc) - Coding standards
-- [Development](mdc:core/development-workflow.mdc) - Development workflow
-- [Error Handling](mdc:core/error-handling.mdc) - Error patterns
+- 🏗️ [Core](mdc:core.mdc) - Project setup, architecture, and conventions
+- 🔄 [Workflow](mdc:workflow.mdc) - Development process and guidelines
 
-## Frontend Patterns
+### Application Layers
 
-Frontend patterns for building the user interface:
+- 🎨 [Frontend](mdc:frontend.mdc) - UI components, state management, and routing
+- 💾 [Data](mdc:data.mdc) - Data modeling, queries, and mutations
+- 🔌 [API](mdc:api.mdc) - Server functions and API patterns
 
-- [Frontend Overview](mdc:frontend/overview.mdc) - Frontend patterns overview
-- [Component Patterns](mdc:frontend/component-patterns.mdc) - Component patterns
-- [Routing Patterns](mdc:frontend/routing-patterns.mdc) - Routing with TanStack Router
-- [State Management](mdc:frontend/state-management.mdc) - State management
-- [Form Handling](mdc:frontend/form-handling.mdc) - Form handling
-- [Styling Guidelines](mdc:frontend/styling-guidelines.mdc) - UI/UX patterns
-- [i18n Patterns](mdc:frontend/i18n.mdc) - Internationalization patterns
-- [Accessibility](mdc:frontend/accessibility.mdc) - Accessibility patterns
+### Quality & Security
 
-## Data Patterns
+- 🔒 [Security](mdc:security.mdc) - Authentication, authorization, and protection
+- ✅ [Testing](mdc:testing.mdc) - Testing strategies and patterns
+- 📊 [Quality](mdc:quality.mdc) - Code quality and standards
+- 🚀 [Deployment](mdc:deployment.mdc) - Deployment and release process
 
-Patterns for managing data and state:
+## 🔍 Pattern Relationships
 
-- [Data Overview](mdc:data/overview.mdc) - Data patterns overview
-- [Schema Design](mdc:data/schema-design.mdc) - Database schema
-- [Query Patterns](mdc:data/query-patterns.mdc) - Query patterns
-- [Mutation Patterns](mdc:data/mutation-patterns.mdc) - Mutation patterns
-- [Validation Rules](mdc:data/validation-rules.mdc) - Data validation
-- [State Patterns](mdc:data/state-patterns.mdc) - State management
+```mermaid
+graph TD
+    A[Frontend] --> B[Data]
+    A --> C[API]
+    B --> C
+    D[Security] --> A
+    D --> B
+    D --> C
+    E[Testing] --> A
+    E --> B
+    E --> C
+    F[Quality] --> A
+    F --> B
+    F --> C
+    G[Deployment] --> A
+    G[Deployment] --> B
+    G[Deployment] --> C
+```
 
-## API Patterns
+## 🌳 Decision Trees
 
-Patterns for building and consuming APIs:
+### Technology Selection
 
-- [API Overview](mdc:api/overview.mdc) - API patterns index
-- [Server Functions](mdc:api/server-functions.mdc) - Server function patterns
-- [Error Handling](mdc:api/error-handling.mdc) - API error patterns
-- [Validation](mdc:api/validation-patterns.mdc) - API validation
-- [Security](mdc:api/security-patterns.mdc) - API security
+```mermaid
+graph TD
+    A[New Feature] --> B{UI Component?}
+    B -->|Yes| C{Complex State?}
+    B -->|No| D{Data Operation?}
+    C -->|Yes| E[Zustand]
+    C -->|No| F[Local State]
+    D -->|Yes| G{Write Operation?}
+    D -->|No| H[TanStack Query]
+    G -->|Yes| I[TanStack Mutation]
+    G -->|No| J[TanStack Query]
+```
 
-## Security Patterns
+### Implementation Strategy
 
-Security best practices and patterns:
+```mermaid
+graph TD
+    A[Implementation] --> B{Performance Critical?}
+    B -->|Yes| C[Optimize First]
+    B -->|No| D[Implement First]
+    C --> E{Memory or Speed?}
+    D --> F[Add Tests]
+    E -->|Memory| G[Reduce Bundle]
+    E -->|Speed| H[Add Caching]
+```
 
-- [Security Overview](mdc:security/overview.mdc) - Security patterns index
-- [Authentication](mdc:security/authentication-patterns.mdc) - Auth patterns
-- [Authorization](mdc:security/authorization-patterns.mdc) - Access control
-- [Data Protection](mdc:security/data-protection.mdc) - Data security
-- [Headers](mdc:security/security-headers.mdc) - Security headers
+## 📚 Quick Reference
 
-## Testing Patterns
+### Common Solutions
 
-Patterns for testing and quality assurance:
+#### State Management
 
-- [Testing Overview](mdc:testing/overview.mdc) - Testing patterns index
-- [Unit Testing](mdc:testing/unit-testing.mdc) - Unit testing
-- [Integration Testing](mdc:testing/integration-testing.mdc) - Integration testing
-- [E2E Testing](mdc:testing/e2e-testing.mdc) - End-to-end testing
-- [Performance Testing](mdc:testing/performance-testing.mdc) - Performance testing
+```typescript
+// Global state with Zustand
+const useStore = create<AppState>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+}));
 
-## Performance Patterns
+// Server state with TanStack Query
+const query = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+});
+```
 
-Patterns for optimizing application performance:
+#### Data Fetching
 
-- [Performance Overview](mdc:performance/overview.mdc) - Performance patterns index
-- [Optimization Patterns](mdc:performance/optimization-patterns.mdc) - Performance optimization
-- [Monitoring Patterns](mdc:performance/monitoring-patterns.mdc) - Performance monitoring
-- [Caching Strategies](mdc:performance/caching-strategies.mdc) - Caching strategies
-- [Load Testing](mdc:performance/load-testing.mdc) - Load testing
+```typescript
+// Basic query
+const users = useQuery({
+  queryKey: ['users'],
+  queryFn: fetchUsers,
+});
 
-## Quality Patterns
+// Mutation with optimistic update
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onMutate: async (newUser) => {
+    await queryClient.cancelQueries({ queryKey: ['users'] });
+    const previousUsers = queryClient.getQueryData(['users']);
+    queryClient.setQueryData(['users'], (old) => [...old, newUser]);
+    return { previousUsers };
+  },
+});
+```
 
-Patterns for maintaining code quality:
+#### Routing
 
-- [Quality Overview](mdc:quality/overview.mdc) - Quality patterns overview
-- [Code Style](mdc:quality/code-style.mdc) - Style guidelines
-- [Documentation Standards](mdc:quality/documentation-standards.mdc) - Documentation standards
-- [Review Process](mdc:quality/review-process.mdc) - Code review process
-- [Monitoring Setup](mdc:quality/monitoring-setup.mdc) - Application monitoring
-- [ESLint Rules](mdc:quality/eslint-rules.mdc) - Linting rules
+```typescript
+// Type-safe routing
+const Route = createFileRoute('/users/$userId')({
+  loader: ({ params }) => fetchUser(params.userId),
+  component: UserProfile,
+});
+```
 
-## Deployment Patterns
+## 🎯 Best Practices
 
-Patterns for deployment and operations:
+1. **Type Safety**
 
-- [Deployment Overview](mdc:deployment/overview.mdc) - Deployment patterns overview
-- [CI/CD Pipeline](mdc:deployment/ci-cd-pipeline.mdc) - Pipeline patterns
-- [Environment Setup](mdc:deployment/environment-setup.mdc) - Environment setup
-- [Release Process](mdc:deployment/release-process.mdc) - Release process
-- [Infrastructure Setup](mdc:deployment/infrastructure-setup.mdc) - Infrastructure setup
-- [Monitoring Setup](mdc:deployment/monitoring-setup.mdc) - Deployment monitoring
+   - Use TypeScript strict mode
+   - Leverage type inference
+   - Define explicit types for APIs
 
-## Quick Start
+2. **Performance**
 
-For new projects, start with:
+   - Implement proper caching
+   - Use code splitting
+   - Optimize bundle size
 
-1. [Core Overview](mdc:core/overview.mdc) - Understand core concepts
-2. [Setup](mdc:core/setup.mdc) - Initialize your project
-3. [Architecture](mdc:core/architecture.mdc) - Learn the architecture
-4. [Development Workflow](mdc:core/development-workflow.mdc) - Start development
+3. **Security**
 
-## Contributing
+   - Validate all inputs
+   - Implement proper auth
+   - Follow security headers
 
-When adding new patterns:
+4. **Testing**
+   - Write unit tests
+   - Add integration tests
+   - Include E2E tests
 
-1. Follow the established directory structure
-2. Use the MDC format for documentation
-3. Include practical examples
-4. Link to related patterns
-5. Update relevant index files
+## ⚠️ Anti-Patterns
 
-## Version Control
+1. **State Management**
 
-These patterns are versioned with the project. See [Commit Conventions](mdc:deployment/commit-conventions.mdc) for contribution guidelines.
+   - Avoid prop drilling
+   - Don't mix global and server state
+   - Don't duplicate state
+
+2. **Data Fetching**
+
+   - Avoid nested queries
+   - Don't fetch in loops
+   - Don't ignore errors
+
+3. **Performance**
+   - Don't skip memoization
+   - Avoid unnecessary re-renders
+   - Don't ignore bundle size
+
+## 🔍 Search Patterns
+
+- [By Use Case](mdc:index.mdc#use-cases)
+- [By Technology](mdc:index.mdc#technologies)
+- [By Problem Domain](mdc:index.mdc#domains)
+
+## 📈 Version History
+
+- v1.0.0 - Initial release
+- v1.1.0 - Added decision trees
+- v1.2.0 - Enhanced pattern relationships
+
+## 🔄 Updates
+
+Last updated: 2024-02-18
+Next review: 2024-03-18
+
+## 📖 Contributing
+
+See [Workflow](mdc:workflow.mdc) for contribution guidelines and process.

@@ -1,13 +1,13 @@
 ---
-description: 'Code style guidelines and standards'
-globs: '**/*.{ts,tsx}'
+description: 'Comprehensive code style, formatting, and documentation standards'
+globs: '**/*.{ts,tsx,md,mdc}'
 ---
 
-# Code Style Guidelines
+# Code Style and Formatting Standards
 
 ## Overview
 
-Our code style guidelines ensure consistency and maintainability across the codebase.
+These guidelines ensure consistency across our codebase, covering TypeScript/JavaScript, Markdown, and general formatting standards.
 
 ## TypeScript/JavaScript Standards
 
@@ -32,14 +32,6 @@ Our code style guidelines ensure consistency and maintainability across the code
 - UPPER_CASE for constants
 - Descriptive and meaningful names
 - Prefix boolean variables with is/has/should
-
-### Formatting
-
-- 2 space indentation
-- Single quotes for strings
-- Semicolons required
-- No trailing commas
-- Maximum line length of 80 characters
 
 ### Component Structure
 
@@ -72,6 +64,95 @@ export const MyComponent: FC<Props> = ({ id, name }) => {
   );
 };
 ```
+
+## Prettier Configuration
+
+### Base Configuration
+
+```javascript
+// .prettierrc.js
+module.exports = {
+  semi: true,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  bracketSpacing: true,
+  jsxBracketSameLine: false,
+  arrowParens: 'always',
+  endOfLine: 'lf',
+};
+```
+
+### File-Specific Overrides
+
+```javascript
+// .prettierrc.js overrides
+module.exports = {
+  overrides: [
+    {
+      files: '*.{md,mdc}',
+      options: {
+        parser: 'markdown',
+        proseWrap: 'always',
+        printWidth: 80,
+        tabWidth: 2,
+        endOfLine: 'lf',
+      },
+    },
+    {
+      files: '*.{ts,tsx}',
+      options: {
+        parser: 'typescript',
+        semi: true,
+        trailingComma: 'all',
+        endOfLine: 'lf',
+      },
+    },
+  ],
+};
+```
+
+## Markdown Standards
+
+### File Structure
+
+```markdown
+---
+description: 'Clear description of the file contents'
+globs: 'pattern'
+---
+
+# Title (H1)
+
+## Section (H2)
+
+### Subsection (H3)
+
+Content with proper spacing.
+```
+
+### Markdown Rules
+
+- Use ATX-style headers (`#` for h1, `##` for h2)
+- Maximum line length of 80 characters (except code blocks)
+- Use dashes (`-`) for unordered lists
+- Use backticks for inline code
+- Use fenced code blocks with language specification
+- One blank line before and after headings
+- No multiple consecutive blank lines
+- Use reference-style links for better readability
+- Include alt text for images
+- End files with a single newline
+
+### Documentation Best Practices
+
+- Clear and concise descriptions
+- Proper section hierarchy
+- Consistent formatting
+- Meaningful examples
+- Proper cross-referencing
 
 ## Best Practices
 
@@ -111,11 +192,7 @@ export const MyComponent: FC<Props> = ({ id, name }) => {
 
 ### ESLint
 
-- Strict mode enabled
-- React plugin rules
-- TypeScript rules
-- Import sorting
-- Error prevention
+See [ESLint Rules](./eslint.mdc) for detailed configuration.
 
 ### Prettier
 
@@ -127,6 +204,6 @@ export const MyComponent: FC<Props> = ({ id, name }) => {
 
 ## Related Patterns
 
-- [ESLint](mdc:.cursor/rules/quality/eslint.mdc) for linting configuration
-- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
-- [Reviews](mdc:.cursor/rules/quality/reviews.mdc) for code review process
+- [ESLint Rules](./eslint-rules.mdc) for linting configuration
+- [Documentation Standards](./documentation-standards.mdc) for documentation standards
+- [Review Process](./review-process.mdc) for code review process

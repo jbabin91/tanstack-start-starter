@@ -1,0 +1,7 @@
+## Related Patterns
+
+- [Unit Testing](./unit-testing.mdc) for unit tests
+- [E2E Testing](./e2e-testing.mdc) for end-to-end tests
+- [API Testing](../api/testing-patterns.mdc) for API tests
+- [Error Handling](../core/error-handling.mdc) for error testing
+- [Performance Testing](./performance-testing.mdc) for performance tests

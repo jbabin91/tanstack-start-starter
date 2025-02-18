@@ -1,5 +1,5 @@
 ---
-description: 'Security patterns and best practices for application protection'
+description: 'Overview of security patterns and best practices'
 globs: '**/security/**/*.{ts,tsx}'
 ---
 
@@ -7,110 +7,167 @@ globs: '**/security/**/*.{ts,tsx}'
 
 ## Architecture
 
-Our security architecture follows a defense-in-depth approach:
+Our security architecture implements a comprehensive defense-in-depth strategy:
 
 - Authentication and authorization
-- Data protection
-- Input validation
-- Security headers
-- Rate limiting
+- Data protection and encryption
+- HTTP security headers
+- Input validation and sanitization
+- Security monitoring and auditing
 
 ## Core Technologies
 
 - JWT for authentication
 - RBAC for authorization
-- Zod for validation
-- HTTP security headers
-- Rate limiting middleware
+- AES for encryption
+- Helmet.js for headers
+- Monitoring tools
 
 ## Pattern Categories
 
 ### 1. Authentication
 
-- JWT handling
+See [Authentication Patterns](./authentication-patterns.mdc) for:
+
+- Token-based authentication
 - Session management
 - Password security
-- Multi-factor auth
-- OAuth/OIDC integration
+- Multi-factor authentication
+- Social authentication
 
 ### 2. Authorization
+
+See [Authorization Patterns](./authorization-patterns.mdc) for:
 
 - Role-based access control
 - Permission management
+- Resource-level access
 - Policy enforcement
-- Resource protection
-- Access auditing
+- Audit logging
 
 ### 3. Data Protection
 
-- Input sanitization
-- Output encoding
+See [Data Protection Patterns](./data-protection.mdc) for:
+
 - Data encryption
-- PII handling
 - Secure storage
-
-### 4. Infrastructure Security
-
-- Security headers
-- CORS policies
-- Rate limiting
-- DDoS protection
-- SSL/TLS configuration
-
-### 5. Security Monitoring
-
+- Access control
+- Data sanitization
 - Audit logging
-- Security alerts
-- Intrusion detection
-- Vulnerability scanning
-- Incident response
 
-### 6. Compliance
+### 4. Security Headers
 
-- Data privacy
-- GDPR compliance
-- Cookie policies
-- Terms of service
-- Privacy policies
+See [Security Headers Patterns](./security-headers.mdc) for:
+
+- Content Security Policy
+- XSS Protection
+- CSRF Protection
+- Frame Options
+- Referrer Policy
 
 ## Best Practices
 
-### 1. Authentication
+### 1. Security Design
 
-- Secure password handling
-- Token management
-- Session security
-- MFA implementation
-- OAuth best practices
+- Defense in depth
+- Least privilege
+- Secure defaults
+- Fail securely
+- Complete mediation
 
-### 2. Authorization
-
-- Principle of least privilege
-- Role-based access
-- Resource isolation
-- Policy enforcement
-- Access auditing
-
-### 3. Data Security
+### 2. Implementation
 
 - Input validation
 - Output encoding
-- Encryption at rest
-- Encryption in transit
-- Secure key management
-
-### 4. Infrastructure
-
-- Security headers
-- Rate limiting
-- CORS policies
 - Error handling
-- Secure logging
+- Logging and monitoring
+- Regular updates
+
+### 3. Operations
+
+- Security monitoring
+- Incident response
+- Regular audits
+- Penetration testing
+- Security training
+
+### 4. Compliance
+
+- Data protection
+- Privacy regulations
+- Security standards
+- Regular assessments
+- Documentation
+
+## Decision Trees
+
+### 1. Authentication Method
+
+```mermaid
+graph TD
+    A[Start] --> B{Public Access?}
+    B -->|Yes| C[No Auth Required]
+    B -->|No| D{User Account?}
+    D -->|Yes| E{Security Level?}
+    D -->|No| F[Social Auth]
+    E -->|High| G[MFA Required]
+    E -->|Medium| H[Password + Token]
+    E -->|Low| I[Token Only]
+```
+
+### 2. Authorization Level
+
+```mermaid
+graph TD
+    A[Start] --> B{Resource Type?}
+    B -->|Public| C[Allow All]
+    B -->|Private| D{User Role?}
+    B -->|Protected| E{Owner?}
+    D -->|Admin| F[Full Access]
+    D -->|User| G[Limited Access]
+    D -->|Guest| H[Read Only]
+    E -->|Yes| I[Owner Access]
+    E -->|No| J[Deny Access]
+```
+
+## Implementation Checklist
+
+### 1. Authentication
+
+- [ ] Implement secure password hashing
+- [ ] Set up JWT token management
+- [ ] Configure session handling
+- [ ] Add MFA support
+- [ ] Implement social auth
+
+### 2. Authorization
+
+- [ ] Set up RBAC system
+- [ ] Define permission schema
+- [ ] Implement access control
+- [ ] Add audit logging
+- [ ] Configure policies
+
+### 3. Data Protection
+
+- [ ] Set up encryption
+- [ ] Configure secure storage
+- [ ] Implement sanitization
+- [ ] Add access logging
+- [ ] Set up monitoring
+
+### 4. Security Headers
+
+- [ ] Configure CSP
+- [ ] Set up CORS
+- [ ] Add CSRF protection
+- [ ] Configure headers
+- [ ] Enable monitoring
 
 ## Related Patterns
 
-- [Authentication](authentication-patterns.mdc) for auth patterns
-- [Authorization](authorization-patterns.mdc) for access control
-- [Data Protection](data-protection.mdc) for data security
-- [Security Headers](security-headers.mdc) for security headers
+- [API Security](../api/security-patterns.mdc) for API protection
 - [Error Handling](../core/error-handling.mdc) for security errors
+- [Monitoring](../quality/monitoring.mdc) for security monitoring
+- [Testing](../testing/security-testing.mdc) for security testing
+- [Deployment](../deployment/security-deployment.mdc) for secure deployment

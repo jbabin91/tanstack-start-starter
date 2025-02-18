@@ -7,26 +7,55 @@ globs: '**/deployment/**/*.{ts,tsx}'
 
 ## Architecture
 
-Our deployment architecture ensures reliable and consistent releases through:
+Our deployment architecture uses Coolify as the primary deployment platform:
 
-- CI/CD pipelines
-- Environment management
-- Release strategies
-- Monitoring
-- Rollback procedures
+- GitHub App integration for automated deployments
+- Nixpacks for build optimization
+- Preview environments for pull requests
+- Zero-downtime deployments
+- Automatic SSL/TLS certificates
+- Real-time monitoring and logging
 
 ## Core Technologies
 
-- GitHub Actions for CI/CD
+- Coolify for deployment automation
+- GitHub App (@Coolify) for repository integration
+- Nixpacks for build optimization
 - Docker for containerization
-- Kubernetes for orchestration
-- Monitoring tools
-- Infrastructure as Code
+- Built-in monitoring and logging
+
+## Deployment Types
+
+### 1. Production Deployments
+
+- Manual approval required
+- Zero-downtime updates
+- Health checks enabled
+- Force HTTPS
+- Automatic SSL certificates
+- Production domain routing
+
+### 2. Staging Deployments
+
+- Automatic deployments from develop
+- Preview environments
+- Health monitoring
+- Staging domain routing
+- Automated testing
+
+### 3. Preview Deployments
+
+- Automatic PR deployments
+- Unique preview URLs
+- Automatic cleanup
+- Isolated environments
+- Quick feedback loop
 
 ## Pattern Categories
 
 ### 1. CI/CD Pipeline
 
+- GitHub App integration
 - Build process
 - Testing stages
 - Deployment stages
@@ -75,6 +104,38 @@ Our deployment architecture ensures reliable and consistent releases through:
 
 ## Best Practices
 
+### 1. Repository Setup
+
+- Use GitHub App integration
+- Enable branch protection
+- Configure auto-deployments
+- Set up preview deployments
+- Define deployment rules
+
+### 2. Build Configuration
+
+- Use Nixpacks build pack
+- Enable build caching
+- Configure static site serving
+- Set resource limits
+- Define health checks
+
+### 3. Environment Management
+
+- Separate production/staging
+- Use environment variables
+- Enable preview deployments
+- Configure domains
+- Set up SSL certificates
+
+### 4. Security
+
+- Force HTTPS in production
+- Implement health checks
+- Configure authentication
+- Set up monitoring
+- Enable automatic updates
+
 1. **CI/CD**
 
    - Automated testing
@@ -108,8 +169,8 @@ Our deployment architecture ensures reliable and consistent releases through:
 
 ## Related Patterns
 
-- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline configuration
-- [Environments](mdc:.cursor/rules/deployment/environments.mdc) for environment setup
-- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
-- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure setup
-- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
+- [CI/CD](./ci-cd.mdc) for pipeline configuration
+- [Environments](./environments.mdc) for environment setup
+- [Release](./release.mdc) for release process
+- [Infrastructure](./infrastructure.mdc) for infrastructure setup
+- [Monitoring](./monitoring.mdc) for deployment monitoring

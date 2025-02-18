@@ -363,9 +363,9 @@ export function useUpdatePostWithTags() {
 
 ## Related Patterns
 
-- [Query Patterns](mdc:query-patterns.mdc) for data fetching
-- [Schema Design](mdc:schema-design.mdc) for database schema
-- [Validation Rules](mdc:validation-rules.mdc) for data validation
-- [State Patterns](mdc:state-patterns.mdc) for state management
-- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
-- [Form Handling](mdc:../frontend/form-handling.mdc) for form submission
+- [Query Patterns](./query-patterns.mdc) for data fetching
+- [Schema Design](./schema-design.mdc) for database schema
+- [Validation Rules](./validation-rules.mdc) for data validation
+- [State Patterns](./state-patterns.mdc) for state management
+- [Error Handling](../core/error-handling.mdc) for error patterns
+- [Form Handling](../frontend/form-handling.mdc) for form submission

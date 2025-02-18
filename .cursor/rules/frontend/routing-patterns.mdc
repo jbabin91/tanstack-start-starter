@@ -140,11 +140,11 @@ export const Route = createFileRoute('/dashboard/')({
 
 ## Related Patterns
 
-- [Component Patterns](mdc:component-patterns.mdc) for page components
-- [State Management](mdc:state-management.mdc) for state management
-- [Authentication Patterns](mdc:../security/authentication-patterns.mdc) for auth patterns
-- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
-- [Query Patterns](mdc:../data/query-patterns.mdc) for data loading
+- [Component Patterns](./component-patterns.mdc) for page components
+- [State Management](./state-management.mdc) for state management
+- [Authentication Patterns](../security/authentication-patterns.mdc) for auth patterns
+- [Error Handling](../core/error-handling.mdc) for error patterns
+- [Query Patterns](../data/query-patterns.mdc) for data loading
 
 type RouterContext = {
 user: User | null;

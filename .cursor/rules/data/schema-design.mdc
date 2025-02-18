@@ -233,11 +233,11 @@ export const emailType = customType<{ data: string }>({
 
 ## Related Patterns
 
-- [Query Patterns](mdc:query-patterns.mdc) for efficient querying
-- [Mutation Patterns](mdc:mutation-patterns.mdc) for data modifications
-- [Validation Rules](mdc:validation-rules.mdc) for data validation
-- [State Patterns](mdc:state-patterns.mdc) for state management
-- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+- [Query Patterns](./query-patterns.mdc) for efficient querying
+- [Mutation Patterns](./mutation-patterns.mdc) for data modifications
+- [Validation Rules](./validation-rules.mdc) for data validation
+- [State Patterns](./state-patterns.mdc) for state management
+- [Error Handling](../core/error-handling.mdc) for error patterns
 
 type TableConfig = {
 name: string;

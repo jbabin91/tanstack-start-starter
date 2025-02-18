@@ -305,7 +305,7 @@ import logo from './logo.svg';
 
 ## Related Patterns
 
-- [Setup](mdc:.cursor/rules/core/setup.mdc) for project setup
-- [Architecture](mdc:.cursor/rules/core/architecture.mdc) for structure
-- [Workflow](mdc:.cursor/rules/core/workflow.mdc) for process
-- [Components](mdc:.cursor/rules/frontend/components.mdc) for component patterns
+- [Setup](./setup.mdc) for project setup
+- [Architecture](./architecture.mdc) for structure
+- [Workflow](./workflow.mdc) for process
+- [Components](../frontend/components.mdc) for component patterns

@@ -5,9 +5,13 @@ globs: '*'
 
 # Core Project Concepts
 
-## Project Overview
+## Quick Navigation
 
-This project follows a modern React stack with TypeScript, focusing on maintainability, type safety, and developer experience.
+- [Project Setup](./setup.mdc) - Project initialization and configuration
+- [Architecture](./architecture.mdc) - Application architecture and patterns
+- [Development Workflow](./development-workflow.mdc) - Development process
+- [Error Handling](./error-handling.mdc) - Error handling patterns
+- [Conventions](./conventions.mdc) - Coding standards
 
 ## Project Structure
 
@@ -23,18 +27,15 @@ app/
 ├── features/           # Feature modules
 │   └── [feature]/
 │       ├── api/        # Server functions & queries
-│       │   ├── queries.ts    # TanStack Query hooks
-│       │   └── mutations.ts  # TanStack Mutations
 │       ├── components/ # Feature components
-│       │   ├── index.ts      # Component exports
-│       │   └── [Component]/  # Component files
 │       ├── hooks/     # Feature hooks
-│       │   └── index.ts      # Hook exports
 │       ├── utils/     # Feature utilities
 │       └── types/     # Feature-specific types
 └── routes/             # Route components
     └── [feature]/      # Feature routes
 ```
+
+See [Architecture](./architecture.mdc) for detailed structure explanation.
 
 ## Technology Stack
 
@@ -48,161 +49,51 @@ app/
 - TanStack Start for server functions
 - Drizzle ORM for database operations
 
+See [Setup](./setup.mdc#dependencies) for version details.
+
 ### UI Layer
 
-- Shadcn UI for components
-- Tailwind CSS v4 for styling
-- Radix UI for primitives
+See [Frontend Documentation](../frontend/index.mdc) for UI patterns and implementation details.
 
 ### Data Layer
 
-- PostgreSQL for database
-- Drizzle ORM for queries
-- Zod for validation
+See [Data Layer Documentation](../data/index.mdc) for data patterns and implementation details.
 
-## Base Patterns
+## Pattern Documentation
 
-### Component Pattern
+Each pattern follows a standardized structure. See [Documentation Standards](../quality/documentation-standards.mdc#pattern-template) for the template.
 
-```typescript
-type BaseProps = {
-  className?: string;
-  children?: React.ReactNode;
-};
+## Decision Trees
 
-// Base component template
-export function Component({
-  className,
-  children,
-  ...props
-}: BaseProps) {
-  return (
-    <div className={cn("base-styles", className)} {...props}>
-      {children}
-    </div>
-  );
-}
-```
+Find decision trees for common scenarios in:
 
-### Data Pattern
+- [Component Selection](../frontend/component-patterns.mdc#decision-tree)
+- [State Management](../frontend/state-management.mdc#decision-tree)
+- [API Design](../api/overview.mdc#decision-tree)
+- [Testing Strategy](../testing/overview.mdc#decision-tree)
 
-```typescript
-// Base entity type
-type BaseEntity = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+## Quick References
 
-// Base response type
-type ApiResponse<T> = {
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    fields?: Record<string, string>;
-  };
-};
+### Implementation Checklists
 
-// Base query options
-type BaseQueryOptions = {
-  select?: string[];
-  include?: Record<string, boolean>;
-  where?: Record<string, unknown>;
-};
-```
+- [Component Implementation](../frontend/component-patterns.mdc#checklist)
+- [API Implementation](../api/overview.mdc#checklist)
+- [Security Implementation](../security/overview.mdc#checklist)
+- [Testing Implementation](../testing/overview.mdc#checklist)
 
-## Naming Conventions
+### Common Solutions
 
-### Files and Directories
+- [Error Handling](./error-handling.mdc#common-solutions)
+- [Performance Optimization](../performance/optimization-patterns.mdc#common-solutions)
+- [Security Measures](../security/overview.mdc#common-solutions)
 
-- Components: `PascalCase.tsx`
-- Utilities: `camelCase.ts`
-- Server Functions: `$camelCase.ts`
-- Hooks: `use[Name].ts`
-- Routes: `$paramName.tsx` or `route.tsx`
-- Directories: `kebab-case`
+## Related Documentation
 
-### Code Style
+See [Main Index](../index.mdc) for a complete list of all patterns and documentation sections.
 
-- Use 2 space indentation
-- Use spaces over tabs
-- Use single quotes for strings
-- Use semicolons
-- No unused variables
-- Add space after keywords
-- Always use === instead of ==
-- Space infix operators
-- Space after commas
-- Keep else on same line
-- Use curly braces for multi-line if
-- Handle err function parameter
-- Use camelCase for variables
-- Use PascalCase for components
+## Development Guidelines
 
-### Import Organization
-
-```typescript
-// 1. React imports
-import { useState } from 'react';
-
-// 2. External libraries
-import { useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
-
-// 3. Internal absolute imports
-import { type User } from '~/types';
-
-// 4. Internal relative imports
-import { UserCard } from './UserCard';
-```
-
-## Development Workflow
-
-1. Planning
-
-   - Break down requirements
-   - Design component structure
-   - Plan data flow
-   - Consider edge cases
-
-2. Implementation
-
-   - Follow type-safe patterns
-   - Write clean, maintainable code
-   - Handle errors gracefully
-   - Add proper documentation
-
-3. Testing
-
-   - Write unit tests
-   - Test edge cases
-   - Verify accessibility
-   - Check performance
-
-4. Review
-
-   - Code review
-   - Self-review checklist
-   - Performance audit
-   - Accessibility audit
-
-5. Deployment
-   - Build optimization
-   - Environment checks
-   - Monitoring setup
-   - Error tracking
-
-## Cross-Cutting Concerns
-
-For specific patterns and implementations, see:
-
-- [API Layer](mdc:.cursor/rules/api/index.mdc) for server functions and API patterns
-- [Frontend Layer](mdc:.cursor/rules/frontend/index.mdc) for UI components and forms
-- [Data Layer](mdc:.cursor/rules/data/index.mdc) for database operations
-- [Error Handling](mdc:.cursor/rules/core/errors.mdc) for error patterns
-- [State Management](mdc:.cursor/rules/frontend/state.mdc) for state patterns
-- [Testing](mdc:.cursor/rules/testing/index.mdc) for testing strategies
-- [Security](mdc:.cursor/rules/security/index.mdc) for security practices
-- [Performance](mdc:.cursor/rules/performance/index.mdc) for optimization
-- [i18n](mdc:.cursor/rules/frontend/i18n.mdc) for internationalization
+- [Conventions](./conventions.mdc) - Coding standards and naming conventions
+- [Development Workflow](./development-workflow.mdc) - Development process and guidelines
+- [Error Handling](./error-handling.mdc) - Error handling patterns and best practices
+- [Quick Start](./quick-start.mdc) - Getting started with new projects

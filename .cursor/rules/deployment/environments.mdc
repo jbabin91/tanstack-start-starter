@@ -237,7 +237,7 @@ export const domainConfig = {
 
 ## Related Patterns
 
-- [CI/CD](mdc:.cursor/rules/deployment/ci-cd.mdc) for pipeline configuration
-- [Release](mdc:.cursor/rules/deployment/release.mdc) for release process
-- [Infrastructure](mdc:.cursor/rules/deployment/infrastructure.mdc) for infrastructure setup
-- [Monitoring](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
+- [CI/CD](./ci-cd.mdc) for pipeline configuration
+- [Release](./release.mdc) for release process
+- [Infrastructure](./infrastructure.mdc) for infrastructure setup
+- [Monitoring](./monitoring.mdc) for deployment monitoring

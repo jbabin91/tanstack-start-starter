@@ -341,7 +341,7 @@ pnpm test
 
 ## Related Patterns
 
-- [Setup](setup.mdc) for project setup
-- [Architecture](architecture.mdc) for patterns
+- [Setup](./setup.mdc) for project setup
+- [Architecture](./architecture.mdc) for patterns
 - [Testing](../testing/unit-testing.mdc) for testing guidelines
 - [Documentation](../quality/documentation-standards.mdc) for documentation standards

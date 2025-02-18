@@ -1,0 +1,7 @@
+## Related Patterns
+
+- [Unit Testing](./unit-testing.mdc) for unit tests
+- [Integration Testing](./integration-testing.mdc) for integration tests
+- [E2E Testing](./e2e-testing.mdc) for end-to-end tests
+- [Monitoring](../deployment/monitoring.mdc) for performance monitoring
+- [Optimization](../performance/optimization-patterns.mdc) for optimization
