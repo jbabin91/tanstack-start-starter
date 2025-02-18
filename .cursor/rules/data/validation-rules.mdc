@@ -1,0 +1,333 @@
+---
+description: Data validation patterns and best practices with Zod
+globs: '**/validation/**/*.{ts,tsx}'
+---
+
+# Validation Rules
+
+## Core Principles
+
+1. **Type Safety**
+
+   - Use Zod for runtime validation
+   - Maintain TypeScript integration
+   - Generate types from schemas
+   - Ensure type inference
+
+2. **Data Integrity**
+
+   - Validate at boundaries
+   - Implement custom validators
+   - Handle edge cases
+   - Maintain consistency
+
+3. **Error Handling**
+
+   - Provide clear error messages
+   - Support i18n for errors
+   - Handle validation failures
+   - Enable error recovery
+
+4. **Performance**
+
+   - Optimize validation logic
+   - Cache validation results
+   - Handle large datasets
+   - Implement async validation
+
+## Implementation
+
+### 1. Basic Schemas
+
+```typescript
+import { z } from 'zod';
+
+// User validation schema
+export const userSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  age: z.number().min(0).optional(),
+  role: z.enum(['user', 'admin']),
+  settings: z
+    .object({
+      theme: z.enum(['light', 'dark']),
+      notifications: z.boolean(),
+    })
+    .optional(),
+});
+
+// Post validation schema
+export const postSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  content: z.string().min(10, 'Content must be at least 10 characters'),
+  published: z.boolean(),
+  authorId: z.number(),
+  tags: z.array(z.string()).min(1, 'At least one tag is required'),
+});
+
+// Infer types from schemas
+export type User = z.infer<typeof userSchema>;
+export type Post = z.infer<typeof postSchema>;
+```
+
+### 2. Custom Validators
+
+```typescript
+// Custom validation logic
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+    'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+  );
+
+// Custom validator function
+const isValidUsername = (username: string) =>
+  /^[a-zA-Z0-9_]{3,20}$/.test(username);
+
+// Schema with custom validation
+export const authSchema = z
+  .object({
+    username: z
+      .string()
+      .refine(
+        isValidUsername,
+        'Username must be 3-20 characters and alphanumeric',
+      ),
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords must match',
+    path: ['confirmPassword'],
+  });
+```
+
+### 3. Form Validation
+
+```typescript
+// Form validation schema
+export const contactFormSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(1, 'Subject is required'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+  attachments: z
+    .array(
+      z.object({
+        name: z.string(),
+        size: z
+          .number()
+          .max(5 * 1024 * 1024, 'File size must be less than 5MB'),
+        type: z.string().regex(/^image\/(jpeg|png|gif)$/, 'Invalid file type'),
+      }),
+    )
+    .max(3, 'Maximum 3 attachments allowed'),
+});
+
+// Form submission with validation
+export async function submitContactForm(data: unknown) {
+  try {
+    const validated = contactFormSchema.parse(data);
+    return await submitForm(validated);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        errors: error.errors.map((e) => ({
+          path: e.path.join('.'),
+          message: e.message,
+        })),
+      };
+    }
+    throw error;
+  }
+}
+```
+
+### 4. API Validation
+
+```typescript
+// API request validation
+export const apiRequestSchema = z.object({
+  method: z.enum(['GET', 'POST', 'PUT', 'DELETE']),
+  path: z.string().startsWith('/'),
+  query: z.record(z.string()).optional(),
+  body: z.unknown().optional(),
+  headers: z.record(z.string()).optional(),
+});
+
+// API response validation
+export const apiResponseSchema = z.object({
+  status: z.number(),
+  data: z.unknown(),
+  headers: z.record(z.string()),
+});
+
+// API endpoint validation
+export function validateApiRequest(req: unknown) {
+  const result = apiRequestSchema.safeParse(req);
+
+  if (!result.success) {
+    return {
+      valid: false,
+      errors: result.error.errors,
+    };
+  }
+
+  return {
+    valid: true,
+    data: result.data,
+  };
+}
+```
+
+## Best Practices
+
+### 1. Schema Design
+
+- Keep schemas modular
+- Reuse common patterns
+- Document constraints
+- Version schemas
+- Handle migrations
+
+### 2. Error Messages
+
+- Provide clear messages
+- Support i18n
+- Include field context
+- Suggest corrections
+- Use consistent format
+
+### 3. Performance
+
+- Cache validation results
+- Validate incrementally
+- Handle large objects
+- Optimize common cases
+- Monitor performance
+
+### 4. Security
+
+- Sanitize inputs
+- Prevent injection
+- Validate file uploads
+- Handle sensitive data
+- Rate limit validation
+
+## Validation Composition
+
+### 1. Schema Composition
+
+```typescript
+// Base schemas
+const addressSchema = z.object({
+  street: z.string(),
+  city: z.string(),
+  state: z.string(),
+  zip: z.string(),
+});
+
+const contactSchema = z.object({
+  email: z.string().email(),
+  phone: z.string().optional(),
+});
+
+// Composed schema
+const customerSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    address: addressSchema,
+    contact: contactSchema,
+    type: z.enum(['individual', 'business']),
+  })
+  .and(
+    z.discriminatedUnion('type', [
+      z.object({
+        type: z.literal('individual'),
+        ssn: z.string(),
+      }),
+      z.object({
+        type: z.literal('business'),
+        ein: z.string(),
+      }),
+    ]),
+  );
+```
+
+### 2. Async Validation
+
+```typescript
+// Async validation schema
+const userRegistrationSchema = z.object({
+  username: z
+    .string()
+    .min(3)
+    .refine(async (username) => {
+      const exists = await checkUsernameExists(username);
+      return !exists;
+    }, 'Username already taken'),
+  email: z
+    .string()
+    .email()
+    .refine(async (email) => {
+      const exists = await checkEmailExists(email);
+      return !exists;
+    }, 'Email already registered'),
+});
+```
+
+## Related Patterns
+
+- [Schema Design](mdc:schema-design.mdc) for database schema
+- [Query Patterns](mdc:query-patterns.mdc) for data fetching
+- [Mutation Patterns](mdc:mutation-patterns.mdc) for data modifications
+- [Form Handling](mdc:../frontend/form-handling.mdc) for form validation
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+
+type UserSchema = {
+id: number;
+email: string;
+name: string;
+age: number;
+role: 'user' | 'admin';
+};
+
+type ValidationError = {
+path: string[];
+message: string;
+code: string;
+};
+
+type ValidationResult<T> = {
+success: boolean;
+data?: T;
+errors?: ValidationError[];
+};
+
+// Basic schema validation
+const userSchema = z.object({
+email: z.string().email(),
+name: z.string().min(2),
+age: z.number().min(18),
+role: z.enum(['user', 'admin']),
+});
+
+// Custom validator type
+type CustomValidator<T> = (value: T) => ValidationResult<T>;
+
+// Form validation type
+type FormValidation<T> = {
+values: T;
+errors: Partial<Record<keyof T, string>>;
+touched: Partial<Record<keyof T, boolean>>;
+};
+
+// API validation type
+type APIValidation<T> = {
+input: unknown;
+output: ValidationResult<T>;
+};

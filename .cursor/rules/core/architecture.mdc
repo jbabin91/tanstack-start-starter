@@ -1,300 +1,1409 @@
 ---
-description: Project architecture, structure, and design patterns
-globs: '**/*.{ts,tsx}'
+description: Project architecture and structure patterns
+globs: 'app/**/*.{ts,tsx}'
 ---
 
-# Architecture Patterns
+# Project Architecture
 
-## Project Structure
+## Directory Structure
+
+````sh
+app/
+├── api/                # API layer
+│   ├── client/        # API client configuration
+│   │   ├── axios.ts   # Axios instance & interceptors
+│   │   └── query.ts   # TanStack Query client config
+│   ├── middleware/    # API middleware
+│   │   ├── auth.ts    # Auth middleware
+│   │   └── error.ts   # Error handling middleware
+│   └── types/         # API type definitions
+│       └── response.ts # Common API response types
+│
+├── components/        # Shared UI components
+│   ├── errors/       # Error components
+│   ├── ui/           # Shadcn UI components
+│   └── layout/       # Layout components
+│
+├── config/           # Global configuration
+│   ├── env.ts       # Environment variables
+│   └── site.ts      # Site-wide settings
+│
+├── constants/        # Global constants
+│   ├── api.ts       # API constants
+│   ├── routes.ts    # Route constants
+│   ├── config.ts    # App-wide configuration
+│   └── theme.ts     # CSS variable references
+│
+├── cache/           # Cache management
+│   ├── strategies/  # Caching strategies
+│   │   ├── memory.ts
+│   │   └── storage.ts
+│   └── invalidation/ # Cache invalidation
+│       └── rules.ts
+│
+├── db/              # Database configuration
+│   ├── schema/      # Database schema
+│   ├── migrations/  # Database migrations
+│   └── client.ts    # Database client
+│
+├── docs/            # Documentation
+│   ├── api/        # API documentation
+│   ├── components/ # Component documentation
+│   ├── patterns/   # Pattern documentation
+│   └── setup/      # Setup documentation
+│
+├── features/        # Feature-based modules
+│   └── [feature]/  # Each feature module
+│       ├── components/ # Feature components
+│       ├── api/       # API code
+│       ├── hooks/     # React hooks
+│       ├── stores/    # State management
+│       │   ├── atoms.ts    # Atomic state
+│       │   └── selectors.ts # Derived state
+│       ├── validation/ # Schema validation
+│       │   └── schemas.ts  # Zod schemas
+│       └── utils/     # Feature utilities
+│           └── helpers.ts  # Helper functions
+│
+├── i18n/            # Internationalization
+│   ├── locales/    # Translation files
+│   ├── config.ts   # i18n configuration
+│   └── types.ts    # Translation types
+│
+├── lib/            # Core shared code
+│   ├── errors/     # Error handling
+│   ├── hooks/      # Shared hooks
+│   ├── utils/      # Shared utilities
+│   └── types/      # Shared types
+│
+├── monitoring/     # Performance monitoring
+│   ├── metrics/    # Performance metrics
+│   │   ├── web-vitals.ts
+│   │   └── api-metrics.ts
+│   ├── logging/    # Logging configuration
+│   │   ├── logger.ts
+│   │   └── sentry.ts
+│   └── analytics/  # Analytics tracking
+│       └── events.ts
+│
+├── providers/      # App providers
+│   ├── api/       # API providers
+│   ├── auth/      # Auth providers
+│   └── theme/     # Theme providers
+│
+├── routes/         # File-based routing
+│   ├── _app/      # Protected routes
+│   ├── _auth/     # Auth routes
+│   └── _public/   # Public routes
+│
+├── styles/        # Global styles
+│   └── globals.css # Tailwind directives
+│
+└── testing/       # Test utilities
+    ├── mocks/     # Mock data
+    ├── factories/ # Test factories
+    ├── fixtures/  # Test fixtures
+    ├── helpers/   # Test helpers
+    ├── setup/     # Test setup
+    │   ├── msw/   # MSW setup
+    │   └── vitest/ # Vitest setup
+    └── matchers/  # Custom matchers
+
+## Security Note
+
+TanStack Start provides built-in security features:
+
+1. **Authentication & Authorization**
+   - Built-in auth system via better-auth
+   - Session management
+   - OAuth integration
+   - Auth middleware
+
+2. **Input Validation**
+   - Zod schema validation
+   - Type-safe server functions
+   - Runtime validation
+
+3. **Security Headers & Protection**
+   - Secure cookie handling
+   - CSRF protection
+   - Rate limiting
+   - Security headers
+
+4. **Data Protection**
+   - Type-safe database operations
+   - Secure environment variables
+   - Sensitive data masking
+
+No additional security utilities are needed as these concerns are handled by the framework.
+
+## Feature Organization
+
+Each feature follows this structure:
 
 ```sh
-src/
-├── app/                # Application core
-│   ├── providers/     # Global providers
-│   ├── layouts/       # Layout components
-│   └── styles/        # Global styles
-├── features/          # Feature modules
-│   ├── auth/         # Authentication
-│   ├── users/        # User management
-│   └── dashboard/    # Dashboard
-├── shared/           # Shared code
-│   ├── components/   # Reusable components
-│   ├── hooks/        # Custom hooks
-│   ├── utils/        # Utilities
-│   └── types/        # Type definitions
-├── server/           # Server-side code
-│   ├── db/          # Database
-│   ├── api/         # API routes
-│   └── middleware/  # Server middleware
-└── config/          # Configuration
-    ├── env.ts       # Environment
-    └── constants.ts # Constants
-```
+features/[feature]/
+├── components/        # UI components
+│   ├── UserCard.tsx
+│   └── UserCard.test.tsx
+├── api/              # API code by domain
+│   ├── profile.ts           # Server + client code
+│   ├── profile.test.ts
+│   └── types.ts            # Domain types
+├── config/           # Feature config
+│   ├── constants.ts
+│   └── schemas.ts
+├── errors/           # Feature-specific errors
+│   ├── boundaries.tsx
+│   └── types.ts
+├── hooks/            # React hooks
+│   ├── useUserPreferences.ts
+│   └── useUserPreferences.test.ts
+└── types.ts          # Feature types
+````
 
-## Layer Architecture
-
-### 1. Presentation Layer
+### Error Handling Example
 
 ```typescript
-// pages/users/[id].tsx
-export default function UserPage() {
-  // 1. Data hooks
-  const { data: user } = useUser();
-  const { mutate } = useUpdateUser();
+// lib/errors/types.ts
+export type ApiError = {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+};
 
-  // 2. UI state
-  const [isEditing, setIsEditing] = useState(false);
+// constants/api.ts
+export const API_ERROR_CODES = {
+  NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+} as const;
 
-  // 3. Event handlers
-  const handleSubmit = async (data: UserFormData) => {
-    await mutate(data);
-    setIsEditing(false);
-  };
+// lib/errors/handlers.ts
+import { API_ERROR_CODES } from '~/constants/api';
+import type { ApiError } from './types';
 
-  // 4. Render
+export const handleApiError = (error: ApiError) => {
+  switch (error.code) {
+    case API_ERROR_CODES.NOT_FOUND:
+      // Handle not found
+      break;
+    case API_ERROR_CODES.UNAUTHORIZED:
+      // Handle unauthorized
+      break;
+    default:
+      // Handle unknown error
+  }
+};
+
+// features/users/errors/types.ts
+import { API_ERROR_CODES } from '~/constants/api';
+import type { ApiError } from '~/lib/errors/types';
+
+export type UserApiError = ApiError & {
+  code: typeof API_ERROR_CODES.NOT_FOUND | typeof API_ERROR_CODES.UNAUTHORIZED;
+};
+
+// features/users/errors/handlers.ts
+import { handleApiError } from '~/lib/errors/handlers';
+import type { UserApiError } from './types';
+
+export const handleUserError = (error: UserApiError) => {
+  // Feature-specific error handling
+  handleApiError(error);
+};
+
+// components/errors/ApiError.tsx
+import { API_ERROR_CODES } from '~/constants/api';
+import type { ApiError } from '~/lib/errors/types';
+
+export function ApiError({ error }: { error: ApiError }) {
+  switch (error.code) {
+    case API_ERROR_CODES.NOT_FOUND:
+      return <NotFoundError message={error.message} />;
+    case API_ERROR_CODES.UNAUTHORIZED:
+      return <UnauthorizedError message={error.message} />;
+    default:
+      return <GenericError message={error.message} />;
+  }
+}
+
+// features/users/api/profile.ts
+import { API_ERROR_CODES } from '~/constants/api';
+import { handleUserError } from '../errors/handlers';
+import type { UserApiError } from '../errors/types';
+
+export const $getProfile = createServerFn<GetProfileParams, Profile, UserApiError>(
+  'getProfile',
+  async ({ id }) => {
+    try {
+      // Server-side code
+      if (!user) {
+        throw {
+          code: API_ERROR_CODES.NOT_FOUND,
+          message: 'User not found'
+        };
+      }
+      return user;
+    } catch (error) {
+      handleUserError(error as UserApiError);
+      throw error;
+    }
+  },
+);
+```
+
+### Testing Organization
+
+```typescript
+// testing/factories/users.ts
+import { faker } from '@faker-js/faker';
+import type { User } from '~/features/users/types';
+
+export const createUser = (overrides?: Partial<User>): User => ({
+  id: faker.string.uuid(),
+  name: faker.person.fullName(),
+  email: faker.internet.email(),
+  ...overrides,
+});
+
+// features/users/api/profile.test.ts
+import { createUser } from '~/testing/factories/users';
+
+describe('getProfile', () => {
+  it('returns user profile', async () => {
+    const user = createUser();
+    // Test implementation
+  });
+});
+```
+
+Benefits of these improvements:
+
+- Comprehensive error handling
+- Type-safe errors
+- Centralized test utilities
+- Consistent test data generation
+- Better test organization
+- Clear error boundaries
+- Feature-specific error handling
+
+### API Organization Example
+
+```typescript
+// features/users/api/profile.ts
+
+// Types can be imported from types.ts
+import type { GetProfileParams, Profile, UpdateProfileData } from './types';
+
+// Server functions
+export const $getProfile = createServerFn<GetProfileParams, Profile>(
+  'getProfile',
+  async ({ id }) => {
+    // Server-side code
+    return profile;
+  },
+);
+
+// Client hooks
+export const useProfile = (id: string) => {
+  return useQuery({
+    queryKey: ['profile', id],
+    queryFn: () => $getProfile({ id }),
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: (data: UpdateProfileData) => $updateProfile(data),
+  });
+};
+```
+
+Benefits:
+
+- Explicit file naming (no index files)
+- Clear file purposes
+- Easy to locate files
+- Consistent naming patterns
+- Better IDE support
+- Simpler imports
+
+### Import Examples
+
+Instead of using barrel files, import directly from source files:
+
+```typescript
+// ❌ Don't use barrel imports
+import { UserCard } from '~/features/users/components';
+import { useUser } from '~/features/users/api';
+
+// ✅ Use direct imports
+import { UserCard } from '~/features/users/components/UserCard';
+import { useUser } from '~/features/users/api/queries';
+```
+
+Benefits of direct imports:
+
+- Better tree-shaking
+- Faster builds
+- Clearer dependency graph
+- Easier to track usage
+- Better IDE support
+
+### Route Organization
+
+Routes follow TanStack Router's file-based routing conventions:
+
+```sh
+routes/
+├── _app/              # Root layout and protected routes
+│   ├── route.tsx     # Root route with auth checks
+│   └── [feature]/    # Protected feature routes
+├── _auth/            # Authentication routes
+│   ├── signin.tsx    # Sign in page
+│   └── signup.tsx    # Sign up page
+└── _public/          # Public routes
+    └── index.tsx     # Public home page
+```
+
+## Library Organization
+
+### 1. Core Library
+
+The core library contains shared code used across features:
+
+```sh
+lib/
+├── client/           # Client-side utilities
+├── server/           # Server-side utilities
+│   ├── db/          # Database operations
+│   └── middleware/  # Server middleware
+└── shared/          # Shared utilities
+    ├── constants/   # Shared constants
+    ├── types/       # Shared types
+    └── utils/       # Shared utilities
+```
+
+### 2. Feature Library
+
+Each feature contains its own isolated logic:
+
+- Client-side API and hooks
+- Server functions
+- Feature-specific types and schemas
+- No direct database operations (use core library)
+
+## Best Practices
+
+### 1. Code Organization
+
+- Keep features self-contained
+- Use clear, consistent naming
+- Follow established patterns
+- Maintain proper separation
+- Use proper imports
+
+### 2. Feature Development
+
+- Start with shared types
+- Build from bottom up
+- Test at each level
+- Document APIs
+- Consider reusability
+
+### 3. Code Sharing
+
+- Share through core lib
+- Keep dependencies clean
+- Use proper abstractions
+- Document shared code
+- Version shared code
+
+### 4. Performance
+
+- Code split by feature
+- Lazy load components
+- Optimize imports
+- Monitor bundle size
+- Cache appropriately
+
+## Related Patterns
+
+- [Setup](mdc:setup.mdc) for project setup
+- [Development](mdc:development-workflow.mdc) for workflow
+
+### Constants Organization Example
+
+```typescript
+// constants/api.ts
+export const API_ERROR_CODES = {
+  NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+} as const;
+
+export const API_ENDPOINTS = {
+  AUTH: '/api/auth',
+  USERS: '/api/users',
+} as const;
+
+// constants/routes.ts
+export const ROUTE_PATHS = {
+  HOME: '/',
+  DASHBOARD: '/dashboard',
+  PROFILE: '/profile',
+  SETTINGS: '/settings',
+} as const;
+
+// constants/config.ts
+export const APP_CONFIG = {
+  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_UPLOAD_COUNT: 10,
+  SUPPORTED_LOCALES: ['en', 'es', 'fr'] as const,
+  DEFAULT_LOCALE: 'en',
+} as const;
+
+// constants/theme.ts
+export const theme = {
+  colors: {
+    primary: 'var(--color-primary)',
+    secondary: 'var(--color-secondary)',
+    accent: 'var(--color-accent)',
+    background: 'var(--color-background)',
+    text: 'var(--color-text)',
+  },
+  spacing: {
+    page: 'var(--spacing-page)',
+    content: 'var(--spacing-content)',
+    gap: 'var(--spacing-gap)',
+  },
+  radius: {
+    sm: 'var(--radius-sm)',
+    md: 'var(--radius-md)',
+    lg: 'var(--radius-lg)',
+  },
+} as const;
+
+// styles/globals.css
+:root {
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+  --color-accent: hsl(var(--accent));
+  --color-background: hsl(var(--background));
+  --color-text: hsl(var(--text));
+
+  --spacing-page: clamp(1rem, 5vw, 2rem);
+  --spacing-content: clamp(0.5rem, 2.5vw, 1rem);
+  --spacing-gap: clamp(0.25rem, 1.25vw, 0.5rem);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --secondary: 217.2 32.6% 17.5%;
+  --accent: 210 40% 96.1%;
+  --background: 222.2 84% 4.9%;
+  --text: 210 40% 98%;
+}
+
+.light {
+  --primary: 222.2 84% 4.9%;
+  --secondary: 210 40% 96.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --background: 0 0% 100%;
+  --text: 222.2 84% 4.9%;
+}
+
+// Example usage in a component
+import { theme } from '~/constants/theme';
+
+export function Button({ children }: { children: React.ReactNode }) {
   return (
-    <UserLayout>
-      <UserProfile
-        user={user}
-        isEditing={isEditing}
-        onSubmit={handleSubmit}
-      />
-    </UserLayout>
+    <button
+      className="px-4 py-2 rounded-md"
+      style={{
+        backgroundColor: theme.colors.primary,
+        borderRadius: theme.radius.md,
+        margin: theme.spacing.gap
+      }}
+    >
+      {children}
+    </button>
   );
 }
 ```
 
-### 2. Application Layer
+This approach:
+
+- Uses CSS variables for theme values
+- Provides type-safe access to theme values
+- Works with Tailwind v4's CSS variable system
+- Maintains single source of truth
+- Enables runtime theme switching
+- Provides proper TypeScript types
+
+### i18n Organization Example
 
 ```typescript
-// features/users/api/queries.ts
-export function useUser(id: string) {
-  return useQuery({
-    queryKey: ['users', id],
-    queryFn: () => $getUser(id),
-  });
+// i18n/types.ts
+export type CommonTranslations = {
+  errors: {
+    notFound: string;
+    unauthorized: string;
+  };
+  actions: {
+    save: string;
+    cancel: string;
+    delete: string;
+  };
+};
+
+export type UserTranslations = {
+  profile: {
+    title: string;
+    editButton: string;
+    deleteAccount: string;
+  };
+  settings: {
+    title: string;
+    language: string;
+    theme: string;
+  };
+};
+
+// i18n/locales/en/common.json
+{
+  "errors": {
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
 }
 
-// features/users/api/mutations.ts
-export function useUpdateUser() {
-  const queryClient = useQueryClient();
+// i18n/locales/en/features/users.json
+{
+  "profile": {
+    "title": "Profile",
+    "editButton": "Edit Profile",
+    "deleteAccount": "Delete Account"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme"
+  }
+}
 
-  return useMutation({
-    mutationFn: $updateUser,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['users', data.id],
-      });
+// i18n/config.ts
+import { createI18nServer } from '@tanstack/react-i18n';
+import type { CommonTranslations, UserTranslations } from './types';
+
+export const i18n = createI18nServer({
+  defaultLocale: 'en',
+  locales: ['en', 'es'],
+  namespaces: ['common', 'users'],
+  resources: {
+    en: {
+      common: () => import('./locales/en/common.json'),
+      users: () => import('./locales/en/features/users.json'),
     },
-  });
+    es: {
+      common: () => import('./locales/es/common.json'),
+      users: () => import('./locales/es/features/users.json'),
+    },
+  },
+});
+
+// Example usage in a component
+import { useTranslation } from '@tanstack/react-i18n';
+
+export function ProfilePage() {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <h1>{t('users.profile.title')}</h1>
+      <button>{t('users.profile.editButton')}</button>
+      <button className="text-red-500">
+        {t('users.profile.deleteAccount')}
+      </button>
+    </div>
+  );
 }
 ```
 
-### 3. Domain Layer
+Benefits of this i18n structure:
+
+- Clear separation of translations by language and feature
+- Type-safe translations with TypeScript
+- Lazy loading of translation files
+- Easy to add new languages
+- Maintainable organization
+- Feature-specific translations
+- Common shared translations
+
+### Example Implementations
 
 ```typescript
-// features/users/types/index.ts
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  createdAt: Date;
+// api/client/axios.ts
+import axios from 'axios';
+import { handleApiError } from '~/lib/errors/handlers';
+
+export const apiClient = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    handleApiError(error);
+    return Promise.reject(error);
+  },
+);
+
+// cache/strategies/memory.ts
+import { LRUCache } from 'lru-cache';
+
+export const memoryCache = new LRUCache<string, unknown>({
+  max: 500,
+  ttl: 1000 * 60 * 5, // 5 minutes
+});
+
+// monitoring/metrics/web-vitals.ts
+import { onCLS, onFID, onLCP } from 'web-vitals';
+
+export function reportWebVitals(metric: any) {
+  console.log(metric);
+  // Send to analytics
 }
+
+// security/validation/schemas.ts
+import { z } from 'zod';
 
 export const userSchema = z.object({
-  id: z.string().uuid(),
   email: z.string().email(),
+  password: z.string().min(8),
+});
+
+// features/users/stores/atoms.ts
+import { atom } from 'jotai';
+import type { User } from '../types';
+
+export const userAtom = atom<User | null>(null);
+
+// features/users/validation/schemas.ts
+import { z } from 'zod';
+
+export const profileSchema = z.object({
   name: z.string().min(2),
-  role: z.enum(['USER', 'ADMIN']),
-  createdAt: z.date(),
-});
-```
-
-### 4. Infrastructure Layer
-
-```typescript
-// server/db/schema/users.ts
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey(),
-  email: text('email').notNull().unique(),
-  name: text('name').notNull(),
-  role: text('role', { enum: ['USER', 'ADMIN'] }).notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  bio: z.string().max(160),
+  avatar: z.string().url().optional(),
 });
 
-// server/api/users/$getUser.ts
-export async function $getUser(id: string) {
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, id),
-  });
+// testing/setup/msw/handlers.ts
+import { rest } from 'msw';
+import { API_ENDPOINTS } from '~/constants/api';
 
-  if (!user) {
-    throw new NotFoundError('User not found');
-  }
-
-  return user;
-}
+export const handlers = [
+  rest.get(API_ENDPOINTS.USERS, (req, res, ctx) => {
+    return res(ctx.json({ users: [] }));
+  }),
+];
 ```
 
-## Design Patterns
+Benefits of this enhanced structure:
 
-### 1. Repository Pattern
+1. **API Management**
 
-```typescript
-// server/repositories/users.ts
-export class UserRepository {
-  async findById(id: string): Promise<User> {
-    return db.query.users.findFirst({
-      where: eq(users.id, id),
-    });
-  }
+   - Centralized API client configuration
+   - Consistent error handling
+   - Type-safe responses
+   - Middleware organization
 
-  async create(data: NewUser): Promise<User> {
-    return db.insert(users).values(data).returning();
-  }
+2. **Performance Monitoring**
 
-  async update(id: string, data: Partial<User>): Promise<User> {
-    return db.update(users).set(data).where(eq(users.id, id)).returning();
-  }
-}
-```
+   - Web vitals tracking
+   - API metrics
+   - Error logging
+   - Analytics events
 
-### 2. Factory Pattern
+3. **Security**
 
-```typescript
-// shared/factories/query.ts
-export function createQueryKeys<T extends string>(scope: T) {
-  return {
-    all: [scope] as const,
-    lists: () => [...keys.all, 'list'] as const,
-    list: (filters: string) => [...keys.lists(), { filters }] as const,
-    details: () => [...keys.all, 'detail'] as const,
-    detail: (id: string) => [...keys.details(), id] as const,
-  };
-}
+   - Input validation
+   - CSRF protection
+   - XSS prevention
+   - Data encryption
 
-// features/users/api/keys.ts
-export const userKeys = createQueryKeys('users');
-```
+4. **Caching**
 
-### 3. Builder Pattern
+   - Multiple cache strategies
+   - Clear invalidation rules
+   - Performance optimization
+   - Type-safe cache
 
-```typescript
-// shared/builders/query.ts
-export class QueryBuilder<T> {
-  private query: Query<T>;
+5. **State Management**
 
-  constructor(baseQuery: Query<T>) {
-    this.query = baseQuery;
-  }
+   - Atomic state management
+   - Derived state
+   - Type-safe stores
+   - Clear data flow
 
-  withPagination(page: number, limit: number) {
-    this.query.limit = limit;
-    this.query.offset = (page - 1) * limit;
-    return this;
-  }
+6. **Testing**
 
-  withSort(field: keyof T, direction: 'asc' | 'desc') {
-    this.query.orderBy = [{ field, direction }];
-    return this;
-  }
+   - MSW setup for API mocking
+   - Test factories
+   - Custom matchers
+   - Comprehensive helpers
 
-  withFilter(filter: Partial<T>) {
-    this.query.where = filter;
-    return this;
-  }
+7. **Documentation**
+   - API documentation
+   - Component documentation
+   - Pattern documentation
+   - Setup guides
 
-  build(): Query<T> {
-    return this.query;
-  }
-}
-```
-
-### 4. Observer Pattern
+### Validation Organization Example
 
 ```typescript
-// shared/observers/events.ts
-export class EventEmitter {
-  private listeners: Map<string, Function[]>;
+// features/users/validation/schemas.ts
+import { z } from 'zod';
 
-  constructor() {
-    this.listeners = new Map();
+export const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(2),
+});
+
+// features/users/validation/rules.ts
+import type { User } from '../types';
+
+export const validatePassword = (password: string): boolean => {
+  // Custom password validation logic
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password)
+  );
+};
+
+export const validateUserProfile = (user: Partial<User>): string[] => {
+  const errors: string[] = [];
+
+  if (user.name && user.name.length < 2) {
+    errors.push('Name must be at least 2 characters');
   }
 
-  on(event: string, callback: Function) {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
+  if (user.password && !validatePassword(user.password)) {
+    errors.push('Password must meet complexity requirements');
+  }
+
+  return errors;
+};
+
+// features/users/api/profile.ts
+import { userSchema } from '../validation/schemas';
+import { validateUserProfile } from '../validation/rules';
+
+export const $updateProfile = createServerFn<UpdateProfileData, Profile>(
+  'updateProfile',
+  async (data) => {
+    // Zod schema validation
+    const result = userSchema.safeParse(data);
+    if (!result.success) {
+      throw new ValidationError(result.error);
     }
-    this.listeners.get(event)?.push(callback);
-  }
 
-  emit(event: string, data: unknown) {
-    this.listeners.get(event)?.forEach((callback) => {
-      callback(data);
-    });
-  }
-}
+    // Custom validation rules
+    const errors = validateUserProfile(data);
+    if (errors.length > 0) {
+      throw new ValidationError(errors);
+    }
+
+    // Proceed with update
+    return updateUser(data);
+  },
+);
 ```
 
-### 5. Strategy Pattern
+Benefits of this validation structure:
+
+- Clear separation of validation logic
+- Type-safe validation
+- Consistent validation rules
+- Feature-specific validation
+- Centralized validation logic
+- Easy to add new validations
+- Consistent error handling
+
+### Validation Example
 
 ```typescript
-// shared/strategies/validation.ts
-interface ValidationStrategy {
-  validate(data: unknown): boolean;
-  getError(): string;
-}
+// features/users/validation/schemas.ts
+import { z } from 'zod';
 
-class EmailValidation implements ValidationStrategy {
-  validate(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+export const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(2),
+});
+
+// features/users/validation/rules.ts
+import type { User } from '../types';
+
+export const validatePassword = (password: string): boolean => {
+  // Custom password validation logic
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password)
+  );
+};
+
+export const validateUserProfile = (user: Partial<User>): string[] => {
+  const errors: string[] = [];
+
+  if (user.name && user.name.length < 2) {
+    errors.push('Name must be at least 2 characters');
   }
 
-  getError(): string {
-    return 'Invalid email format';
-  }
-}
-
-class PasswordValidation implements ValidationStrategy {
-  validate(password: string): boolean {
-    return password.length >= 8;
+  if (user.password && !validatePassword(user.password)) {
+    errors.push('Password must meet complexity requirements');
   }
 
-  getError(): string {
-    return 'Password must be at least 8 characters';
-  }
-}
+  return errors;
+};
+
+// features/users/api/profile.ts
+import { userSchema } from '../validation/schemas';
+import { validateUserProfile } from '../validation/rules';
+
+export const $updateProfile = createServerFn<UpdateProfileData, Profile>(
+  'updateProfile',
+  async (data) => {
+    // Zod schema validation
+    const result = userSchema.safeParse(data);
+    if (!result.success) {
+      throw new ValidationError(result.error);
+    }
+
+    // Custom validation rules
+    const errors = validateUserProfile(data);
+    if (errors.length > 0) {
+      throw new ValidationError(errors);
+    }
+
+    // Proceed with update
+    return updateUser(data);
+  },
+);
 ```
+
+Benefits of this validation structure:
+
+- Clear separation of validation logic
+- Type-safe validation
+- Consistent validation rules
+- Feature-specific validation
+- Centralized validation logic
+- Easy to add new validations
+- Consistent error handling
+
+### API Organization Example
+
+```typescript
+// features/users/api/profile.ts
+
+// Types can be imported from types.ts
+import type { GetProfileParams, Profile, UpdateProfileData } from './types';
+
+// Server functions
+export const $getProfile = createServerFn<GetProfileParams, Profile>(
+  'getProfile',
+  async ({ id }) => {
+    // Server-side code
+    return profile;
+  },
+);
+
+// Client hooks
+export const useProfile = (id: string) => {
+  return useQuery({
+    queryKey: ['profile', id],
+    queryFn: () => $getProfile({ id }),
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: (data: UpdateProfileData) => $updateProfile(data),
+  });
+};
+```
+
+Benefits:
+
+- Explicit file naming (no index files)
+- Clear file purposes
+- Easy to locate files
+- Consistent naming patterns
+- Better IDE support
+- Simpler imports
+
+### Import Examples
+
+Instead of using barrel files, import directly from source files:
+
+```typescript
+// ❌ Don't use barrel imports
+import { UserCard } from '~/features/users/components';
+import { useUser } from '~/features/users/api';
+
+// ✅ Use direct imports
+import { UserCard } from '~/features/users/components/UserCard';
+import { useUser } from '~/features/users/api/queries';
+```
+
+Benefits of direct imports:
+
+- Better tree-shaking
+- Faster builds
+- Clearer dependency graph
+- Easier to track usage
+- Better IDE support
+
+### Route Organization
+
+Routes follow TanStack Router's file-based routing conventions:
+
+```sh
+routes/
+├── _app/              # Root layout and protected routes
+│   ├── route.tsx     # Root route with auth checks
+│   └── [feature]/    # Protected feature routes
+├── _auth/            # Authentication routes
+│   ├── signin.tsx    # Sign in page
+│   └── signup.tsx    # Sign up page
+└── _public/          # Public routes
+    └── index.tsx     # Public home page
+```
+
+## Library Organization
+
+### 1. Core Library
+
+The core library contains shared code used across features:
+
+```sh
+lib/
+├── client/           # Client-side utilities
+├── server/           # Server-side utilities
+│   ├── db/          # Database operations
+│   └── middleware/  # Server middleware
+└── shared/          # Shared utilities
+    ├── constants/   # Shared constants
+    ├── types/       # Shared types
+    └── utils/       # Shared utilities
+```
+
+### 2. Feature Library
+
+Each feature contains its own isolated logic:
+
+- Client-side API and hooks
+- Server functions
+- Feature-specific types and schemas
+- No direct database operations (use core library)
 
 ## Best Practices
 
-1. **Separation of Concerns**
+### 1. Code Organization
 
-   - Keep layers independent
-   - Use clear boundaries
-   - Follow single responsibility
+- Keep features self-contained
+- Use clear, consistent naming
+- Follow established patterns
+- Maintain proper separation
+- Use proper imports
 
-2. **Dependency Injection**
+### 2. Feature Development
 
-   - Use dependency inversion
-   - Avoid tight coupling
-   - Make testing easier
+- Start with shared types
+- Build from bottom up
+- Test at each level
+- Document APIs
+- Consider reusability
 
-3. **Error Handling**
+### 3. Code Sharing
 
-   - Use domain-specific errors
-   - Implement proper error boundaries
-   - Handle edge cases
+- Share through core lib
+- Keep dependencies clean
+- Use proper abstractions
+- Document shared code
+- Version shared code
 
-4. **State Management**
-   - Use appropriate state solutions
-   - Implement proper caching
-   - Handle loading states
+### 4. Performance
+
+- Code split by feature
+- Lazy load components
+- Optimize imports
+- Monitor bundle size
+- Cache appropriately
 
 ## Related Patterns
 
-- [Setup](mdc:.cursor/rules/core/setup.mdc) for project setup
-- [Conventions](mdc:.cursor/rules/core/conventions.mdc) for code style
-- [API](mdc:.cursor/rules/api/endpoints.mdc) for API patterns
-- [Data](mdc:.cursor/rules/data/schema.mdc) for data patterns
+- [Setup](mdc:setup.mdc) for project setup
+- [Development](mdc:development-workflow.mdc) for workflow
+
+### Constants Organization Example
+
+```typescript
+// constants/api.ts
+export const API_ERROR_CODES = {
+  NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+} as const;
+
+export const API_ENDPOINTS = {
+  AUTH: '/api/auth',
+  USERS: '/api/users',
+} as const;
+
+// constants/routes.ts
+export const ROUTE_PATHS = {
+  HOME: '/',
+  DASHBOARD: '/dashboard',
+  PROFILE: '/profile',
+  SETTINGS: '/settings',
+} as const;
+
+// constants/config.ts
+export const APP_CONFIG = {
+  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_UPLOAD_COUNT: 10,
+  SUPPORTED_LOCALES: ['en', 'es', 'fr'] as const,
+  DEFAULT_LOCALE: 'en',
+} as const;
+
+// constants/theme.ts
+export const theme = {
+  colors: {
+    primary: 'var(--color-primary)',
+    secondary: 'var(--color-secondary)',
+    accent: 'var(--color-accent)',
+    background: 'var(--color-background)',
+    text: 'var(--color-text)',
+  },
+  spacing: {
+    page: 'var(--spacing-page)',
+    content: 'var(--spacing-content)',
+    gap: 'var(--spacing-gap)',
+  },
+  radius: {
+    sm: 'var(--radius-sm)',
+    md: 'var(--radius-md)',
+    lg: 'var(--radius-lg)',
+  },
+} as const;
+
+// styles/globals.css
+:root {
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+  --color-accent: hsl(var(--accent));
+  --color-background: hsl(var(--background));
+  --color-text: hsl(var(--text));
+
+  --spacing-page: clamp(1rem, 5vw, 2rem);
+  --spacing-content: clamp(0.5rem, 2.5vw, 1rem);
+  --spacing-gap: clamp(0.25rem, 1.25vw, 0.5rem);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --secondary: 217.2 32.6% 17.5%;
+  --accent: 210 40% 96.1%;
+  --background: 222.2 84% 4.9%;
+  --text: 210 40% 98%;
+}
+
+.light {
+  --primary: 222.2 84% 4.9%;
+  --secondary: 210 40% 96.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --background: 0 0% 100%;
+  --text: 222.2 84% 4.9%;
+}
+
+// Example usage in a component
+import { theme } from '~/constants/theme';
+
+export function Button({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      className="px-4 py-2 rounded-md"
+      style={{
+        backgroundColor: theme.colors.primary,
+        borderRadius: theme.radius.md,
+        margin: theme.spacing.gap
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+This approach:
+
+- Uses CSS variables for theme values
+- Provides type-safe access to theme values
+- Works with Tailwind v4's CSS variable system
+- Maintains single source of truth
+- Enables runtime theme switching
+- Provides proper TypeScript types
+
+### i18n Organization Example
+
+```typescript
+// i18n/types.ts
+export type CommonTranslations = {
+  errors: {
+    notFound: string;
+    unauthorized: string;
+  };
+  actions: {
+    save: string;
+    cancel: string;
+    delete: string;
+  };
+};
+
+export type UserTranslations = {
+  profile: {
+    title: string;
+    editButton: string;
+    deleteAccount: string;
+  };
+  settings: {
+    title: string;
+    language: string;
+    theme: string;
+  };
+};
+
+// i18n/locales/en/common.json
+{
+  "errors": {
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}
+
+// i18n/locales/en/features/users.json
+{
+  "profile": {
+    "title": "Profile",
+    "editButton": "Edit Profile",
+    "deleteAccount": "Delete Account"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme"
+  }
+}
+
+// i18n/config.ts
+import { createI18nServer } from '@tanstack/react-i18n';
+import type { CommonTranslations, UserTranslations } from './types';
+
+export const i18n = createI18nServer({
+  defaultLocale: 'en',
+  locales: ['en', 'es'],
+  namespaces: ['common', 'users'],
+  resources: {
+    en: {
+      common: () => import('./locales/en/common.json'),
+      users: () => import('./locales/en/features/users.json'),
+    },
+    es: {
+      common: () => import('./locales/es/common.json'),
+      users: () => import('./locales/es/features/users.json'),
+    },
+  },
+});
+
+// Example usage in a component
+import { useTranslation } from '@tanstack/react-i18n';
+
+export function ProfilePage() {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <h1>{t('users.profile.title')}</h1>
+      <button>{t('users.profile.editButton')}</button>
+      <button className="text-red-500">
+        {t('users.profile.deleteAccount')}
+      </button>
+    </div>
+  );
+}
+```
+
+Benefits of this i18n structure:
+
+- Clear separation of translations by language and feature
+- Type-safe translations with TypeScript
+- Lazy loading of translation files
+- Easy to add new languages
+- Maintainable organization
+- Feature-specific translations
+- Common shared translations
+
+### Example Implementations
+
+```typescript
+// api/client/axios.ts
+import axios from 'axios';
+import { handleApiError } from '~/lib/errors/handlers';
+
+export const apiClient = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    handleApiError(error);
+    return Promise.reject(error);
+  },
+);
+
+// cache/strategies/memory.ts
+import { LRUCache } from 'lru-cache';
+
+export const memoryCache = new LRUCache<string, unknown>({
+  max: 500,
+  ttl: 1000 * 60 * 5, // 5 minutes
+});
+
+// monitoring/metrics/web-vitals.ts
+import { onCLS, onFID, onLCP } from 'web-vitals';
+
+export function reportWebVitals(metric: any) {
+  console.log(metric);
+  // Send to analytics
+}
+
+// security/validation/schemas.ts
+import { z } from 'zod';
+
+export const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+// features/users/stores/atoms.ts
+import { atom } from 'jotai';
+import type { User } from '../types';
+
+export const userAtom = atom<User | null>(null);
+
+// features/users/validation/schemas.ts
+import { z } from 'zod';
+
+export const profileSchema = z.object({
+  name: z.string().min(2),
+  bio: z.string().max(160),
+  avatar: z.string().url().optional(),
+});
+
+// testing/setup/msw/handlers.ts
+import { rest } from 'msw';
+import { API_ENDPOINTS } from '~/constants/api';
+
+export const handlers = [
+  rest.get(API_ENDPOINTS.USERS, (req, res, ctx) => {
+    return res(ctx.json({ users: [] }));
+  }),
+];
+```
+
+Benefits of this enhanced structure:
+
+1. **API Management**
+
+   - Centralized API client configuration
+   - Consistent error handling
+   - Type-safe responses
+   - Middleware organization
+
+2. **Performance Monitoring**
+
+   - Web vitals tracking
+   - API metrics
+   - Error logging
+   - Analytics events
+
+3. **Security**
+
+   - Input validation
+   - CSRF protection
+   - XSS prevention
+   - Data encryption
+
+4. **Caching**
+
+   - Multiple cache strategies
+   - Clear invalidation rules
+   - Performance optimization
+   - Type-safe cache
+
+5. **State Management**
+
+   - Atomic state management
+   - Derived state
+   - Type-safe stores
+   - Clear data flow
+
+6. **Testing**
+
+   - MSW setup for API mocking
+   - Test factories
+   - Custom matchers
+   - Comprehensive helpers
+
+7. **Documentation**
+   - API documentation
+   - Component documentation
+   - Pattern documentation
+   - Setup guides
+
+```
+
+```

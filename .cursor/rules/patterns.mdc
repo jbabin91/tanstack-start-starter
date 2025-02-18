@@ -1,0 +1,121 @@
+---
+description: 'Main index of all patterns and best practices'
+globs: '**/*.{ts,tsx,mdc}'
+---
+
+# TanStack Start Project Patterns
+
+This documentation provides comprehensive patterns and best practices for building applications with TanStack Start. Each section contains detailed guidelines, examples, and cross-references to related patterns.
+
+## Core Patterns
+
+Foundation patterns that form the basis of the project:
+
+- [Core Overview](mdc:core/overview.mdc) - Core concepts and principles
+- [Architecture](mdc:core/architecture.mdc) - Application architecture and structure
+- [Setup](mdc:core/setup.mdc) - Project initialization and configuration
+- [Conventions](mdc:core/conventions.mdc) - Coding standards and conventions
+- [Development Workflow](mdc:core/development-workflow.mdc) - Development process and guidelines
+- [Error Handling](mdc:core/error-handling.mdc) - Error handling patterns and strategies
+
+## Frontend Patterns
+
+Patterns for building robust user interfaces:
+
+- [Frontend Overview](mdc:frontend/overview.mdc) - Frontend architecture and principles
+- [Component Patterns](mdc:frontend/component-patterns.mdc) - Reusable component design
+- [Routing Patterns](mdc:frontend/routing-patterns.mdc) - TanStack Router implementation
+- [State Management](mdc:frontend/state-management.mdc) - Application state patterns
+- [Form Handling](mdc:frontend/form-handling.mdc) - Form management and validation
+- [Styling Guidelines](mdc:frontend/styling-guidelines.mdc) - UI/UX and styling standards
+- [i18n Patterns](mdc:frontend/i18n-patterns.mdc) - Internationalization patterns
+- [Accessibility](mdc:frontend/accessibility.mdc) - Accessibility patterns
+
+## Data Patterns
+
+Patterns for efficient data management:
+
+- [Data Overview](mdc:data/overview.mdc) - Data architecture principles
+- [Schema Design](mdc:data/schema-design.mdc) - Database schema patterns
+- [Query Patterns](mdc:data/query-patterns.mdc) - Data querying strategies
+- [Mutation Patterns](mdc:data/mutation-patterns.mdc) - Data modification patterns
+- [Validation Rules](mdc:data/validation-rules.mdc) - Data validation strategies
+- [State Patterns](mdc:data/state-patterns.mdc) - Data state management
+
+## API Patterns
+
+Guidelines for API design and implementation:
+
+- [API Overview](mdc:api/overview.mdc) - API design principles
+- [Server Functions](mdc:api/server-functions.mdc) - Server-side function patterns
+- [Error Handling](mdc:api/error-handling.mdc) - API error management
+- [Validation Patterns](mdc:api/validation-patterns.mdc) - API validation strategies
+- [Security Patterns](mdc:api/security-patterns.mdc) - API security measures
+
+## Security Patterns
+
+Security best practices and implementations:
+
+- [Security Overview](mdc:security/overview.mdc) - Security principles
+- [Authentication Patterns](mdc:security/authentication-patterns.mdc) - Auth implementation
+- [Authorization Patterns](mdc:security/authorization-patterns.mdc) - Access control
+- [Data Protection](mdc:security/data-protection.mdc) - Data security measures
+- [Security Headers](mdc:security/security-headers.mdc) - HTTP security headers
+
+## Testing Patterns
+
+Comprehensive testing strategies:
+
+- [Testing Overview](mdc:testing/overview.mdc) - Testing principles
+- [Unit Testing](mdc:testing/unit-testing.mdc) - Component and function testing
+- [Integration Testing](mdc:testing/integration-testing.mdc) - Integration test patterns
+- [E2E Testing](mdc:testing/e2e-testing.mdc) - End-to-end test strategies
+- [Performance Testing](mdc:testing/performance-testing.mdc) - Performance test patterns
+
+## Performance Patterns
+
+Performance optimization strategies:
+
+- [Performance Overview](mdc:performance/overview.mdc) - Performance principles
+- [Optimization Patterns](mdc:performance/optimization-patterns.mdc) - Performance optimization
+- [Monitoring Patterns](mdc:performance/monitoring-patterns.mdc) - Performance monitoring
+- [Caching Strategies](mdc:performance/caching-strategies.mdc) - Caching implementation
+- [Load Testing](mdc:performance/load-testing.mdc) - Load testing patterns
+
+## Quality Standards
+
+Code quality and maintenance standards:
+
+- [Code Style](mdc:quality/code-style.mdc) - Coding style guidelines
+- [Documentation Standards](mdc:quality/documentation-standards.mdc) - Documentation rules
+- [Review Process](mdc:quality/review-process.mdc) - Code review guidelines
+- [ESLint Rules](mdc:quality/eslint-rules.mdc) - Linting configuration
+
+## Deployment
+
+Deployment and operations patterns:
+
+- [Deployment Overview](mdc:deployment/overview.mdc) - Deployment principles
+- [CI/CD Pipeline](mdc:deployment/ci-cd-pipeline.mdc) - Continuous integration/deployment
+- [Environment Setup](mdc:deployment/environment-setup.mdc) - Environment configuration
+- [Release Process](mdc:deployment/release-process.mdc) - Release management
+- [Infrastructure Setup](mdc:deployment/infrastructure-setup.mdc) - Infrastructure patterns
+- [Monitoring Setup](mdc:deployment/monitoring-setup.mdc) - Production monitoring
+
+## Contributing
+
+- [Commit Conventions](mdc:commit-conventions.mdc) - Git commit guidelines
+- [Contributing Guidelines](mdc:contributing.mdc) - Contribution process
+
+## Quick Start
+
+For new projects, start with these core documents:
+
+1. [Core Overview](mdc:core/overview.mdc) - Understand fundamental concepts
+2. [Setup](mdc:core/setup.mdc) - Initialize your project
+3. [Architecture](mdc:core/architecture.mdc) - Learn the architecture
+4. [Development Workflow](mdc:core/development-workflow.mdc) - Begin development
+
+## Version Control
+
+These patterns are versioned with the project. See [Commit Conventions](mdc:commit-conventions.mdc) for contribution guidelines.

@@ -1,0 +1,303 @@
+---
+description: Database schema design patterns and best practices with Drizzle ORM
+globs: '**/db/**/*.{ts,tsx}'
+---
+
+# Schema Design Patterns
+
+## Core Principles
+
+1. **Type Safety**
+
+   - Use TypeScript for schema definitions
+   - Leverage Drizzle's type inference
+   - Define explicit relationships
+   - Maintain strict type checking
+
+2. **Data Integrity**
+
+   - Implement proper constraints
+   - Define relationships explicitly
+   - Use appropriate data types
+   - Maintain referential integrity
+
+3. **Performance**
+
+   - Design efficient indexes
+   - Optimize table structure
+   - Consider query patterns
+   - Plan for scalability
+
+4. **Maintainability**
+
+   - Follow naming conventions
+   - Document schema changes
+   - Version control migrations
+   - Maintain backwards compatibility
+
+## Implementation
+
+### 1. Table Definitions
+
+```typescript
+import { pgTable, serial, text, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
+
+// User table with relations
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Posts table with relations
+export const posts = pgTable('posts', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  published: boolean('published').default(false).notNull(),
+  authorId: serial('author_id')
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Schema validation
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
+
+export type User = z.infer<typeof selectUserSchema>;
+export type NewUser = z.infer<typeof insertUserSchema>;
+```
+
+### 2. Relationships
+
+```typescript
+import { relations } from 'drizzle-orm';
+
+// Define user relations
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}));
+
+// Define post relations
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, {
+    fields: [posts.authorId],
+    references: [users.id],
+  }),
+}));
+```
+
+### 3. Migrations
+
+```typescript
+import { sql } from 'drizzle-orm';
+import { migrate } from 'drizzle-orm/node-postgres';
+import { db } from './db';
+
+// Migration function
+export async function runMigrations() {
+  try {
+    await migrate(db, {
+      migrationsFolder: './drizzle/migrations',
+    });
+    console.log('Migrations completed');
+  } catch (error) {
+    console.error('Migration failed:', error);
+    throw error;
+  }
+}
+
+// Example migration
+export const migration = sql`
+  CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+  );
+
+  CREATE INDEX users_email_idx ON users (email);
+`;
+```
+
+### 4. Indexes
+
+```typescript
+import { index } from 'drizzle-orm/pg-core';
+
+// Table with indexes
+export const products = pgTable(
+  'products',
+  {
+    id: serial('id').primaryKey(),
+    name: text('name').notNull(),
+    sku: text('sku').notNull().unique(),
+    price: numeric('price').notNull(),
+    categoryId: serial('category_id')
+      .references(() => categories.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    skuIdx: index('products_sku_idx').on(table.sku),
+    categoryIdx: index('products_category_idx').on(table.categoryId),
+    nameIdx: index('products_name_idx').on(table.name),
+  }),
+);
+```
+
+## Best Practices
+
+### 1. Table Design
+
+- Use meaningful table names
+- Follow consistent naming conventions
+- Define appropriate constraints
+- Implement proper indexes
+- Document table purpose
+
+### 2. Column Design
+
+- Choose appropriate data types
+- Set default values when needed
+- Implement NOT NULL constraints
+- Use proper foreign keys
+- Add helpful comments
+
+### 3. Indexing Strategy
+
+- Index frequently queried columns
+- Consider composite indexes
+- Monitor index usage
+- Remove unused indexes
+- Balance performance gains
+
+### 4. Migration Management
+
+- Version control migrations
+- Test migrations thoroughly
+- Plan rollback strategies
+- Document changes clearly
+- Consider data volume
+
+## Schema Validation
+
+### 1. Type Validation
+
+```typescript
+import { z } from 'zod';
+
+// Custom validation schema
+export const userSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2).max(100),
+  age: z.number().min(0).optional(),
+});
+
+// Extend Drizzle schema
+export const insertUserSchema = createInsertSchema(users).extend({
+  email: z.string().email(),
+  name: z.string().min(2),
+});
+```
+
+### 2. Custom Validators
+
+```typescript
+import { customType } from 'drizzle-orm/pg-core';
+
+// Custom email type with validation
+export const emailType = customType<{ data: string }>({
+  dataType() {
+    return 'text';
+  },
+  fromDriver(value: string) {
+    return value;
+  },
+  toDriver(value: string) {
+    if (!value.includes('@')) {
+      throw new Error('Invalid email format');
+    }
+    return value;
+  },
+});
+```
+
+## Related Patterns
+
+- [Query Patterns](mdc:query-patterns.mdc) for efficient querying
+- [Mutation Patterns](mdc:mutation-patterns.mdc) for data modifications
+- [Validation Rules](mdc:validation-rules.mdc) for data validation
+- [State Patterns](mdc:state-patterns.mdc) for state management
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+
+type TableConfig = {
+name: string;
+columns: ColumnDefinition[];
+indexes?: IndexDefinition[];
+constraints?: ConstraintDefinition[];
+};
+
+type ColumnDefinition = {
+name: string;
+type: string;
+nullable?: boolean;
+defaultValue?: unknown;
+unique?: boolean;
+};
+
+type IndexDefinition = {
+name: string;
+columns: string[];
+type?: 'btree' | 'hash' | 'gist' | 'gin';
+unique?: boolean;
+};
+
+type ConstraintDefinition = {
+name: string;
+type: 'primary' | 'foreign' | 'check' | 'unique';
+columns: string[];
+references?: {
+table: string;
+columns: string[];
+};
+};
+
+type MigrationConfig = {
+name: string;
+up: string[];
+down: string[];
+};
+
+// Example schema with types
+export const users = pgTable('users', {
+id: serial('id').primaryKey(),
+email: text('email').notNull().unique(),
+name: text('name').notNull(),
+createdAt: timestamp('created_at').defaultNow().notNull(),
+updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Example migration with types
+export const migration: MigrationConfig = {
+name: 'create_users',
+up: [
+`CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+email TEXT NOT NULL UNIQUE,
+name TEXT NOT NULL,
+created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+)`,
+'CREATE INDEX users_email_idx ON users (email)',
+],
+down: ['DROP TABLE users'],
+};

@@ -1,0 +1,267 @@
+---
+description: State management patterns and best practices with Zustand and TanStack Query
+globs: '**/state/**/*.{ts,tsx}'
+---
+
+# State Management Patterns
+
+## Core Principles
+
+1. **State Organization**
+
+   - Separate UI and server state
+   - Use appropriate tools
+   - Maintain single source of truth
+   - Follow immutability patterns
+
+2. **Type Safety**
+
+   - Use TypeScript for state types
+   - Implement proper selectors
+   - Maintain type inference
+   - Handle state updates safely
+
+3. **Performance**
+
+   - Optimize re-renders
+   - Implement proper memoization
+   - Handle state updates efficiently
+   - Manage subscriptions
+
+4. **Developer Experience**
+
+   - Provide clear APIs
+   - Implement proper devtools
+   - Enable time-travel debugging
+   - Support hot reloading
+
+## Implementation
+
+### 1. UI State with Zustand
+
+```typescript
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+// UI state store
+type UIState = {
+  theme: 'light' | 'dark';
+  sidebar: boolean;
+  notifications: boolean;
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleSidebar: () => void;
+  toggleNotifications: () => void;
+};
+
+export const useUIStore = create<UIState>()(
+  devtools(
+    persist(
+      (set) => ({
+        theme: 'light',
+        sidebar: true,
+        notifications: true,
+        setTheme: (theme) => set({ theme }),
+        toggleSidebar: () => set((state) => ({ sidebar: !state.sidebar })),
+        toggleNotifications: () =>
+          set((state) => ({ notifications: !state.notifications })),
+      }),
+      {
+        name: 'ui-storage',
+      },
+    ),
+  ),
+);
+
+// Selectors
+export const useTheme = () => useUIStore((state) => state.theme);
+export const useSidebar = () => useUIStore((state) => state.sidebar);
+```
+
+### 2. Server State with TanStack Query
+
+```typescript
+import { QueryClient } from '@tanstack/react-query';
+
+// Query client configuration
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+});
+
+// Prefetch configuration
+export async function prefetchQueries() {
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ['user'],
+      queryFn: getCurrentUser,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['settings'],
+      queryFn: getSettings,
+    }),
+  ]);
+}
+```
+
+### 3. Complex State Management
+
+```typescript
+// Feature store with slices
+type AuthSlice = {
+  user: User | null;
+  setUser: (user: User | null) => void;
+};
+
+type SettingsSlice = {
+  settings: Settings;
+  updateSettings: (settings: Partial<Settings>) => void;
+};
+
+type AppState = AuthSlice & SettingsSlice;
+
+const createAuthSlice = (set: SetState<AppState>): AuthSlice => ({
+  user: null,
+  setUser: (user) => set({ user }),
+});
+
+const createSettingsSlice = (set: SetState<AppState>): SettingsSlice => ({
+  settings: defaultSettings,
+  updateSettings: (newSettings) =>
+    set((state) => ({
+      settings: { ...state.settings, ...newSettings },
+    })),
+});
+
+export const useAppStore = create<AppState>()(
+  devtools((...args) => ({
+    ...createAuthSlice(...args),
+    ...createSettingsSlice(...args),
+  })),
+);
+```
+
+### 4. State Synchronization
+
+```typescript
+// Sync server and client state
+export function useSyncedState() {
+  const queryClient = useQueryClient();
+  const updateSettings = useAppStore((state) => state.updateSettings);
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    onSuccess: (data) => {
+      updateSettings(data);
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: updateServerSettings,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['settings'], data);
+      updateSettings(data);
+    },
+  });
+
+  return {
+    settings,
+    updateSettings: mutation.mutate,
+    isLoading: mutation.isLoading,
+    error: mutation.error,
+  };
+}
+```
+
+## Best Practices
+
+### 1. State Design
+
+- Keep state minimal
+- Use appropriate tools
+- Implement proper types
+- Document state shape
+- Handle migrations
+
+### 2. Performance
+
+- Optimize selectors
+- Use proper middleware
+- Handle subscriptions
+- Implement memoization
+- Monitor re-renders
+
+### 3. State Updates
+
+- Follow immutability
+- Batch updates
+- Handle side effects
+- Implement rollbacks
+- Validate state
+
+### 4. Developer Tools
+
+- Enable debugging
+- Implement logging
+- Support time travel
+- Monitor performance
+- Handle errors
+
+## State Composition
+
+### 1. Combined Stores
+
+```typescript
+// Combine multiple stores
+export function useDashboardState() {
+  const { user } = useAppStore();
+  const { theme } = useUIStore();
+  const { data: posts } = usePosts(user?.id);
+  const { data: notifications } = useNotifications(user?.id);
+
+  return {
+    user,
+    theme,
+    posts,
+    notifications,
+    isLoading: !user || !posts || !notifications,
+  };
+}
+```
+
+### 2. Derived State
+
+```typescript
+// Compute derived state
+export function useUserStatus() {
+  const user = useAppStore((state) => state.user);
+  const lastActive = useLastActive(user?.id);
+  const notifications = useNotifications(user?.id);
+
+  const status = useMemo(() => {
+    if (!user) return 'offline';
+    if (lastActive.isStale) return 'away';
+    if (notifications.hasUnread) return 'busy';
+    return 'online';
+  }, [user, lastActive.isStale, notifications.hasUnread]);
+
+  return {
+    status,
+    lastActive: lastActive.data,
+    notifications: notifications.data,
+  };
+}
+```
+
+## Related Patterns
+
+- [Query Patterns](query-patterns.mdc) for data fetching
+- [Mutation Patterns](mutation-patterns.mdc) for state updates
+- [Validation Rules](validation-rules.mdc) for state validation
+- [Error Handling](../core/error-handling.mdc) for error patterns

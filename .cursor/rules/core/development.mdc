@@ -156,7 +156,7 @@ globs: '*'
 
 ## Related Patterns
 
-- [Setup](mdc:.cursor/rules/core/setup.mdc) for project setup
-- [Architecture](mdc:.cursor/rules/core/architecture.mdc) for patterns
-- [Testing](mdc:.cursor/rules/testing/unit.mdc) for testing guidelines
-- [Documentation](mdc:.cursor/rules/quality/documentation.mdc) for documentation standards
+- [Setup](setup.mdc) for project setup
+- [Architecture](architecture.mdc) for patterns
+- [Testing](../testing/unit-testing.mdc) for testing guidelines
+- [Documentation](../quality/documentation-standards.mdc) for documentation standards

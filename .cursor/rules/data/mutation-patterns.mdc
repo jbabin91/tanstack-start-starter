@@ -1,0 +1,371 @@
+---
+description: Mutation patterns and best practices with TanStack Query and Drizzle ORM
+globs: '**/mutations/**/*.{ts,tsx}'
+---
+
+# Mutation Patterns
+
+## Core Principles
+
+1. **Type Safety**
+
+   - Use TypeScript for mutation definitions
+   - Leverage TanStack Query types
+   - Implement proper error types
+   - Maintain type inference
+
+2. **Data Consistency**
+
+   - Implement optimistic updates
+   - Handle rollbacks
+   - Maintain cache consistency
+   - Validate data integrity
+
+3. **Error Handling**
+
+   - Implement retry logic
+   - Handle network errors
+   - Provide error feedback
+   - Support recovery actions
+
+4. **Performance**
+
+   - Batch operations
+   - Optimize cache updates
+   - Handle race conditions
+   - Manage loading states
+
+## Implementation
+
+### 1. Basic Mutations
+
+```typescript
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { db } from '~/db';
+import { users, posts } from '~/db/schema';
+import { eq } from 'drizzle-orm';
+
+type User = {
+  id: number;
+  email: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  postCount?: number;
+};
+
+type Post = {
+  id: number;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type NewUser = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
+
+type UpdateUserData = {
+  id: number;
+  data: Partial<User>;
+};
+
+type MutationContext<T> = {
+  previousData?: T;
+};
+
+type BatchUpdateData = {
+  id: number;
+  data: Partial<Post>;
+}[];
+
+type PostFormData = {
+  title: string;
+  content: string;
+  tags: string[];
+  authorId: number;
+};
+
+type PublishPostResult = {
+  post: Post;
+  notification: Notification;
+};
+
+type UpdatePostWithTagsData = {
+  postId: number;
+  data: Partial<Post>;
+  tags: string[];
+};
+
+type UpdatePostWithTagsResult = {
+  post: Post;
+  tags: string[];
+};
+
+type Notification = {
+  id: number;
+  type: string;
+  postId: number;
+  createdAt: Date;
+};
+
+// Create user mutation
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: NewUser) => {
+      const [user] = await db.insert(users).values(data).returning();
+      return user;
+    },
+    onSuccess: (user) => {
+      queryClient.setQueryData(['user', user.id], user);
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+// Update user mutation
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: UpdateUserData) => {
+      const [user] = await db
+        .update(users)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(users.id, id))
+        .returning();
+      return user;
+    },
+    onSuccess: (user) => {
+      queryClient.setQueryData(['user', user.id], user);
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+```
+
+### 2. Optimistic Updates
+
+```typescript
+type UpdatePostData = {
+  id: number;
+  data: Partial<Post>;
+};
+
+// Optimistic update mutation
+export function useOptimisticUpdatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: UpdatePostData) => {
+      const [post] = await db
+        .update(posts)
+        .set(data)
+        .where(eq(posts.id, id))
+        .returning();
+      return post;
+    },
+    onMutate: async ({ id, data }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['post', id] });
+
+      // Snapshot previous value
+      const previousPost = queryClient.getQueryData(['post', id]);
+
+      // Optimistically update
+      queryClient.setQueryData(['post', id], (old: Post) => ({
+        ...old,
+        ...data,
+      }));
+
+      return { previousPost };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousPost) {
+        queryClient.setQueryData(['post', variables.id], context.previousPost);
+      }
+    },
+    onSettled: (post) => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['post', post.id] });
+    },
+  });
+}
+```
+
+### 3. Batch Mutations
+
+```typescript
+// Batch update mutation
+export function useBatchUpdatePosts() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updates: BatchUpdateData) => {
+      const results = await db.transaction(async (tx) => {
+        return Promise.all(
+          updates.map(({ id, data }) =>
+            tx.update(posts).set(data).where(eq(posts.id, id)).returning(),
+          ),
+        );
+      });
+      return results.flat();
+    },
+    onSuccess: (updatedPosts) => {
+      updatedPosts.forEach((post) => {
+        queryClient.setQueryData(['post', post.id], post);
+      });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+}
+```
+
+### 4. Form Mutations
+
+```typescript
+// Form submission mutation
+export function useSubmitPostForm() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: PostFormData) => {
+      const [post] = await db
+        .insert(posts)
+        .values({
+          ...data,
+          published: false,
+        })
+        .returning();
+      return post;
+    },
+    onSuccess: (post, variables, context) => {
+      queryClient.setQueryData(['post', post.id], post);
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+
+      // Update author's post count
+      queryClient.setQueryData(['user', post.authorId], (old: User) => ({
+        ...old,
+        postCount: (old.postCount ?? 0) + 1,
+      }));
+    },
+  });
+}
+```
+
+## Best Practices
+
+### 1. Mutation Design
+
+- Use proper types
+- Implement validation
+- Handle all states
+- Provide feedback
+- Maintain consistency
+
+### 2. Error Handling
+
+- Validate input data
+- Handle network errors
+- Provide error messages
+- Support recovery
+- Log errors properly
+
+### 3. Cache Management
+
+- Update cache correctly
+- Handle race conditions
+- Implement rollbacks
+- Maintain consistency
+- Consider side effects
+
+### 4. Performance
+
+- Batch operations
+- Optimize updates
+- Handle loading states
+- Prevent unnecessary updates
+- Monitor performance
+
+## Mutation Composition
+
+### 1. Sequential Mutations
+
+```typescript
+// Sequential mutations hook
+export function usePublishPost() {
+  const updatePost = useUpdatePost();
+  const notifySubscribers = useNotifySubscribers();
+
+  const publish = async (postId: number): Promise<PublishPostResult> => {
+    // First update the post
+    const post = await updatePost.mutateAsync({
+      id: postId,
+      data: { published: true },
+    });
+
+    // Then notify subscribers
+    const notification = post.published
+      ? await notifySubscribers.mutateAsync({
+          postId: post.id,
+          type: 'new_post',
+        })
+      : null;
+
+    return { post, notification };
+  };
+
+  return {
+    publish,
+    isLoading: updatePost.isLoading || notifySubscribers.isLoading,
+    error: updatePost.error || notifySubscribers.error,
+  };
+}
+```
+
+### 2. Coordinated Mutations
+
+```typescript
+// Coordinated mutations hook
+export function useUpdatePostWithTags() {
+  const queryClient = useQueryClient();
+  const updatePost = useUpdatePost();
+  const updateTags = useUpdateTags();
+
+  return useMutation({
+    mutationFn: async ({
+      postId,
+      data,
+      tags,
+    }: UpdatePostWithTagsData): Promise<UpdatePostWithTagsResult> => {
+      return db.transaction(async (tx) => {
+        const [post] = await updatePost.mutateAsync({ id: postId, data });
+        const updatedTags = await updateTags.mutateAsync({
+          postId,
+          tags,
+        });
+        return { post, tags: updatedTags };
+      });
+    },
+    onSuccess: ({ post, tags }) => {
+      queryClient.setQueryData(['post', post.id], {
+        ...post,
+        tags,
+      });
+    },
+  });
+}
+```
+
+## Related Patterns
+
+- [Query Patterns](mdc:query-patterns.mdc) for data fetching
+- [Schema Design](mdc:schema-design.mdc) for database schema
+- [Validation Rules](mdc:validation-rules.mdc) for data validation
+- [State Patterns](mdc:state-patterns.mdc) for state management
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+- [Form Handling](mdc:../frontend/form-handling.mdc) for form submission

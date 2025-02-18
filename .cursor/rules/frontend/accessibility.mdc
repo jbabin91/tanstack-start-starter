@@ -1,51 +1,49 @@
 ---
-description: Accessibility patterns and best practices for React components
+description: Accessibility (a11y) patterns and best practices for React components
 globs: '**/*.{ts,tsx}'
 ---
 
 # Accessibility Patterns
 
-## Accessibility Types
+## Core Principles
 
 1. **Semantic HTML**
 
-   - Proper element usage
-   - ARIA landmarks
-   - Document structure
-   - Content organization
+   - Use proper HTML elements for their intended purpose
+   - Implement ARIA landmarks for page structure
+   - Follow document outline and heading hierarchy
+   - Organize content logically and meaningfully
 
-2. **ARIA Patterns**
+2. **ARIA Implementation**
 
-   - ARIA roles
-   - ARIA states
-   - ARIA properties
-   - Live regions
+   - Use ARIA roles only when HTML semantics aren't sufficient
+   - Maintain ARIA states for interactive elements
+   - Implement ARIA properties for enhanced context
+   - Configure live regions for dynamic content
 
-3. **Interactive Elements**
+3. **Keyboard Navigation**
 
-   - Focus management
-   - Keyboard navigation
-   - Touch targets
-   - Event handling
+   - Ensure all interactive elements are focusable
+   - Implement logical tab order
+   - Provide keyboard shortcuts for common actions
+   - Handle focus management in modals and popups
 
-4. **Content Patterns**
-   - Color contrast
-   - Text alternatives
-   - Error messages
-   - Status updates
+4. **Visual Design**
 
-## Component Patterns
+   - Maintain sufficient color contrast (WCAG 2.1 AA)
+   - Support different text sizes and zoom levels
+   - Design focus indicators for interactive elements
+   - Consider reduced motion preferences
 
-### Semantic Structure
+## Implementation
+
+### 1. Page Structure
 
 ```typescript
-// Page layout with landmarks
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen">
-      <a href="#main" className="sr-only focus:not-sr-only">
-        Skip to main content
-      </a>
+      <SkipLink href="#main">Skip to main content</SkipLink>
 
       <header role="banner">
         <nav role="navigation" aria-label="Main">
@@ -63,36 +61,11 @@ export function Layout({ children }: LayoutProps) {
     </div>
   );
 }
-
-// Section with proper headings
-export function Section({
-  title,
-  description,
-  children,
-}: SectionProps) {
-  return (
-    <section
-      aria-labelledby="section-title"
-      className="space-y-4"
-    >
-      <div className="space-y-1">
-        <h2 id="section-title" className="text-2xl font-bold">
-          {title}
-        </h2>
-        {description && (
-          <p className="text-muted-foreground">{description}</p>
-        )}
-      </div>
-      {children}
-    </section>
-  );
-}
 ```
 
-### Interactive Components
+### 2. Interactive Components
 
 ```typescript
-// Accessible button with loading state
 export function Button({
   children,
   isLoading,
@@ -119,8 +92,54 @@ export function Button({
     </button>
   );
 }
+```
 
-// Dialog with proper focus management
+### 3. Form Controls
+
+```typescript
+export function FormField({
+  label,
+  error,
+  required,
+  children,
+}: FormFieldProps) {
+  const id = useId();
+  const errorId = useId();
+
+  return (
+    <div className="space-y-2">
+      <Label
+        htmlFor={id}
+        className={cn(required && 'after:content-["*"] after:ml-1 after:text-destructive')}
+      >
+        {label}
+      </Label>
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+        return React.cloneElement(child, {
+          id,
+          'aria-describedby': error ? errorId : undefined,
+          'aria-invalid': !!error,
+          'aria-required': required,
+        });
+      })}
+      {error && (
+        <p
+          id={errorId}
+          className="text-sm text-destructive"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+```
+
+### 4. Dialog Management
+
+```typescript
 export function Dialog({
   title,
   description,
@@ -161,244 +180,62 @@ export function Dialog({
 }
 ```
 
-### Form Components
-
-```typescript
-// Accessible form field
-export function FormField({
-  label,
-  error,
-  required,
-  children,
-}: FormFieldProps) {
-  const id = useId();
-  const errorId = useId();
-
-  return (
-    <div className="space-y-2">
-      <Label
-        htmlFor={id}
-        className={cn(required && 'after:content-["*"] after:ml-1 after:text-destructive')}
-      >
-        {label}
-      </Label>
-      {React.Children.map(children, (child) => {
-        if (!React.isValidElement(child)) return child;
-        return React.cloneElement(child, {
-          id,
-          'aria-describedby': error ? errorId : undefined,
-          'aria-invalid': !!error,
-          'aria-required': required,
-        });
-      })}
-      {error && (
-        <p
-          id={errorId}
-          className="text-sm text-destructive"
-          role="alert"
-        >
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// Accessible select
-export function Select({
-  label,
-  options,
-  error,
-  ...props
-}: SelectProps) {
-  const id = useId();
-  const errorId = useId();
-
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <SelectPrimitive.Root {...props}>
-        <SelectPrimitive.Trigger
-          id={id}
-          aria-describedby={error ? errorId : undefined}
-          aria-invalid={!!error}
-          className={cn(
-            'border rounded-md px-3 py-2',
-            error && 'border-destructive'
-          )}
-        >
-          <SelectPrimitive.Value placeholder="Select an option" />
-        </SelectPrimitive.Trigger>
-        <SelectPrimitive.Portal>
-          <SelectPrimitive.Content>
-            <SelectPrimitive.Viewport>
-              {options.map((option) => (
-                <SelectPrimitive.Item
-                  key={option.value}
-                  value={option.value}
-                >
-                  <SelectPrimitive.ItemText>
-                    {option.label}
-                  </SelectPrimitive.ItemText>
-                </SelectPrimitive.Item>
-              ))}
-            </SelectPrimitive.Viewport>
-          </SelectPrimitive.Content>
-        </SelectPrimitive.Portal>
-      </SelectPrimitive.Root>
-      {error && (
-        <p
-          id={errorId}
-          className="text-sm text-destructive"
-          role="alert"
-        >
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-```
-
-### Status and Updates
-
-```typescript
-// Live region for status updates
-export function StatusMessage({
-  message,
-  type = 'status',
-}: StatusMessageProps) {
-  return (
-    <div
-      role={type === 'alert' ? 'alert' : 'status'}
-      aria-live={type === 'alert' ? 'assertive' : 'polite'}
-      className={cn(
-        'p-4 rounded-md',
-        type === 'alert' && 'bg-destructive text-destructive-foreground',
-        type === 'status' && 'bg-muted'
-      )}
-    >
-      {message}
-    </div>
-  );
-}
-
-// Loading state
-export function LoadingState({
-  children,
-  isLoading,
-}: LoadingStateProps) {
-  return (
-    <div aria-busy={isLoading}>
-      {isLoading ? (
-        <div
-          role="status"
-          className="flex items-center justify-center p-4"
-        >
-          <Spinner className="h-6 w-6" />
-          <span className="ml-2">Loading...</span>
-        </div>
-      ) : (
-        children
-      )}
-    </div>
-  );
-}
-```
-
 ## Best Practices
 
-1. **Semantic HTML**
+### 1. Semantic Structure
 
-   - Use proper HTML elements
-   - Implement ARIA landmarks
-   - Maintain heading hierarchy
-   - Provide skip links
+- Use proper heading hierarchy (h1-h6)
+- Implement landmarks for major sections
+- Provide descriptive labels for regions
+- Use lists for related items
 
-2. **Keyboard Navigation**
+### 2. Interactive Elements
 
-   - Ensure focusability
-   - Logical tab order
-   - Focus management
-   - Keyboard shortcuts
+- Ensure sufficient touch targets (44x44px)
+- Provide visible focus indicators
+- Support both mouse and keyboard interaction
+- Handle touch and gesture events
 
-3. **ARIA Usage**
+### 3. Forms and Validation
 
-   - Follow ARIA patterns
-   - Proper role usage
-   - State management
-   - Live regions
+- Associate labels with form controls
+- Provide clear error messages
+- Group related form elements
+- Indicate required fields
 
-4. **Visual Design**
+### 4. Dynamic Content
 
-   - Color contrast
-   - Focus indicators
-   - Text sizing
-   - Spacing
+- Announce important updates
+- Manage focus during navigation
+- Handle loading states
+- Provide progress indicators
 
-5. **Content**
-   - Alt text
-   - Error messages
-   - Status updates
-   - Instructions
+### 5. Media
 
-## Testing Patterns
+- Include alt text for images
+- Provide captions for videos
+- Support audio descriptions
+- Consider transcripts
 
-```typescript
-// Accessibility test utilities
-export const a11y = {
-  // Check focus management
-  async checkFocus(element: HTMLElement) {
-    expect(document.activeElement).toBe(element);
-  },
+## Testing
 
-  // Check ARIA attributes
-  checkAriaLabel(element: HTMLElement, label: string) {
-    expect(element).toHaveAttribute('aria-label', label);
-  },
+### 1. Automated Testing
 
-  // Check keyboard navigation
-  async pressTab(times = 1) {
-    for (let i = 0; i < times; i++) {
-      await userEvent.tab();
-    }
-  },
+- Implement axe-core for automated checks
+- Test keyboard navigation
+- Verify ARIA attributes
+- Check color contrast
 
-  // Check screen reader text
-  checkScreenReaderText(text: string) {
-    expect(screen.getByText(text)).toHaveClass('sr-only');
-  },
-};
+### 2. Manual Testing
 
-// Component tests
-describe('Dialog', () => {
-  it('manages focus correctly', async () => {
-    render(<Dialog />);
-
-    // Open dialog
-    await userEvent.click(screen.getByRole('button'));
-
-    // Check focus trap
-    await a11y.checkFocus(screen.getByRole('dialog'));
-
-    // Check focus movement
-    await a11y.pressTab();
-    await a11y.checkFocus(screen.getByRole('button', { name: 'Close' }));
-  });
-
-  it('has proper ARIA attributes', () => {
-    render(<Dialog title="Test" description="Test description" />);
-
-    const dialog = screen.getByRole('dialog');
-    expect(dialog).toHaveAttribute('aria-labelledby');
-    expect(dialog).toHaveAttribute('aria-describedby');
-  });
-});
-```
+- Use screen readers
+- Test keyboard-only navigation
+- Verify focus management
+- Check different zoom levels
 
 ## Related Patterns
 
-- [Components](mdc:.cursor/rules/frontend/components.mdc) for base components
-- [Forms](mdc:.cursor/rules/frontend/forms.mdc) for form patterns
-- [Styling](mdc:.cursor/rules/frontend/styling.mdc) for visual patterns
-- [Testing](mdc:.cursor/rules/quality/testing.mdc) for a11y testing
+- [Component Patterns](component-patterns.mdc) for component implementation
+- [Form Handling](form-handling.mdc) for accessible forms
+- [Styling Guidelines](styling-guidelines.mdc) for visual accessibility
+- [Error Handling](../core/error-handling.mdc) for error patterns

@@ -1,0 +1,313 @@
+---
+description: Error handling patterns and best practices
+globs: '**/*'
+---
+
+# Error Handling Patterns
+
+## Core Principles
+
+1. **Early Returns**
+
+   - Handle errors at the beginning of functions
+   - Use guard clauses for preconditions
+   - Return early for invalid states
+   - Keep the happy path last
+
+2. **Error Types**
+
+   - Use custom error classes
+   - Include error codes
+   - Add contextual information
+   - Support i18n messages
+
+3. **Error Boundaries**
+
+   - Implement React Error Boundaries
+   - Catch rendering errors
+   - Provide fallback UI
+   - Log errors appropriately
+
+## Implementation
+
+### 1. Custom Error Classes
+
+```typescript
+class AppError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public status: number,
+    public data?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = 'AppError';
+  }
+}
+
+class ValidationError extends AppError {
+  constructor(message: string, data?: Record<string, unknown>) {
+    super(message, 'VALIDATION_ERROR', 400, data);
+    this.name = 'ValidationError';
+  }
+}
+
+class AuthenticationError extends AppError {
+  constructor(message: string) {
+    super(message, 'AUTH_ERROR', 401);
+    this.name = 'AuthenticationError';
+  }
+}
+```
+
+### 2. Error Boundaries
+
+```typescript
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundaryComponent
+      fallback={({ error }) => (
+        <ErrorDisplay
+          error={error}
+          reset={() => window.location.reload()}
+        />
+      )}
+    >
+      {children}
+    </ErrorBoundaryComponent>
+  );
+}
+```
+
+### 3. API Error Handling
+
+```typescript
+async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
+  try {
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new AppError(
+        error.message,
+        error.code,
+        response.status,
+        error.data,
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError('An unexpected error occurred', 'UNKNOWN_ERROR', 500);
+  }
+}
+```
+
+### 4. Form Error Handling
+
+```typescript
+function handleFormError(error: unknown) {
+  if (error instanceof ValidationError) {
+    return {
+      message: error.message,
+      fields: error.data?.fields as Record<string, string>,
+    };
+  }
+
+  if (error instanceof AuthenticationError) {
+    return {
+      message: error.message,
+      action: 'login',
+    };
+  }
+
+  return {
+    message: 'An unexpected error occurred',
+    action: 'retry',
+  };
+}
+```
+
+## Error Handling Best Practices
+
+### 1. Function Error Handling
+
+```typescript
+function processData(data: unknown): Result<ProcessedData, ValidationError> {
+  // 1. Type validation
+  if (!isValidData(data)) {
+    return err(new ValidationError('Invalid data format'));
+  }
+
+  // 2. Business logic validation
+  if (!meetsBusinessRules(data)) {
+    return err(new ValidationError('Data does not meet requirements'));
+  }
+
+  // 3. Happy path (last)
+  return ok(processValidData(data));
+}
+```
+
+### 2. Async Error Handling
+
+```typescript
+async function fetchUserData(userId: string) {
+  try {
+    // 1. Input validation
+    if (!isValidUserId(userId)) {
+      throw new ValidationError('Invalid user ID');
+    }
+
+    // 2. API request
+    const response = await apiRequest(`/users/${userId}`);
+
+    // 3. Response validation
+    if (!isValidUserData(response)) {
+      throw new ValidationError('Invalid user data received');
+    }
+
+    // 4. Return processed data
+    return response;
+  } catch (error) {
+    // 5. Error handling
+    handleError(error);
+    throw error;
+  }
+}
+```
+
+### 3. Component Error Handling
+
+```typescript
+function UserProfile({ userId }: { userId: string }) {
+  const { data, error } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUserData(userId),
+    retry: false
+  });
+
+  if (error) {
+    return <ErrorDisplay error={error} />;
+  }
+
+  if (!data) {
+    return <LoadingSpinner />;
+  }
+
+  return <UserProfileDisplay data={data} />;
+}
+```
+
+## Error Logging
+
+### 1. Client-Side Logging
+
+```typescript
+function logError(error: unknown) {
+  if (error instanceof AppError) {
+    console.error({
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      data: error.data,
+    });
+  } else {
+    console.error({
+      name: 'UnknownError',
+      message: String(error),
+    });
+  }
+}
+```
+
+### 2. Production Error Tracking
+
+```typescript
+function initErrorTracking() {
+  window.addEventListener('error', (event) => {
+    logError(event.error);
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    logError(event.reason);
+  });
+}
+```
+
+## Related Patterns
+
+- [API Error Handling](../api/error-handling.mdc)
+- [Form Validation](../frontend/form-handling.mdc)
+- [Testing Errors](../testing/unit-testing.mdc)
+- [Monitoring](../deployment/monitoring-setup.mdc)
+
+type ErrorData = {
+code: string;
+message: string;
+status: number;
+data?: Record<string, unknown>;
+};
+
+type ValidationErrorData = {
+field: string;
+message: string;
+code: string;
+};
+
+type Result<T, E = Error> = {
+data?: T;
+error?: E;
+success: boolean;
+};
+
+type ErrorBoundaryProps = {
+children: React.ReactNode;
+fallback: (props: { error: Error; reset: () => void }) => React.ReactElement;
+};
+
+type ErrorDisplayProps = {
+error: Error;
+reset?: () => void;
+};
+
+// Custom error classes remain classes as they extend Error
+class AppError extends Error {
+constructor(
+message: string,
+public code: string,
+public status: number,
+public data?: Record<string, unknown>,
+) {
+super(message);
+this.name = 'AppError';
+}
+}
+
+// Example error handling with types
+function handleError(error: unknown): Result<never, ErrorData> {
+if (error instanceof AppError) {
+return {
+success: false,
+error: {
+code: error.code,
+message: error.message,
+status: error.status,
+data: error.data,
+},
+};
+}
+
+return {
+success: false,
+error: {
+code: 'UNKNOWN_ERROR',
+message: String(error),
+status: 500,
+},
+};
+}

@@ -1,6 +1,6 @@
 ---
 description: Component patterns and best practices with Shadcn UI and Radix
-globs: '**/*.tsx'
+globs: '**/*.{tsx,css,scss}'
 ---
 
 # Component Patterns
@@ -29,6 +29,7 @@ globs: '**/*.tsx'
    - Responsive layouts
 
 4. **Composite Components**
+
    - Forms
    - Data tables
    - Complex UIs
@@ -206,6 +207,155 @@ export function EmptyState({
 }
 ```
 
+### i18n Components
+
+```typescript
+// Basic component with translations
+function WelcomeMessage() {
+  const { t } = useTranslation();
+  return <h1>{t('common:welcome')}</h1>;
+}
+
+// Component with namespace
+function LoginForm() {
+  const { t } = useTranslation('auth');
+
+  return (
+    <form className="space-y-4">
+      <div>
+        <label>{t('emailLabel')}</label>
+        <input
+          type="email"
+          placeholder={t('emailPlaceholder')}
+          aria-label={t('emailLabel')}
+        />
+      </div>
+      <div>
+        <label>{t('passwordLabel')}</label>
+        <input
+          type="password"
+          placeholder={t('passwordPlaceholder')}
+          aria-label={t('passwordLabel')}
+        />
+      </div>
+      <Button type="submit">
+        {t('loginButton')}
+      </Button>
+    </form>
+  );
+}
+
+// Component with interpolation
+function UserGreeting({ name, count }: { name: string; count: number }) {
+  const { t } = useTranslation();
+  return (
+    <div>
+      {t('greeting', { name })}
+      {t('notifications', { count })}
+    </div>
+  );
+}
+
+// Language switcher component
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+  const router = useRouter();
+
+  const handleLanguageChange = async (lng: string) => {
+    const translations = await getServerSideTranslations({
+      lng,
+      namespaces: ['common', 'auth'],
+    });
+
+    Object.entries(translations).forEach(([ns, resources]) => {
+      i18n.addResourceBundle(lng, ns, resources, true, true);
+    });
+
+    await i18n.changeLanguage(lng);
+    router.reload();
+  };
+
+  return (
+    <Select
+      value={i18n.language}
+      onValueChange={handleLanguageChange}
+    >
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="en">English</SelectItem>
+        <SelectItem value="es">Español</SelectItem>
+        <SelectItem value="fr">Français</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
+// Component with dynamic namespace loading
+function FeatureComponent() {
+  const namespace = 'feature';
+  const { t } = useTranslation();
+  const { isLoading } = useLoadTranslations(namespace);
+
+  if (isLoading) {
+    return <div>{t('common:loading')}</div>;
+  }
+
+  return <div>{t(`${namespace}:title`)}</div>;
+}
+
+// HOC for translation loading
+function withTranslations<P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  namespace: string
+) {
+  return function TranslatedComponent(props: P) {
+    const { t } = useTranslation();
+    const { isLoading } = useLoadTranslations(namespace);
+
+    if (isLoading) {
+      return <div>{t('common:loading')}</div>;
+    }
+
+    return <WrappedComponent {...props} />;
+  };
+}
+```
+
+### i18n Component Best Practices
+
+1. **Component Organization**
+
+   - Keep translations close to components
+   - Use proper namespacing
+   - Handle loading states
+   - Provide fallback content
+   - Support dynamic loading
+
+2. **Type Safety**
+
+   - Use translation key types
+   - Type interpolation values
+   - Handle missing translations
+   - Validate translation keys
+   - Type-safe components
+
+3. **Performance**
+
+   - Load translations on demand
+   - Cache translation results
+   - Memoize translation functions
+   - Handle suspense boundaries
+   - Optimize bundle size
+
+4. **Accessibility**
+   - Use proper HTML lang attribute
+   - Support RTL languages
+   - Handle screen readers
+   - Manage focus on language change
+   - Provide aria labels
+
 ## Component Best Practices
 
 1. **Component Design**
@@ -241,6 +391,7 @@ export function EmptyState({
    - Recovery actions
 
 5. **Accessibility**
+
    - ARIA attributes
    - Keyboard navigation
    - Screen reader support
@@ -249,7 +400,66 @@ export function EmptyState({
 
 ## Related Patterns
 
-- [Routing](mdc:.cursor/rules/frontend/routing.mdc) for route components
-- [Forms](mdc:.cursor/rules/frontend/forms.mdc) for form components
-- [Styling](mdc:.cursor/rules/frontend/styling.mdc) for UI patterns
-- [State](mdc:.cursor/rules/data/state.mdc) for state management
+- [Form Handling](mdc:form-handling.mdc) for form components
+- [State Management](mdc:state-management.mdc) for state patterns
+- [Styling Guidelines](mdc:styling-guidelines.mdc) for UI consistency
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+
+type BaseProps = {
+className?: string;
+children?: React.ReactNode;
+};
+
+type ComponentProps = BaseProps & {
+// Add additional props as needed
+};
+
+type DataTableProps<TData> = {
+data: TData[];
+columns: ColumnDef<TData>[];
+pagination?: {
+pageSize: number;
+pageIndex: number;
+total: number;
+onPageChange: (page: number) => void;
+};
+};
+
+type LoadingSpinnerProps = {
+size?: 'sm' | 'md' | 'lg';
+className?: string;
+};
+
+type EmptyStateProps = {
+icon: React.ComponentType<{ className?: string }>;
+title: string;
+description: string;
+action?: React.ReactNode;
+};
+
+// Example component with types
+export function DataTable<TData>({
+data,
+columns,
+pagination,
+}: DataTableProps<TData>) {
+// ... existing implementation ...
+}
+
+// Example loading component with types
+export function LoadingSpinner({
+size = 'md',
+className,
+}: LoadingSpinnerProps) {
+// ... existing implementation ...
+}
+
+// Example empty state component with types
+export function EmptyState({
+icon: Icon,
+title,
+description,
+action,
+}: EmptyStateProps) {
+// ... existing implementation ...
+}

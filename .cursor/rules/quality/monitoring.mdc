@@ -300,6 +300,7 @@ export function handleAlert(alert: Alert) {
 
 ## Related Patterns
 
-- [Performance](mdc:.cursor/rules/performance/monitoring.mdc) for performance monitoring
-- [Deployment](mdc:.cursor/rules/deployment/monitoring.mdc) for deployment monitoring
-- [Security](mdc:.cursor/rules/security/monitoring.mdc) for security monitoring
+- [Performance Monitoring](../performance/monitoring-patterns.mdc) for performance monitoring
+- [Deployment Monitoring](../deployment/monitoring-setup.mdc) for deployment monitoring
+- [Security Monitoring](../security/monitoring-patterns.mdc) for security monitoring
+- [Error Handling](../core/error-handling.mdc) for error monitoring

@@ -245,7 +245,7 @@ pnpm lint-staged
 
 ## Related Patterns
 
-- [Architecture](mdc:.cursor/rules/core/architecture.mdc) for application structure
-- [Conventions](mdc:.cursor/rules/core/conventions.mdc) for coding standards
-- [Workflow](mdc:.cursor/rules/core/workflow.mdc) for development process
-- [Testing](mdc:.cursor/rules/quality/testing.mdc) for test setup
+- [Architecture](mdc:architecture.mdc) for application structure
+- [Conventions](mdc:conventions.mdc) for coding standards
+- [Development Workflow](mdc:development-workflow.mdc) for development process
+- [Testing](mdc:../testing/unit-testing.mdc) for test setup

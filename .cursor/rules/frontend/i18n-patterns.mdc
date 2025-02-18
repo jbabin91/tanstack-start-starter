@@ -1,0 +1,224 @@
+---
+description: 'Internationalization (i18n) patterns with i18next and TanStack Start'
+globs: '**/i18n/**/*.{ts,tsx},**/translations/**/*.{ts,tsx},**/locales/**/*.{ts,tsx}'
+---
+
+# i18n Patterns
+
+## Core Principles
+
+1. **Type Safety**
+
+   - Use TypeScript for translation keys
+   - Implement proper namespaces
+   - Maintain type inference
+   - Handle fallback types
+
+2. **Server Integration**
+
+   - Use TanStack Start for server translations
+   - Implement server-side language detection
+   - Handle SSR translations
+   - Manage translation loading
+
+3. **Client Integration**
+   - Use i18next for client-side translations
+   - Implement language switching
+   - Handle dynamic loading
+   - Manage translation cache
+
+## Implementation
+
+### 1. Server Setup
+
+```typescript
+// app/i18n/server.ts
+import { createServerFunction$ } from '@tanstack/start';
+import { z } from 'zod';
+import { db } from '~/db';
+
+export const getTranslations = createServerFunction$({
+  key: 'getTranslations',
+  schema: z.object({
+    lng: z.string(),
+    ns: z.string(),
+  }),
+  handler: async ({ lng, ns }) => {
+    const translations = await db.query.translations.findMany({
+      where: (translations, { eq, and }) =>
+        and(eq(translations.language, lng), eq(translations.namespace, ns)),
+    });
+
+    return translations.reduce(
+      (acc, { key, value }) => ({
+        ...acc,
+        [key]: value,
+      }),
+      {},
+    );
+  },
+});
+
+export const getServerSideTranslations = createServerFunction$({
+  key: 'getServerSideTranslations',
+  schema: z.object({
+    lng: z.string(),
+    namespaces: z.array(z.string()),
+  }),
+  handler: async ({ lng, namespaces }) => {
+    const translations = await Promise.all(
+      namespaces.map((ns) => getTranslations({ lng, ns })),
+    );
+
+    return namespaces.reduce(
+      (acc, ns, index) => ({
+        ...acc,
+        [ns]: translations[index],
+      }),
+      {},
+    );
+  },
+});
+```
+
+### 2. Client Setup
+
+```typescript
+// app/i18n/client.ts
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { getTranslations } from './server';
+
+export async function initializeI18n() {
+  await i18next.use(initReactI18next).init({
+    lng: 'en',
+    fallbackLng: 'en',
+    supportedLngs: ['en', 'es', 'fr'],
+    defaultNS: 'common',
+    interpolation: {
+      escapeValue: false,
+    },
+    backend: {
+      loadPath: async (lng: string, ns: string) => {
+        const translations = await getTranslations({ lng, ns });
+        return translations;
+      },
+    },
+  });
+
+  return i18next;
+}
+```
+
+### 3. Route Integration
+
+```typescript
+// app/routes/_app/route.tsx
+import { createRootRoute } from '@tanstack/react-router';
+import { getServerSideTranslations } from '~/i18n/server';
+
+export const Route = createRootRoute({
+  beforeLoad: async ({ context }) => {
+    const translations = await getServerSideTranslations({
+      lng: context.locale ?? 'en',
+      namespaces: ['common', 'auth'],
+    });
+
+    return { translations };
+  },
+  component: RootLayout,
+});
+
+function RootLayout() {
+  const { translations } = useLoaderData();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    Object.entries(translations).forEach(([ns, resources]) => {
+      i18n.addResourceBundle(i18n.language, ns, resources, true, true);
+    });
+  }, [translations, i18n]);
+
+  return (
+    <div>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+### 4. Translation Loading Hook
+
+```typescript
+// app/hooks/useLoadTranslations.ts
+import { useQuery } from '@tanstack/react-query';
+import { getTranslations } from '~/i18n/server';
+import { useTranslation } from 'react-i18next';
+
+export function useLoadTranslations(namespace: string) {
+  const { i18n } = useTranslation();
+
+  return useQuery({
+    queryKey: ['translations', i18n.language, namespace],
+    queryFn: () =>
+      getTranslations({
+        lng: i18n.language,
+        ns: namespace,
+      }),
+    onSuccess: (translations) => {
+      i18n.addResourceBundle(
+        i18n.language,
+        namespace,
+        translations,
+        true,
+        true,
+      );
+    },
+  });
+}
+```
+
+## Best Practices
+
+### 1. Translation Management
+
+- Store translations in database
+- Use namespaces for organization
+- Implement fallback languages
+- Handle missing translations
+- Support pluralization
+
+### 2. Performance
+
+- Load translations on demand
+- Cache translations
+- Preload common namespaces
+- Optimize bundle size
+- Handle loading states
+
+### 3. Type Safety
+
+- Define translation keys
+- Use TypeScript for safety
+- Handle missing keys
+- Validate translations
+- Type-safe components
+
+### 4. Error Handling
+
+- Handle loading errors
+- Provide fallback texts
+- Log missing translations
+- Monitor translation usage
+- Handle edge cases
+
+## Related Patterns
+
+- [Server Functions](../api/server-functions.mdc) for server integration
+- [Query Patterns](../data/query-patterns.mdc) for data loading
+- [Error Handling](../core/error-handling.mdc) for error patterns
+- [Component Patterns](component-patterns.mdc) for i18n components

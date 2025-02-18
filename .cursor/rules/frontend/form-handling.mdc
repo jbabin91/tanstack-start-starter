@@ -32,9 +32,51 @@ globs: '**/*.{ts,tsx}'
 ### Basic Form
 
 ```typescript
+// Types
+type FormField<T> = {
+  name: string;
+  value: T;
+  error?: string;
+  touched: boolean;
+};
+
+type FormState<T> = {
+  values: T;
+  errors: Partial<Record<keyof T, string[]>>;
+  touched: Partial<Record<keyof T, boolean>>;
+  isSubmitting: boolean;
+  isValid: boolean;
+};
+
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
+type RegistrationFormData = {
+  // Step 1: Account
+  email: string;
+  password: string;
+  // Step 2: Profile
+  name: string;
+  bio: string;
+  // Step 3: Preferences
+  notifications: boolean;
+  theme: 'light' | 'dark';
+};
+
+type DynamicFieldData = {
+  name: string;
+  value: string;
+};
+
+type DynamicFormData = {
+  fields: DynamicFieldData[];
+};
+
 // Basic form with validation
 export function LoginForm() {
-  const form = createForm({
+  const form = createForm<LoginFormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -57,24 +99,24 @@ export function LoginForm() {
 
   return (
     <form.Provider>
-      <form onSubmit={form.handleSubmit} className='space-y-4'>
-        <form.Field name='email'>
+      <form onSubmit={form.handleSubmit} className="space-y-4">
+        <form.Field name="email">
           {(field) => (
-            <FormField label='Email' error={field.state.meta.errors?.[0]}>
-              <Input {...field.props} type='email' autoComplete='email' />
+            <FormField label="Email" error={field.state.meta.errors?.[0]}>
+              <Input {...field.props} type="email" autoComplete="email" />
             </FormField>
           )}
         </form.Field>
 
-        <form.Field name='password'>
+        <form.Field name="password">
           {(field) => (
-            <FormField label='Password' error={field.state.meta.errors?.[0]}>
-              <Input {...field.props} type='password' autoComplete='current-password' />
+            <FormField label="Password" error={field.state.meta.errors?.[0]}>
+              <Input {...field.props} type="password" autoComplete="current-password" />
             </FormField>
           )}
         </form.Field>
 
-        <Button type='submit' disabled={form.state.isSubmitting}>
+        <Button type="submit" disabled={form.state.isSubmitting}>
           {form.state.isSubmitting ? 'Logging in...' : 'Log in'}
         </Button>
       </form>
@@ -90,17 +132,14 @@ export function LoginForm() {
 export function RegistrationForm() {
   const [step, setStep] = useState(1);
 
-  const form = createForm({
+  const form = createForm<RegistrationFormData>({
     defaultValues: {
-      // Step 1: Account
       email: '',
       password: '',
-      // Step 2: Profile
       name: '',
       bio: '',
-      // Step 3: Preferences
       notifications: true,
-      theme: 'light' as const,
+      theme: 'light',
     },
     validatorSchema: registrationSchema,
   });
@@ -121,7 +160,7 @@ export function RegistrationForm() {
 
   return (
     <form.Provider>
-      <form onSubmit={form.handleSubmit} className='space-y-6'>
+      <form onSubmit={form.handleSubmit} className="space-y-6">
         {step === 1 && <AccountStep form={form} onNext={nextStep} />}
         {step === 2 && <ProfileStep form={form} onNext={nextStep} onPrev={prevStep} />}
         {step === 3 && <PreferencesStep form={form} onPrev={prevStep} onSubmit={form.handleSubmit} />}
@@ -130,8 +169,6 @@ export function RegistrationForm() {
   );
 }
 ```
-
-## Form Patterns
 
 ### Form Validation
 
@@ -157,7 +194,7 @@ export function PasswordField() {
 
   return (
     <form.Field
-      name='password'
+      name="password"
       validate={async (value) => {
         // Check password strength
         const strength = await checkPasswordStrength(value);
@@ -167,7 +204,7 @@ export function PasswordField() {
       }}
     >
       {(field) => (
-        <FormField label='Password' error={field.state.meta.errors?.[0]}>
+        <FormField label="Password" error={field.state.meta.errors?.[0]}>
           <PasswordInput {...field.props} />
           <PasswordStrengthMeter value={field.state.value} />
         </FormField>
@@ -180,9 +217,9 @@ export function PasswordField() {
 ### Dynamic Forms
 
 ```typescript
-// Dynamic form fields
+// Dynamic form with validation
 export function DynamicForm() {
-  const form = createForm({
+  const form = createForm<DynamicFormData>({
     defaultValues: {
       fields: [{ name: '', value: '' }],
     },
@@ -191,36 +228,36 @@ export function DynamicForm() {
   return (
     <form.Provider>
       <form onSubmit={form.handleSubmit}>
-        <form.Field name='fields'>
+        <form.Field name="fields">
           {(field) => (
-            <div className='space-y-4'>
+            <div className="space-y-4">
               {field.state.value.map((_, index) => (
-                <div key={index} className='flex gap-2'>
-                  <form.Field name={`fields.${index}.name`} defaultValue=''>
+                <div key={index} className="flex gap-2">
+                  <form.Field name={`fields.${index}.name`} defaultValue="">
                     {(nameField) => (
-                      <FormField label='Name' error={nameField.state.meta.errors?.[0]}>
+                      <FormField label="Name" error={nameField.state.meta.errors?.[0]}>
                         <Input {...nameField.props} />
                       </FormField>
                     )}
                   </form.Field>
-                  <form.Field name={`fields.${index}.value`} defaultValue=''>
+                  <form.Field name={`fields.${index}.value`} defaultValue="">
                     {(valueField) => (
-                      <FormField label='Value' error={valueField.state.meta.errors?.[0]}>
+                      <FormField label="Value" error={valueField.state.meta.errors?.[0]}>
                         <Input {...valueField.props} />
                       </FormField>
                     )}
                   </form.Field>
                   <Button
-                    type='button'
-                    variant='ghost'
+                    type="button"
+                    variant="ghost"
                     onClick={() => field.removeValue(index)}
-                    className='mt-8'
+                    className="mt-8"
                   >
                     Remove
                   </Button>
                 </div>
               ))}
-              <Button type='button' onClick={() => field.pushValue({ name: '', value: '' })}>
+              <Button type="button" onClick={() => field.pushValue({ name: '', value: '' })}>
                 Add Field
               </Button>
             </div>
@@ -275,7 +312,8 @@ export function DynamicForm() {
 
 ## Related Patterns
 
-- [Components](mdc:.cursor/rules/frontend/components.mdc) for form components
-- [Validation](mdc:.cursor/rules/security/validation.mdc) for input validation
-- [State](mdc:.cursor/rules/data/state.mdc) for form state
-- [API](mdc:.cursor/rules/data/mutations.mdc) for form submission
+- [Component Patterns](mdc:component-patterns.mdc) for form components
+- [Validation Rules](mdc:../data/validation-rules.mdc) for input validation
+- [State Patterns](mdc:../data/state-patterns.mdc) for form state
+- [Mutation Patterns](mdc:../data/mutation-patterns.mdc) for form submission
+- [Accessibility](mdc:accessibility.mdc) for form accessibility

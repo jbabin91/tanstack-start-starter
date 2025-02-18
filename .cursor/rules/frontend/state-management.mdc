@@ -117,14 +117,36 @@ function UsersPage() {
 ### Global State (Zustand)
 
 ```typescript
-// Auth store with persistence
-interface AuthState {
+type AuthState = {
   user: User | null;
   isAuthenticated: boolean;
   setUser: (user: User | null) => void;
   logout: () => Promise<void>;
-}
+};
 
+type SettingsState = {
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  setTheme: (theme: Theme) => void;
+  setLanguage: (language: string) => void;
+};
+
+type Theme = 'light' | 'dark' | 'system';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: 'user' | 'admin';
+};
+
+type UserFormData = {
+  name: string;
+  email: string;
+  role: 'user' | 'admin';
+};
+
+// Example auth store with types
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -142,14 +164,7 @@ export const useAuthStore = create<AuthState>()(
   ),
 );
 
-// Settings store with system sync
-interface SettingsState {
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  setTheme: (theme: Theme) => void;
-  setLanguage: (language: string) => void;
-}
-
+// Example settings store with types
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
@@ -169,129 +184,10 @@ export const useSettingsStore = create<SettingsState>()(
 );
 ```
 
-### Server State (TanStack Query)
+## Related Patterns
 
-```typescript
-// Query with dependent data
-export function useUser(id: string) {
-  // Primary query
-  const userQuery = useQuery({
-    queryKey: ['user', id],
-    queryFn: () => $getUser(id),
-  });
-
-  // Dependent query
-  const postsQuery = useQuery({
-    queryKey: ['user.posts', id],
-    queryFn: () => $getUserPosts(id),
-    enabled: !!userQuery.data,
-  });
-
-  return {
-    user: userQuery.data,
-    posts: postsQuery.data,
-    isLoading: userQuery.isLoading || postsQuery.isLoading,
-  };
-}
-
-// Mutation with optimistic updates
-export function useUpdateUser() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: $updateUser,
-    onMutate: async ({ id, data }) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['user', id] });
-
-      // Snapshot previous value
-      const previousData = queryClient.getQueryData(['user', id]);
-
-      // Optimistically update
-      queryClient.setQueryData(['user', id], (old: User) => ({
-        ...old,
-        ...data,
-      }));
-
-      return { previousData };
-    },
-    onError: (error, { id }, context) => {
-      // Revert on error
-      queryClient.setQueryData(['user', id], context?.previousData);
-    },
-    onSettled: (_, __, { id }) => {
-      // Refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['user', id] });
-    },
-  });
-}
-```
-
-### Form State (TanStack Form)
-
-```typescript
-// Form with validation and submission
-export function UserForm() {
-  const form = createForm({
-    defaultValues: {
-      name: '',
-      email: '',
-      role: 'user' as const,
-    },
-    validatorSchema: userSchema,
-    onSubmit: async ({ value }) => {
-      try {
-        await $createUser(value);
-        toast.success('User created successfully');
-        router.navigate('/users');
-      } catch (error) {
-        if (error instanceof ValidationError) {
-          form.setErrors(error.fields);
-          return;
-        }
-        throw error;
-      }
-    },
-  });
-
-  return (
-    <form.Provider>
-      <form onSubmit={form.handleSubmit} className="space-y-4">
-        <form.Field name="name">
-          {(field) => (
-            <FormField label="Name" error={field.state.meta.errors?.[0]}>
-              <Input {...field.props} />
-            </FormField>
-          )}
-        </form.Field>
-
-        <form.Field name="email">
-          {(field) => (
-            <FormField label="Email" error={field.state.meta.errors?.[0]}>
-              <Input {...field.props} type="email" autoComplete="email" />
-            </FormField>
-          )}
-        </form.Field>
-
-        <form.Field name="role">
-          {(field) => (
-            <FormField label="Role" error={field.state.meta.errors?.[0]}>
-              <Select
-                {...field.props}
-                options={[
-                  { label: 'User', value: 'user' },
-                  { label: 'Admin', value: 'admin' },
-                ]}
-              />
-            </FormField>
-          )}
-        </form.Field>
-
-        <Button type="submit" disabled={form.state.isSubmitting}>
-          {form.state.isSubmitting ? 'Creating...' : 'Create User'}
-        </Button>
-      </form>
-    </form.Provider>
-  );
-}
-```
+- [Component Patterns](mdc:component-patterns.mdc) for component state
+- [Form Handling](mdc:form-handling.mdc) for form state
+- [Query Patterns](mdc:../data/query-patterns.mdc) for data fetching
+- [Mutation Patterns](mdc:../data/mutation-patterns.mdc) for data updates
+- [Error Handling](mdc:../core/error-handling.mdc) for error states

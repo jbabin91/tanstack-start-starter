@@ -109,7 +109,8 @@ Our security architecture follows a defense-in-depth approach:
 
 ## Related Patterns
 
-- [Authentication](mdc:.cursor/rules/security/authentication.mdc) for auth patterns
-- [Authorization](mdc:.cursor/rules/security/authorization.mdc) for access control
-- [Data Protection](mdc:.cursor/rules/security/data-protection.mdc) for data security
-- [Headers](mdc:.cursor/rules/security/headers.mdc) for security headers
+- [Authentication](authentication-patterns.mdc) for auth patterns
+- [Authorization](authorization-patterns.mdc) for access control
+- [Data Protection](data-protection.mdc) for data security
+- [Security Headers](security-headers.mdc) for security headers
+- [Error Handling](../core/error-handling.mdc) for security errors

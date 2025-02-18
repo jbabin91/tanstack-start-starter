@@ -108,7 +108,8 @@ Our performance architecture focuses on optimizing all aspects:
 
 ## Related Patterns
 
-- [Optimization](mdc:.cursor/rules/performance/optimization.mdc) for performance optimization
-- [Monitoring](mdc:.cursor/rules/performance/monitoring.mdc) for performance monitoring
-- [Caching](mdc:.cursor/rules/performance/caching.mdc) for caching strategies
-- [Load Testing](mdc:.cursor/rules/performance/load-testing.mdc) for load testing
+- [Optimization Patterns](optimization-patterns.mdc) for performance optimization
+- [Monitoring Patterns](monitoring-patterns.mdc) for performance monitoring
+- [Caching Strategies](caching-strategies.mdc) for caching strategies
+- [Load Testing](load-testing.mdc) for load testing
+- [Error Handling](../core/error-handling.mdc) for error handling
