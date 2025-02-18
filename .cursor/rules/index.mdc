@@ -11,21 +11,21 @@ A comprehensive guide to building scalable applications with TanStack Start.
 
 ### Core Patterns
 
-- 🏗️ [Core](../core/architecture.mdc) - Project setup, architecture, and conventions
-- 🔄 [Workflow](../workflow.mdc) - Development process and guidelines
+- 🏗️ [Architecture](mdc:core/architecture/system.mdc) - Project setup, architecture, and conventions
+- 🔄 [Workflow](mdc:core/workflow/development.mdc) - Development process and guidelines
 
 ### Application Layers
 
-- 🎨 [Frontend](../frontend.mdc) - UI components, state management, and routing
-- 💾 [Data](../data.mdc) - Data modeling, queries, and mutations
-- 🔌 [API](../api.mdc) - Server functions and API patterns
+- 🎨 [Components](mdc:features/components/patterns.mdc) - UI components, state management, and routing
+- 💾 [Data](mdc:features/data/api.mdc) - Data modeling, queries, and mutations
+- 🔌 [API](mdc:features/data/api.mdc) - Server functions and API patterns
 
 ### Quality & Security
 
-- 🔒 [Security](../security.mdc) - Authentication, authorization, and protection
-- ✅ [Testing](../testing.mdc) - Testing strategies and patterns
-- 📊 [Quality](../quality.mdc) - Code quality and standards
-- 🚀 [Deployment](../deployment.mdc) - Deployment and release process
+- 🔒 [Security](mdc:ops/security/protection.mdc) - Authentication, authorization, and protection
+- ✅ [Testing](mdc:quality/testing/overview.mdc) - Testing strategies and patterns
+- 📊 [Quality](mdc:quality/testing/overview.mdc) - Code quality and standards
+- 🚀 [Deployment](mdc:ops/deployment/process.mdc) - Deployment and release process
 
 ## 🔍 Pattern Relationships
 
@@ -175,9 +175,9 @@ const Route = createFileRoute('/users/$userId')({
 
 ## 🔍 Search Patterns
 
-- [By Use Case](../index.mdc#use-cases)
-- [By Technology](../index.mdc#technologies)
-- [By Problem Domain](../index.mdc#domains)
+- [By Use Case](mdc:../index.mdc#use-cases)
+- [By Technology](mdc:../index.mdc#technologies)
+- [By Problem Domain](mdc:../index.mdc#domains)
 
 ## 📈 Version History
 
@@ -192,4 +192,4 @@ Next review: 2024-03-18
 
 ## 📖 Contributing
 
-See [Workflow](../workflow.mdc) for contribution guidelines and process.
+See [Workflow](mdc:../workflow.mdc) for contribution guidelines and process.

@@ -135,3 +135,141 @@ export function handleSession(req: Request, res: Response) {
 - [Security Headers](./security-headers.mdc) for HTTP security
 - [Error Handling](../core/error-handling.mdc) for auth errors
 - [API Security](../api/security-patterns.mdc) for API protection
+
+---
+
+description: 'Authorization patterns and best practices for secure access control'
+globs: '**/auth/**/\*.{ts,tsx}'
+
+---
+
+# Authorization Patterns
+
+## Overview
+
+Our authorization system implements role-based access control (RBAC) with fine-grained permissions:
+
+- Role-based access control
+- Permission management
+- Resource-level access
+- Policy enforcement
+- Audit logging
+
+## Core Technologies
+
+- Custom RBAC system
+- Policy-based access control
+- Resource ownership
+- Permission inheritance
+- Audit trails
+
+## Implementation
+
+### 1. Role Management
+
+```typescript
+// auth/roles.ts
+export const Roles = {
+  ADMIN: 'admin',
+  USER: 'user',
+  GUEST: 'guest',
+} as const;
+
+export type Role = keyof typeof Roles;
+
+export const RolePermissions: Record<Role, string[]> = {
+  admin: ['*'],
+  user: ['read:own', 'write:own', 'delete:own'],
+  guest: ['read:public'],
+};
+```
+
+### 2. Permission Checking
+
+```typescript
+// auth/permissions.ts
+export function checkPermission(
+  user: User,
+  resource: Resource,
+  action: string,
+): boolean {
+  // Check role-based permissions
+  const permissions = RolePermissions[user.role];
+  if (permissions.includes('*')) {
+    return true;
+  }
+
+  // Check resource ownership
+  if (resource.ownerId === user.id && permissions.includes(`${action}:own`)) {
+    return true;
+  }
+
+  // Check public access
+  if (resource.isPublic && permissions.includes(`${action}:public`)) {
+    return true;
+  }
+
+  return false;
+}
+```
+
+### 3. Authorization Middleware
+
+```typescript
+// auth/middleware.ts
+export function requirePermission(action: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const resource = await getResource(req.params.id);
+      if (!checkPermission(req.user, resource, action)) {
+        throw new AuthorizationError('Insufficient permissions');
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+```
+
+## Best Practices
+
+### 1. Role Management
+
+- Define clear role hierarchy
+- Implement role inheritance
+- Document permissions
+- Regular role review
+- Principle of least privilege
+
+### 2. Access Control
+
+- Resource-level permissions
+- Ownership validation
+- Public/private resources
+- Permission inheritance
+- Access auditing
+
+### 3. Security
+
+- Validate all access
+- Log authorization attempts
+- Monitor suspicious activity
+- Regular permission review
+- Security testing
+
+### 4. Implementation
+
+- Clear error messages
+- Proper logging
+- Performance optimization
+- Caching strategies
+- Scalable design
+
+## Related Patterns
+
+- [Authentication](./authentication-patterns.mdc) for auth implementation
+- [Data Protection](./data-protection.mdc) for data security
+- [Security Headers](./security-headers.mdc) for HTTP security
+- [Error Handling](../core/error-handling.mdc) for auth errors
+- [API Security](../api/security-patterns.mdc) for API protection

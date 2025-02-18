@@ -1,0 +1,306 @@
+---
+description: 'API patterns and best practices for server functions and data access'
+globs: '**/api/**/*.{ts,tsx}'
+---
+
+# API Patterns Overview
+
+## Architecture
+
+Our API architecture follows a server function approach with TanStack Start:
+
+- Type-safe server functions
+- Request validation
+- Error handling
+- Security middleware
+- Performance optimization
+
+## Core Technologies
+
+- TanStack Start for server functions
+- Zod for validation
+- TypeScript for type safety
+- HTTP headers for security
+- Rate limiting for protection
+
+## Pattern Categories
+
+### 1. Server Functions
+
+- Type-safe endpoints
+- Request handling
+- Response formatting
+- Error handling
+- Middleware
+
+### 2. Error Handling
+
+- Error types
+- Error responses
+- Recovery strategies
+- Error logging
+- Client feedback
+
+### 3. Validation
+
+- Input schemas
+- Runtime validation
+- Type inference
+- Custom validators
+- Error messages
+
+### 4. Security
+
+- Authentication
+- Authorization
+- Rate limiting
+- Input sanitization
+- Security headers
+
+### 5. Performance
+
+- Response caching
+- Query optimization
+- Batch operations
+- Connection pooling
+- Load balancing
+
+### 6. Monitoring
+
+- Error tracking
+- Performance metrics
+- Request logging
+- Health checks
+- Analytics
+
+## Best Practices
+
+### 1. API Design
+
+- Type safety first
+- Clear endpoints
+- Proper validation
+- Error handling
+- Documentation
+
+### 2. Security
+
+- Input validation
+- Authentication
+- Authorization
+- Rate limiting
+- Security headers
+
+### 3. Performance
+
+- Response caching
+- Query optimization
+- Connection pooling
+- Load balancing
+- Monitoring
+
+### 4. Error Handling
+
+- Clear error types
+- Proper logging
+- Client feedback
+- Recovery strategies
+- Monitoring
+
+## Related Patterns
+
+- [Data Layer](mdc:../data/schema-design.mdc) for database schema
+- [Authentication](mdc:../security/authentication-patterns.mdc) for auth implementation
+- [Error Handling](mdc:../core/error-handling.mdc) for error patterns
+
+### Data Fetching Components
+
+```typescript
+import { useQuery } from '@tanstack/react-query';
+import { LoadingSpinner, ErrorCard, EmptyState } from '~/components/ui/feedback';
+import { z } from 'zod';
+
+// Validation schema for API response
+const ApiResponseSchema = z.object({
+  data: z.unknown(),
+  error: z.object({
+    message: z.string(),
+    code: z.string().optional(),
+  }).optional(),
+});
+
+interface DataFetchProps<TData> {
+  queryKey: string[];
+  queryFn: () => Promise<TData>;
+  LoadingComponent?: React.ComponentType;
+  ErrorComponent?: React.ComponentType<{ error: Error; retry: () => void }>;
+  EmptyComponent?: React.ComponentType;
+  children: (data: TData) => React.ReactNode;
+}
+
+export function DataFetch<TData>({
+  queryKey,
+  queryFn,
+  LoadingComponent = DefaultLoading,
+  ErrorComponent = DefaultError,
+  EmptyComponent = DefaultEmpty,
+  children,
+}: DataFetchProps<TData>) {
+  const {
+    data,
+    error,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await queryFn();
+      const result = ApiResponseSchema.safeParse(response);
+
+      if (!result.success) {
+        throw new Error('Invalid API response format');
+      }
+
+      if (result.data.error) {
+        throw new Error(result.data.error.message);
+      }
+
+      return result.data.data as TData;
+    },
+  });
+
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
+
+  if (isError && error instanceof Error) {
+    return <ErrorComponent error={error} retry={() => refetch()} />;
+  }
+
+  if (!data) {
+    return <EmptyComponent />;
+  }
+
+  return children(data);
+}
+
+// Default components
+function DefaultLoading() {
+  return (
+    <div className="flex justify-center p-4">
+      <LoadingSpinner />
+    </div>
+  );
+}
+
+function DefaultError({ error, retry }: { error: Error; retry: () => void }) {
+  return (
+    <ErrorCard
+      error={{ message: error.message }}
+      onRetry={retry}
+      className="mx-auto max-w-md"
+    />
+  );
+}
+
+function DefaultEmpty() {
+  return (
+    <EmptyState
+      icon={InboxIcon}
+      title="No data available"
+      description="There is no data to display at this time."
+      className="mx-auto max-w-md"
+    />
+  );
+}
+
+// Example usage with custom error boundaries
+interface QueryBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+export class QueryBoundary extends React.Component<
+  QueryBoundaryProps,
+  { hasError: boolean }
+> {
+  constructor(props: QueryBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('Query boundary caught an error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <ErrorCard
+            error={{
+              message: 'An unexpected error occurred while fetching data.',
+            }}
+            className="mx-auto max-w-md"
+          />
+        )
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Example usage with optimistic updates
+interface OptimisticUpdateConfig<TData> {
+  queryKey: string[];
+  mutationFn: (variables: any) => Promise<TData>;
+  optimisticData: (variables: any) => TData;
+  onError?: (error: Error) => void;
+  onSuccess?: (data: TData) => void;
+}
+
+export function useOptimisticUpdate<TData>({
+  queryKey,
+  mutationFn,
+  optimisticData,
+  onError,
+  onSuccess,
+}: OptimisticUpdateConfig<TData>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousData = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, optimisticData(variables));
+
+      return { previousData };
+    },
+    onError: (err, _, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+      if (err instanceof Error && onError) {
+        onError(err);
+      }
+    },
+    onSuccess: (data) => {
+      if (onSuccess) {
+        onSuccess(data);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+}
+```

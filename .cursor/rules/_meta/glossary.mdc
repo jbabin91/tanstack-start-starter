@@ -1,0 +1,173 @@
+---
+description: 'Pattern terminology, concepts, and relationships'
+category: 'meta'
+related: ['overview', 'index', 'decisions']
+status: 'stable'
+lastUpdated: '2024-02-18'
+---
+
+# Pattern Glossary
+
+## Core Concepts
+
+### Architecture Terms
+
+- **Feature Module**: Self-contained unit of functionality including UI, data, and logic
+- **Server Function**: Type-safe server-side function exposed to the client
+- **Route Component**: Top-level component handling a specific route
+- **Layout Component**: Component providing structure for routes or features
+
+### Development Terms
+
+- **Pattern**: Reusable solution to a common problem
+- **Convention**: Agreed-upon way of implementing functionality
+- **Standard**: Required way of implementing functionality
+- **Guideline**: Recommended approach to implementation
+
+### Data Terms
+
+- **Query**: Read operation for data fetching
+- **Mutation**: Write operation for data modification
+- **Validation**: Data integrity checking
+- **Schema**: Type-safe data structure definition
+
+### State Terms
+
+- **Server State**: Data from server managed by TanStack Query
+- **Client State**: Local UI state managed by React or Zustand
+- **Form State**: Input state managed by TanStack Form
+- **URL State**: State managed through the URL
+
+### Quality Terms
+
+- **Unit Test**: Tests for individual functions/components
+- **Integration Test**: Tests for feature interactions
+- **E2E Test**: Full system tests
+- **Performance Metric**: Measurable performance indicator
+
+### Security Terms
+
+- **Authentication**: Identity verification
+- **Authorization**: Permission verification
+- **Protection**: Data/system security measures
+- **Audit**: Security review process
+
+## File Naming
+
+### Component Files
+
+- React Components: `PascalCase.tsx`
+- Component Tests: `ComponentName.test.tsx`
+- Component Styles: `ComponentName.styles.ts`
+
+### Utility Files
+
+- Utility Functions: `camelCase.ts`
+- Type Definitions: `camelCase.types.ts`
+- Constants: `camelCase.constants.ts`
+
+### Server Files
+
+- Server Functions: `$camelCase.ts`
+- API Routes: `$paramName.ts`
+- Middleware: `camelCase.middleware.ts`
+
+### Test Files
+
+- Unit Tests: `*.test.ts`
+- Integration Tests: `*.integration.test.ts`
+- E2E Tests: `*.e2e.test.ts`
+
+## Common Abbreviations
+
+- **a11y**: Accessibility
+- **i18n**: Internationalization
+- **l10n**: Localization
+- **e2e**: End-to-End
+- **UI**: User Interface
+- **API**: Application Programming Interface
+- **ORM**: Object-Relational Mapping
+- **JWT**: JSON Web Token
+- **SSR**: Server-Side Rendering
+- **CSR**: Client-Side Rendering
+
+## Pattern Categories
+
+### Core Patterns
+
+Foundational patterns that form the basis of the application architecture.
+
+### Feature Patterns
+
+Patterns for implementing specific features and functionality.
+
+### Quality Patterns
+
+Patterns for ensuring application quality and performance.
+
+### Operations Patterns
+
+Patterns for deployment, monitoring, and maintenance.
+
+## Pattern Relationships
+
+### Component → Data Flow
+
+```mermaid
+graph TD
+    A[Components] --> B[Data Operations]
+    B --> C[State Management]
+    C --> A
+```
+
+### Feature Dependencies
+
+```mermaid
+graph TD
+    A[Forms] --> B[Validation]
+    B --> C[Data Operations]
+    D[Routing] --> E[Auth Guards]
+```
+
+### Quality Integration
+
+```mermaid
+graph TD
+    A[Components] --> B[Testing]
+    A --> C[Performance]
+    A --> D[Accessibility]
+```
+
+## Pattern Evolution
+
+Each pattern follows a lifecycle:
+
+1. **Proposal**: Initial pattern suggestion
+2. **Implementation**: Pattern development
+3. **Refinement**: Pattern improvement
+4. **Maturity**: Stable pattern
+5. **Deprecation**: Pattern retirement
+
+## Pattern Status
+
+- **Stable**: Production-ready patterns
+- **Beta**: Patterns under testing
+- **Deprecated**: Patterns to be replaced
+- **Experimental**: Patterns under evaluation
+
+## Search Index
+
+Common pattern searches:
+
+- components + styling
+- forms + validation
+- data + state
+- security + auth
+- testing + quality
+
+## Version History
+
+- v1.0.0: Initial glossary
+- v1.1.0: Added pattern relationships
+- v1.2.0: Enhanced terminology
+- v1.3.0: Added search index

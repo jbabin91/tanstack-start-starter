@@ -1,0 +1,224 @@
+---
+description: 'Decision trees and pattern selection guidance'
+category: 'meta'
+related: ['overview', 'glossary', 'index']
+status: 'stable'
+lastUpdated: '2024-02-18'
+---
+
+# Pattern Selection Guide
+
+## Quick Reference
+
+### Common Decisions
+
+1. Component Selection
+2. State Management
+3. Data Fetching
+4. Form Handling
+5. Error Handling
+
+## Decision Trees
+
+### Component Selection
+
+```mermaid
+graph TD
+    A[New UI Element] --> B{Primitive UI?}
+    B -->|Yes| C[Use Radix UI]
+    B -->|No| D{Common Pattern?}
+    D -->|Yes| E[Use Shadcn UI]
+    D -->|No| F{Feature Specific?}
+    F -->|Yes| G[Create Feature Component]
+    F -->|No| H[Create Shared Component]
+```
+
+### State Management
+
+```mermaid
+graph TD
+    A[New State] --> B{URL Sharable?}
+    B -->|Yes| C[Use URL State]
+    B -->|No| D{Server Data?}
+    D -->|Yes| E[Use TanStack Query]
+    D -->|No| F{Form State?}
+    F -->|Yes| G[Use TanStack Form]
+    F -->|No| H{Global UI?}
+    H -->|Yes| I[Use Zustand]
+    H -->|No| J[Use React State]
+```
+
+### Data Fetching
+
+```mermaid
+graph TD
+    A[Data Need] --> B{Read or Write?}
+    B -->|Read| C{Real-time?}
+    B -->|Write| D[Use Mutation]
+    C -->|Yes| E[Use Subscription]
+    C -->|No| F{Dependent?}
+    F -->|Yes| G[Use Dependent Query]
+    F -->|No| H[Use Basic Query]
+```
+
+### Form Handling
+
+```mermaid
+graph TD
+    A[New Form] --> B{Complex Form?}
+    B -->|Yes| C[Use TanStack Form]
+    B -->|No| D{Need Validation?}
+    D -->|Yes| E[Use Zod + Form]
+    D -->|No| F[Use Basic Form]
+```
+
+### Error Handling
+
+```mermaid
+graph TD
+    A[Error Case] --> B{User Facing?}
+    B -->|Yes| C[Use Error Boundary]
+    B -->|No| D{API Error?}
+    D -->|Yes| E[Use Query Error]
+    D -->|No| F[Use Try-Catch]
+```
+
+## Pattern Selection Matrix
+
+### UI Components
+
+| Need              | Pattern          | When to Use                 |
+| ----------------- | ---------------- | --------------------------- |
+| Basic UI Element  | Radix UI         | Need primitive component    |
+| Common UI Pattern | Shadcn UI        | Need pre-built component    |
+| Feature UI        | Custom Component | Need specific functionality |
+| Layout            | Layout Component | Need page structure         |
+
+### State Management
+
+| Need            | Pattern        | When to Use          |
+| --------------- | -------------- | -------------------- |
+| URL State       | Router State   | Need shareable state |
+| Server State    | TanStack Query | Need backend data    |
+| Form State      | TanStack Form  | Need form handling   |
+| Global UI State | Zustand        | Need global UI state |
+| Local State     | React State    | Need component state |
+
+### Data Operations
+
+| Need              | Pattern         | When to Use          |
+| ----------------- | --------------- | -------------------- |
+| Data Fetching     | Basic Query     | Need to read data    |
+| Data Updates      | Mutation        | Need to write data   |
+| Real-time Updates | Subscription    | Need live updates    |
+| Dependent Data    | Dependent Query | Need sequential data |
+
+## Implementation Guidelines
+
+### 1. Component Implementation
+
+```typescript
+// Decision: Feature-specific component
+export function UserProfile({ id }: { id: string }) {
+  // Implementation
+}
+
+// Decision: Shared component
+export function Button({ children, ...props }: ButtonProps) {
+  // Implementation
+}
+```
+
+### 2. State Management
+
+```typescript
+// Decision: URL state
+const router = useRouter();
+const { id } = router.params;
+
+// Decision: Server state
+const query = useQuery({
+  queryKey: ['data'],
+  queryFn: fetchData,
+});
+
+// Decision: Form state
+const form = useForm({
+  defaultValues: { name: '' },
+});
+
+// Decision: Global state
+const useStore = create<Store>((set) => ({
+  theme: 'light',
+  setTheme: (theme) => set({ theme }),
+}));
+```
+
+### 3. Data Operations
+
+```typescript
+// Decision: Basic query
+const query = useQuery({
+  queryKey: ['users'],
+  queryFn: fetchUsers,
+});
+
+// Decision: Mutation
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onSuccess: () => {
+    // Handle success
+  },
+});
+```
+
+## Best Practices
+
+1. **Pattern Selection**
+
+   - Start with decision trees
+   - Consider requirements
+   - Check constraints
+   - Review alternatives
+
+2. **Implementation**
+
+   - Follow patterns exactly
+   - Include all aspects
+   - Test thoroughly
+   - Document decisions
+
+3. **Maintenance**
+   - Monitor usage
+   - Gather feedback
+   - Update patterns
+   - Review decisions
+
+## Anti-Patterns
+
+1. **Component Anti-Patterns**
+
+   - Mixing concerns
+   - Prop drilling
+   - Deep component trees
+   - Inline styles
+
+2. **State Anti-Patterns**
+
+   - State duplication
+   - Prop drilling
+   - Context overuse
+   - Global state overuse
+
+3. **Data Anti-Patterns**
+   - Direct API calls
+   - Missing error handling
+   - Improper caching
+   - Nested queries
+
+## Version History
+
+- v1.0.0: Initial decision trees
+- v1.1.0: Added selection matrix
+- v1.2.0: Enhanced guidelines
+- v1.3.0: Added anti-patterns
