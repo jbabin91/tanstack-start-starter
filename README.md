@@ -1,72 +1,137 @@
-# Welcome to TanStack.com!
+# TanStack Start Starter
 
-This site is built with TanStack Router!
+A modern, full-stack web application starter template built with TanStack Start, following comprehensive development guidelines and best practices.
 
-- [TanStack Router Docs](https://tanstack.com/router)
+## Development Guidelines
 
-It's deployed automagically with Netlify!
+This project follows a set of carefully crafted development rules and patterns:
 
-- [Netlify](https://netlify.com/)
+- 📋 [Code Style and Structure](.cursor/rules/code-style-structure.mdc) - Code organization and style guidelines
+- 🔄 [Consistency Patterns](.cursor/rules/consistency-patterns.mdc) - Maintaining codebase consistency
+- 🎯 [Principle of Least Surprise](.cursor/rules/principle-of-least-surprise.mdc) - Writing predictable code
+- 👨‍💻 [Senior Developer Guidelines](.cursor/rules/consistency-senior-dev.mdc) - Code quality standards
+- ⚛️ [React Best Practices](.cursor/rules/react-best-practices.mdc) - React-specific patterns
+- 🏗️ [TanStack Suite Patterns](.cursor/rules/tanstack-suite-patterns.mdc) - TanStack library usage
+- 🚀 [TanStack Start Patterns](.cursor/rules/tanstack-start-patterns.mdc) - Project structure and setup
+- 🧪 [Testing Quality](.cursor/rules/testing-quality.mdc) - Testing standards and practices
 
-## Development
+For a comprehensive overview of all standards, see our [Tech Stack Documentation](.cursor/rules/tech-stack.mdc).
 
-From your terminal:
+## Tech Stack
 
-```sh
+### Core Framework
+
+- 🏗️ [TanStack Start](https://tanstack.com/start) - Full-stack TypeScript framework
+- ⚛️ [React](https://react.dev) - UI Framework (v19+)
+- 📘 [TypeScript](https://www.typescriptlang.org/) - Type safety
+
+### TanStack Suite
+
+- 🛣️ [TanStack Router](https://tanstack.com/router) - Type-safe routing
+- 🔄 [TanStack Query](https://tanstack.com/query) - Data synchronization
+- 📝 [React Hook Form](https://react-hook-form.com/) - Form management with Shadcn UI
+- 📊 [TanStack Table](https://tanstack.com/table) - Table/DataGrid
+- 📜 [TanStack Virtual](https://tanstack.com/virtual) - Virtualization
+
+### Authentication & Email
+
+- 🔐 [Better Auth](https://better-auth.com) - Authentication
+- 📧 [Resend](https://resend.com) - Email service
+- ✉️ [React Email](https://react.email) - Email templates
+
+### UI & Styling
+
+- 🎨 [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
+- 🧱 [Shadcn UI](https://ui.shadcn.com) - UI components
+- 🔧 [Radix UI](https://www.radix-ui.com) - Headless UI primitives
+- 🎨 [React Icons](https://react-icons.github.io/react-icons) - Icon library (including Lucide icons)
+
+### Form & Validation
+
+- ✅ [Zod](https://zod.dev) - Schema validation
+- 🏷️ [Class Variance Authority](https://cva.style) - Component variants
+
+### Development & Tooling
+
+- 📦 [PNPM](https://pnpm.io) - Package manager
+- 🔍 [ESLint](https://eslint.org) - Code linting
+- 💅 [Prettier](https://prettier.io) - Code formatting
+- ⚡ [Vite](https://vitejs.dev) - Build tool
+- 🧪 [Vitest](https://vitest.dev) - Testing framework
+
+### Features
+
+- 📱 Responsive design
+- 🌙 Dark mode support
+- 🔒 Type-safe APIs
+- 📄 File-based routing
+- 🎯 Server functions
+- 🔐 Authentication with Better Auth
+- 📧 Email templates with React Email
+- 🎨 Themeable UI components
+- 📱 Mobile-first design
+- ♿ Accessible components
+- 🌐 SEO optimized
+- 🚀 Fast build times
+- 📦 Optimized bundle size
+
+## Development Workflow
+
+### Getting Started
+
+\`\`\`bash
+
+# Clone the repository
+
+git clone <https://github.com/yourusername/tanstack-start-starter.git>
+
+# Install dependencies
+
 pnpm install
+
+# Start the development server
+
 pnpm dev
-```
+\`\`\`
 
-This starts your app in development mode, rebuilding assets on file changes.
+### Development Process
 
-## Editing and previewing the docs of TanStack projects locally
+1. Read through the development guidelines in `.cursor/rules/`
+2. Follow the [Senior Developer Guidelines](.cursor/rules/consistency-senior-dev.mdc) for implementation
+3. Ensure code adheres to [Code Style and Structure](.cursor/rules/code-style-structure.mdc)
+4. Write tests following [Testing Quality](.cursor/rules/testing-quality.mdc) standards
+5. Use proper patterns from [TanStack Suite Patterns](.cursor/rules/tanstack-suite-patterns.mdc)
 
-The documentations for all TanStack projects except for `React Charts` are hosted on [https://tanstack.com](https://tanstack.com), powered by this TanStack Router app.
-In production, the markdown doc pages are fetched from the GitHub repos of the projects, but in development they are read from the local file system.
+### Code Quality
 
-Follow these steps if you want to edit the doc pages of a project (in these steps we'll assume it's [`TanStack/form`](https://github.com/tanstack/form)) and preview them locally :
+- Follow TypeScript best practices
+- Maintain consistent code style
+- Write comprehensive tests
+- Document code changes
+- Review code before committing
 
-1. Create a new directory called `tanstack`.
+## Project Structure
 
-```sh
-mkdir tanstack
-```
+\`\`\`sh
+app/
+├── components/ # Shared components
+│ ├── ui/ # UI components
+│ └── email/ # Email templates
+├── lib/ # Shared utilities
+│ ├── client/ # Client-only code
+│ ├── server/ # Server-only code
+│ └── shared/ # Shared code
+├── routes/ # File-based routes
+│ ├── api/ # API routes
+│ │ ├── auth/ # Better Auth endpoints
+│ │ └── send.ts # Email endpoint
+│ ├── \_public/ # Public routes
+│ ├── \_auth/ # Auth routes
+│ └── \_app/ # Protected routes
+├── styles/ # Global styles
+└── types/ # TypeScript types
+\`\`\`
 
-2. Enter the directory and clone this repo and the repo of the project there.
+## License
 
-```sh
-cd tanstack
-git clone git@github.com:TanStack/tanstack.com.git
-git clone git@github.com:TanStack/form.git
-```
-
-> [!NOTE]
-> Your `tanstack` directory should look like this:
->
-> ```sh
-> tanstack/
->    |
->    +-- form/
->    |
->    +-- tanstack.com/
-> ```
->
-> [!WARNING]
-> Make sure the name of the directory in your local file system matches the name of the project's repo. For example, `tanstack/form` must be cloned into `form` (this is the default) instead of `some-other-name`, because that way, the doc pages won't be found.
-
-3. Enter the `tanstack/tanstack.com` directory, install the dependencies and run the app in dev mode:
-
-```sh
-cd tanstack.com
-pnpm i
-# The app will run on https://localhost:3000 by default
-pnpm dev
-```
-
-4. Now you can visit <http://localhost:3000/form/latest/docs/overview> in the browser and see the changes you make in `tanstack/form/docs`.
-
-> [!NOTE]
-> The updated pages need to be manually reloaded in the browser.
->
-> [!WARNING]
-> You will need to update the `docs/config.json` file (in the project's repo) if you add a new doc page!
+MIT

@@ -1,0 +1,2003 @@
+---
+description: Comprehensive documentation of the project's tech stack, naming conventions, and best practices.
+globs: ['**/*']
+---
+
+# Tech Stack Documentation
+
+## Rule Organization
+
+This document serves as the root documentation for all project standards. Rules are organized in a hierarchical structure:
+
+### Core Guidelines
+
+1. [Consistency Patterns](mdc:.cursor/rules/consistency-patterns.mdc)
+
+   - Base patterns for maintaining consistency
+   - Version management
+   - Feature implementation
+   - Code style evolution
+   - Documentation standards
+
+2. [Principle of Least Surprise](mdc:.cursor/rules/principle-of-least-surprise.mdc)
+
+   - Core principles for predictable code
+   - Naming guidelines
+   - Function behavior
+   - API design patterns
+   - State management patterns
+
+3. [Senior Developer Guidelines](mdc:.cursor/rules/consistency-senior-dev.mdc)
+   - Code quality standards
+   - Implementation process
+   - Error handling patterns
+   - Performance considerations
+   - Security best practices
+
+### Implementation-Specific Rules
+
+1. [React Best Practices](mdc:.cursor/rules/react-best-practices.mdc)
+
+   - Component structure
+   - Hooks usage
+   - Performance optimization
+   - State management
+   - Form handling
+
+2. [TanStack Suite Patterns](mdc:.cursor/rules/tanstack-suite-patterns.mdc)
+
+   - Query patterns
+   - Router patterns
+   - Form patterns
+   - Table patterns
+   - Virtual list patterns
+
+3. [TanStack Start Patterns](mdc:.cursor/rules/tanstack-start-patterns.mdc)
+
+   - Project structure
+   - Server functions
+   - API routes
+   - Authentication
+   - Deployment
+
+4. [Testing Quality](mdc:.cursor/rules/testing-quality.mdc)
+   - Testing framework setup
+   - Component testing
+   - Integration testing
+   - E2E testing
+   - Performance testing
+
+## Rule Dependencies
+
+```mermaid
+graph TD
+    A[tech-stack.mdc] --> B[consistency-patterns.mdc]
+    A --> C[principle-of-least-surprise.mdc]
+    A --> D[consistency-senior-dev.mdc]
+
+    B --> E[react-best-practices.mdc]
+    C --> E
+    D --> E
+
+    E --> F[tanstack-suite-patterns.mdc]
+    F --> G[tanstack-start-patterns.mdc]
+
+    B --> H[testing-quality.mdc]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+```
+
+## Cross-Reference Index
+
+### Code Style and Structure
+
+- Base Patterns: [Consistency Patterns - Code Style Evolution](mdc:.cursor/rules/consistency-patterns.mdc#code-style-evolution)
+- React Patterns: [React Best Practices - Component Structure](mdc:.cursor/rules/react-best-practices.mdc#component-structure)
+- Testing Patterns: [Testing Quality - Test Structure](mdc:.cursor/rules/testing-quality.mdc#test-structure)
+
+### State Management
+
+- Core Principles: [Principle of Least Surprise - State Management](mdc:.cursor/rules/principle-of-least-surprise.mdc#state-management)
+- React Implementation: [React Best Practices - State Management](mdc:.cursor/rules/react-best-practices.mdc#state-management)
+- TanStack Patterns: [TanStack Suite Patterns - Query Management](mdc:.cursor/rules/tanstack-suite-patterns.mdc#query-definition)
+
+### Error Handling
+
+- Senior Guidelines: [Senior Developer Guidelines - Error Handling](mdc:.cursor/rules/consistency-senior-dev.mdc#error-handling)
+- React Patterns: [React Best Practices - Error Boundaries](mdc:.cursor/rules/react-best-practices.mdc#error-handling)
+- Testing Approach: [Testing Quality - Error Testing](mdc:.cursor/rules/testing-quality.mdc#error-testing)
+
+### Performance
+
+- Core Standards: [Consistency Patterns - Performance Standards](mdc:.cursor/rules/consistency-patterns.mdc#performance-standards)
+- React Optimization: [React Best Practices - Performance](mdc:.cursor/rules/react-best-practices.mdc#performance)
+- Testing Methods: [Testing Quality - Performance Testing](mdc:.cursor/rules/testing-quality.mdc#performance)
+
+### Security
+
+- Senior Guidelines: [Senior Developer Guidelines - Security Best Practices](mdc:.cursor/rules/consistency-senior-dev.mdc#security-best-practices)
+- Implementation: [TanStack Start Patterns - Security Measures](mdc:.cursor/rules/tanstack-start-patterns.mdc#security-considerations)
+- Testing: [Testing Quality - Security Testing](mdc:.cursor/rules/testing-quality.mdc#security-testing)
+
+## Core Technologies
+
+### Runtime Environment
+
+- Node.js: >=22.14.0
+- Package Manager: pnpm@10.4.1
+
+### Core Framework
+
+- React: ^19.0.0
+- React DOM: ^19.0.0
+- TypeScript: ^5.7.3
+- Vinxi: 0.5.3 (Build and Dev Server)
+
+## Naming Conventions
+
+### Project Structure
+
+```sh
+features/                    # Feature-first organization
+├── auth/
+│   ├── components/         # Feature-specific components
+│   │   ├── login-form.tsx
+│   │   └── signup-form.tsx
+│   └── lib/               # Feature-specific logic
+│       ├── auth.server.ts
+│       └── auth.schema.ts
+├── dashboard/
+│   ├── components/
+│   │   ├── activity-feed.tsx
+│   │   └── stats-card.tsx
+│   └── lib/
+│       └── dashboard.server.ts
+shared/                     # Shared resources
+├── components/            # Shared components
+│   └── ui/               # UI components
+│       ├── button.tsx
+│       └── card.tsx
+└── lib/                  # Shared utilities
+    ├── utils.server.ts
+    └── types.ts
+```
+
+### File and Directory Naming
+
+- Use kebab-case for all files and directories
+- Use consistent suffixes:
+  - `.server.ts` - Server-only code
+  - `.client.ts` - Client-only code
+  - `.schema.ts` - Zod schemas
+  - `.spec.ts(x)` - E2E tests
+  - `.test.ts(x)` - Unit/integration tests
+
+### Import/Export Conventions
+
+- Avoid barrel files (index.ts re-exports)
+- Import directly from source files:
+
+  ```typescript
+  // ❌ Don't use barrel imports
+  import { Button, Card } from '@/components/ui';
+
+  // ✅ Import directly from component files
+  import { Button } from '@/components/ui/button';
+  import { Card } from '@/components/ui/card';
+  ```
+
+- One component per file
+- Export components as named exports:
+
+  ```typescript
+  // ✅ Use named exports
+  export function Button() {}
+
+  // ❌ Avoid default exports
+  export default function Button() {}
+  ```
+
+- Keep imports organized by type:
+  1. React and framework imports
+  2. Third-party libraries
+  3. Internal components and utilities
+  4. Types and interfaces
+  5. Styles and assets
+
+### Component Naming
+
+> 📝 See [Principle of Least Surprise - Naming Guidelines](.cursor/rules/principle-of-least-surprise.mdc#naming-guidelines) for more details on intuitive naming.
+
+- Use kebab-case for component files: `user-profile.tsx`
+- Use PascalCase for the component name inside the file:
+
+  ```typescript
+  // user-profile.tsx
+  export function UserProfile() {
+    return <div>Profile Content</div>
+  }
+  ```
+
+- Use kebab-case for component directories: `user-profile/index.tsx`
+- Prefix layout components with `layout-`: `layout-dashboard.tsx`
+- Suffix context providers with `-provider`: `theme-provider.tsx`
+
+### Server Function Naming
+
+- Use verb-noun format consistently:
+
+  ```typescript
+  // ✅ Consistent verb-noun pattern
+  $createUser;
+  $updateUser;
+  $deleteUser;
+  $fetchUserData;
+
+  // ❌ Avoid mixed patterns
+  $userCreate;
+  $userUpdate;
+  $deleteUser;
+  ```
+
+### Hook Naming
+
+- Prefix custom hooks with `use`: `useAuth`, `useTheme`
+- Use camelCase after the `use` prefix
+- Suffix query hooks with `Query`: `useUserQuery`
+- Suffix mutation hooks with `Mutation`: `useUpdateUserMutation`
+
+### Type and Interface Naming
+
+- Use precise, non-redundant names:
+
+  ```typescript
+  // ✅ Clear, concise types
+  type UserProps = {
+    id: string;
+    name: string;
+  };
+
+  type UserApiResponse = {
+    id: string;
+    email: string;
+    createdAt: string;
+  };
+
+  // ❌ Avoid redundant naming
+  type UserProfileProps = { ... }
+  type UserResponse = { ... }
+  ```
+
+- Consistent type suffixes:
+
+  - `Props` - Component props
+  - `State` - State objects
+  - `Context` - Context values
+  - `ApiResponse` - API responses
+  - `ApiRequest` - API requests
+  - `Handler` - Event handlers
+  - `Config` - Configuration objects
+
+- Use Zod for runtime type validation:
+
+  ```typescript
+  import { z } from 'zod';
+
+  const userSchema = z.object({
+    id: z.string(),
+    email: z.string().email(),
+    role: z.enum(['admin', 'user', 'guest']),
+  });
+
+  type User = z.infer<typeof userSchema>;
+  ```
+
+### Variable and Function Naming
+
+- Use camelCase for variables and functions
+- Prefix booleans with `is`, `has`, or `should`: `isLoading`, `hasError`
+- Use descriptive action verbs for functions: `handleSubmit`, `validateInput`
+- Prefix event handlers with `handle`: `handleClick`, `handleChange`
+- Prefix callbacks with `on`: `onSuccess`, `onError`
+
+## TanStack Suite
+
+### Core TanStack Libraries
+
+- TanStack Start: ^1.105.3
+- TanStack Router: ^1.105.0
+- TanStack Query: ^5.66.4
+- TanStack Router with Query: ^1.105.0
+- TanStack Zod Adapter: ^1.105.0
+
+### Development Tools
+
+- TanStack Query DevTools: ^5.66.4
+- TanStack Router DevTools: ^1.105.0
+
+## UI Framework
+
+### Core UI Libraries
+
+- Tailwind CSS: ^4.0.6
+- Radix UI (Complete Suite):
+  - Accordion: ^1.2.3
+  - Alert Dialog: ^1.1.6
+  - Avatar: ^1.1.3
+  - Checkbox: ^1.1.4
+  - Dialog: ^1.1.6
+  - Dropdown Menu: ^2.1.6
+  - and many more Radix primitives
+
+### UI Enhancement Libraries
+
+- class-variance-authority: ^0.7.1
+- clsx: ^2.1.1
+- tailwind-merge: ^3.0.1
+- tailwindcss-animate: ^1.0.7
+
+### Additional UI Components
+
+- Embla Carousel: ^8.5.2
+- React Day Picker: 8.10.1
+- React Icons: ^5.4.0
+- Recharts: ^2.15.1
+- Sonner (Toast): ^1.7.4
+- Vaul: ^1.1.2
+
+## Form Management
+
+### Core Form Libraries
+
+- React Hook Form: ^7.54.2
+- @hookform/resolvers: ^4.1.0
+- Zod: ^3.24.2
+
+### Form Components
+
+- Shadcn UI Form Components:
+  - Form
+  - FormField
+  - FormItem
+  - FormLabel
+  - FormControl
+  - FormDescription
+  - FormMessage
+
+### Form Best Practices
+
+```typescript
+// ✅ Proper form implementation with React Hook Form and Shadcn UI
+function SignUpForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      // Handle success
+    } catch (error) {
+      // Handle error
+      if (error instanceof Error) {
+        form.setError('root', {
+          type: 'server',
+          message: error.message,
+        });
+      }
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input {...field} type="email" />
+              </FormControl>
+              <FormDescription>
+                Enter your email address to create an account
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input {...field} type="password" />
+              </FormControl>
+              <FormDescription>
+                Must be at least 8 characters long
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? 'Creating account...' : 'Create account'}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor form implementation
+function UnsafeForm() {
+  const [data, setData] = useState({});
+  return (
+    <form onSubmit={() => fetch('/api/submit', { body: JSON.stringify(data) })}>
+      <input onChange={(e) => setData({ ...data, value: e.target.value })} />
+    </form>
+  );
+}
+```
+
+### Form Validation
+
+```typescript
+// ✅ Proper form validation with Zod
+const formSchema = z.object({
+  email: z.string().email('Please enter a valid email'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(
+      /[^A-Za-z0-9]/,
+      'Password must contain at least one special character',
+    ),
+});
+
+// ❌ Poor form validation
+const form = useForm({
+  // Don't use inline validation
+  validate: (values) => {
+    const errors = {};
+    if (!values.email) {
+      errors.email = 'Required';
+    }
+    return errors;
+  },
+});
+```
+
+### Form Error Handling
+
+```typescript
+// ✅ Proper form error handling
+function FormWithErrorHandling() {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await submitForm(values);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        // Handle API errors
+        form.setError('root', {
+          type: 'server',
+          message: error.message,
+        });
+      } else if (error instanceof ValidationError) {
+        // Handle validation errors
+        Object.entries(error.errors).forEach(([field, message]) => {
+          form.setError(field as keyof FormValues, {
+            type: 'server',
+            message: message as string,
+          });
+        });
+      } else {
+        // Handle unexpected errors
+        form.setError('root', {
+          type: 'server',
+          message: 'An unexpected error occurred',
+        });
+      }
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {/* Form fields */}
+        {form.formState.errors.root && (
+          <div role="alert" className="text-red-500">
+            {form.formState.errors.root.message}
+          </div>
+        )}
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor error handling
+function FormWithPoorErrorHandling() {
+  const onSubmit = async (data) => {
+    try {
+      await submitForm(data);
+    } catch (error) {
+      // Don't use generic error handling
+      console.error(error);
+      alert('Something went wrong');
+    }
+  };
+}
+```
+
+### Form State Management
+
+```typescript
+// ✅ Proper form state management
+function FormWithState() {
+  const form = useForm<FormValues>();
+  const { isSubmitting, isDirty, isValid } = form.formState;
+
+  // Watch specific fields
+  const watchEmail = form.watch('email');
+
+  // Subscribe to field changes
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      console.log(value, name, type);
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {/* Form fields */}
+        <Button
+          type="submit"
+          disabled={!isDirty || !isValid || isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor state management
+function FormWithPoorState() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Don't manage form state manually
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await submitForm(data);
+    } catch (error) {
+      setErrors({ ...errors, submit: error.message });
+    }
+    setIsSubmitting(false);
+  };
+}
+```
+
+### Form Accessibility
+
+```typescript
+// ✅ Proper form accessibility
+function AccessibleForm() {
+  const form = useForm<FormValues>();
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        noValidate
+        aria-label="Sign up form"
+      >
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor={field.name}>
+                Email
+                <span aria-hidden="true" className="text-red-500">*</span>
+                <span className="sr-only">(Required)</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  id={field.name}
+                  aria-describedby={`${field.name}-description ${field.name}-error`}
+                  aria-invalid={!!form.formState.errors.email}
+                  required
+                />
+              </FormControl>
+              <FormDescription id={`${field.name}-description`}>
+                Enter your email address
+              </FormDescription>
+              <FormMessage id={`${field.name}-error`} />
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor accessibility
+function InaccessibleForm() {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Email *</label>
+        <input type="email" />
+        <span className="error">Invalid email</span>
+      </div>
+    </form>
+  );
+}
+```
+
+### Form Performance
+
+```typescript
+// ✅ Proper form performance
+function PerformantForm() {
+  const form = useForm<FormValues>({
+    mode: 'onBlur', // Validate on blur instead of onChange
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  // Memoize callback
+  const onSubmit = useCallback(async (values: FormValues) => {
+    await submitForm(values);
+  }, []);
+
+  // Memoize expensive computations
+  const isValid = useMemo(() => {
+    return Object.keys(form.formState.errors).length === 0;
+  }, [form.formState.errors]);
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {/* Form fields */}
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor performance
+function UnperformantForm() {
+  const form = useForm<FormValues>({
+    mode: 'onChange', // Don't validate on every change
+  });
+
+  // Don't create new functions on every render
+  const onSubmit = async (values: FormValues) => {
+    await submitForm(values);
+  };
+
+  // Don't compute on every render
+  const isValid = Object.keys(form.formState.errors).length === 0;
+}
+```
+
+### Form Testing
+
+```typescript
+// ✅ Proper form testing
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+describe('SignUpForm', () => {
+  it('should validate form fields', async () => {
+    render(<SignUpForm />);
+
+    // Submit empty form
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    // Check for validation errors
+    expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
+    expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
+
+    // Fill form with invalid data
+    await userEvent.type(
+      screen.getByLabelText(/email/i),
+      'invalid-email'
+    );
+    await userEvent.type(
+      screen.getByLabelText(/password/i),
+      'short'
+    );
+
+    // Check for validation errors
+    expect(await screen.findByText(/invalid email/i)).toBeInTheDocument();
+    expect(await screen.findByText(/password must be at least/i)).toBeInTheDocument();
+
+    // Fill form with valid data
+    await userEvent.clear(screen.getByLabelText(/email/i));
+    await userEvent.type(
+      screen.getByLabelText(/email/i),
+      'test@example.com'
+    );
+    await userEvent.clear(screen.getByLabelText(/password/i));
+    await userEvent.type(
+      screen.getByLabelText(/password/i),
+      'ValidP@ssw0rd'
+    );
+
+    // Submit form
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    // Check form submission
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should handle server errors', async () => {
+    server.use(
+      rest.post('/api/signup', (req, res, ctx) => {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: 'Email already exists' })
+        );
+      })
+    );
+
+    render(<SignUpForm />);
+
+    // Fill and submit form
+    await userEvent.type(
+      screen.getByLabelText(/email/i),
+      'existing@example.com'
+    );
+    await userEvent.type(
+      screen.getByLabelText(/password/i),
+      'ValidP@ssw0rd'
+    );
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    // Check for server error
+    expect(await screen.findByText(/email already exists/i)).toBeInTheDocument();
+  });
+});
+
+// ❌ Poor testing
+describe('SignUpForm', () => {
+  it('should submit form', () => {
+    render(<SignUpForm />);
+    // Don't test implementation details
+    expect(screen.getByTestId('form')).toBeInTheDocument();
+  });
+});
+```
+
+### Form Security with React Hook Form
+
+```typescript
+// ✅ Proper form security
+function SecureForm() {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      // Get CSRF token
+      const csrfToken = await getCsrfToken();
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Submission failed');
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        autoComplete="off"
+      >
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="password"
+                  autoComplete="new-password"
+                  // Prevent password logging
+                  onInput={(e) => {
+                    e.currentTarget.setAttribute(
+                      'value',
+                      '*'.repeat(e.currentTarget.value.length)
+                    );
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor security
+function UnsecureForm() {
+  const onSubmit = (data) => {
+    // Don't submit without CSRF protection
+    fetch('/api/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="password"
+        // Don't log sensitive data
+        onChange={(e) => console.log('Password:', e.target.value)}
+      />
+    </form>
+  );
+}
+```
+
+## Authentication & Authorization
+
+- Better Auth: ^1.1.18
+- js-cookie: ^3.0.5
+
+## Database & ORM
+
+- Drizzle ORM: ^0.39.3
+- Drizzle Kit: ^0.30.4
+- Drizzle Zod: ^0.7.0
+- Postgres: ^3.4.5
+
+### Database Schema Definition
+
+```typescript
+// ✅ Proper schema definition with Drizzle ORM
+import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
+
+// Define the table schema
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified').notNull(),
+  image: text('image'),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+});
+
+// Create Zod schemas for type-safe operations
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
+
+// Define relationships
+export const sessions = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+});
+
+// ❌ Poor schema definition
+const badUsers = pgTable('users', {
+  // Don't use generic column names
+  id: text('id'),
+  // Don't skip null constraints
+  name: text('name'),
+  // Don't skip unique constraints
+  email: text('email'),
+  // Don't use boolean without default
+  active: boolean('active'),
+});
+```
+
+### Database Configuration
+
+```typescript
+// ✅ Proper Drizzle configuration
+// drizzle.config.ts
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  breakpoints: true,
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+  dialect: 'postgresql',
+  out: './.drizzle',
+  schema: './app/lib/server/schema/index.ts',
+  strict: true,
+  verbose: true,
+});
+
+// ✅ Proper database client setup
+// app/lib/server/db.ts
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from './schema';
+
+const queryClient = postgres(process.env.DATABASE_URL!);
+export const db = drizzle({
+  casing: 'snake_case',
+  client: queryClient,
+  schema,
+});
+```
+
+### Database Operations
+
+```typescript
+// ✅ Proper database operations
+async function databaseOperations() {
+  // Insert with type safety
+  const newUser = await db
+    .insert(users)
+    .values(
+      insertUserSchema.parse({
+        id: 'user_123',
+        name: 'John Doe',
+        email: 'john@example.com',
+        emailVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    )
+    .returning();
+
+  // Select with relationships
+  const userWithSessions = await db
+    .select()
+    .from(users)
+    .leftJoin(sessions, eq(users.id, sessions.userId))
+    .where(eq(users.id, 'user_123'));
+
+  // Update with validation
+  const updatedUser = await db
+    .update(users)
+    .set({
+      emailVerified: true,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, 'user_123'))
+    .returning();
+
+  // Delete with safety
+  const deletedUser = await db
+    .delete(users)
+    .where(eq(users.id, 'user_123'))
+    .returning();
+}
+
+// ❌ Poor database operations
+async function poorDatabaseOperations() {
+  // Don't use raw SQL
+  const user = await db.execute(sql`SELECT * FROM users WHERE id = ${userId}`);
+
+  // Don't skip validation
+  await db.insert(users).values({
+    id: userId,
+    email: email, // Missing validation
+  });
+
+  // Don't use string interpolation
+  await db.execute(`DELETE FROM users WHERE id = '${userId}'`);
+}
+```
+
+### Migrations
+
+```typescript
+// ✅ Proper migration workflow
+// 1. Generate migration
+// pnpm db:generate
+
+// 2. Review generated SQL in .drizzle/migrations
+// 0000_create_users.sql
+CREATE TABLE "users" (
+  "id" text PRIMARY KEY NOT NULL,
+  "name" text NOT NULL,
+  "email" text NOT NULL,
+  "email_verified" boolean NOT NULL,
+  "image" text,
+  "created_at" timestamp NOT NULL,
+  "updated_at" timestamp NOT NULL,
+  CONSTRAINT "users_email_unique" UNIQUE("email")
+);
+
+// 3. Apply migration
+// pnpm db:migrate
+
+// 4. Use Drizzle Studio for development
+// pnpm db:studio
+```
+
+### Best Practices
+
+1. Schema Definition:
+
+   - Use proper column types and constraints
+   - Define relationships explicitly
+   - Use Zod schemas for validation
+   - Keep schema files organized by feature
+   - Use proper naming conventions
+
+2. Database Operations:
+
+   - Use type-safe queries
+   - Implement proper error handling
+   - Use transactions when needed
+   - Validate input data
+   - Handle relationships properly
+
+3. Migrations:
+
+   - Review generated migrations
+   - Test migrations locally
+   - Back up data before migrations
+   - Use proper versioning
+   - Document breaking changes
+
+4. Performance:
+
+   - Use proper indexes
+   - Optimize queries
+   - Use connection pooling
+   - Monitor query performance
+   - Cache when appropriate
+
+5. Security:
+   - Validate all inputs
+   - Use parameterized queries
+   - Implement proper access control
+   - Encrypt sensitive data
+   - Regular security audits
+
+## Email
+
+- Resend: ^4.1.2
+- React Email Components: ^0.0.33
+- React Email Render: 1.0.5
+
+## Development Environment
+
+### Code Quality Tools
+
+- ESLint: ^9.20.1
+  - @eslint/js
+  - @eslint-react/eslint-plugin
+  - @tanstack/eslint-plugin-query
+  - @tanstack/eslint-plugin-router
+  - Multiple additional plugins for enhanced linting
+
+### Code Formatting
+
+- Prettier: ^3.5.1
+  - prettier-plugin-packagejson: ^2.5.8
+  - prettier-plugin-tailwindcss: ^0.6.11
+
+### Git Hooks & Commit Standards
+
+- Husky: ^9.1.7
+- Commitlint: ^19.7.1
+- Lint Staged: ^15.4.3
+- Commitizen: cz-git
+
+### Environment Variables
+
+- @dotenvx/dotenvx: ^1.36.0
+- @t3-oss/env-core: ^0.12.0
+
+## Testing Framework
+
+### Unit and Integration Testing
+
+- Testing configuration to be implemented with:
+  - Vitest (recommended)
+  - React Testing Library
+  - MSW for API mocking
+
+### End-to-End Testing
+
+- Playwright for E2E testing
+  - Cross-browser testing (Chromium, Firefox, WebKit)
+  - Parallel test execution
+  - Mobile device emulation
+  - Visual regression testing
+  - Network request mocking
+  - Test recording and debugging
+  - CI/CD integration
+  - Accessibility testing
+  - Performance metrics collection
+
+### Testing Scripts
+
+- \`pnpm test\`: Run unit and integration tests
+- \`pnpm test:e2e\`: Run Playwright E2E tests
+- \`pnpm test:e2e:ui\`: Open Playwright UI mode
+- \`pnpm test:e2e:report\`: Generate E2E test report
+
+## Scripts
+
+### Development
+
+- \`pnpm dev\`: Start development server
+- \`pnpm build\`: Build for production
+- \`pnpm start\`: Start production server
+
+### Database
+
+- \`pnpm db:up\`: Start database container
+- \`pnpm db:down\`: Stop database container
+- \`pnpm db:generate\`: Generate database migrations
+- \`pnpm db:migrate\`: Run database migrations
+- \`pnpm db:studio\`: Open database studio
+
+### Code Quality
+
+- \`pnpm format\`: Format code with Prettier
+- \`pnpm lint\`: Lint code with ESLint
+- \`pnpm typecheck\`: Type check with TypeScript
+
+### Authentication
+
+- \`pnpm auth\`: Run auth CLI
+- \`pnpm auth:generate\`: Generate auth schemas
+
+### Internationalization
+
+- \`pnpm i18n:extract\`: Extract translation keys
+- \`pnpm i18n:compile\`: Compile translation files
+- \`pnpm i18n:validate\`: Validate translation files
+
+## Environment Setup
+
+### Required Environment Variables
+
+- Database configuration
+- Authentication secrets
+- Email service configuration
+- API keys for external services
+
+### Development Configuration
+
+- Node.js >=22.14.0
+- PNPM >=10.4.1
+- Docker for database
+- Git for version control
+
+### Production Configuration
+
+- Node.js runtime
+- PostgreSQL database
+- Environment variables properly set
+- Build optimization settings configured
+
+## Deployment
+
+### Coolify Integration
+
+- Automated deployments via Coolify
+- GitHub integration for automatic deploys on push/merge to main
+- Zero-downtime deployments
+- Built-in health checks and monitoring
+- Automatic SSL certificate management
+- Docker-based deployment pipeline
+
+### Deployment Features
+
+- Automatic builds on git push
+- Environment variable management
+- Deployment history and rollbacks
+- Build cache optimization
+- Automatic container cleanup
+- Resource monitoring and scaling
+- Database backups and management
+
+### Deployment Configuration
+
+- GitHub repository integration
+- Branch-based deployments (main)
+- Build and runtime environment configuration
+- Health check endpoints
+- Resource allocation settings
+- Network and domain configuration
+- SSL/TLS certificate management
+
+## Performance Optimization
+
+- React 19 automatic batching
+- Code splitting with React.lazy
+- Route-based code splitting
+- Asset optimization with Vinxi
+- Proper cache management with TanStack Query
+- Optimized bundle size with proper imports
+- Server-side rendering capabilities
+
+## Security Measures
+
+- Better Auth for authentication
+- CSRF protection
+- Input validation with Zod
+- Secure cookie handling
+- Environment variable protection
+- SQL injection prevention with Drizzle
+- XSS protection
+
+## Development Workflow
+
+> 📝 See [Senior Developer Guidelines - Implementation Process](.cursor/rules/consistency-senior-dev.mdc#implementation-process) for detailed development steps.
+
+### Git Workflow
+
+> 📝 See [Consistency Patterns - Version Management](.cursor/rules/consistency-patterns.mdc#version-management) for detailed versioning guidelines.
+
+- Use feature branches for all changes
+- Branch naming: `feature/<feature-name>`
+- Create a pull request for each feature branch
+- Review and merge pull requests
+- Delete the feature branch after merging
+- Use `main` branch for stable releases
+- Tag releases with version numbers
+- Use semantic versioning (MAJOR.MINOR.PATCH)
+- Update `CHANGELOG.md` for each release
+- Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages
+
+### Development Steps
+
+1. Create a new feature branch
+2. Make changes and commit with descriptive messages
+3. Push changes to the feature branch
+4. Create a pull request
+5. Review and merge the pull request
+6. Delete the feature branch
+7. Update `CHANGELOG.md` and version number
+8. Tag the release with the version number
+9. Push the tag to the remote repository
+
+### Versioning Guidelines
+
+- Follow semantic versioning (MAJOR.MINOR.PATCH)
+- Increment the MAJOR version for breaking changes
+- Increment the MINOR version for new features
+- Increment the PATCH version for bug fixes
+- Update `CHANGELOG.md` for each release
+- Tag releases with version numbers
+- Use tags for stable releases and branches for development
+
+### Commit Message Guidelines
+
+- Use the present tense ("Add feature" not "Added feature")
+- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+- Limit the first line to 72 characters or less
+- Reference issues and pull requests in the commit message
+- Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages
+
+### Pull Request Guidelines
+
+- Use descriptive titles and descriptions
+- Reference issues and pull requests in the description
+- Include screenshots or GIFs if applicable
+- Request reviews from relevant team members
+- Address review comments and make changes as needed
+- Squash and rebase commits for a clean history
+- Delete the feature branch after merging
+
+### Release Guidelines
+
+- Update `CHANGELOG.md` for each release
+- Tag releases with version numbers
+- Use tags for stable releases and branches for development
+- Follow semantic versioning (MAJOR.MINOR.PATCH)
+- Increment the MAJOR version for breaking changes
+- Increment the MINOR version for new features
+- Increment the PATCH version for bug fixes
+- Push the tag to the remote repository
+- Create a new GitHub release for each tag
+- Include release notes in the GitHub release description
+
+## Internationalization (i18n)
+
+### Core i18n Libraries
+
+- i18next: ^23.10.1
+- react-i18next: ^14.1.0
+- i18next-browser-languagedetector: ^7.2.0
+- i18next-http-backend: ^2.5.0
+- i18next-resources-to-backend: ^1.2.0
+
+### Directory Structure
+
+```sh
+app/
+└── lib/
+    └── i18n/              # i18n configuration and utilities
+        ├── config.ts      # Main i18n configuration
+        ├── types.ts       # Type definitions and resources
+        ├── schemas.ts     # Zod schemas for validation
+        └── utils.ts       # Utility functions
+
+public/
+└── locales/              # Translation files
+    ├── en/              # English translations
+    │   ├── common.json  # Shared translations
+    │   ├── auth.json    # Authentication translations
+    │   └── features/    # Feature-specific translations
+    │       ├── dashboard.json
+    │       └── settings.json
+    └── es/              # Spanish translations
+        ├── common.json
+        ├── auth.json
+        └── features/
+            ├── dashboard.json
+            └── settings.json
+```
+
+### Type-Safe Resources
+
+```typescript
+// app/lib/i18n/types.ts
+export const defaultResources = {
+  en: {
+    common: {
+      loading: 'Loading...',
+      error: 'An error occurred',
+      success: 'Success!',
+    },
+    auth: {
+      signin: {
+        title: 'Sign In',
+        emailLabel: 'Email',
+        passwordLabel: 'Password',
+      },
+    },
+  },
+} as const;
+
+// Type-safe resources
+export type Resources = typeof defaultResources;
+
+// Type augmentation for type-safe translations
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    defaultNS: 'common';
+    resources: Resources;
+  }
+}
+```
+
+### Translation Schemas
+
+```typescript
+// app/lib/i18n/schemas.ts
+import { z } from 'zod';
+
+export const commonSchema = z.object({
+  loading: z.string(),
+  error: z.string(),
+  success: z.string(),
+});
+
+export const authSchema = z.object({
+  signin: z.object({
+    title: z.string(),
+    emailLabel: z.string(),
+    passwordLabel: z.string(),
+  }),
+});
+
+export type CommonTranslations = z.infer<typeof commonSchema>;
+export type AuthTranslations = z.infer<typeof authSchema>;
+```
+
+### Utility Functions
+
+```typescript
+// app/lib/i18n/utils.ts
+import { type Resources } from './types';
+
+export function validateTranslations(
+  resources: Resources,
+  schemas: Record<string, z.ZodSchema>,
+) {
+  Object.entries(resources).forEach(([lang, namespaces]) => {
+    Object.entries(namespaces).forEach(([ns, translations]) => {
+      const schema = schemas[ns];
+      if (schema) {
+        try {
+          schema.parse(translations);
+        } catch (error) {
+          console.error(`Invalid translations in ${lang}/${ns}:`, error);
+        }
+      }
+    });
+  });
+}
+```
+
+### Usage in Components
+
+```typescript
+import { useTranslation, Trans } from 'react-i18next';
+
+export function SignInForm() {
+  const { t, i18n } = useTranslation(['auth', 'common']);
+
+  // Basic translation
+  const title = t('auth:signin.title');
+
+  // With variables
+  const welcome = t('auth:welcome', { name: 'John' });
+
+  // With pluralization
+  const items = t('common:items', { count: 4 });
+
+  // With Trans component for complex translations
+  return (
+    <form>
+      <h1>{title}</h1>
+      <div>
+        <label>{t('auth:signin.emailLabel')}</label>
+        <input
+          type="email"
+          placeholder={t('auth:signin.emailPlaceholder')}
+          aria-label={t('auth:signin.emailLabel')}
+        />
+      </div>
+      <Trans i18nKey="auth:signin.terms">
+        By signing in, you agree to our <a href="/terms">Terms</a>
+      </Trans>
+      {/* Error handling */}
+      {error && (
+        <p role="alert">
+          {t('auth:signin.errors.invalidEmail')}
+        </p>
+      )}
+    </form>
+  );
+}
+```
+
+### Translation File Examples
+
+```json
+// public/locales/en/common.json
+{
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "items_zero": "No items",
+  "items_one": "One item",
+  "items_other": "{{count}} items",
+  "select": {
+    "language": "Select language"
+  }
+}
+
+// public/locales/en/auth.json
+{
+  "signin": {
+    "title": "Sign In",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "submitButton": "Sign In",
+    "terms": "By signing in, you agree to our <1>Terms</1>",
+    "errors": {
+      "invalidEmail": "Please enter a valid email",
+      "invalidPassword": "Password is required"
+    }
+  }
+}
+```
+
+### Scripts
+
+```typescript
+// scripts/i18n/validate.ts
+import { validateTranslations } from '@/lib/i18n/utils';
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { commonSchema, authSchema } from '@/lib/i18n/schemas';
+
+const LOCALES_DIR = 'public/locales';
+const schemaMap = {
+  'common.json': commonSchema,
+  'auth.json': authSchema,
+};
+
+export function validateTranslations() {
+  const locales = readdirSync(LOCALES_DIR);
+
+  for (const locale of locales) {
+    const files = readdirSync(join(LOCALES_DIR, locale));
+
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        const content = JSON.parse(
+          readFileSync(join(LOCALES_DIR, locale, file),
+          'utf-8',
+        );
+        const schema = schemaMap[file];
+        if (schema) {
+          try {
+            schema.parse(content);
+          } catch (error) {
+            console.error(`Invalid translations in ${locale}/${file}:`, error);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Run validation
+validateTranslations();
+```
+
+## Security Best Practices
+
+### Authentication with Better Auth
+
+```typescript
+// ✅ Proper Better Auth integration with React 19
+import { createBetterAuth } from '@better-auth/core';
+import { createTanStackAuthAdapter } from '@better-auth/tanstack';
+
+// Configure Better Auth with TanStack adapter
+const auth = createBetterAuth({
+  adapter: createTanStackAuthAdapter({
+    // Use proper session management
+    session: {
+      strategy: 'jwt',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      // Proper cookie security
+      cookie: {
+        name: '__session',
+        options: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 30 * 24 * 60 * 60,
+        },
+      },
+    },
+    // Proper CSRF protection
+    csrf: {
+      cookie: {
+        name: '__csrf',
+        options: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        },
+      },
+    },
+  }),
+  // Proper providers configuration
+  providers: [
+    // Configure OAuth providers securely
+    auth.oauth('github', {
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      // Use proper callback URL
+      callbackUrl: new URL(
+        '/auth/callback/github',
+        process.env.APP_URL
+      ).toString(),
+    }),
+  ],
+});
+
+// ✅ Proper auth hooks usage with React 19
+function ProtectedRoute() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <ErrorBoundary>
+        <AuthCheck>
+          <ProtectedContent />
+        </AuthCheck>
+      </ErrorBoundary>
+    </Suspense>
+  );
+}
+
+// Proper auth check component
+function AuthCheck({ children }) {
+  const { session } = useAuth();
+
+  if (!session) {
+    throw new UnauthorizedError('Not authenticated');
+  }
+
+  return children;
+}
+
+// ❌ Poor auth implementation
+function ProtectedRoute() {
+  // Don't use localStorage for auth
+  const token = localStorage.getItem('token');
+  return token ? <div>Protected</div> : null;
+}
+```
+
+### Route Protection with TanStack Router
+
+```typescript
+// ✅ Proper route protection with React 19
+import { createRoute } from '@tanstack/react-router';
+
+// Protected route with auth guard
+export const protectedRoute = createRoute({
+  path: '/dashboard',
+  beforeLoad: async ({ context, navigate }) => {
+    const { session } = await context.auth.getSession();
+
+    if (!session) {
+      // Proper redirect with return URL
+      throw navigate({
+        to: '/signin',
+        search: {
+          returnTo: '/dashboard',
+        },
+      });
+    }
+
+    // Proper role-based access
+    if (!session.user.roles.includes('admin')) {
+      throw new ForbiddenError('Insufficient permissions');
+    }
+
+    return { session };
+  },
+  // Proper error handling
+  errorComponent: ({ error }) => {
+    if (error instanceof UnauthorizedError) {
+      return <Navigate to="/signin" />;
+    }
+    if (error instanceof ForbiddenError) {
+      return <AccessDenied />;
+    }
+    return <ErrorDisplay error={error} />;
+  },
+  // Proper loading state
+  pendingComponent: () => <LoadingSpinner />,
+});
+
+// ❌ Poor route protection
+const route = createRoute({
+  path: '/dashboard',
+  component: () => {
+    // Don't check auth status in component
+    const isAuth = localStorage.getItem('token');
+    return isAuth ? <Dashboard /> : <Navigate to="/login" />;
+  },
+});
+```
+
+### API Security with TanStack Query
+
+```typescript
+// ✅ Proper API security with React 19
+function useSecureQuery() {
+  const { session } = useAuth();
+  const csrfToken = useCsrfToken();
+
+  return useQuery({
+    queryKey: ['protected-data'],
+    queryFn: async () => {
+      // Proper error handling
+      if (!session) {
+        throw new UnauthorizedError();
+      }
+
+      const response = await fetch('/api/protected', {
+        headers: {
+          // Proper auth header
+          Authorization: `Bearer ${session.token}`,
+          // Proper CSRF protection
+          'X-CSRF-Token': csrfToken,
+          // Proper content type
+          'Content-Type': 'application/json',
+        },
+        // Proper credentials handling
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        // Proper error classification
+        if (response.status === 401) {
+          throw new UnauthorizedError();
+        }
+        if (response.status === 403) {
+          throw new ForbiddenError();
+        }
+        if (response.status === 429) {
+          throw new RateLimitError();
+        }
+        throw new ApiError(response);
+      }
+
+      return response.json();
+    },
+    // Proper retry configuration
+    retry: (failureCount, error) => {
+      if (
+        error instanceof UnauthorizedError ||
+        error instanceof ForbiddenError ||
+        error instanceof RateLimitError
+      ) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+}
+
+// ❌ Poor API security
+function useUnsafeQuery() {
+  return useQuery({
+    queryKey: ['data'],
+    queryFn: () => fetch('/api/data').then((res) => res.json()),
+    // Missing error handling
+    // Missing auth
+    // Missing CSRF protection
+  });
+}
+```
+
+### Form Security with React Hook Form
+
+```typescript
+// ✅ Proper form security
+function SecureForm() {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      // Get CSRF token
+      const csrfToken = await getCsrfToken();
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Submission failed');
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        autoComplete="off"
+      >
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="password"
+                  autoComplete="new-password"
+                  // Prevent password logging
+                  onInput={(e) => {
+                    e.currentTarget.setAttribute(
+                      'value',
+                      '*'.repeat(e.currentTarget.value.length)
+                    );
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
+  );
+}
+
+// ❌ Poor security
+function UnsecureForm() {
+  const onSubmit = (data) => {
+    // Don't submit without CSRF protection
+    fetch('/api/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="password"
+        // Don't log sensitive data
+        onChange={(e) => console.log('Password:', e.target.value)}
+      />
+    </form>
+  );
+}
+```
+
+### Error Handling with React 19
+
+```typescript
+// ✅ Proper error handling
+function ErrorBoundary() {
+  return (
+    <TanStackRouterErrorComponent
+      render={({ error }) => {
+        // Proper error classification
+        if (error instanceof UnauthorizedError) {
+          return <Navigate to="/signin" />;
+        }
+
+        if (error instanceof ForbiddenError) {
+          return <AccessDenied />;
+        }
+
+        if (error instanceof RateLimitError) {
+          return <RateLimitExceeded />;
+        }
+
+        // Don't expose internal errors
+        return (
+          <ErrorDisplay
+            message={getPublicErrorMessage(error)}
+            // Log detailed error for debugging
+            onMount={() => {
+              logError({
+                error,
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+              });
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
+
+// ❌ Poor error handling
+function ErrorComponent({ error }) {
+  // Don't expose error details to users
+  return <div>{error.stack}</div>;
+}
+```
+
+### Environment Variables
+
+```typescript
+// ✅ Proper environment configuration
+import { createEnv } from '@t3-oss/env-core';
+import { z } from 'zod';
+
+export const env = createEnv({
+  server: {
+    // Database configuration
+    DATABASE_URL: z.string().url(),
+    DATABASE_AUTH_TOKEN: z.string(),
+
+    // Authentication secrets
+    AUTH_SECRET: z.string().min(32),
+    GITHUB_CLIENT_SECRET: z.string(),
+
+    // API keys
+    STRIPE_SECRET_KEY: z.string(),
+    SENDGRID_API_KEY: z.string(),
+
+    // Service configuration
+    REDIS_URL: z.string().url(),
+    S3_BUCKET: z.string(),
+    AWS_ACCESS_KEY: z.string(),
+    AWS_SECRET_KEY: z.string(),
+  },
+  client: {
+    // Public URLs
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_API_URL: z.string().url(),
+
+    // Public keys
+    NEXT_PUBLIC_STRIPE_PUBLIC_KEY: z.string(),
+    NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string(),
+
+    // Feature flags
+    NEXT_PUBLIC_FEATURE_FLAGS: z.string(),
+  },
+  runtimeEnv: process.env,
+  // Proper environment validation
+  skipValidation:
+    process.env.NODE_ENV === 'development' &&
+    process.env.SKIP_ENV_VALIDATION === '1',
+});
+
+// ❌ Poor environment configuration
+const config = {
+  // Don't expose sensitive values
+  dbUrl: process.env.DATABASE_URL,
+  // Don't use untyped env vars
+  apiKey: process.env.API_KEY,
+};
+```

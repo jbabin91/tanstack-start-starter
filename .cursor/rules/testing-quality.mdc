@@ -1,0 +1,500 @@
+---
+description: Testing standards and quality assurance practices for unit, integration, and E2E tests.
+globs: ['**/*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}']
+---
+
+# Testing and Quality Assurance for TanStack Start
+
+You are a testing expert focused on ensuring code quality and reliability in a TanStack Start project. Follow these guidelines:
+
+## Testing Framework
+
+- Use Vitest as the testing framework
+- Implement React Testing Library for component tests
+- Use MSW for API mocking
+- Follow the testing trophy principle
+- Use proper TanStack Query testing utilities
+
+## TanStack Router Testing
+
+- Test route matching and navigation
+- Test search params handling
+- Test route guards and protection
+- Test error boundaries
+- Test loading states
+
+## TanStack Query Testing
+
+- Test query invalidation
+- Test optimistic updates
+- Test error handling
+- Test loading states
+- Test prefetching
+- Use proper query client mocking
+- Test infinite queries
+- Test mutations
+- Test cache behavior
+- Test stale time handling
+
+## TanStack Form Testing
+
+- Test form validation
+- Test form submission
+- Test field interactions
+- Test error states
+- Test loading states
+- Test form reset
+- Test field dependencies
+- Test dynamic validation
+- Test form state updates
+- Test form submission errors
+
+## TanStack Table Testing
+
+- Test sorting functionality
+- Test filtering behavior
+- Test pagination
+- Test row selection
+- Test column management
+- Test data updates
+- Test virtual scrolling
+- Test row expansion
+- Test column resizing
+- Test state persistence
+
+## TanStack Virtual Testing
+
+- Test virtualization behavior
+- Test scroll handling
+- Test item rendering
+- Test dynamic sizes
+- Test overscan
+- Test scroll restoration
+- Test item measurement
+- Test grid layout
+- Test scroll sync
+- Test performance
+
+## Test Types
+
+- Unit tests for utility functions and hooks
+- Integration tests for component interaction
+- Route tests for navigation flows
+- Query tests for data fetching
+- Form tests for validation
+
+## Test Structure
+
+- Follow AAA pattern (Arrange, Act, Assert)
+- One test = one assertion
+- Use descriptive test names
+- Group related tests together
+- Mock external dependencies
+
+## Component Testing
+
+- Test component behavior, not implementation
+- Use proper query methods (getBy, findBy, queryBy)
+- Test accessibility concerns
+- Test error states and loading states
+- Test user interactions
+
+## Route Testing
+
+- Test navigation flows
+- Test search params handling
+- Test error boundaries
+- Test loading states
+- Test route guards
+
+## Query Testing
+
+- Test query invalidation
+- Test optimistic updates
+- Test error handling
+- Test loading states
+- Test prefetching
+
+## Form Testing with React Hook Form
+
+- Test form validation
+- Test form submission
+- Test field interactions
+- Test error states
+- Test loading states
+- Test form reset
+- Test field dependencies
+- Test dynamic validation
+- Test form state updates
+- Test form submission errors
+
+## Authentication Testing
+
+- Test auth flows
+- Test protected routes
+- Test auth errors
+- Test auth loading states
+- Test auth redirects
+
+## Test Coverage
+
+- Aim for meaningful coverage over percentage
+- Cover edge cases and error scenarios
+- Test both success and failure paths
+- Test boundary conditions
+- Cover all user interactions
+
+## Testing Best Practices
+
+- Keep tests simple and readable
+- Avoid test interdependence
+- Clean up after each test
+- Use proper setup and teardown
+- Implement proper error handling
+- Use proper test isolation
+- Follow proper naming conventions
+- Implement proper assertions
+- Use proper test coverage
+- Maintain proper documentation
+
+## Quality Checks
+
+- Run linting before tests
+- Implement proper TypeScript checks
+- Use proper CI/CD pipeline
+- Regular dependency updates
+- Security vulnerability scanning
+
+## Documentation
+
+- Document test setup requirements
+- Explain complex test scenarios
+- Document any test data requirements
+- Keep test documentation current
+- Document known limitations
+
+## Component Testing Patterns
+
+### Unit Testing Components
+
+```typescript
+// ✅ Proper component testing
+import { render, screen, fireEvent } from '@testing-library/react';
+import { expect, test, vi } from 'vitest';
+
+test('UserProfile renders and handles updates', async () => {
+  // Arrange
+  const mockUser = { id: 1, name: 'John' };
+  const onUpdate = vi.fn();
+
+  // Act
+  render(<UserProfile user={mockUser} onUpdate={onUpdate} />);
+
+  // Assert - Initial render
+  expect(screen.getByText(mockUser.name)).toBeInTheDocument();
+
+  // Act - User interaction
+  await fireEvent.click(screen.getByRole('button', { name: /edit/i }));
+
+  // Assert - After interaction
+  expect(onUpdate).toHaveBeenCalledWith(expect.any(Object));
+});
+
+// ❌ Poor component testing
+test('component works', () => {
+  const wrapper = render(<Component />);
+  expect(wrapper).toBeTruthy();
+});
+```
+
+### Integration Testing
+
+```typescript
+// ✅ Proper integration testing
+test('user authentication flow', async () => {
+  // Arrange
+  const mockApi = vi.fn();
+  server.use(
+    rest.post('/api/login', mockApi)
+  );
+
+  // Act
+  render(<AuthFlow />);
+
+  // Fill form
+  await userEvent.type(
+    screen.getByLabelText(/email/i),
+    'user@example.com'
+  );
+  await userEvent.type(
+    screen.getByLabelText(/password/i),
+    'password123'
+  );
+
+  // Submit
+  await userEvent.click(
+    screen.getByRole('button', { name: /sign in/i })
+  );
+
+  // Assert
+  expect(mockApi).toHaveBeenCalledWith(
+    expect.objectContaining({
+      email: 'user@example.com'
+    })
+  );
+
+  // Verify navigation
+  expect(await screen.findByText(/welcome/i))
+    .toBeInTheDocument();
+});
+
+// ❌ Poor integration testing
+test('auth works', async () => {
+  render(<Auth />);
+  // Missing proper assertions
+  expect(screen.getByText(/login/i)).toBeInTheDocument();
+});
+```
+
+### Hook Testing
+
+```typescript
+// ✅ Proper hook testing
+import { renderHook, act } from '@testing-library/react';
+
+test('useCounter hook', async () => {
+  // Arrange
+  const { result } = renderHook(() => useCounter());
+
+  // Assert initial state
+  expect(result.current.count).toBe(0);
+
+  // Act
+  await act(() => {
+    result.current.increment();
+  });
+
+  // Assert after update
+  expect(result.current.count).toBe(1);
+});
+
+// ❌ Poor hook testing
+test('hook works', () => {
+  const hook = useMyHook();
+  expect(hook).toBeDefined();
+});
+```
+
+### Context Testing
+
+```typescript
+// ✅ Proper context testing
+test('theme context provides and updates theme', async () => {
+  // Arrange
+  const wrapper = ({ children }) => (
+    <ThemeProvider>{children}</ThemeProvider>
+  );
+
+  const { result } = renderHook(
+    () => useTheme(),
+    { wrapper }
+  );
+
+  // Assert initial state
+  expect(result.current.theme).toBe('light');
+
+  // Act
+  await act(() => {
+    result.current.setTheme('dark');
+  });
+
+  // Assert after update
+  expect(result.current.theme).toBe('dark');
+});
+
+// ❌ Poor context testing
+test('context works', () => {
+  render(<ThemeProvider />);
+  // Missing assertions and state changes
+});
+```
+
+### Query Testing
+
+```typescript
+// ✅ Proper query testing
+test('useUserQuery fetches and caches data', async () => {
+  // Arrange
+  const mockUser = { id: 1, name: 'John' };
+  const queryClient = new QueryClient();
+
+  server.use(
+    rest.get('/api/user/1', (req, res, ctx) => {
+      return res(ctx.json(mockUser));
+    })
+  );
+
+  // Act
+  const { result } = renderHook(
+    () => useUserQuery(1),
+    {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      ),
+    }
+  );
+
+  // Assert loading state
+  expect(result.current.isLoading).toBe(true);
+
+  // Wait for data
+  await waitFor(() => {
+    expect(result.current.isSuccess).toBe(true);
+  });
+
+  // Assert data
+  expect(result.current.data).toEqual(mockUser);
+});
+
+// ❌ Poor query testing
+test('query works', async () => {
+  const { result } = renderHook(() => useQuery());
+  await waitFor(() => {
+    expect(result.current.data).toBeDefined();
+  });
+});
+```
+
+### Mutation Testing
+
+```typescript
+// ✅ Proper mutation testing
+test('useUpdateUser mutation', async () => {
+  // Arrange
+  const mockUpdate = { name: 'Updated Name' };
+  const queryClient = new QueryClient();
+
+  server.use(
+    rest.patch('/api/user/1', (req, res, ctx) => {
+      return res(ctx.json(mockUpdate));
+    })
+  );
+
+  // Act
+  const { result } = renderHook(
+    () => useUpdateUserMutation(),
+    {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      ),
+    }
+  );
+
+  // Trigger mutation
+  await act(() => {
+    result.current.mutate({
+      id: 1,
+      data: mockUpdate,
+    });
+  });
+
+  // Assert success
+  await waitFor(() => {
+    expect(result.current.isSuccess).toBe(true);
+  });
+
+  // Verify cache update
+  const cachedData = queryClient.getQueryData(['user', 1]);
+  expect(cachedData).toEqual(mockUpdate);
+});
+
+// ❌ Poor mutation testing
+test('mutation updates', async () => {
+  const { result } = renderHook(() => useMutation());
+  result.current.mutate({});
+  // Missing proper assertions
+});
+```
+
+### Error Testing
+
+```typescript
+// ✅ Proper error testing
+test('handles API errors gracefully', async () => {
+  // Arrange
+  server.use(
+    rest.get('/api/user', (req, res, ctx) => {
+      return res(
+        ctx.status(500),
+        ctx.json({ message: 'Server error' })
+      );
+    })
+  );
+
+  // Act
+  render(<UserProfile />);
+
+  // Assert error state
+  expect(
+    await screen.findByText(/something went wrong/i)
+  ).toBeInTheDocument();
+
+  // Verify error boundary
+  expect(
+    screen.getByRole('alert')
+  ).toHaveTextContent(/server error/i);
+
+  // Test recovery
+  await userEvent.click(
+    screen.getByRole('button', { name: /retry/i })
+  );
+});
+
+// ❌ Poor error testing
+test('shows error', () => {
+  render(<Component />);
+  // Missing error simulation and recovery testing
+});
+```
+
+### Accessibility Testing
+
+```typescript
+// ✅ Proper accessibility testing
+test('form meets accessibility requirements', async () => {
+  // Arrange
+  render(<LoginForm />);
+
+  // Assert ARIA labels
+  expect(
+    screen.getByRole('textbox', { name: /email/i })
+  ).toHaveAttribute('aria-required', 'true');
+
+  // Test keyboard navigation
+  await userEvent.tab();
+  expect(
+    screen.getByLabelText(/email/i)
+  ).toHaveFocus();
+
+  // Test error states
+  await userEvent.type(
+    screen.getByLabelText(/email/i),
+    'invalid'
+  );
+  await userEvent.tab();
+
+  expect(
+    screen.getByRole('alert')
+  ).toHaveTextContent(/invalid email/i);
+});
+
+// ❌ Poor accessibility testing
+test('form works', () => {
+  render(<Form />);
+  // Missing accessibility checks
+});
+```

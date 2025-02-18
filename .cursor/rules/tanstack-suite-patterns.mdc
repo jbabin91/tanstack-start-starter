@@ -1,0 +1,334 @@
+---
+description: Best practices and patterns for using TanStack Suite (Query, Router, Form, Table, Virtual) in React applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Suite Patterns
+
+You are a TanStack Suite expert focused on leveraging the full power of the ecosystem. Follow these guidelines:
+
+## TanStack Router
+
+### File-Based Routing Structure
+
+```sh
+app/routes/
+├── __root.tsx           # Root layout with providers and meta
+├── _public/            # Public routes
+│   ├── index.tsx      # Landing page
+│   └── about.tsx      # About page
+├── _auth/             # Authentication routes
+│   ├── signin.tsx     # Sign in page
+│   └── signup.tsx     # Sign up page
+└── dashboard/         # Dashboard feature
+    ├── route.tsx      # Dashboard layout with auth guard
+    └── index.tsx      # Dashboard page
+```
+
+### Route Organization
+
+- Use `__root.tsx` for the root layout with providers and meta configuration
+- Use `_public/` for publicly accessible routes
+- Use `_auth/` for authentication-related routes
+- Use `dashboard/` and other feature directories for protected routes
+- Use `route.tsx` in directories for layout and guard definitions
+- Use `index.tsx` for directory index pages
+- Follow consistent naming for dynamic segments ([id].tsx)
+
+### Route Definition
+
+```typescript
+// ✅ Proper route definition
+// routes/__root.tsx
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async () => {
+    const user = await $getUser();
+    return { user };
+  },
+  component: RootComponent,
+  head: () => ({
+    // Meta configuration
+  }),
+});
+
+// routes/dashboard/route.tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/signin' });
+    }
+  },
+  component: RouteComponent,
+});
+
+// routes/dashboard/index.tsx
+export const Route = createFileRoute('/dashboard/')({
+  component: DashboardComponent,
+  loader: async () => {
+    return { data: await fetchDashboardData() };
+  },
+});
+
+// ❌ Poor route definition
+// Don't mix layout and page logic
+export const Route = createFileRoute('/dashboard')({
+  component: ({ children }) => (
+    <div>
+      <h1>Dashboard</h1>
+      {children}
+    </div>
+  ),
+});
+```
+
+### Navigation
+
+- Use `Link` component from `@tanstack/react-router` for navigation
+- Use `useRouter` hook for programmatic navigation
+- Use proper search params with `useSearch`
+- Implement proper error boundaries with `ErrorComponent`
+- Use proper loading states with `Suspense`
+
+### Type Safety
+
+- Leverage full route type inference
+- Use proper path params validation
+- Implement proper search params validation
+- Use proper context typing
+- Maintain proper type boundaries
+
+## TanStack Query
+
+### Query Definition
+
+- Use proper query keys structure
+- Implement proper query functions
+- Use proper error handling
+- Implement proper retry logic
+- Use proper stale time configuration
+
+### Cache Management
+
+- Implement proper query invalidation
+- Use proper optimistic updates
+- Configure proper cache time
+- Use proper prefetching strategies
+- Implement proper infinite queries
+
+### Mutations
+
+- Use proper mutation functions
+- Implement proper optimistic updates
+- Handle proper error states
+- Use proper onSuccess/onError callbacks
+- Implement proper mutation state reset
+
+## TanStack Table
+
+### Table Definition
+
+- Use proper column definitions
+- Implement proper data fetching
+- Use proper sorting logic
+- Implement proper filtering
+- Use proper pagination
+
+### Feature Management
+
+- Implement proper row selection
+- Use proper column ordering
+- Handle proper column resizing
+- Implement proper row expansion
+- Use proper column visibility
+
+### Virtual Scrolling
+
+- Use proper row virtualization
+- Implement proper column virtualization
+- Handle proper scroll restoration
+- Use proper item measurement
+- Implement proper overscan
+
+## TanStack Virtual
+
+### List Virtualization
+
+- Use proper item size measurement
+- Implement proper overscan
+- Handle proper scroll restoration
+- Use proper item keys
+- Implement proper dynamic heights
+
+### Grid Virtualization
+
+- Use proper cell measurement
+- Implement proper row/column virtualization
+- Handle proper scroll sync
+- Use proper cell keys
+- Implement proper dynamic sizes
+
+## TanStack Start Server & API Patterns
+
+### Server Function Pattern (Primary Approach)
+
+```typescript
+// routes/_app/users/[id].tsx
+import { createServerFn } from '@tanstack/start';
+
+// Define server function with GET method
+const $getUser = createServerFn({
+  method: 'GET',
+}).handler(async ({ params }) => {
+  const { id } = params;
+  return user;
+});
+
+// Define server function with validation
+const $updateUser = createServerFn({
+  method: 'POST',
+})
+  .validator((data: UserInput) => userSchema.parse(data))
+  .handler(async ({ data }) => {
+    return updatedUser;
+  });
+
+export const Route = createFileRoute('/users/$id')({
+  component: UserDetail,
+  loader: async ({ params }) => {
+    return $getUser({ params });
+  },
+});
+```
+
+### API Route Pattern (for Better Auth & Resend)
+
+```typescript
+// routes/api/auth/signin.ts
+import { betterAuth } from '@/lib/server/auth';
+
+export const handler = {
+  async POST(req) {
+    const data = await req.json();
+    return betterAuth.signIn(data);
+  },
+};
+
+// routes/api/auth/signup.ts
+import { betterAuth } from '@/lib/server/auth';
+
+export const handler = {
+  async POST(req) {
+    const data = await req.json();
+    return betterAuth.signUp(data);
+  },
+};
+
+// routes/api/email/send.ts
+import { resend } from '@/lib/server/email';
+
+export const handler = {
+  async POST(req) {
+    const { to, template, data } = await req.json();
+    return resend.emails.send({
+      to,
+      template,
+      data,
+    });
+  },
+};
+```
+
+### API Directory Structure
+
+```sh
+app/routes/api/
+├── auth/
+│   └── $.ts     # Single catch-all handler for all auth endpoints
+├── email/
+│   └── send.ts  # Email sending endpoint
+└── // ... other route files
+```
+
+### When to Use Each Pattern
+
+#### Use Server Functions For:
+
+- Standard CRUD operations
+- Business logic
+- Data validation
+- Database operations
+- Custom server-side logic
+
+#### Use API Routes For:
+
+- Better Auth endpoints (in routes/api/auth/)
+- Resend email service (in routes/api/email/)
+- Third-party service webhooks
+- Complex authentication flows
+- External service integrations
+
+### Server Function Organization
+
+- Colocate with route components
+- Use proper method definition
+- Implement validation with Zod
+- Use proper TypeScript types
+- Keep functions focused
+
+### API Route Organization
+
+- Place in routes/api directory
+- Group by feature (auth/, email/, etc.)
+- Keep handlers focused
+- Implement proper security
+- Handle service-specific requirements
+
+### Security Considerations
+
+- Use server functions for internal operations
+- Use API routes for external services
+- Implement proper authentication
+- Validate all inputs
+- Handle errors appropriately
+
+### Integration Patterns
+
+- Use server functions with loaders
+- Use API routes with external services
+- Implement proper error handling
+- Handle loading states
+- Maintain type safety
+
+## Integration Patterns
+
+### Data Flow
+
+- Use Query with Router for data loading
+- Implement Form with Query for submissions
+- Use Table with Query for data fetching
+- Implement Virtual with Query for infinite lists
+- Handle proper loading states across tools
+
+### Type Safety
+
+- Maintain consistent type definitions
+- Use proper generic constraints
+- Implement proper error types
+- Use proper validation schemas
+- Maintain proper type boundaries
+
+### Performance
+
+- Implement proper code splitting
+- Use proper caching strategies
+- Handle proper memory management
+- Implement proper prefetching
+- Use proper bundle optimization
+
+### Development
+
+- Use proper devtools configuration
+- Implement proper debugging strategies
+- Use proper error handling
+- Follow proper testing practices
+- Maintain proper documentation

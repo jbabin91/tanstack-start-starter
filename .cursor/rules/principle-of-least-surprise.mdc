@@ -1,0 +1,160 @@
+---
+description: Guidelines for writing predictable and intuitive code following the Principle of Least Surprise.
+globs: ['**/*']
+---
+
+# Principle of Least Surprise
+
+## Related Guidelines
+
+- [Tech Stack Documentation](mdc:.cursor/rules/tech-stack.mdc) - For overall project standards
+- [Senior Developer Guidelines](mdc:.cursor/rules/consistency-senior-dev.mdc) - For code quality standards
+- [Consistency Patterns](mdc:.cursor/rules/consistency-patterns.mdc) - For maintaining consistency
+
+## Related Sections
+
+- See [Naming Conventions](mdc:tech-stack.mdc#naming-conventions) for specific naming rules
+- See [Code Quality Standards](mdc:consistency-senior-dev.mdc#code-quality-standards) for implementation guidelines
+- See [Pattern Updates](mdc:consistency-patterns.mdc#pattern-updates) for evolving patterns
+
+Follow these guidelines to create code that behaves predictably and intuitively.
+
+## Core Principles
+
+- Write code that behaves as other developers would expect
+- Follow established patterns in the codebase
+- Use clear, descriptive names that indicate behavior
+- Avoid hidden side effects
+- Keep similar things similar
+
+## Naming Guidelines
+
+- Name things based on what they do, not how they do it
+- Use consistent terminology throughout the codebase
+- Follow established naming patterns in the ecosystem
+- Make boolean variables ask a question (isLoading, hasError)
+- Use verb-noun format for functions (getData, updateUser)
+
+## Function Behavior
+
+> 📝 See [Senior Developer Guidelines - Code Quality Standards](mdc:.cursor/rules/consistency-senior-dev.mdc#code-quality-standards) for implementation details.
+
+- Functions should do what their name suggests
+- Return types should be consistent with function names
+- Handle errors in expected ways
+- Follow established patterns for async operations
+- Keep function signatures consistent within categories
+
+## Component Patterns
+
+> 📝 See [React Best Practices](mdc:.cursor/rules/react-best-practices.mdc) for detailed React component guidelines.
+
+- Props should behave like HTML attributes where applicable
+- Follow React conventions for event handlers (onClick, onChange)
+- Use consistent patterns for loading and error states
+- Follow established patterns for form handling
+- Keep component APIs consistent within categories
+
+## State Management
+
+- State updates should be predictable
+- Follow established patterns for state management
+- Use consistent patterns for loading states
+- Handle errors in expected ways
+- Keep state structure consistent
+
+## API Design
+
+> 📝 See [Tech Stack Documentation - Development Workflow](mdc:.cursor/rules/tech-stack.mdc#development-workflow) for API development process.
+
+- Follow REST conventions where applicable
+- Use consistent response formats
+- Handle errors in expected ways
+- Follow established patterns for authentication
+- Keep API signatures consistent
+
+## Internationalization
+
+> 📝 See [Tech Stack Documentation - Internationalization](mdc:.cursor/rules/tech-stack.mdc#internationalization-i18n) for complete i18n setup.
+
+- Use consistent translation keys across similar features
+- Follow established patterns for pluralization
+- Keep translation keys close to their usage
+- Use descriptive keys that match content
+- Handle fallbacks predictably
+
+## Examples
+
+```typescript
+// ✅ Predictable naming and behavior
+function getUserData(userId: string) {
+  return fetchData(`/users/${userId}`);
+}
+
+// ❌ Surprising behavior
+function getUser(userId: string) {
+  deleteOtherData(); // Unexpected side effect
+  return fetchData(`/users/${userId}`);
+}
+
+// ✅ Predictable component props
+function Button({ onClick, disabled, children }) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
+  );
+}
+
+// ❌ Surprising component behavior
+function Button({ action, inactive, content }) {
+  return (
+    <button onClick={() => setTimeout(action, 1000)} disabled={!inactive}>
+      {content}
+    </button>
+  );
+}
+```
+
+## Common Patterns
+
+### Loading States
+
+```typescript
+// ✅ Consistent loading pattern
+const { data, isLoading, error } = useQuery(...)
+
+// ❌ Surprising loading pattern
+const { data, loading, failure } = useQuery(...)
+```
+
+### Error Handling
+
+```typescript
+// ✅ Predictable error handling
+try {
+  await saveData();
+} catch (error) {
+  handleError(error);
+}
+
+// ❌ Surprising error handling
+try {
+  await saveData();
+} catch {
+  // Silently ignore errors
+}
+```
+
+### State Updates
+
+```typescript
+// ✅ Predictable state update
+setState((prev) => ({ ...prev, updated: true }));
+
+// ❌ Surprising state update
+setState((prev) => {
+  delete prev.something; // Mutating state
+  return prev;
+});
+```
