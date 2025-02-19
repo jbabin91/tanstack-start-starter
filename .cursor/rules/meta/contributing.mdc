@@ -11,8 +11,8 @@ These guidelines establish the processes and standards for maintaining, updating
 
 ## Related Guidelines
 
-- [Core Principles](../domains/core/principles.mdc) - Core development principles
-- [Standards](../domains/core/standards.mdc) - Code style and quality standards
+- [Core Principles](mdc:../domains/core/principles.mdc) - Core development principles
+- [Standards](mdc:../domains/core/standards.mdc) - Code style and quality standards
 
 ## Documentation Structure
 

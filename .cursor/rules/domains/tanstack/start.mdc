@@ -11,8 +11,8 @@ These guidelines establish best practices for setting up and configuring TanStac
 
 ## Related Guidelines
 
-- [Query](./query.mdc) - Query patterns and practices
-- [Router](./router.mdc) - Routing patterns and practices
+- [Query](mdc:domains/tanstack/query.mdc) - Query patterns and practices
+- [Router](mdc:domains/tanstack/router.mdc) - Routing patterns and practices
 
 ## Project Structure
 

@@ -11,8 +11,8 @@ These architectural guidelines establish the foundational patterns and principle
 
 ## Related Guidelines
 
-- [Principles](./principles.mdc) - Core development principles
-- [Standards](./standards.mdc) - Code style and quality standards
+- [Principles](mdc:principles.mdc) - Core development principles
+- [Standards](mdc:standards.mdc) - Code style and quality standards
 
 ## Core Architecture Principles
 

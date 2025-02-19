@@ -11,8 +11,8 @@ These guidelines establish TypeScript-specific patterns and best practices for m
 
 ## Related Guidelines
 
-- [React](./react.mdc) - React development guidelines
-- [Testing](./testing.mdc) - Testing guidelines and practices
+- [React](mdc:react.mdc) - React development guidelines
+- [Testing](mdc:testing.mdc) - Testing guidelines and practices
 
 ## Type System
 

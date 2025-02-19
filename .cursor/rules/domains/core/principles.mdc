@@ -11,8 +11,8 @@ These guidelines establish the foundational principles and consistency standards
 
 ## Related Guidelines
 
-- [Architecture](./architecture.mdc) - For system design patterns
-- [Standards](./standards.mdc) - For detailed style and quality guidelines
+- [Architecture](mdc:domains/core/architecture.mdc) - For system design patterns
+- [Standards](mdc:domains/core/standards.mdc) - For detailed style and quality guidelines
 
 ## Fundamental Principles
 

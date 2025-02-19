@@ -11,8 +11,8 @@ These guidelines establish best practices for using TanStack Query in our applic
 
 ## Related Guidelines
 
-- [Start](./start.mdc) - TanStack Start setup and configuration
-- [Router](./router.mdc) - Routing patterns and practices
+- [Start](mdc:start.mdc) - TanStack Start setup and configuration
+- [Router](mdc:router.mdc) - Routing patterns and practices
 
 ## Query Organization
 

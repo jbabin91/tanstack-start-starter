@@ -28,20 +28,20 @@ This repository contains comprehensive development guidelines and best practices
 
 ## Quick Start
 
-1. Start with [Core Principles](./domains/core/principles.mdc) for fundamental development guidelines
-2. Check [Architecture](./domains/core/architecture.mdc) for system design patterns
-3. Review [Standards](./domains/core/standards.mdc) for code quality guidelines
+1. Start with [Core Principles](mdc:domains/core/principles.mdc) for fundamental development guidelines
+2. Check [Architecture](mdc:domains/core/architecture.mdc) for system design patterns
+3. Review [Standards](mdc:domains/core/standards.mdc) for code quality guidelines
 4. Visit domain-specific guidelines as needed:
-   - [React Guidelines](./domains/frontend/react.mdc)
-   - [TypeScript Guidelines](./domains/frontend/typescript.mdc)
-   - [Testing Guidelines](./domains/frontend/testing.mdc)
-   - [TanStack Start Guidelines](./domains/tanstack/start.mdc)
-   - [Query Guidelines](./domains/tanstack/query.mdc)
-   - [Router Guidelines](./domains/tanstack/router.mdc)
+   - [React Guidelines](mdc:domains/frontend/react.mdc)
+   - [TypeScript Guidelines](mdc:domains/frontend/typescript.mdc)
+   - [Testing Guidelines](mdc:domains/frontend/testing.mdc)
+   - [TanStack Start Guidelines](mdc:domains/tanstack/start.mdc)
+   - [Query Guidelines](mdc:domains/tanstack/query.mdc)
+   - [Router Guidelines](mdc:domains/tanstack/router.mdc)
 
 ## Contributing
 
-Please read our [Contributing Guidelines](./meta/contributing.mdc) for details on:
+Please read our [Contributing Guidelines](mdc:meta/contributing.mdc) for details on:
 
 - How to maintain documentation
 - File format and structure
@@ -51,7 +51,7 @@ Please read our [Contributing Guidelines](./meta/contributing.mdc) for details o
 
 ## Navigation
 
-1. Use the [INDEX.mdc](./INDEX.mdc) file as your primary navigation hub
+1. Use the [INDEX.mdc](mdc:INDEX.mdc) file as your primary navigation hub
 2. Browse domain directories for specific areas of interest
 3. Follow related guideline links within each document
 4. Use your IDE's search functionality to find specific topics

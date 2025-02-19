@@ -11,8 +11,8 @@ These guidelines establish comprehensive testing standards for TanStack Start ap
 
 ## Related Guidelines
 
-- [React](./react.mdc) - React development guidelines
-- [TypeScript](./typescript.mdc) - TypeScript guidelines
+- [React](mdc:react.mdc) - React development guidelines
+- [TypeScript](mdc:typescript.mdc) - TypeScript guidelines
 
 ## Core Testing Principles
 

@@ -11,8 +11,8 @@ These guidelines establish comprehensive best practices for React development in
 
 ## Related Guidelines
 
-- [TypeScript](./typescript.mdc) - TypeScript guidelines
-- [Testing](./testing.mdc) - Testing guidelines and practices
+- [TypeScript](mdc:domains/frontend/typescript.mdc) - TypeScript guidelines
+- [Testing](mdc:domains/frontend/testing.mdc) - Testing guidelines and practices
 
 ## Component Design
 

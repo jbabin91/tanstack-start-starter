@@ -11,8 +11,8 @@ These guidelines establish fundamental code standards and style patterns that ap
 
 ## Related Guidelines
 
-- [Principles](./principles.mdc) - Core development principles
-- [Architecture](./architecture.mdc) - System design patterns
+- [Principles](mdc:principles.mdc) - Core development principles
+- [Architecture](mdc:architecture.mdc) - System design patterns
 
 ## Directory Structure
 
