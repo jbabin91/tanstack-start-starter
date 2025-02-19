@@ -1,0 +1,246 @@
+---
+description: Comprehensive code style and structure guidelines for maintaining clean, consistent, and maintainable code across all languages and frameworks.
+globs: ['**/*']
+---
+
+# Code Style and Structure Guidelines
+
+## Overview
+
+These guidelines establish fundamental code style patterns that apply across all languages and frameworks in our codebase, with specific emphasis on TypeScript and React applications.
+
+## Directory Structure
+
+### Project Organization
+
+```sh
+app/
+├── api.ts                  # Root API configuration
+├── components/            # Shared components
+│   ├── ui/               # UI components
+│   └── features/         # Feature components
+├── lib/                  # Shared utilities
+│   ├── client/          # Client-only code
+│   ├── server/          # Server-only code
+│   └── shared/          # Shared code
+├── routes/               # File-based routes
+│   ├── __root.tsx       # Root layout
+│   ├── api/             # API routes
+│   │   ├── auth/        # Auth-related endpoints
+│   │   └── send.ts      # Email sending endpoint
+│   ├── _public/         # Public routes
+│   ├── _auth/           # Auth routes
+│   └── _app/            # Protected routes
+├── types/               # Type definitions
+└── tests/               # Test files
+```
+
+### General Principles
+
+- Group files by feature or domain
+- Separate concerns (UI, logic, types)
+- Keep related files close together
+- Use clear, descriptive directory names
+- Maintain consistent depth
+
+## File Organization
+
+### Naming Conventions
+
+1. Route Files:
+
+   - `__root.tsx` - Root layout
+   - `route.tsx` - Layout files
+   - `index.tsx` - Page components
+   - `[param].tsx` - Dynamic routes
+
+2. API Routes:
+
+   - `$.ts` - Catch-all handlers
+   - `[feature].ts` - Feature-specific endpoints
+
+3. Component Files:
+
+   - Use PascalCase
+   - Suffix with type: `.component.tsx`
+   - Example: `UserProfile.component.tsx`
+
+4. Server Functions:
+
+   - Prefix with `$`
+   - Use camelCase after prefix
+   - Group in feature-specific files
+   - Example: `$getUser`, `$updateProfile`
+
+5. Type Files:
+   - Suffix with `.types.ts`
+   - Example: `user.types.ts`
+
+### File Structure
+
+1. Order of Content:
+
+   ```markdown
+   1. File description/license
+   2. Imports/dependencies
+   3. Type definitions
+   4. Constants
+   5. Helper functions
+   6. Main implementation
+   7. Exports
+   ```
+
+### Import Organization
+
+```typescript
+// External dependencies
+import { useState } from 'react';
+import { createServerFn } from '@tanstack/start';
+
+// Internal dependencies
+import { UserProfile } from '~/components/features/user';
+import { Button } from '~/components/ui/button';
+
+// Types
+import type { User } from '~/lib/shared/types';
+```
+
+## Code Style
+
+### Naming Standards
+
+1. Variables:
+
+   ```typescript
+   // ✅ Good
+   const isUserAuthenticated = true;
+   const handleProfileUpdate = () => {};
+
+   // ❌ Bad
+   const auth = true;
+   const update = () => {};
+   ```
+
+2. Functions:
+
+   ```typescript
+   // ✅ Good
+   function getUserProfile(id: string): Promise<User> {}
+   const handleSubmit = async (data: FormData) => {};
+
+   // ❌ Bad
+   function getStuff(id) {}
+   const submit = (data) => {};
+   ```
+
+### Type Safety
+
+1. Use `type` over `interface`:
+
+   ```typescript
+   // ✅ Good
+   type UserData = {
+     id: string;
+     name: string;
+   };
+
+   // ❌ Bad - Don't use interface except in declare module
+   interface UserData {
+     id: string;
+     name: string;
+   }
+   ```
+
+2. Exception for `declare module`:
+
+   ```typescript
+   // ✅ Good - Interface in declare module
+   declare module '@tanstack/react-router' {
+     interface Register {
+       router: ReturnType<typeof createRouter>;
+     }
+   }
+   ```
+
+### Server Functions
+
+```typescript
+// ✅ Good - Grouped by feature
+export const $getUser = createServerFn({ method: 'GET' })
+  .handler(async ({ params }) => {
+    // Implementation
+  });
+
+// ❌ Bad - Mixed with components
+function UserProfile() {
+  const $getUser = createServerFn({ method: 'GET' });
+  return <div>...</div>;
+}
+```
+
+## Error Handling
+
+### Principles
+
+1. Use Error Boundaries:
+
+   ```typescript
+   export function ErrorBoundary({ error }: { error: Error }) {
+     return (
+       <div role="alert">
+         <p>Something went wrong:</p>
+         <pre>{error.message}</pre>
+       </div>
+     );
+   }
+   ```
+
+2. Handle Async Errors:
+
+   ```typescript
+   try {
+     const data = await $fetchData();
+     return json(data);
+   } catch (error) {
+     if (error instanceof ValidationError) {
+       return json({ error: error.message }, { status: 400 });
+     }
+     throw error;
+   }
+   ```
+
+## Documentation
+
+### Comments
+
+1. Usage:
+
+   ```typescript
+   // ✅ Good - Explains why, not what
+   // Retry three times to handle temporary network issues
+   function fetchWithRetry() { ... }
+
+   // ❌ Bad - States the obvious
+   // Function to fetch data
+   function fetchData() { ... }
+   ```
+
+### API Documentation
+
+```typescript
+/**
+ * Brief description of purpose
+ *
+ * @param {type} name - Parameter description
+ * @returns {type} Description of return value
+ * @throws {type} Description of error cases
+ */
+```
+
+## Related Guidelines
+
+- [Core Principles](../core/core-principles.mdc) - Core development principles and consistency standards
+- [Architecture](../core/architecture.mdc) - System design patterns
+- [TypeScript Style](../development/typescript/style.mdc) - TypeScript-specific guidelines
+
+Remember: These guidelines aim to create consistent, maintainable code across all languages and frameworks in our codebase.

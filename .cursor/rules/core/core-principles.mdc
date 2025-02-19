@@ -1,0 +1,290 @@
+---
+description: Core development principles, consistency standards, and quality guidelines for writing maintainable, reliable, and predictable code.
+globs: ['**/*']
+---
+
+# Core Development Principles and Consistency Standards
+
+## Overview
+
+These guidelines establish the foundational principles and consistency standards for our development practices, combining senior developer expertise with established patterns to create maintainable, reliable, and intuitive code.
+
+## Related Guidelines
+
+- [Tech Stack Documentation](../core/tech-stack.mdc) - For overall project standards
+- [Architecture](../core/architecture.mdc) - For system design patterns
+- [Code Style](../core/code-style.mdc) - For detailed style guidelines
+- [Testing Quality](../development/testing/testing.mdc) - For testing standards
+
+## Fundamental Principles
+
+### 1. Predictability (Principle of Least Surprise)
+
+- Write code that behaves as other developers would expect
+- Follow established patterns in the codebase
+- Keep similar things similar
+- Avoid hidden side effects
+- Maintain consistent behavior across similar features
+
+### 2. Quality First
+
+- Be meticulous in implementation
+- Achieve 100% confidence before coding
+- Maintain backward compatibility
+- Keep changes minimal and focused
+- Prioritize simplicity over complexity
+
+### 3. Clear Communication
+
+- Use clear, descriptive names that indicate behavior
+- Write self-documenting code
+- Maintain comprehensive documentation
+- Provide meaningful error messages
+- Include proper logging
+
+### 4. Consistency Requirements
+
+- Follow established patterns religiously
+- Maintain predictable code structure
+- Keep documentation current
+- Ensure backward compatibility
+- Test thoroughly
+
+## Development Process
+
+### Before Implementation
+
+1. Requirement Analysis:
+
+   - Thoroughly analyze requirements
+   - Consider all edge cases
+   - Plan for backward compatibility
+   - Evaluate performance implications
+   - Consider security implications
+
+2. Pattern Review:
+   - Review existing similar features
+   - Identify reusable components
+   - Understand established patterns
+   - Review documentation requirements
+   - Check test patterns
+
+### During Implementation
+
+1. Follow established patterns
+2. Write self-documenting code
+3. Include proper error handling
+4. Add appropriate logging
+5. Write tests for new code
+
+### After Implementation
+
+1. Review Process:
+
+   - Review your own code first
+   - Test edge cases thoroughly
+   - Verify backward compatibility
+   - Check performance impact
+   - Update documentation
+
+2. Quality Gates:
+   - Maintain existing lint rules
+   - Follow type safety standards
+   - Keep test coverage requirements
+   - Match performance benchmarks
+   - Follow security requirements
+
+## Code Organization
+
+### Naming Conventions
+
+- Name things based on what they do, not how they do it
+- Use consistent terminology throughout the codebase
+- Follow established naming patterns in the ecosystem
+- Make boolean variables ask a question (isLoading, hasError)
+- Use verb-noun format for functions (getData, updateUser)
+
+### Function Design
+
+- Functions should do what their name suggests
+- Return types should be consistent with function names
+- Handle errors in expected ways
+- Follow established patterns for async operations
+- Keep function signatures consistent within categories
+
+### Component Design
+
+- Props should behave like HTML attributes where applicable
+- Follow framework conventions for event handlers
+- Use consistent patterns for loading and error states
+- Follow established patterns for form handling
+- Keep component APIs consistent within categories
+
+## Quality Standards
+
+### Code Simplicity
+
+```typescript
+// ✅ Simple and clear
+function getUserName(user: User) {
+  return user.name;
+}
+
+// ❌ Overcomplicated
+function getUserName(user: User) {
+  return (
+    user?.personal?.details?.name ?? user?.profile?.displayName ?? 'Unknown'
+  );
+}
+```
+
+### Error Handling
+
+```typescript
+// ✅ Predictable error handling
+try {
+  await saveData();
+} catch (error) {
+  logger.error('Operation failed', { error });
+  throw new AppError('Failed to save data', { cause: error });
+}
+
+// ❌ Poor error handling
+try {
+  await saveData();
+} catch {
+  // Silently ignore errors
+}
+```
+
+### State Management
+
+```typescript
+// ✅ Predictable state update
+setState((prev) => ({ ...prev, updated: true }));
+
+// ❌ Surprising state update
+setState((prev) => {
+  delete prev.something; // Mutating state
+  return prev;
+});
+```
+
+## Version Management
+
+### Dependency Updates
+
+- Use caret (^) for minor version updates
+- Pin exact versions for critical dependencies
+- Document breaking changes in CHANGELOG.md
+- Update dependencies in batches by category
+- Test thoroughly after major version bumps
+
+### Breaking Changes
+
+- Avoid breaking changes in minor versions
+- Document migration steps in UPGRADE.md
+- Provide codemods for automated updates
+- Keep backwards compatibility when possible
+- Add deprecation warnings before removal
+
+### File Operations Best Practices
+
+#### Command Line Operations
+
+- Use `mv` for moving/renaming files instead of create-delete operations
+- Use `cp` for copying files instead of read-write operations
+- Preserve file metadata by using proper shell commands
+- Ensure atomic operations when possible
+- Use proper file permissions
+
+```bash
+# ✅ Good - Using mv for renaming
+mv old_file.ts new_file.ts
+
+# ❌ Bad - Create and delete
+touch new_file.ts
+rm old_file.ts
+
+# ✅ Good - Using cp for copying
+cp source_file.ts destination_file.ts
+
+# ❌ Bad - Manual read and write
+cat source_file.ts > destination_file.ts
+```
+
+#### File Manipulation Guidelines
+
+- Prefer atomic operations over multi-step processes
+- Maintain file permissions and metadata
+- Use appropriate error handling for file operations
+- Back up important files before modifications
+- Follow the principle of least surprise in file operations
+
+## Security Best Practices
+
+### Input Validation
+
+```typescript
+// ✅ Proper validation
+const userSchema = z.object({
+  email: z.string().email(),
+  age: z.number().min(13),
+});
+
+// ❌ Unsafe
+function createUser(data: any) {
+  // Implementation
+}
+```
+
+### Authentication
+
+```typescript
+// ✅ Secure
+const user = await authenticateAndAuthorize(request);
+if (!user.canAccess(resource)) {
+  throw new AuthError('Unauthorized');
+}
+
+// ❌ Insecure
+const user = request.user;
+// No authorization check
+```
+
+## Documentation Standards
+
+### Code Comments
+
+```typescript
+// ✅ Helpful comment
+// Retries the operation with exponential backoff
+// Maximum of 3 attempts with 1s, 2s, and 4s delays
+async function retryOperation() {
+  // Implementation
+}
+
+// ❌ Obvious comment
+// Get user data
+function getUserData() {
+  // Implementation
+}
+```
+
+### API Documentation
+
+```typescript
+/**
+ * Updates user profile with validation and optimistic updates
+ * @param userId - The user's unique identifier
+ * @param data - Profile update data
+ * @returns Promise resolving to updated user
+ * @throws ValidationError if data is invalid
+ * @throws AuthError if user lacks permissions
+ */
+async function updateUserProfile(userId: string, data: UpdateData) {
+  // Implementation
+}
+```
+
+Remember: These principles and standards aim to create code that is maintainable, secure, and performs well in production, while being intuitive and predictable for other developers.

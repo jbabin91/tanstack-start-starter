@@ -1,0 +1,401 @@
+---
+description: Comprehensive React development guidelines, including components, hooks, performance, and best practices for TanStack Start.
+globs: ['**/*.{ts,tsx}']
+---
+
+# React Development Guidelines
+
+## Overview
+
+These guidelines establish comprehensive best practices for React development in our TanStack Start application, covering components, hooks, performance, and general best practices.
+
+## Component Design
+
+### Function Components
+
+```typescript
+// ✅ Good - Proper component structure
+interface UserProfileProps {
+  userId: string;
+  onUpdate?: (user: User) => void;
+}
+
+export function UserProfile({ userId, onUpdate }: UserProfileProps) {
+  const { data: user } = useUser(userId);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>{/* ... */}</CardContent>
+    </Card>
+  );
+}
+
+// ❌ Bad - Poor component structure
+export default function Profile(props: any) {
+  const [userData, setUserData] = useState(null);
+  // Mixing data fetching and UI
+  useEffect(() => {
+    fetch(`/api/users/${props.id}`).then(setUserData);
+  }, [props.id]);
+
+  return <div>{/* ... */}</div>;
+}
+```
+
+### File Organization
+
+```typescript
+// components/features/users/UserProfile.tsx
+
+// 1. Imports
+import { type User } from '~/types';
+import { useUser } from '~/lib/queries';
+import { UserAvatar } from './UserAvatar';
+
+// 2. Types
+interface UserProfileProps {
+  userId: string;
+}
+
+// 3. Helper Functions
+function formatUserName(user: User): string {
+  return `${user.firstName} ${user.lastName}`;
+}
+
+// 4. Component
+export function UserProfile({ userId }: UserProfileProps) {
+  // Component implementation
+}
+
+// 5. Subcomponents (if small and specific to this component)
+function UserStats({ user }: { user: User }) {
+  return <div>{/* ... */}</div>;
+}
+```
+
+## Hooks Usage
+
+### Built-in Hooks
+
+1. useState:
+
+```typescript
+// ✅ Good - Proper state usage
+function UserForm() {
+  const [user, setUser] = useState<User | null>(null);
+
+  // Use updater function for derived state
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : null);
+  };
+
+  return (/* ... */);
+}
+```
+
+2. useEffect:
+
+```typescript
+// ✅ Good - Proper effect usage
+function UserProfile({ userId }: { userId: string }) {
+  useEffect(() => {
+    // Cleanup function
+    const subscription = subscribe(userId);
+    return () => subscription.unsubscribe();
+  }, [userId]); // Clear dependencies
+
+  // Separate effects for different concerns
+  useEffect(() => {
+    logProfileView(userId);
+  }, [userId]);
+
+  return (/* ... */);
+}
+```
+
+3. useCallback:
+
+```typescript
+// ✅ Good - Proper callback usage
+function UserList({ onUserSelect }: { onUserSelect: (user: User) => void }) {
+  const handleUserClick = useCallback((user: User) => {
+    analytics.track('user_selected', { userId: user.id });
+    onUserSelect(user);
+  }, [onUserSelect]);
+
+  return (/* ... */);
+}
+```
+
+### Custom Hooks
+
+```typescript
+// ✅ Good - Proper custom hook
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchUser() {
+      setIsLoading(true);
+      try {
+        const data = await fetchUserData(userId);
+        if (isMounted) {
+          setUser(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err as Error);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
+  return { user, error, isLoading };
+}
+```
+
+## Performance Optimization
+
+### React 19 Features
+
+React 19 includes several automatic optimizations:
+
+1. Automatic batching for all updates
+2. Automatic memoization of components
+3. Automatic code splitting with React.lazy
+4. Automatic streaming with Suspense
+5. Automatic error boundary recovery
+
+```typescript
+// ✅ Good - Let React 19 handle optimizations
+function UserDashboard() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UserProfile />
+      <Suspense fallback={<ActivitySkeleton />}>
+        <UserActivity />
+      </Suspense>
+    </Suspense>
+  );
+}
+```
+
+### Code Splitting
+
+```typescript
+// ✅ Good - Proper route splitting
+// routes/dashboard/route.lazy.tsx
+export const Route = createLazyFileRoute('/dashboard')({
+  component: lazy(() => import('./DashboardPage')),
+});
+
+// Component-based splitting
+const UserDashboard = lazy(() => import('./UserDashboard'));
+const UserSettings = lazy(() => import('./UserSettings'));
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/settings" element={<UserSettings />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+### Data Loading
+
+```typescript
+// ✅ Good - Parallel data loading
+function Dashboard() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <div className="grid grid-cols-2 gap-4">
+        <Suspense fallback={<ProfileSkeleton />}>
+          <UserProfile />
+        </Suspense>
+        <Suspense fallback={<ActivitySkeleton />}>
+          <UserActivity />
+        </Suspense>
+      </div>
+    </Suspense>
+  );
+}
+```
+
+### Virtual Lists
+
+```typescript
+// ✅ Good - Virtual list for large datasets
+function UserList({ users }: { users: User[] }) {
+  return (
+    <VirtualList
+      items={users}
+      height={400}
+      itemHeight={80}
+      overscan={5}
+      renderItem={({ index, style }) => (
+        <UserItem
+          key={users[index].id}
+          user={users[index]}
+          style={style}
+        />
+      )}
+    />
+  );
+}
+```
+
+## Error Handling
+
+### Error Boundaries
+
+```typescript
+// ✅ Good - Proper error boundary usage
+function UserDashboard() {
+  return (
+    <ErrorBoundary
+      fallback={({ error }) => (
+        <Alert variant="error">
+          <AlertTitle>Error loading dashboard</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
+    >
+      <Suspense fallback={<DashboardSkeleton />}>
+        <UserProfile />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+### Loading States
+
+```typescript
+// ✅ Good - Proper loading states
+function UserProfile() {
+  const { data: user, isLoading, error } = useUser();
+
+  if (isLoading) {
+    return <UserProfileSkeleton />;
+  }
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
+
+  return <div>{/* ... */}</div>;
+}
+```
+
+## Forms and Validation
+
+```typescript
+// ✅ Good - Proper form handling
+function UserForm() {
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {/* ... */}
+    </Form>
+  );
+}
+```
+
+## State Management
+
+### Global State
+
+```typescript
+// ✅ Good - Optimized global state
+const useStore = create<AppState>()((set) => ({
+  theme: 'light',
+  setTheme: (theme) => set({ theme }),
+  user: null,
+  setUser: (user) => set({ user }),
+}));
+
+function ThemeToggle() {
+  // Only subscribe to needed state
+  const theme = useStore((state) => state.theme);
+  const setTheme = useStore((state) => state.setTheme);
+  return (/* ... */);
+}
+```
+
+## Best Practices
+
+1. Component Design:
+
+   - Use function components
+   - Follow proper file organization
+   - Implement proper TypeScript types
+   - Keep components focused
+   - Use proper naming conventions
+
+2. Hook Usage:
+
+   - Follow hook rules
+   - Create focused custom hooks
+   - Handle cleanup properly
+   - Use proper dependencies
+   - Implement proper error handling
+
+3. Performance:
+
+   - Use React 19 features
+   - Implement proper code splitting
+   - Use parallel data loading
+   - Implement virtual lists for large datasets
+   - Follow proper state management patterns
+
+4. Error Handling:
+   - Use error boundaries
+   - Implement proper loading states
+   - Handle async errors
+   - Provide user-friendly error messages
+   - Follow proper error recovery patterns
+
+Remember: The goal is to write maintainable, performant React code that follows modern best practices and leverages the full power of React 19 and TanStack Start.

@@ -1,0 +1,417 @@
+---
+description: Comprehensive patterns and best practices for using the TanStack Suite (Query, Router, Form, Table, Virtual) in React applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Suite Patterns
+
+## Overview
+
+These guidelines establish best practices for using TanStack libraries in our application, focusing on Query, Router, Table, and Virtual components.
+
+## TanStack Query
+
+### Query Organization
+
+```typescript
+// ✅ Good - Proper query organization
+// lib/queries/users.ts
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
+}
+
+// ❌ Bad - Inline query definition
+function UserProfile({ id }: { id: string }) {
+  const { data } = useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+  });
+}
+```
+
+### Mutation Patterns
+
+```typescript
+// ✅ Good - Proper mutation with optimistic updates
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateUserData) => $updateUser(data),
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries({ queryKey: ['user'] });
+      const previousUser = queryClient.getQueryData(['user']);
+      queryClient.setQueryData(['user'], newUser);
+      return { previousUser };
+    },
+    onError: (err, newUser, context) => {
+      queryClient.setQueryData(['user'], context?.previousUser);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+}
+```
+
+### Query Client Setup
+
+```typescript
+// ✅ Good - Proper query client configuration
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes
+      retry: (failureCount, error) => {
+        if (error instanceof AuthError) return false;
+        return failureCount < 3;
+      },
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+  },
+});
+```
+
+## TanStack Router
+
+### File-Based Routing Structure
+
+```sh
+app/routes/
+├── __root.tsx           # Root layout with providers and meta
+├── _public/            # Public routes
+│   ├── index.tsx      # Landing page
+│   └── about.tsx      # About page
+├── _auth/             # Authentication routes
+│   ├── signin.tsx     # Sign in page
+│   └── signup.tsx     # Sign up page
+└── dashboard/         # Dashboard feature
+    ├── route.tsx      # Dashboard layout with auth guard
+    └── index.tsx      # Dashboard page
+```
+
+### Route Definition
+
+```typescript
+// ✅ Good - Proper route definition
+// routes/__root.tsx
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async () => {
+    const user = await $getUser();
+    return { user };
+  },
+  component: RootComponent,
+  head: () => ({
+    // Meta configuration
+  }),
+});
+
+// routes/dashboard/route.tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/signin' });
+    }
+  },
+  component: RouteComponent,
+});
+```
+
+### Navigation Patterns
+
+```typescript
+// ✅ Good - Type-safe navigation
+function Navigation() {
+  const router = useRouter();
+
+  return (
+    <nav>
+      <Link to="/dashboard">Dashboard</Link>
+      <button
+        onClick={() => {
+          router.navigate({
+            to: '/users/$id',
+            params: { id: '1' },
+            search: { tab: 'profile' },
+          });
+        }}
+      >
+        User Profile
+      </button>
+    </nav>
+  );
+}
+```
+
+## TanStack Table
+
+### Table Configuration
+
+```typescript
+// ✅ Good - Proper table setup
+function DataTable<TData>({ data }: { data: TData[] }) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+    },
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+  });
+
+  return (
+    <div>
+      <TableToolbar table={table} />
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext(),
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <TablePagination table={table} />
+    </div>
+  );
+}
+```
+
+### Column Definitions
+
+```typescript
+// ✅ Good - Type-safe column definitions
+const columns = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <UserCell user={row.original} />,
+  },
+] satisfies ColumnDef<User>[];
+```
+
+## TanStack Virtual
+
+### List Virtualization
+
+```typescript
+// ✅ Good - Proper virtual list
+function VirtualUserList({ users }: { users: User[] }) {
+  const parentRef = useRef(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: users.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 50,
+    overscan: 5,
+  });
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-[400px] overflow-auto"
+    >
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+          <div
+            key={virtualRow.key}
+            data-index={virtualRow.index}
+            ref={rowVirtualizer.measureElement}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            <UserListItem user={users[virtualRow.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Grid Virtualization
+
+```typescript
+// ✅ Good - Proper virtual grid
+function VirtualGrid({ items }: { items: GridItem[] }) {
+  const parentRef = useRef(null);
+
+  const gridVirtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 100,
+    overscan: 5,
+    horizontal: true,
+    lanes: 3,
+  });
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-[400px] overflow-auto"
+    >
+      <div
+        style={{
+          height: `${gridVirtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {gridVirtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            data-index={virtualItem.index}
+            style={{
+              position: 'absolute',
+              top: `${Math.floor(virtualItem.index / 3) * 100}px`,
+              left: `${(virtualItem.index % 3) * 100}px`,
+              width: '100px',
+              height: '100px',
+            }}
+          >
+            <GridItem item={items[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+### Performance Optimization
+
+1. Query Optimization:
+
+   - Use proper stale time configuration
+   - Implement optimistic updates
+   - Configure proper cache invalidation
+   - Use parallel queries when possible
+   - Implement proper prefetching
+
+2. Router Optimization:
+
+   - Use proper code splitting
+   - Implement proper data loading
+   - Configure proper caching
+   - Use proper prefetching
+   - Handle loading states properly
+
+3. Table Optimization:
+
+   - Use proper virtualization for large datasets
+   - Implement proper sorting/filtering
+   - Configure proper pagination
+   - Use proper row selection
+   - Handle column management efficiently
+
+4. Virtual List Optimization:
+   - Use proper overscan configuration
+   - Implement proper item measurement
+   - Configure proper scroll restoration
+   - Use proper dynamic sizing
+   - Handle scroll sync efficiently
+
+### Type Safety
+
+1. Query Types:
+
+   - Use proper type inference
+   - Implement proper error types
+   - Use proper validation
+   - Handle loading states properly
+   - Maintain proper type boundaries
+
+2. Router Types:
+
+   - Use proper route type inference
+   - Implement proper context types
+   - Use proper param validation
+   - Handle search params properly
+   - Maintain proper type safety
+
+3. Table Types:
+
+   - Use proper column definitions
+   - Implement proper row types
+   - Use proper state types
+   - Handle selection types properly
+   - Maintain proper type inference
+
+4. Virtual Types:
+   - Use proper item types
+   - Implement proper measurement types
+   - Use proper scroll types
+   - Handle dynamic types properly
+   - Maintain proper type safety
+
+Remember: The goal is to leverage the full power of the TanStack Suite while maintaining type safety, performance, and maintainability.

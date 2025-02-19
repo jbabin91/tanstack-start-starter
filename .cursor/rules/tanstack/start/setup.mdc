@@ -1,0 +1,216 @@
+---
+description: Project setup and configuration patterns for TanStack Start applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Start Setup Patterns
+
+## Project Structure
+
+```sh
+app/
+├── api.ts                  # Root API configuration
+├── components/             # Shared components
+│   ├── ui/                # UI components
+│   └── features/          # Feature components
+├── lib/                   # Shared utilities
+│   ├── client/           # Client-only code
+│   ├── server/           # Server-only code
+│   └── shared/           # Shared code
+├── routes/                # File-based routes
+│   ├── __root.tsx        # Root layout
+│   ├── api/              # API routes
+│   │   ├── auth/         # Auth-related endpoints
+│   │   │   └── $.ts     # Auth handler (catch-all)
+│   │   └── send.ts      # Email sending endpoint
+│   ├── _public/          # Public routes
+│   ├── _auth/           # Auth routes
+│   └── _app/            # Protected routes
+├── client.tsx            # Client entry
+├── router.tsx            # Router config
+└── ssr.tsx              # Server entry
+```
+
+## Core Configuration
+
+### API Configuration
+
+```typescript
+// api.ts
+import {
+  createStartAPIHandler,
+  defaultAPIFileRouteHandler,
+} from '@tanstack/start/api';
+
+export default createStartAPIHandler(defaultAPIFileRouteHandler);
+```
+
+### Router Configuration
+
+```typescript
+// router.tsx
+import { QueryClient } from '@tanstack/react-query';
+import { createRouter } from '@tanstack/react-router';
+import { routerWithQueryClient } from '@tanstack/react-router-with-query';
+
+import { DefaultCatchBoundary } from '~/components/errors/default-catch-boundary';
+import { NotFound } from '~/components/errors/not-found';
+
+export function createRouter() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 30 * 60 * 1000, // 30 minutes
+        retry: (failureCount, error) => {
+          if (error instanceof AuthError) return false;
+          return failureCount < 3;
+        },
+      },
+    },
+  });
+
+  return routerWithQueryClient(
+    createTanStackRouter({
+      context: { queryClient },
+      defaultErrorComponent: DefaultCatchBoundary,
+      defaultNotFoundComponent: NotFound,
+      defaultPreload: 'intent',
+      routeTree,
+      scrollRestoration: true,
+    }),
+    queryClient,
+  );
+}
+```
+
+## Server Functions
+
+### Organization
+
+- Keep server functions in feature-specific files
+- Prefix all server functions with `$`
+- Use proper TypeScript types
+- Implement proper validation
+- Handle errors appropriately
+
+```typescript
+// features/users/api.ts
+import { createServerFn } from '@tanstack/start';
+import { z } from 'zod';
+
+export const $getUser = createServerFn({ method: 'GET' })
+  .input(z.object({ id: z.string() }))
+  .handler(async ({ input }) => {
+    return db.user.findUnique({ where: { id: input.id } });
+  });
+
+export const $updateUser = createServerFn({ method: 'POST' })
+  .input(userSchema)
+  .handler(async ({ input }) => {
+    return db.user.update({
+      where: { id: input.id },
+      data: input,
+    });
+  });
+```
+
+## API Routes
+
+### Organization
+
+```sh
+routes/api/
+├── auth/                # Auth-related endpoints
+│   └── $.ts           # Auth handler (catch-all)
+├── email/              # Email-related endpoints
+│   └── send.ts        # Email sending endpoint
+└── webhooks/           # Webhook endpoints
+    └── stripe.ts      # Stripe webhook handler
+```
+
+### Implementation
+
+```typescript
+// routes/api/auth/$.ts
+export const APIRoute = createAPIFileRoute('/api/auth/$')({
+  GET: ({ request }) => auth.handler(request),
+  POST: ({ request }) => auth.handler(request),
+});
+
+// routes/api/email/send.ts
+export const APIRoute = createAPIFileRoute('/api/send')({
+  POST: async ({ request }) => {
+    const { to, template, data } = await request.json();
+    return resend.emails.send({ to, template, data });
+  },
+});
+```
+
+## Environment Setup
+
+### Environment Variables
+
+```sh
+# .env
+# Auth
+BETTER_AUTH_SECRET=your-secret
+BETTER_AUTH_ISSUER=your-issuer
+
+# Email
+RESEND_API_KEY=your-api-key
+
+# Database
+DATABASE_URL=your-database-url
+```
+
+### Type Safety
+
+```typescript
+// env.ts
+import { z } from 'zod';
+
+const envSchema = z.object({
+  BETTER_AUTH_SECRET: z.string(),
+  BETTER_AUTH_ISSUER: z.string(),
+  RESEND_API_KEY: z.string(),
+  DATABASE_URL: z.string().url(),
+});
+
+export const env = envSchema.parse(process.env);
+```
+
+## Development Tools
+
+### Query DevTools
+
+```typescript
+// components/utils/tanstack-query-devtools.tsx
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+export function TanstackQueryDevtools() {
+  if (process.env.NODE_ENV === 'production') return null;
+  return <ReactQueryDevtools />;
+}
+```
+
+### Router DevTools
+
+```typescript
+// components/utils/tanstack-router-devtools.tsx
+import { RouterDevtools } from '@tanstack/react-router-devtools';
+
+export function TanstackRouterDevtools() {
+  if (process.env.NODE_ENV === 'production') return null;
+  return <RouterDevtools />;
+}
+```
+
+## Related Guidelines
+
+- [Routing Patterns](./routing.mdc) - For routing configuration
+- [Deployment Patterns](./deployment.mdc) - For deployment setup
+- [TanStack Suite Patterns](../../development/tanstack/patterns.mdc) - For library usage
+- [Core Architecture](../../core/architecture.mdc) - For system design patterns
+- [TypeScript Style](../../development/typescript/style.mdc) - For TypeScript patterns
+- [Testing Guidelines](../../development/testing/quality.mdc) - For testing setup

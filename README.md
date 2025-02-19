@@ -4,18 +4,27 @@ A modern, full-stack web application starter template built with TanStack Start,
 
 ## Development Guidelines
 
-This project follows a set of carefully crafted development rules and patterns:
+This project follows a set of carefully crafted development rules and patterns. For a complete overview, see our [Rules Index](.cursor/rules/INDEX.mdc).
 
-- 📋 [Code Style and Structure](.cursor/rules/code-style-structure.mdc) - Code organization and style guidelines
-- 🔄 [Consistency Patterns](.cursor/rules/consistency-patterns.mdc) - Maintaining codebase consistency
-- 🎯 [Principle of Least Surprise](.cursor/rules/principle-of-least-surprise.mdc) - Writing predictable code
-- 👨‍💻 [Senior Developer Guidelines](.cursor/rules/consistency-senior-dev.mdc) - Code quality standards
-- ⚛️ [React Best Practices](.cursor/rules/react-best-practices.mdc) - React-specific patterns
-- 🏗️ [TanStack Suite Patterns](.cursor/rules/tanstack-suite-patterns.mdc) - TanStack library usage
-- 🚀 [TanStack Start Patterns](.cursor/rules/tanstack-start-patterns.mdc) - Project structure and setup
-- 🧪 [Testing Quality](.cursor/rules/testing-quality.mdc) - Testing standards and practices
+Core Guidelines:
 
-For a comprehensive overview of all standards, see our [Tech Stack Documentation](.cursor/rules/tech-stack.mdc).
+- 📋 [Code Style](.cursor/rules/core/code-style.mdc) - Code organization and style guidelines
+- 🎯 [Core Principles](.cursor/rules/core/core-principles.mdc) - Core development principles and standards
+- 🏗️ [Architecture](.cursor/rules/core/architecture.mdc) - System architecture and design patterns
+- 📚 [Tech Stack](.cursor/rules/core/tech-stack.mdc) - Technology documentation and standards
+
+Development Standards:
+
+- ⚛️ [React Guidelines](.cursor/rules/development/react/guidelines.mdc) - React development guidelines
+- 📘 [TypeScript Style](.cursor/rules/development/typescript/style.mdc) - TypeScript-specific patterns
+- 🧪 [Testing Standards](.cursor/rules/development/testing/testing.mdc) - Testing and quality assurance
+
+TanStack Ecosystem:
+
+- 🚀 [TanStack Patterns](.cursor/rules/tanstack/core/patterns.mdc) - TanStack library usage
+- 🛣️ [Routing](.cursor/rules/tanstack/start/routing.mdc) - Routing patterns and structure
+- ⚙️ [Setup](.cursor/rules/tanstack/start/setup.mdc) - Project setup and configuration
+- 📦 [Deployment](.cursor/rules/tanstack/start/deployment.mdc) - Deployment and CI/CD
 
 ## Tech Stack
 
@@ -96,11 +105,11 @@ pnpm dev
 
 ### Development Process
 
-1. Read through the development guidelines in `.cursor/rules/`
-2. Follow the [Senior Developer Guidelines](.cursor/rules/consistency-senior-dev.mdc) for implementation
-3. Ensure code adheres to [Code Style and Structure](.cursor/rules/code-style-structure.mdc)
-4. Write tests following [Testing Quality](.cursor/rules/testing-quality.mdc) standards
-5. Use proper patterns from [TanStack Suite Patterns](.cursor/rules/tanstack-suite-patterns.mdc)
+1. Read through the development guidelines in `.cursor/rules/INDEX.mdc`
+2. Follow the [Core Principles](.cursor/rules/core/core-principles.mdc) for implementation
+3. Ensure code adheres to [Code Style](.cursor/rules/core/code-style.mdc)
+4. Write tests following [Testing Standards](.cursor/rules/development/testing/testing.mdc)
+5. Use proper patterns from [TanStack Patterns](.cursor/rules/tanstack/core/patterns.mdc)
 
 ### Code Quality
 

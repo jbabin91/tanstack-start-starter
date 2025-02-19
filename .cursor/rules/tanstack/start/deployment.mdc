@@ -1,0 +1,326 @@
+---
+description: Deployment and CI/CD patterns for TanStack Start applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Start Deployment Patterns
+
+## Build Configuration
+
+### Build Script
+
+```json
+// package.json
+{
+  "scripts": {
+    "build": "tanstack build",
+    "build:client": "tanstack build --target client",
+    "build:server": "tanstack build --target server",
+    "start": "node dist/server/index.js"
+  }
+}
+```
+
+### Environment Variables
+
+```sh
+# .env.production
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+DATABASE_URL=your-production-db-url
+BETTER_AUTH_SECRET=your-production-secret
+BETTER_AUTH_ISSUER=your-production-issuer
+```
+
+## Docker Configuration
+
+### Dockerfile
+
+```dockerfile
+# Dockerfile
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# Production image, copy all the files and run the app
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV production
+
+# Copy necessary files
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 tanstack
+USER tanstack
+
+EXPOSE 3000
+ENV PORT 3000
+ENV HOST 0.0.0.0
+
+CMD ["npm", "start"]
+```
+
+### Docker Compose
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: runner
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_ISSUER=${BETTER_AUTH_ISSUER}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+```
+
+## CI/CD Configuration
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/ci.yml
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run typecheck
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
+```
+
+## Deployment Platforms
+
+### Railway
+
+```sh
+# railway.toml
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+```
+
+### Fly.io
+
+```toml
+# fly.toml
+app = "your-app-name"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  HOST = "0.0.0.0"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+```
+
+## Performance Monitoring
+
+### Sentry Configuration
+
+```typescript
+// lib/monitoring/sentry.ts
+import * as Sentry from '@sentry/react';
+
+export function initSentry() {
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      environment: process.env.NODE_ENV,
+      tracesSampleRate: 1.0,
+      integrations: [
+        new Sentry.BrowserTracing({
+          routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+            useEffect,
+            useLocation,
+            useNavigationType,
+            createRoutesFromChildren,
+            matchRoutes,
+          ),
+        }),
+      ],
+    });
+  }
+}
+```
+
+### Health Check Endpoint
+
+```typescript
+// routes/api/health.ts
+export const APIRoute = createAPIFileRoute('/api/health')({
+  GET: async () => {
+    const [dbHealth] = await Promise.all([
+      db.$queryRaw`SELECT 1`,
+      // Add other health checks
+    ]);
+
+    return {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      checks: {
+        database: dbHealth ? 'up' : 'down',
+      },
+    };
+  },
+});
+```
+
+## Security Configuration
+
+### Headers
+
+```typescript
+// lib/middleware/security.ts
+import { helmet } from 'helmet';
+
+export const securityMiddleware = helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://api.your-domain.com'],
+    },
+  },
+  crossOriginEmbedderPolicy: true,
+  crossOriginOpenerPolicy: true,
+  crossOriginResourcePolicy: true,
+  dnsPrefetchControl: true,
+  frameguard: true,
+  hidePoweredBy: true,
+  hsts: true,
+  ieNoOpen: true,
+  noSniff: true,
+  permittedCrossDomainPolicies: true,
+  referrerPolicy: true,
+  xssFilter: true,
+});
+```
+
+## Related Guidelines
+
+- [Setup Patterns](./setup.mdc) - For project setup
+- [Routing Patterns](./routing.mdc) - For routing configuration
+- [TanStack Suite Patterns](../../development/tanstack/patterns.mdc) - For library usage
+- [Core Architecture](../../core/architecture.mdc) - For system design patterns
+- [Security Guidelines](../../core/security.mdc) - For security best practices

@@ -1,0 +1,331 @@
+---
+description: System architecture and design patterns for building maintainable, scalable applications.
+globs: ['**/*']
+---
+
+# System Architecture
+
+## Overview
+
+These architectural guidelines establish the foundational patterns and principles for building maintainable, scalable, and robust applications using TanStack Start.
+
+## Core Architecture Principles
+
+### 1. Separation of Concerns
+
+- Divide the application into distinct features
+- Separate business logic from UI components
+- Keep data fetching logic isolated
+- Maintain clear boundaries between layers
+- Follow the single responsibility principle
+
+### 2. Modularity
+
+- Build small, focused modules
+- Design for reusability
+- Minimize dependencies between modules
+- Use clear interfaces between components
+- Implement proper encapsulation
+
+### 3. Scalability
+
+- Design for horizontal scaling
+- Implement proper caching strategies
+- Use efficient data loading patterns
+- Optimize for performance
+- Plan for future growth
+
+## Application Structure
+
+### Layer Separation
+
+```sh
+app/
+├── components/             # UI Components
+│   ├── ui/                # Reusable UI components
+│   └── features/          # Feature-specific components
+├── lib/                   # Core Logic
+│   ├── client/           # Client-only code
+│   ├── server/           # Server-only code
+│   └── shared/           # Shared utilities
+├── routes/                # Routing and Pages
+│   ├── __root.tsx        # Root layout
+│   ├── api/              # API endpoints
+│   ├── _public/          # Public routes
+│   ├── _auth/            # Auth routes
+│   └── _app/             # Protected routes
+└── types/                # Type definitions
+```
+
+### Feature Organization
+
+```sh
+features/
+├── auth/                  # Authentication feature
+│   ├── components/       # Auth-specific components
+│   ├── lib/             # Auth business logic
+│   └── types/           # Auth type definitions
+└── users/                # Users feature
+    ├── components/       # User-specific components
+    ├── lib/             # User business logic
+    └── types/           # User type definitions
+```
+
+## Data Flow Architecture
+
+### 1. Server Functions
+
+```typescript
+// ✅ Good - Proper server function architecture
+// lib/server/users.ts
+export const $getUser = createServerFn({ method: 'GET' })
+  .input(z.object({ id: z.string() }))
+  .handler(async ({ input }) => {
+    return db.user.findUnique({ where: { id: input.id } });
+  });
+
+// ❌ Bad - Mixed concerns
+function UserProfile() {
+  const $getUser = createServerFn({ method: 'GET' }); // Don't define here
+  return <div>...</div>;
+}
+```
+
+### 2. API Routes
+
+```typescript
+// ✅ Good - Clean API route architecture
+// routes/api/auth/$.ts
+export const APIRoute = createAPIFileRoute('/api/auth/$')({
+  GET: ({ request }) => auth.handler(request),
+  POST: ({ request }) => auth.handler(request),
+});
+
+// ❌ Bad - Mixed responsibilities
+export const APIRoute = createAPIFileRoute('/api/mixed')({
+  GET: ({ request }) => {
+    // Auth, email, and other mixed logic
+  },
+});
+```
+
+## State Management Architecture
+
+### 1. Global State
+
+```typescript
+// ✅ Good - Proper state architecture
+// lib/client/store.ts
+interface AppState {
+  theme: 'light' | 'dark';
+  user: User | null;
+}
+
+const useStore = create<AppState>()((set) => ({
+  theme: 'light',
+  user: null,
+  setTheme: (theme) => set({ theme }),
+  setUser: (user) => set({ user }),
+}));
+
+// ❌ Bad - Scattered state
+const useTheme = create(() => ({ theme: 'light' }));
+const useUser = create(() => ({ user: null }));
+```
+
+### 2. Server State
+
+```typescript
+// ✅ Good - Organized query architecture
+// lib/client/queries/users.ts
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+  });
+}
+
+// ❌ Bad - Inline queries
+function UserProfile({ id }: { id: string }) {
+  const { data } = useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+  });
+}
+```
+
+## Component Architecture
+
+### 1. Component Hierarchy
+
+```typescript
+// ✅ Good - Clear component hierarchy
+// components/features/users/UserDashboard.tsx
+function UserDashboard() {
+  return (
+    <DashboardLayout>
+      <UserProfile />
+      <UserActivity />
+      <UserSettings />
+    </DashboardLayout>
+  );
+}
+
+// ❌ Bad - Flat structure
+function UserDashboard() {
+  return (
+    <div>
+      <Header />
+      <Nav />
+      <Profile />
+      <Activity />
+      <Settings />
+      <Footer />
+    </div>
+  );
+}
+```
+
+### 2. Component Composition
+
+```typescript
+// ✅ Good - Proper composition
+function DataTable<T>({ data, columns, Toolbar }: DataTableProps<T>) {
+  return (
+    <div>
+      <Toolbar />
+      <Table data={data} columns={columns} />
+    </div>
+  );
+}
+
+// ❌ Bad - Rigid implementation
+function DataTable<T>({ data, columns }: DataTableProps<T>) {
+  return (
+    <div>
+      <DefaultToolbar /> {/* No flexibility */}
+      <Table data={data} columns={columns} />
+    </div>
+  );
+}
+```
+
+## Error Handling Architecture
+
+### 1. Error Boundaries
+
+```typescript
+// ✅ Good - Proper error boundary architecture
+// components/error-boundary.tsx
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ErrorBoundaryImpl>
+        {children}
+      </ErrorBoundaryImpl>
+    </Suspense>
+  );
+}
+
+// routes/dashboard/route.tsx
+export const Route = createFileRoute('/dashboard')({
+  component: DashboardPage,
+  errorComponent: DashboardErrorBoundary,
+});
+```
+
+### 2. Error Types
+
+```typescript
+// ✅ Good - Structured error architecture
+// lib/shared/errors.ts
+export class AppError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public status: number,
+    public cause?: unknown,
+  ) {
+    super(message);
+  }
+}
+
+export class ValidationError extends AppError {
+  constructor(message: string) {
+    super(message, 'VALIDATION_ERROR', 400);
+  }
+}
+```
+
+## Performance Architecture
+
+### 1. Code Splitting
+
+```typescript
+// ✅ Good - Proper code splitting
+const UserDashboard = lazy(() => import('./UserDashboard'));
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UserDashboard />
+    </Suspense>
+  );
+}
+```
+
+### 2. Data Loading
+
+```typescript
+// ✅ Good - Optimized data loading
+function Dashboard() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UserProfile />
+      <Suspense fallback={<Loading />}>
+        <ParallelDataComponents />
+      </Suspense>
+    </Suspense>
+  );
+}
+```
+
+## Security Architecture
+
+### 1. Authentication
+
+```typescript
+// ✅ Good - Proper auth architecture
+// routes/_app/route.tsx
+export const Route = createFileRoute('/_app')({
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/signin' });
+    }
+  },
+});
+```
+
+### 2. Authorization
+
+```typescript
+// ✅ Good - Structured authorization
+// lib/server/auth.ts
+export function checkPermission(
+  user: User,
+  resource: string,
+  action: string,
+): boolean {
+  return user.permissions.some(
+    (p) => p.resource === resource && p.action === action,
+  );
+}
+```
+
+## Related Guidelines
+
+- [Core Principles](../core/core-principles.mdc) - Core development principles and consistency standards
+- [Code Style](../core/code-style.mdc) - Language-agnostic code style guidelines
+- [Testing Quality](../development/testing/testing.mdc) - Testing standards
+
+Remember: This architecture aims to create maintainable, scalable applications while ensuring proper separation of concerns and clear boundaries between different parts of the system.

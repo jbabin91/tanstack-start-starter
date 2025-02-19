@@ -1,0 +1,307 @@
+---
+description: Comprehensive testing standards and quality assurance practices for TanStack Start applications.
+globs: ['**/*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}']
+---
+
+# Testing and Quality Assurance Guidelines
+
+## Overview
+
+These guidelines establish comprehensive testing standards for TanStack Start applications, ensuring code reliability and maintainability.
+
+## Core Testing Principles
+
+### Test Pyramid
+
+- Unit Tests: 70% of test suite
+- Integration Tests: 20% of test suite
+- E2E Tests: 10% of test suite
+- Follow the "Testing Trophy" principle
+
+### Test Organization
+
+- Group tests by feature
+- Use consistent file naming
+- Follow established patterns
+- Maintain clear structure
+- Keep tests focused
+
+### Test Quality
+
+- Write meaningful assertions
+- Test behavior, not implementation
+- Cover edge cases
+- Handle async operations
+- Maintain test isolation
+
+## Testing Framework Setup
+
+### Vitest Configuration
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'vitest.setup.ts'],
+    },
+  },
+});
+
+// vitest.setup.ts
+import '@testing-library/jest-dom';
+import { server } from './src/mocks/server';
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+### Testing Library Setup
+
+```typescript
+// test-utils.tsx
+import { render, RenderOptions } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+}
+
+function customRender(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>,
+) {
+  return render(ui, { wrapper: Providers, ...options });
+}
+
+export * from '@testing-library/react';
+export { customRender as render };
+```
+
+## Component Testing
+
+### Unit Tests
+
+```typescript
+// ✅ Good - Proper component test
+import { render, screen, fireEvent } from '../test-utils';
+import { UserProfile } from './UserProfile';
+
+describe('UserProfile', () => {
+  it('renders user information', async () => {
+    render(<UserProfile userId="1" />);
+
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /profile/i })).toBeInTheDocument();
+  });
+
+  it('handles edit mode', async () => {
+    const onUpdate = vi.fn();
+    render(<UserProfile userId="1" onUpdate={onUpdate} />);
+
+    await fireEvent.click(screen.getByRole('button', { name: /edit/i }));
+    await fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(onUpdate).toHaveBeenCalled();
+  });
+});
+```
+
+### Hook Testing
+
+```typescript
+// ✅ Good - Proper hook test
+import { renderHook, act } from '@testing-library/react';
+import { useCounter } from './useCounter';
+
+describe('useCounter', () => {
+  it('manages counter state', async () => {
+    const { result } = renderHook(() => useCounter());
+
+    expect(result.current.count).toBe(0);
+
+    await act(() => {
+      result.current.increment();
+    });
+
+    expect(result.current.count).toBe(1);
+  });
+});
+```
+
+## TanStack Integration Testing
+
+### Query Testing
+
+```typescript
+describe('useUser', () => {
+  it('fetches and caches user data', async () => {
+    const { result } = renderHook(() => useUser('1'));
+
+    // Test loading state
+    expect(result.current.isLoading).toBe(true);
+
+    // Wait for data
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual({
+      id: '1',
+      name: 'John Doe',
+    });
+  });
+
+  it('handles error states', async () => {
+    server.use(
+      rest.get('/api/users/1', (req, res, ctx) => {
+        return res(ctx.status(500));
+      }),
+    );
+
+    const { result } = renderHook(() => useUser('1'));
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+  });
+});
+```
+
+### Form Testing
+
+```typescript
+describe('UserForm', () => {
+  it('handles form submission', async () => {
+    const onSubmit = vi.fn();
+    render(<UserForm onSubmit={onSubmit} />);
+
+    await userEvent.type(
+      screen.getByLabelText(/name/i),
+      'John Doe'
+    );
+    await userEvent.type(
+      screen.getByLabelText(/email/i),
+      'john@example.com'
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /submit/i })
+    );
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'John Doe',
+      email: 'john@example.com',
+    });
+  });
+});
+```
+
+### Router Testing
+
+```typescript
+describe('RouterIntegration', () => {
+  it('handles navigation and params', async () => {
+    render(<AppRouter />);
+
+    // Test navigation
+    await userEvent.click(screen.getByRole('link', { name: /users/i }));
+    expect(await screen.findByText(/user list/i)).toBeInTheDocument();
+
+    // Test params
+    await userEvent.click(screen.getByRole('link', { name: /user 1/i }));
+    expect(await screen.findByText(/user details/i)).toBeInTheDocument();
+  });
+});
+```
+
+### Table Testing
+
+```typescript
+describe('DataTable', () => {
+  it('handles sorting and filtering', async () => {
+    render(<DataTable data={mockData} />);
+
+    // Test sorting
+    await userEvent.click(screen.getByRole('columnheader', { name: /name/i }));
+    expect(screen.getAllByRole('row')[1]).toHaveTextContent(/alice/i);
+
+    // Test filtering
+    await userEvent.type(screen.getByRole('searchbox'), 'bob');
+    expect(screen.getAllByRole('row')).toHaveLength(2); // Header + 1 result
+  });
+});
+```
+
+## Testing Best Practices
+
+### Test Structure
+
+- Follow AAA pattern (Arrange, Act, Assert)
+- One test = one assertion
+- Use descriptive test names
+- Group related tests together
+- Mock external dependencies
+
+### Coverage Requirements
+
+- Aim for meaningful coverage over percentage
+- Cover edge cases and error scenarios
+- Test both success and failure paths
+- Test boundary conditions
+- Cover all user interactions
+
+### Quality Checks
+
+- Run linting before tests
+- Implement proper TypeScript checks
+- Use proper CI/CD pipeline
+- Regular dependency updates
+- Security vulnerability scanning
+
+## Documentation
+
+### Test Documentation
+
+- Document test setup requirements
+- Explain complex test scenarios
+- Document test data requirements
+- Keep documentation current
+- Document known limitations
+
+### API Documentation
+
+```typescript
+/**
+ * Tests the user authentication flow
+ * @param {Object} options - Test configuration options
+ * @param {string} options.email - Test user email
+ * @param {string} options.password - Test user password
+ * @returns {Promise<void>} - Resolves when test is complete
+ */
+async function testAuthFlow(options: AuthTestOptions): Promise<void> {
+  // Test implementation
+}
+```
+
+Remember: The goal is to write tests that are maintainable, reliable, and provide confidence in the codebase's functionality.

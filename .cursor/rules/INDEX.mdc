@@ -1,0 +1,100 @@
+---
+description: Primary navigation and index for all development rules and guidelines, organized by domain and responsibility.
+globs: ['**/*.{ts,tsx,mdc}']
+---
+
+# TanStack Start Rules Index
+
+## Overview
+
+This document serves as the primary navigation for our development rules and guidelines. Each section is organized by domain and responsibility.
+
+## Core Guidelines
+
+Core principles and foundational standards that apply across the entire codebase.
+
+- [Core Principles](mdc:core/core-principles.mdc) - Core development principles, consistency standards, and quality guidelines
+- [Code Style](mdc:core/code-style.mdc) - Language-agnostic code style guidelines
+- [Architecture](mdc:core/architecture.mdc) - System architecture and design patterns
+- [Tech Stack](mdc:core/tech-stack.mdc) - Technology documentation and standards
+- [Consistency Patterns](mdc:core/consistency-patterns.mdc) - Maintaining codebase consistency
+- [Senior Developer Guidelines](mdc:core/consistency-senior-dev.mdc) - Code quality standards
+- [Principle of Least Surprise](mdc:core/principle-of-least-surprise.mdc) - Writing predictable code
+
+## Development Standards
+
+Language and framework-specific implementation guidelines.
+
+### TypeScript
+
+- [Style Guide](mdc:development/typescript/style.mdc) - TypeScript-specific style guidelines
+
+### React
+
+- [Best Practices](mdc:development/react/best-practices.mdc) - React development guidelines
+- [Components](mdc:development/react/components.mdc) - Component design and patterns
+- [Hooks](mdc:development/react/hooks.mdc) - Hook patterns and best practices
+- [Performance](mdc:development/react/performance.mdc) - React performance optimization
+
+### Testing
+
+- [Quality Standards](mdc:development/testing/quality.mdc) - Comprehensive testing guidelines
+
+## TanStack Ecosystem
+
+TanStack-specific implementation guidelines and patterns.
+
+### TanStack Start
+
+- [Setup](mdc:tanstack/start/setup.mdc) - Project setup and configuration
+- [Routing](mdc:tanstack/start/routing.mdc) - Routing patterns and structure
+- [Deployment](mdc:tanstack/start/deployment.mdc) - Deployment and CI/CD
+
+### TanStack Suite
+
+- [Patterns](mdc:development/tanstack/patterns.mdc) - TanStack library usage patterns, including:
+  - Query patterns and optimization
+  - Router configuration and patterns
+  - Table patterns and virtualization
+  - Virtual list and grid patterns
+  - Form handling with shadcn/ui
+
+## Quality Assurance
+
+Standards and processes for maintaining code quality.
+
+- [Testing Standards](mdc:development/testing/quality.mdc) - Testing guidelines and practices
+- [Performance Guidelines](mdc:development/react/performance.mdc) - Performance standards
+- [Security Guidelines](mdc:core/architecture.mdc#security) - Security best practices
+
+## Meta Documentation
+
+Documentation about documentation and processes.
+
+- [Migration Guide](mdc:MIGRATION.md) - Rules migration process
+- [Directory Structure](mdc:MIGRATION.md#directory-structure) - Rules organization
+
+## Quick Links
+
+Frequently accessed guidelines:
+
+1. [TypeScript Style Guide](mdc:development/typescript/style.mdc)
+2. [React Components](mdc:development/react/components.mdc)
+3. [TanStack Start Setup](mdc:tanstack/start/setup.mdc)
+4. [Testing Standards](mdc:development/testing/quality.mdc)
+5. [Core Architecture](mdc:core/architecture.mdc)
+
+## Version Control
+
+This documentation is version controlled. See [Version Control](mdc:meta/versioning.mdc) for details about our versioning scheme.
+
+## Contributing
+
+To contribute to these guidelines:
+
+1. Follow the [Core Principles](mdc:core/core-principles.mdc)
+2. Maintain consistency as outlined in the [Core Principles](mdc:core/core-principles.mdc#consistency-requirements)
+3. Adhere to [Code Style](mdc:core/code-style.mdc) guidelines
+4. Maintain [Consistency Patterns](mdc:core/consistency-patterns.mdc)
+5. Update cross-references appropriately
+6. Keep the INDEX.md current

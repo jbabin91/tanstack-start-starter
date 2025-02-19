@@ -1,0 +1,282 @@
+---
+description: TypeScript-specific code style guidelines for maintaining clean, type-safe, and maintainable code.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TypeScript Style Guide
+
+## Overview
+
+These guidelines build upon our [Core Code Style](../../core/code-style.mdc) with TypeScript-specific patterns and best practices.
+
+## Type System
+
+### Type Annotations
+
+1. Explicit Types:
+
+   ```typescript
+   // ✅ Good - Explicit types for public APIs
+   function processUser(user: User): ProcessedUser {
+     return { ...user, lastProcessed: new Date() };
+   }
+
+   // ❌ Bad - Relying on inference for public APIs
+   function processUser(user) {
+     return { ...user, lastProcessed: new Date() };
+   }
+   ```
+
+2. Type Inference:
+
+   ```typescript
+   // ✅ Good - Let TypeScript infer obvious types
+   const users = ['Alice', 'Bob']; // string[]
+
+   // ❌ Bad - Redundant type annotation
+   const users: string[] = ['Alice', 'Bob'];
+   ```
+
+### Type Definitions
+
+1. Interfaces vs Types:
+
+   ```typescript
+   // ✅ Good - Interface for object types
+   interface User {
+     id: string;
+     name: string;
+     email: string;
+   }
+
+   // ✅ Good - Type for unions/intersections
+   type Status = 'active' | 'inactive';
+   ```
+
+2. Generic Types:
+
+   ```typescript
+   // ✅ Good - Descriptive type parameters
+   interface Repository<TEntity> {
+     findById(id: string): Promise<TEntity>;
+   }
+
+   // ❌ Bad - Single-letter type parameters
+   interface Repository<T> {
+     findById(id: string): Promise<T>;
+   }
+   ```
+
+## React TypeScript
+
+### Component Types
+
+1. Function Components:
+
+   ```typescript
+   // ✅ Good - Explicit prop interface
+   interface UserCardProps {
+     user: User;
+     onEdit?: (user: User) => void;
+   }
+
+   function UserCard({ user, onEdit }: UserCardProps) {
+     return (/* ... */);
+   }
+   ```
+
+2. Generic Components:
+
+   ```typescript
+   // ✅ Good - Reusable generic components
+   interface ListProps<T> {
+     items: T[];
+     renderItem: (item: T) => React.ReactNode;
+   }
+
+   function List<T>({ items, renderItem }: ListProps<T>) {
+     return (/* ... */);
+   }
+   ```
+
+### Event Handlers
+
+1. Event Types:
+
+   ```typescript
+   // ✅ Good - Proper event typing
+   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+     const value = event.target.value;
+   }
+
+   // ❌ Bad - any type for events
+   function handleChange(event: any) {
+     const value = event.target.value;
+   }
+   ```
+
+2. Handler Types:
+
+   ```typescript
+   // ✅ Good - Explicit handler types
+   type SubmitHandler = (data: FormData) => Promise<void>;
+
+   const handleSubmit: SubmitHandler = async (data) => {
+     await submitForm(data);
+   };
+   ```
+
+## State Management
+
+### Type-Safe State
+
+1. Zustand Store:
+
+   ```typescript
+   // ✅ Good - Type-safe store
+   interface AppState {
+     user: User | null;
+     setUser: (user: User | null) => void;
+   }
+
+   const useStore = create<AppState>((set) => ({
+     user: null,
+     setUser: (user) => set({ user }),
+   }));
+   ```
+
+2. React Query:
+
+   ```typescript
+   // ✅ Good - Typed queries
+   function useUser(id: string) {
+     return useQuery<User, Error>({
+       queryKey: ['user', id],
+       queryFn: () => fetchUser(id),
+     });
+   }
+   ```
+
+## API Integration
+
+### Type-Safe API Calls
+
+1. Request/Response Types:
+
+   ```typescript
+   interface CreateUserRequest {
+     name: string;
+     email: string;
+   }
+
+   interface CreateUserResponse {
+     id: string;
+     name: string;
+     email: string;
+     createdAt: string;
+   }
+
+   async function createUser(
+     data: CreateUserRequest,
+   ): Promise<CreateUserResponse> {
+     const response = await fetch('/api/users', {
+       method: 'POST',
+       body: JSON.stringify(data),
+     });
+     return response.json();
+   }
+   ```
+
+2. Error Types:
+
+   ```typescript
+   interface ApiError {
+     code: string;
+     message: string;
+     details?: Record<string, unknown>;
+   }
+
+   async function fetchData<T>(url: string): Promise<T> {
+     const response = await fetch(url);
+     if (!response.ok) {
+       const error: ApiError = await response.json();
+       throw new Error(error.message);
+     }
+     return response.json();
+   }
+   ```
+
+## Forms
+
+### Type-Safe Forms
+
+1. Form Data Types:
+
+   ```typescript
+   interface LoginForm {
+     email: string;
+     password: string;
+     rememberMe: boolean;
+   }
+
+   function LoginForm() {
+     const form = useForm<LoginForm>({
+       defaultValues: {
+         email: '',
+         password: '',
+         rememberMe: false,
+       },
+     });
+   }
+   ```
+
+2. Validation Schema:
+
+   ```typescript
+   const loginSchema = z.object({
+     email: z.string().email(),
+     password: z.string().min(8),
+     rememberMe: z.boolean(),
+   });
+
+   type LoginForm = z.infer<typeof loginSchema>;
+   ```
+
+## Testing
+
+### Type-Safe Tests
+
+1. Test Utils:
+
+   ```typescript
+   // ✅ Good - Typed test utilities
+   function renderWithProviders<T>(ui: React.ReactElement, options?: RenderOptions<T>) {
+     return render(ui, {
+       wrapper: ({ children }) => (
+         <Providers>{children}</Providers>
+       ),
+       ...options,
+     });
+   }
+   ```
+
+2. Mock Types:
+
+   ```typescript
+   // ✅ Good - Typed mocks
+   const mockUser: User = {
+     id: '1',
+     name: 'Test User',
+     email: 'test@example.com',
+   };
+
+   const mockHandleSubmit = vi.fn<[FormData], Promise<void>>();
+   ```
+
+## Related Guidelines
+
+- [Core Code Style](../../core/code-style.mdc) - Language-agnostic patterns
+- [React Best Practices](../../development/react/best-practices.mdc) - React-specific guidelines
+- [Testing Quality](../../development/testing/quality.mdc) - Testing standards
+
+Remember: These TypeScript-specific guidelines build upon our core code style principles to ensure type safety and maintainability.

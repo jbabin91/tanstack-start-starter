@@ -11,23 +11,15 @@ This document serves as the root documentation for all project standards. Rules 
 
 ### Core Guidelines
 
-1. [Consistency Patterns](mdc:.cursor/rules/consistency-patterns.mdc)
+1. [Core Principles](mdc:.cursor/rules/core/core-principles.mdc)
 
-   - Base patterns for maintaining consistency
+   - Core development principles
+   - Consistency standards
+   - Quality guidelines
    - Version management
-   - Feature implementation
-   - Code style evolution
-   - Documentation standards
+   - Security best practices
 
-2. [Principle of Least Surprise](mdc:.cursor/rules/principle-of-least-surprise.mdc)
-
-   - Core principles for predictable code
-   - Naming guidelines
-   - Function behavior
-   - API design patterns
-   - State management patterns
-
-3. [Senior Developer Guidelines](mdc:.cursor/rules/consistency-senior-dev.mdc)
+2. [Senior Developer Guidelines](mdc:.cursor/rules/consistency-senior-dev.mdc)
    - Code quality standards
    - Implementation process
    - Error handling patterns
@@ -71,12 +63,10 @@ This document serves as the root documentation for all project standards. Rules 
 
 ```mermaid
 graph TD
-    A[tech-stack.mdc] --> B[consistency-patterns.mdc]
-    A --> C[principle-of-least-surprise.mdc]
+    A[tech-stack.mdc] --> B[core-principles.mdc]
     A --> D[consistency-senior-dev.mdc]
 
     B --> E[react-best-practices.mdc]
-    C --> E
     D --> E
 
     E --> F[tanstack-suite-patterns.mdc]
@@ -93,25 +83,25 @@ graph TD
 
 ### Code Style and Structure
 
-- Base Patterns: [Consistency Patterns - Code Style Evolution](mdc:.cursor/rules/consistency-patterns.mdc#code-style-evolution)
+- Base Patterns: [Core Principles - Code Organization](mdc:.cursor/rules/core/core-principles.mdc#code-organization)
 - React Patterns: [React Best Practices - Component Structure](mdc:.cursor/rules/react-best-practices.mdc#component-structure)
 - Testing Patterns: [Testing Quality - Test Structure](mdc:.cursor/rules/testing-quality.mdc#test-structure)
 
 ### State Management
 
-- Core Principles: [Principle of Least Surprise - State Management](mdc:.cursor/rules/principle-of-least-surprise.mdc#state-management)
+- Core Principles: [Core Principles - State Management](mdc:.cursor/rules/core/core-principles.mdc#state-management)
 - React Implementation: [React Best Practices - State Management](mdc:.cursor/rules/react-best-practices.mdc#state-management)
 - TanStack Patterns: [TanStack Suite Patterns - Query Management](mdc:.cursor/rules/tanstack-suite-patterns.mdc#query-definition)
 
 ### Error Handling
 
-- Senior Guidelines: [Senior Developer Guidelines - Error Handling](mdc:.cursor/rules/consistency-senior-dev.mdc#error-handling)
+- Core Standards: [Core Principles - Error Handling](mdc:.cursor/rules/core/core-principles.mdc#error-handling)
 - React Patterns: [React Best Practices - Error Boundaries](mdc:.cursor/rules/react-best-practices.mdc#error-handling)
 - Testing Approach: [Testing Quality - Error Testing](mdc:.cursor/rules/testing-quality.mdc#error-testing)
 
 ### Performance
 
-- Core Standards: [Consistency Patterns - Performance Standards](mdc:.cursor/rules/consistency-patterns.mdc#performance-standards)
+- Core Standards: [Core Principles - Performance Standards](mdc:.cursor/rules/core/core-principles.mdc#performance-standards)
 - React Optimization: [React Best Practices - Performance](mdc:.cursor/rules/react-best-practices.mdc#performance)
 - Testing Methods: [Testing Quality - Performance Testing](mdc:.cursor/rules/testing-quality.mdc#performance)
 
@@ -208,7 +198,7 @@ shared/                     # Shared resources
 
 ### Component Naming
 
-> 📝 See [Principle of Least Surprise - Naming Guidelines](.cursor/rules/principle-of-least-surprise.mdc#naming-guidelines) for more details on intuitive naming.
+> 📝 See [Core Principles - Naming Conventions](mdc:.cursor/rules/core/core-principles.mdc#naming-conventions) for more details on intuitive naming.
 
 - Use kebab-case for component files: `user-profile.tsx`
 - Use PascalCase for the component name inside the file:
@@ -1295,7 +1285,7 @@ CREATE TABLE "users" (
 
 ### Git Workflow
 
-> 📝 See [Consistency Patterns - Version Management](.cursor/rules/consistency-patterns.mdc#version-management) for detailed versioning guidelines.
+> 📝 See [Core Principles - Version Management](mdc:.cursor/rules/core/core-principles.mdc#version-management) for detailed versioning guidelines.
 
 - Use feature branches for all changes
 - Branch naming: `feature/<feature-name>`
