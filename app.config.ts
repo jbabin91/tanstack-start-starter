@@ -7,6 +7,9 @@ export default defineConfig({
     compatibilityDate: '2024-11-25',
     preset: 'node-server',
   },
+  tsr: {
+    autoCodeSplitting: true,
+  },
   vite: {
     plugins: [
       tsConfigPaths({
