@@ -213,39 +213,121 @@ These guidelines establish TypeScript-specific patterns and best practices for m
 
 ## Forms
 
-### Type-Safe Forms
+### Form Types
 
-1. Form Data Types:
+#### Form Data Types
 
-   ```typescript
-   type LoginForm = {
-     email: string;
-     password: string;
-     rememberMe: boolean;
-   };
+```typescript
+// ✅ Good - Type-safe form data with Zod and React Hook Form
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-   function LoginForm() {
-     const form = useForm<LoginForm>({
-       defaultValues: {
-         email: '',
-         password: '',
-         rememberMe: false,
-       },
-     });
-   }
-   ```
+// Define schema with Zod
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  rememberMe: z.boolean().default(false),
+});
 
-2. Validation Schema:
+// Infer types from schema
+type LoginFormData = z.infer<typeof loginSchema>;
 
-   ```typescript
-   const loginSchema = z.object({
-     email: z.string().email(),
-     password: z.string().min(8),
-     rememberMe: z.boolean(),
-   });
+// Use inferred types with React Hook Form
+function LoginForm() {
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  });
 
-   type LoginForm = z.infer<typeof loginSchema>;
-   ```
+  // Form is now fully typed
+  const onSubmit = (data: LoginFormData) => {
+    // Type-safe access to form data
+    const { email, password, rememberMe } = data;
+  };
+}
+```
+
+#### Form Component Types
+
+```typescript
+// ✅ Good - Type-safe form components with Shadcn UI
+import { FormField } from '~/components/ui/form';
+import type { ControllerRenderProps, FieldValues } from 'react-hook-form';
+
+// Type-safe form field component
+interface FormInputProps<T extends FieldValues> {
+  name: keyof T;
+  label: string;
+  control: Control<T>;
+  description?: string;
+}
+
+function FormInput<T extends FieldValues>({
+  name,
+  label,
+  control,
+  description,
+}: FormInputProps<T>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Input {...field} />
+          </FormControl>
+          {description && (
+            <FormDescription>{description}</FormDescription>
+          )}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+```
+
+#### Form Validation Types
+
+```typescript
+// ✅ Good - Type-safe form validation
+import { z } from 'zod';
+
+// Define reusable validation schemas
+const emailSchema = z.string().email('Invalid email address');
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters');
+
+// Compose schemas for different forms
+const signupSchema = z
+  .object({
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
+const profileSchema = z.object({
+  email: emailSchema,
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+});
+
+// Type inference
+type SignupFormData = z.infer<typeof signupSchema>;
+type ProfileFormData = z.infer<typeof profileSchema>;
+```
 
 ## Type Safety Best Practices
 

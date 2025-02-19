@@ -4,27 +4,25 @@ A modern, full-stack web application starter template built with TanStack Start,
 
 ## Development Guidelines
 
-This project follows a set of carefully crafted development rules and patterns. For a complete overview, see our [Rules Index](.cursor/rules/INDEX.mdc).
+This project follows a set of carefully crafted development rules and patterns. For a complete overview, see our [Development Rules & Guidelines](.cursor/rules/_INDEX.mdc).
 
 Core Guidelines:
 
-- 📋 [Code Style](.cursor/rules/core/code-style.mdc) - Code organization and style guidelines
-- 🎯 [Core Principles](.cursor/rules/core/core-principles.mdc) - Core development principles and standards
-- 🏗️ [Architecture](.cursor/rules/core/architecture.mdc) - System architecture and design patterns
-- 📚 [Tech Stack](.cursor/rules/core/tech-stack.mdc) - Technology documentation and standards
+- 🎯 [Core Principles](.cursor/rules/domains/core/principles.mdc) - Fundamental development principles
+- 🏗️ [Architecture](.cursor/rules/domains/core/architecture.mdc) - System design patterns
+- 📋 [Standards](.cursor/rules/domains/core/standards.mdc) - Code quality and style standards
 
-Development Standards:
+Frontend Development:
 
-- ⚛️ [React Guidelines](.cursor/rules/development/react/guidelines.mdc) - React development guidelines
-- 📘 [TypeScript Style](.cursor/rules/development/typescript/style.mdc) - TypeScript-specific patterns
-- 🧪 [Testing Standards](.cursor/rules/development/testing/testing.mdc) - Testing and quality assurance
+- ⚛️ [React Guidelines](.cursor/rules/domains/frontend/react.mdc) - React patterns and practices
+- 📘 [TypeScript Guidelines](.cursor/rules/domains/frontend/typescript.mdc) - TypeScript best practices
+- 🧪 [Testing Guidelines](.cursor/rules/domains/frontend/testing.mdc) - Testing standards
 
-TanStack Ecosystem:
+TanStack Development:
 
-- 🚀 [TanStack Patterns](.cursor/rules/tanstack/core/patterns.mdc) - TanStack library usage
-- 🛣️ [Routing](.cursor/rules/tanstack/start/routing.mdc) - Routing patterns and structure
-- ⚙️ [Setup](.cursor/rules/tanstack/start/setup.mdc) - Project setup and configuration
-- 📦 [Deployment](.cursor/rules/tanstack/start/deployment.mdc) - Deployment and CI/CD
+- 🚀 [Start Guidelines](.cursor/rules/domains/tanstack/start.mdc) - TanStack Start setup and patterns
+- 🔄 [Query Guidelines](.cursor/rules/domains/tanstack/query.mdc) - Data fetching patterns
+- 🛣️ [Router Guidelines](.cursor/rules/domains/tanstack/router.mdc) - Routing patterns
 
 ## Tech Stack
 
@@ -38,25 +36,20 @@ TanStack Ecosystem:
 
 - 🛣️ [TanStack Router](https://tanstack.com/router) - Type-safe routing
 - 🔄 [TanStack Query](https://tanstack.com/query) - Data synchronization
-- 📝 [React Hook Form](https://react-hook-form.com/) - Form management with Shadcn UI
 - 📊 [TanStack Table](https://tanstack.com/table) - Table/DataGrid
 - 📜 [TanStack Virtual](https://tanstack.com/virtual) - Virtualization
-
-### Authentication & Email
-
-- 🔐 [Better Auth](https://better-auth.com) - Authentication
-- 📧 [Resend](https://resend.com) - Email service
-- ✉️ [React Email](https://react.email) - Email templates
 
 ### UI & Styling
 
 - 🎨 [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
 - 🧱 [Shadcn UI](https://ui.shadcn.com) - UI components
 - 🔧 [Radix UI](https://www.radix-ui.com) - Headless UI primitives
-- 🎨 [React Icons](https://react-icons.github.io/react-icons) - Icon library (including Lucide icons)
+- 🎨 [Lucide Icons](https://lucide.dev) - Icon library
 
 ### Form & Validation
 
+- 📝 [React Hook Form](https://react-hook-form.com) - Form state management
+- 🧱 [Shadcn Form](https://ui.shadcn.com/docs/components/form) - Form components
 - ✅ [Zod](https://zod.dev) - Schema validation
 - 🏷️ [Class Variance Authority](https://cva.style) - Component variants
 
@@ -75,8 +68,6 @@ TanStack Ecosystem:
 - 🔒 Type-safe APIs
 - 📄 File-based routing
 - 🎯 Server functions
-- 🔐 Authentication with Better Auth
-- 📧 Email templates with React Email
 - 🎨 Themeable UI components
 - 📱 Mobile-first design
 - ♿ Accessible components
@@ -88,28 +79,24 @@ TanStack Ecosystem:
 
 ### Getting Started
 
-\`\`\`bash
-
+```bash
 # Clone the repository
-
-git clone <https://github.com/yourusername/tanstack-start-starter.git>
+git clone https://github.com/yourusername/tanstack-start-starter.git
 
 # Install dependencies
-
 pnpm install
 
 # Start the development server
-
 pnpm dev
-\`\`\`
+```
 
 ### Development Process
 
-1. Read through the development guidelines in `.cursor/rules/INDEX.mdc`
-2. Follow the [Core Principles](.cursor/rules/core/core-principles.mdc) for implementation
-3. Ensure code adheres to [Code Style](.cursor/rules/core/code-style.mdc)
-4. Write tests following [Testing Standards](.cursor/rules/development/testing/testing.mdc)
-5. Use proper patterns from [TanStack Patterns](.cursor/rules/tanstack/core/patterns.mdc)
+1. Read through the [Development Rules & Guidelines](.cursor/rules/_INDEX.mdc)
+2. Follow the [Core Principles](.cursor/rules/domains/core/principles.mdc)
+3. Adhere to [Standards](.cursor/rules/domains/core/standards.mdc)
+4. Write tests following [Testing Guidelines](.cursor/rules/domains/frontend/testing.mdc)
+5. Use proper [TanStack patterns](.cursor/rules/domains/tanstack/start.mdc)
 
 ### Code Quality
 
@@ -121,25 +108,23 @@ pnpm dev
 
 ## Project Structure
 
-\`\`\`sh
+```sh
 app/
-├── components/ # Shared components
-│ ├── ui/ # UI components
-│ └── email/ # Email templates
-├── lib/ # Shared utilities
-│ ├── client/ # Client-only code
-│ ├── server/ # Server-only code
-│ └── shared/ # Shared code
-├── routes/ # File-based routes
-│ ├── api/ # API routes
-│ │ ├── auth/ # Better Auth endpoints
-│ │ └── send.ts # Email endpoint
-│ ├── \_public/ # Public routes
-│ ├── \_auth/ # Auth routes
-│ └── \_app/ # Protected routes
-├── styles/ # Global styles
-└── types/ # TypeScript types
-\`\`\`
+├── components/        # Shared components
+│   ├── ui/           # UI components
+│   └── features/     # Feature components
+├── lib/              # Shared utilities
+│   ├── client/       # Client-only code
+│   ├── server/       # Server-only code
+│   └── shared/       # Shared code
+├── routes/           # File-based routes
+│   ├── api/          # API routes
+│   ├── _public/      # Public routes
+│   ├── _auth/        # Auth routes
+│   └── _app/         # Protected routes
+├── styles/           # Global styles
+└── types/            # TypeScript types
+```
 
 ## License
 

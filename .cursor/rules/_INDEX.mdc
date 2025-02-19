@@ -1,0 +1,127 @@
+---
+description: Primary navigation and index for all development rules and guidelines, organized by domain and responsibility.
+globs: ['**/*']
+---
+
+# Development Rules and Guidelines
+
+## Overview
+
+This documentation contains comprehensive development guidelines and best practices for our TanStack Start application. The documentation is organized using a domain-driven hierarchy, making it easy to find relevant information for specific needs.
+
+## Directory Structure
+
+```sh
+domains/
+├── core/               # Core principles and standards
+│   ├── principles.mdc  # Fundamental development principles
+│   ├── architecture.mdc# System design and patterns
+│   └── standards.mdc   # Code quality and style
+├── frontend/           # Frontend-specific rules
+│   ├── react.mdc      # React patterns and practices
+│   ├── typescript.mdc  # TypeScript guidelines
+│   └── testing.mdc    # Frontend testing
+└── tanstack/          # TanStack-specific guidelines
+    ├── start.mdc      # Start framework guidelines
+    ├── query.mdc      # Query patterns
+    └── router.mdc     # Routing patterns
+```
+
+## Quick Links
+
+### Core Development
+
+- [Core Principles](mdc:domains/core/principles.mdc) - Fundamental development principles and practices
+- [Architecture](mdc:domains/core/architecture.mdc) - System design patterns and architectural guidelines
+- [Standards](mdc:domains/core/standards.mdc) - Code quality and style standards
+
+### Frontend Development
+
+- [React Guidelines](mdc:domains/frontend/react.mdc) - React development patterns and practices
+- [TypeScript Guidelines](mdc:domains/frontend/typescript.mdc) - TypeScript patterns and best practices
+- [Testing Guidelines](mdc:domains/frontend/testing.mdc) - Testing standards and practices
+
+### TanStack Development
+
+- [Start Guidelines](mdc:domains/tanstack/start.mdc) - TanStack Start setup and configuration
+- [Query Guidelines](mdc:domains/tanstack/query.mdc) - TanStack Query patterns and practices
+- [Router Guidelines](mdc:domains/tanstack/router.mdc) - TanStack Router patterns and practices
+
+## Document Format
+
+Each guideline document (.mdc) follows a consistent structure:
+
+```markdown
+---
+description: Purpose of the document
+globs: Files this applies to
+---
+
+# Title
+
+## Overview
+
+Purpose and scope
+
+## Guidelines
+
+Main content organized by topic
+
+## Related
+
+Cross-references to other guidelines
+```
+
+## Usage Guidelines
+
+### Finding Information
+
+1. Use the Quick Links section for direct access to commonly needed guidelines
+2. Browse the domain directories for specific areas of interest
+3. Use your IDE's search functionality to find specific topics
+4. Follow cross-references within documents to explore related guidelines
+
+### Best Practices
+
+1. Start with Core Principles:
+
+   - Begin with fundamental development principles
+   - Understand architectural patterns
+   - Follow established standards
+
+2. Apply Domain Knowledge:
+
+   - Use domain-specific guidelines
+   - Follow best practices
+   - Implement patterns consistently
+
+3. Keep Current:
+   - Review guidelines regularly
+   - Stay informed of updates
+   - Suggest improvements when needed
+
+## Contributing
+
+For maintaining and contributing to these guidelines:
+
+1. Document Structure:
+
+   - Follow the established document format
+   - Use clear, concise language
+   - Include practical examples
+   - Maintain proper cross-references
+
+2. Review Process:
+
+   - Ensure accuracy and relevance
+   - Verify cross-references
+   - Test code examples
+   - Update related documents
+
+3. Version Control:
+   - Make atomic changes
+   - Provide clear commit messages
+   - Update related documents together
+   - Document breaking changes
+
+For detailed contribution guidelines, see [Contributing Guidelines](mdc:consistencies-contributing.mdc).
