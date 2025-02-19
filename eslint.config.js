@@ -6,6 +6,7 @@ import prettierConfig from 'eslint-config-prettier';
 import importX from 'eslint-plugin-import-x';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
+import reactCompiler from 'eslint-plugin-react-compiler';
 // @ts-ignore
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -105,6 +106,14 @@ export default tseslint.config(
       ],
       '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
+    },
+  },
+  {
+    plugins: {
+      'react-compiler': reactCompiler,
+    },
+    rules: {
+      'react-compiler/react-compiler': 'error',
     },
   },
   {
