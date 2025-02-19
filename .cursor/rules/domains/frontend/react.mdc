@@ -9,6 +9,11 @@ globs: ['**/*.{ts,tsx}']
 
 These guidelines establish comprehensive best practices for React development in our TanStack Start application, covering components, hooks, performance, and general best practices.
 
+## Related Guidelines
+
+- [TypeScript](./typescript.mdc) - TypeScript guidelines
+- [Testing](./testing.mdc) - Testing guidelines and practices
+
 ## Component Design
 
 ### Function Components
@@ -244,158 +249,49 @@ function Dashboard() {
 }
 ```
 
-### Virtual Lists
-
-```typescript
-// ✅ Good - Virtual list for large datasets
-function UserList({ users }: { users: User[] }) {
-  return (
-    <VirtualList
-      items={users}
-      height={400}
-      itemHeight={80}
-      overscan={5}
-      renderItem={({ index, style }) => (
-        <UserItem
-          key={users[index].id}
-          user={users[index]}
-          style={style}
-        />
-      )}
-    />
-  );
-}
-```
-
 ## Error Handling
 
 ### Error Boundaries
 
 ```typescript
 // ✅ Good - Proper error boundary usage
-function UserDashboard() {
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
   return (
-    <ErrorBoundary
-      fallback={({ error }) => (
-        <Alert variant="error">
-          <AlertTitle>Error loading dashboard</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
-    >
-      <Suspense fallback={<DashboardSkeleton />}>
-        <UserProfile />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<Loading />}>
+      <ErrorBoundaryImpl>
+        {children}
+      </ErrorBoundaryImpl>
+    </Suspense>
   );
 }
+
+// Route-level error handling
+export const Route = createFileRoute('/dashboard')({
+  component: DashboardPage,
+  errorComponent: DashboardErrorBoundary,
+});
 ```
 
-### Loading States
+### Error States
 
 ```typescript
-// ✅ Good - Proper loading states
-function UserProfile() {
-  const { data: user, isLoading, error } = useUser();
+// ✅ Good - Proper error state handling
+function UserProfile({ userId }: { userId: string }) {
+  const { data, error, isLoading } = useUser(userId);
 
   if (isLoading) {
     return <UserProfileSkeleton />;
   }
 
   if (error) {
-    return <ErrorMessage error={error} />;
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error loading profile</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
   }
 
-  return <div>{/* ... */}</div>;
+  return <UserProfileContent user={data} />;
 }
 ```
-
-## Forms and Validation
-
-```typescript
-// ✅ Good - Proper form handling
-function UserForm() {
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-    },
-  });
-
-  return (
-    <Form {...form}>
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      {/* ... */}
-    </Form>
-  );
-}
-```
-
-## State Management
-
-### Global State
-
-```typescript
-// ✅ Good - Optimized global state
-const useStore = create<AppState>()((set) => ({
-  theme: 'light',
-  setTheme: (theme) => set({ theme }),
-  user: null,
-  setUser: (user) => set({ user }),
-}));
-
-function ThemeToggle() {
-  // Only subscribe to needed state
-  const theme = useStore((state) => state.theme);
-  const setTheme = useStore((state) => state.setTheme);
-  return (/* ... */);
-}
-```
-
-## Best Practices
-
-1. Component Design:
-
-   - Use function components
-   - Follow proper file organization
-   - Implement proper TypeScript types
-   - Keep components focused
-   - Use proper naming conventions
-
-2. Hook Usage:
-
-   - Follow hook rules
-   - Create focused custom hooks
-   - Handle cleanup properly
-   - Use proper dependencies
-   - Implement proper error handling
-
-3. Performance:
-
-   - Use React 19 features
-   - Implement proper code splitting
-   - Use parallel data loading
-   - Implement virtual lists for large datasets
-   - Follow proper state management patterns
-
-4. Error Handling:
-   - Use error boundaries
-   - Implement proper loading states
-   - Handle async errors
-   - Provide user-friendly error messages
-   - Follow proper error recovery patterns
-
-Remember: The goal is to write maintainable, performant React code that follows modern best practices and leverages the full power of React 19 and TanStack Start.

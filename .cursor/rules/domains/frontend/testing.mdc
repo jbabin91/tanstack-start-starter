@@ -9,6 +9,11 @@ globs: ['**/*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}']
 
 These guidelines establish comprehensive testing standards for TanStack Start applications, ensuring code reliability and maintainability.
 
+## Related Guidelines
+
+- [React](./react.mdc) - React development guidelines
+- [TypeScript](./typescript.mdc) - TypeScript guidelines
+
 ## Core Testing Principles
 
 ### Test Pyramid
@@ -149,7 +154,7 @@ describe('useCounter', () => {
 });
 ```
 
-## TanStack Integration Testing
+## Integration Testing
 
 ### Query Testing
 
@@ -235,73 +240,40 @@ describe('RouterIntegration', () => {
 });
 ```
 
-### Table Testing
-
-```typescript
-describe('DataTable', () => {
-  it('handles sorting and filtering', async () => {
-    render(<DataTable data={mockData} />);
-
-    // Test sorting
-    await userEvent.click(screen.getByRole('columnheader', { name: /name/i }));
-    expect(screen.getAllByRole('row')[1]).toHaveTextContent(/alice/i);
-
-    // Test filtering
-    await userEvent.type(screen.getByRole('searchbox'), 'bob');
-    expect(screen.getAllByRole('row')).toHaveLength(2); // Header + 1 result
-  });
-});
-```
-
-## Testing Best Practices
+## Best Practices
 
 ### Test Structure
 
-- Follow AAA pattern (Arrange, Act, Assert)
-- One test = one assertion
-- Use descriptive test names
-- Group related tests together
-- Mock external dependencies
+1. Arrange-Act-Assert:
 
-### Coverage Requirements
+   ```typescript
+   it('updates user profile', async () => {
+     // Arrange
+     const user = createTestUser();
+     render(<UserProfile user={user} />);
 
-- Aim for meaningful coverage over percentage
-- Cover edge cases and error scenarios
-- Test both success and failure paths
-- Test boundary conditions
-- Cover all user interactions
+     // Act
+     await userEvent.click(screen.getByRole('button', { name: /edit/i }));
+     await userEvent.type(screen.getByLabelText(/name/i), 'New Name');
+     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-### Quality Checks
+     // Assert
+     expect(screen.getByText('New Name')).toBeInTheDocument();
+   });
+   ```
 
-- Run linting before tests
-- Implement proper TypeScript checks
-- Use proper CI/CD pipeline
-- Regular dependency updates
-- Security vulnerability scanning
+### Test Coverage
 
-## Documentation
+1. Coverage Goals:
 
-### Test Documentation
+   - Statements: > 80%
+   - Branches: > 80%
+   - Functions: > 80%
+   - Lines: > 80%
 
-- Document test setup requirements
-- Explain complex test scenarios
-- Document test data requirements
-- Keep documentation current
-- Document known limitations
-
-### API Documentation
-
-```typescript
-/**
- * Tests the user authentication flow
- * @param {Object} options - Test configuration options
- * @param {string} options.email - Test user email
- * @param {string} options.password - Test user password
- * @returns {Promise<void>} - Resolves when test is complete
- */
-async function testAuthFlow(options: AuthTestOptions): Promise<void> {
-  // Test implementation
-}
-```
-
-Remember: The goal is to write tests that are maintainable, reliable, and provide confidence in the codebase's functionality.
+2. Critical Paths:
+   - Authentication flows
+   - Data mutations
+   - Form submissions
+   - Error handling
+   - Edge cases

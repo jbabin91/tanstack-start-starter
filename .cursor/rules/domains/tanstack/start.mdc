@@ -1,9 +1,18 @@
 ---
-description: Project setup and configuration patterns for TanStack Start applications.
+description: Project setup, configuration patterns, and best practices for TanStack Start applications.
 globs: ['**/*.{ts,tsx}']
 ---
 
-# TanStack Start Setup Patterns
+# TanStack Start Guidelines
+
+## Overview
+
+These guidelines establish best practices for setting up and configuring TanStack Start applications, including project structure, server functions, and API routes.
+
+## Related Guidelines
+
+- [Query](./query.mdc) - Query patterns and practices
+- [Router](./router.mdc) - Routing patterns and practices
 
 ## Project Structure
 
@@ -205,12 +214,3 @@ export function TanstackRouterDevtools() {
   return <RouterDevtools />;
 }
 ```
-
-## Related Guidelines
-
-- [Routing Patterns](./routing.mdc) - For routing configuration
-- [Deployment Patterns](./deployment.mdc) - For deployment setup
-- [TanStack Suite Patterns](../../development/tanstack/patterns.mdc) - For library usage
-- [Core Architecture](../../core/architecture.mdc) - For system design patterns
-- [TypeScript Style](../../development/typescript/style.mdc) - For TypeScript patterns
-- [Testing Guidelines](../../development/testing/quality.mdc) - For testing setup

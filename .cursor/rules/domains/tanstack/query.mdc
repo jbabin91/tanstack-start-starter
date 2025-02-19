@@ -1,0 +1,257 @@
+---
+description: Comprehensive patterns and best practices for using TanStack Query in React applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Query Guidelines
+
+## Overview
+
+These guidelines establish best practices for using TanStack Query in our application, focusing on data fetching, caching, and state management.
+
+## Related Guidelines
+
+- [Start](./start.mdc) - TanStack Start setup and configuration
+- [Router](./router.mdc) - Routing patterns and practices
+
+## Query Organization
+
+### Query Hooks
+
+```typescript
+// ✅ Good - Proper query organization
+// lib/queries/users.ts
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
+}
+
+// ❌ Bad - Inline query definition
+function UserProfile({ id }: { id: string }) {
+  const { data } = useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+  });
+}
+```
+
+### Mutation Patterns
+
+```typescript
+// ✅ Good - Proper mutation with optimistic updates
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateUserData) => $updateUser(data),
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries({ queryKey: ['user'] });
+      const previousUser = queryClient.getQueryData(['user']);
+      queryClient.setQueryData(['user'], newUser);
+      return { previousUser };
+    },
+    onError: (err, newUser, context) => {
+      queryClient.setQueryData(['user'], context?.previousUser);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+}
+```
+
+## Query Client Setup
+
+### Configuration
+
+```typescript
+// ✅ Good - Proper query client configuration
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes
+      retry: (failureCount, error) => {
+        if (error instanceof AuthError) return false;
+        return failureCount < 3;
+      },
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+  },
+});
+```
+
+## Data Fetching Patterns
+
+### Parallel Queries
+
+```typescript
+// ✅ Good - Parallel data fetching
+function Dashboard() {
+  const { data: user } = useUser();
+  const { data: posts } = usePosts();
+  const { data: notifications } = useNotifications();
+
+  return (
+    <div>
+      <UserProfile user={user} />
+      <PostList posts={posts} />
+      <NotificationList notifications={notifications} />
+    </div>
+  );
+}
+```
+
+### Dependent Queries
+
+```typescript
+// ✅ Good - Dependent queries
+function UserPosts({ userId }: { userId: string }) {
+  const { data: user } = useUser(userId);
+  const { data: posts } = usePosts(
+    { userId },
+    { enabled: !!user }, // Only fetch posts when user is available
+  );
+
+  return (
+    <div>
+      <UserProfile user={user} />
+      <PostList posts={posts} />
+    </div>
+  );
+}
+```
+
+## Caching Strategies
+
+### Cache Time vs Stale Time
+
+```typescript
+// ✅ Good - Proper cache configuration
+function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+    staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep inactive data for 30 minutes
+  });
+}
+```
+
+### Prefetching
+
+```typescript
+// ✅ Good - Prefetch on hover
+function UserList() {
+  const queryClient = useQueryClient();
+
+  const prefetchUser = (id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['user', id],
+      queryFn: () => $getUser({ id }),
+    });
+  };
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li
+          key={user.id}
+          onMouseEnter={() => prefetchUser(user.id)}
+        >
+          <Link to={`/users/${user.id}`}>{user.name}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Error Handling
+
+### Query Error Boundaries
+
+```typescript
+// ✅ Good - Error boundary for queries
+function UserProfile({ id }: { id: string }) {
+  const { data, error, isLoading } = useUser(id);
+
+  if (isLoading) {
+    return <UserProfileSkeleton />;
+  }
+
+  if (error) {
+    throw error; // Will be caught by error boundary
+  }
+
+  return <UserProfileContent user={data} />;
+}
+```
+
+### Mutation Error Handling
+
+```typescript
+// ✅ Good - Proper mutation error handling
+function UpdateUserForm({ user }: { user: User }) {
+  const { mutate, isPending, error } = useUpdateUser();
+
+  const onSubmit = (data: UpdateUserData) => {
+    mutate(data, {
+      onError: (error) => {
+        toast.error(error.message);
+      },
+      onSuccess: () => {
+        toast.success('User updated successfully');
+      },
+    });
+  };
+
+  return (
+    <Form onSubmit={onSubmit}>
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
+      {/* Form fields */}
+    </Form>
+  );
+}
+```
+
+## Performance Optimization
+
+### Selective Updates
+
+```typescript
+// ✅ Good - Selective cache updates
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onSuccess: (newUser) => {
+    queryClient.setQueryData(['user', newUser.id], newUser);
+    queryClient.setQueryData(['users'], (old: User[]) =>
+      old?.map((user) => (user.id === newUser.id ? newUser : user)),
+    );
+  },
+});
+```
+
+### Infinite Queries
+
+```typescript
+// ✅ Good - Infinite query implementation
+function useInfinitePosts() {
+  return useInfiniteQuery({
+    queryKey: ['posts'],
+    queryFn: ({ pageParam = 0 }) => $getPosts({ page: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getPreviousPageParam: (firstPage) => firstPage.prevCursor,
+  });
+}
+```

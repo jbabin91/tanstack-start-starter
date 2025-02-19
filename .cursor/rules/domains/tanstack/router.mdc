@@ -1,0 +1,275 @@
+---
+description: Comprehensive patterns and best practices for using TanStack Router in React applications.
+globs: ['**/*.{ts,tsx}']
+---
+
+# TanStack Router Guidelines
+
+## Overview
+
+These guidelines establish best practices for using TanStack Router in our application, focusing on file-based routing, type-safe navigation, and route organization.
+
+## Related Guidelines
+
+- [Start](./start.mdc) - TanStack Start setup and configuration
+- [Query](./query.mdc) - Query patterns and practices
+
+## File-Based Routing
+
+### Directory Structure
+
+```sh
+routes/
+├── __root.tsx           # Root layout with providers and meta
+├── _public/            # Public routes
+│   ├── index.tsx      # Landing page
+│   └── about.tsx      # About page
+├── _auth/             # Authentication routes
+│   ├── signin.tsx     # Sign in page
+│   └── signup.tsx     # Sign up page
+└── dashboard/         # Dashboard feature
+    ├── route.tsx      # Dashboard layout with auth guard
+    └── index.tsx      # Dashboard page
+```
+
+### Route Definition
+
+```typescript
+// ✅ Good - Proper route definition
+// routes/__root.tsx
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async () => {
+    const user = await $getUser();
+    return { user };
+  },
+  component: RootComponent,
+  head: () => ({
+    title: 'My App',
+    meta: [
+      {
+        name: 'description',
+        content: 'My App Description',
+      },
+    ],
+  }),
+});
+
+// routes/dashboard/route.tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/signin' });
+    }
+  },
+  component: RouteComponent,
+  errorComponent: DashboardErrorBoundary,
+});
+```
+
+## Navigation Patterns
+
+### Type-Safe Navigation
+
+```typescript
+// ✅ Good - Type-safe navigation
+function Navigation() {
+  const router = useRouter();
+
+  return (
+    <nav>
+      <Link to="/dashboard">Dashboard</Link>
+      <button
+        onClick={() => {
+          router.navigate({
+            to: '/users/$id',
+            params: { id: '1' },
+            search: { tab: 'profile' },
+          });
+        }}
+      >
+        User Profile
+      </button>
+    </nav>
+  );
+}
+```
+
+### Route Guards
+
+```typescript
+// ✅ Good - Route guard implementation
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.navigate({
+        to: '/signin',
+        search: {
+          redirect: router.state.location.pathname,
+        },
+      });
+    }
+  }, [user, router]);
+
+  if (!user) {
+    return <LoadingScreen />;
+  }
+
+  return <>{children}</>;
+}
+```
+
+## Route Organization
+
+### Lazy Loading
+
+```typescript
+// ✅ Good - Lazy route loading
+// routes/dashboard/route.lazy.tsx
+export const Route = createLazyFileRoute('/dashboard')({
+  component: lazy(() => import('./DashboardPage')),
+});
+
+// routes/settings/route.lazy.tsx
+export const Route = createLazyFileRoute('/settings')({
+  component: lazy(() => import('./SettingsPage')),
+});
+```
+
+### Route Groups
+
+```typescript
+// ✅ Good - Route grouping
+// routes/_app/route.tsx
+export const Route = createFileRoute('/_app')({
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/signin' });
+    }
+  },
+  component: AppLayout,
+});
+
+// routes/_app/dashboard/route.tsx
+export const Route = createFileRoute('/_app/dashboard')({
+  component: DashboardPage,
+});
+```
+
+## Error Handling
+
+### Error Boundaries
+
+```typescript
+// ✅ Good - Route error boundaries
+function DashboardErrorBoundary({ error }: { error: Error }) {
+  return (
+    <div className="p-4">
+      <Alert variant="destructive">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+      <Button
+        onClick={() => {
+          window.location.reload();
+        }}
+      >
+        Retry
+      </Button>
+    </div>
+  );
+}
+
+export const Route = createFileRoute('/dashboard')({
+  component: DashboardPage,
+  errorComponent: DashboardErrorBoundary,
+});
+```
+
+### Not Found Handling
+
+```typescript
+// ✅ Good - Not found handling
+function NotFound() {
+  return (
+    <div className="p-4">
+      <h1>404 - Page Not Found</h1>
+      <p>The page you're looking for doesn't exist.</p>
+      <Link to="/">Go Home</Link>
+    </div>
+  );
+}
+
+export const Route = createRootRoute({
+  component: RootComponent,
+  notFoundComponent: NotFound,
+});
+```
+
+## Performance Optimization
+
+### Preloading
+
+```typescript
+// ✅ Good - Route preloading
+function Navigation() {
+  const router = useRouter();
+
+  return (
+    <nav
+      onMouseEnter={() => {
+        // Preload dashboard route on hover
+        router.preloadRoute({
+          to: '/dashboard',
+        });
+      }}
+    >
+      <Link to="/dashboard">Dashboard</Link>
+    </nav>
+  );
+}
+```
+
+### Parallel Routes
+
+```typescript
+// ✅ Good - Parallel route loading
+function DashboardLayout() {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <Suspense fallback={<ProfileSkeleton />}>
+        <Route to="/dashboard/profile" />
+      </Suspense>
+      <Suspense fallback={<ActivitySkeleton />}>
+        <Route to="/dashboard/activity" />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+## Search Params
+
+### Type-Safe Search Params
+
+```typescript
+// ✅ Good - Type-safe search params
+const searchSchema = z.object({
+  q: z.string().optional(),
+  page: z.coerce.number().default(1),
+  limit: z.coerce.number().default(10),
+});
+
+export const Route = createFileRoute('/search')({
+  validateSearch: searchSchema,
+  component: SearchPage,
+});
+
+function SearchPage() {
+  const { search } = useSearch();
+  // search is fully typed based on schema
+  const { q, page, limit } = search;
+}
+```

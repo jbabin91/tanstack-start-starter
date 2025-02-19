@@ -7,7 +7,12 @@ globs: ['**/*.{ts,tsx}']
 
 ## Overview
 
-These guidelines build upon our [Core Code Style](../../core/code-style.mdc) with TypeScript-specific patterns and best practices.
+These guidelines establish TypeScript-specific patterns and best practices for maintaining clean, type-safe, and maintainable code.
+
+## Related Guidelines
+
+- [React](./react.mdc) - React development guidelines
+- [Testing](./testing.mdc) - Testing guidelines and practices
 
 ## Type System
 
@@ -39,15 +44,15 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 
 ### Type Definitions
 
-1. Interfaces vs Types:
+1. Use `type` over `interface`:
 
    ```typescript
-   // ✅ Good - Interface for object types
-   interface User {
+   // ✅ Good - Type for object types
+   type User = {
      id: string;
      name: string;
      email: string;
-   }
+   };
 
    // ✅ Good - Type for unions/intersections
    type Status = 'active' | 'inactive';
@@ -57,14 +62,14 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 
    ```typescript
    // ✅ Good - Descriptive type parameters
-   interface Repository<TEntity> {
+   type Repository<TEntity> = {
      findById(id: string): Promise<TEntity>;
-   }
+   };
 
    // ❌ Bad - Single-letter type parameters
-   interface Repository<T> {
+   type Repository<T> = {
      findById(id: string): Promise<T>;
-   }
+   };
    ```
 
 ## React TypeScript
@@ -75,10 +80,10 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 
    ```typescript
    // ✅ Good - Explicit prop interface
-   interface UserCardProps {
+   type UserCardProps = {
      user: User;
      onEdit?: (user: User) => void;
-   }
+   };
 
    function UserCard({ user, onEdit }: UserCardProps) {
      return (/* ... */);
@@ -89,10 +94,10 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 
    ```typescript
    // ✅ Good - Reusable generic components
-   interface ListProps<T> {
+   type ListProps<T> = {
      items: T[];
      renderItem: (item: T) => React.ReactNode;
-   }
+   };
 
    function List<T>({ items, renderItem }: ListProps<T>) {
      return (/* ... */);
@@ -134,10 +139,10 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 
    ```typescript
    // ✅ Good - Type-safe store
-   interface AppState {
+   type AppState = {
      user: User | null;
      setUser: (user: User | null) => void;
-   }
+   };
 
    const useStore = create<AppState>((set) => ({
      user: null,
@@ -164,17 +169,17 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 1. Request/Response Types:
 
    ```typescript
-   interface CreateUserRequest {
+   type CreateUserRequest = {
      name: string;
      email: string;
-   }
+   };
 
-   interface CreateUserResponse {
+   type CreateUserResponse = {
      id: string;
      name: string;
      email: string;
      createdAt: string;
-   }
+   };
 
    async function createUser(
      data: CreateUserRequest,
@@ -190,11 +195,11 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 2. Error Types:
 
    ```typescript
-   interface ApiError {
+   type ApiError = {
      code: string;
      message: string;
      details?: Record<string, unknown>;
-   }
+   };
 
    async function fetchData<T>(url: string): Promise<T> {
      const response = await fetch(url);
@@ -213,11 +218,11 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
 1. Form Data Types:
 
    ```typescript
-   interface LoginForm {
+   type LoginForm = {
      email: string;
      password: string;
      rememberMe: boolean;
-   }
+   };
 
    function LoginForm() {
      const form = useForm<LoginForm>({
@@ -242,41 +247,57 @@ These guidelines build upon our [Core Code Style](../../core/code-style.mdc) wit
    type LoginForm = z.infer<typeof loginSchema>;
    ```
 
-## Testing
+## Type Safety Best Practices
 
-### Type-Safe Tests
+### Strict Mode
 
-1. Test Utils:
+1. Enable Strict Mode:
 
-   ```typescript
-   // ✅ Good - Typed test utilities
-   function renderWithProviders<T>(ui: React.ReactElement, options?: RenderOptions<T>) {
-     return render(ui, {
-       wrapper: ({ children }) => (
-         <Providers>{children}</Providers>
-       ),
-       ...options,
-     });
+   ```json
+   {
+     "compilerOptions": {
+       "strict": true,
+       "noImplicitAny": true,
+       "strictNullChecks": true,
+       "strictFunctionTypes": true,
+       "strictBindCallApply": true,
+       "strictPropertyInitialization": true,
+       "noImplicitThis": true,
+       "useUnknownInCatchVariables": true
+     }
    }
    ```
 
-2. Mock Types:
+### Type Guards
+
+1. Custom Type Guards:
 
    ```typescript
-   // ✅ Good - Typed mocks
-   const mockUser: User = {
-     id: '1',
-     name: 'Test User',
-     email: 'test@example.com',
-   };
+   // ✅ Good - Type guard function
+   function isUser(value: unknown): value is User {
+     return (
+       typeof value === 'object' &&
+       value !== null &&
+       'id' in value &&
+       'name' in value
+     );
+   }
 
-   const mockHandleSubmit = vi.fn<[FormData], Promise<void>>();
+   // Usage
+   if (isUser(data)) {
+     console.log(data.name); // TypeScript knows data is User
+   }
    ```
 
-## Related Guidelines
+### Utility Types
 
-- [Core Code Style](../../core/code-style.mdc) - Language-agnostic patterns
-- [React Best Practices](../../development/react/best-practices.mdc) - React-specific guidelines
-- [Testing Quality](../../development/testing/quality.mdc) - Testing standards
+1. Built-in Utility Types:
 
-Remember: These TypeScript-specific guidelines build upon our core code style principles to ensure type safety and maintainability.
+   ```typescript
+   // ✅ Good - Using utility types
+   type UserUpdate = Partial<User>;
+   type UserReadOnly = Readonly<User>;
+   type UserKeys = keyof User;
+   type UserPick = Pick<User, 'id' | 'name'>;
+   type UserOmit = Omit<User, 'password'>;
+   ```

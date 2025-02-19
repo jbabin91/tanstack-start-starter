@@ -1,0 +1,142 @@
+---
+description: Core development principles, consistency standards, and quality guidelines for writing maintainable, reliable, and predictable code.
+globs: ['**/*']
+---
+
+# Core Development Principles
+
+## Overview
+
+These guidelines establish the foundational principles and consistency standards for our development practices, combining senior developer expertise with established patterns to create maintainable, reliable, and intuitive code.
+
+## Related Guidelines
+
+- [Architecture](./architecture.mdc) - For system design patterns
+- [Standards](./standards.mdc) - For detailed style and quality guidelines
+
+## Fundamental Principles
+
+### 1. Predictability (Principle of Least Surprise)
+
+- Write code that behaves as other developers would expect
+- Follow established patterns in the codebase
+- Keep similar things similar
+- Avoid hidden side effects
+- Maintain consistent behavior across similar features
+
+### 2. Quality First
+
+- Be meticulous in implementation
+- Achieve 100% confidence before coding
+- Maintain backward compatibility
+- Keep changes minimal and focused
+- Prioritize simplicity over complexity
+
+### 3. Clear Communication
+
+- Use clear, descriptive names that indicate behavior
+- Write self-documenting code
+- Maintain comprehensive documentation
+- Provide meaningful error messages
+- Include proper logging
+
+### 4. Consistency Requirements
+
+- Follow established patterns religiously
+- Maintain predictable code structure
+- Keep documentation current
+- Ensure backward compatibility
+- Test thoroughly
+
+## Development Process
+
+### Before Implementation
+
+1. Requirement Analysis:
+
+   - Thoroughly analyze requirements
+   - Consider all edge cases
+   - Plan for backward compatibility
+   - Evaluate performance implications
+   - Consider security implications
+
+2. Pattern Review:
+   - Review existing similar features
+   - Identify reusable components
+   - Understand established patterns
+   - Review documentation requirements
+   - Check test patterns
+
+### During Implementation
+
+1. Follow established patterns
+2. Write self-documenting code
+3. Include proper error handling
+4. Add appropriate logging
+5. Write tests for new code
+
+### After Implementation
+
+1. Review Process:
+
+   - Review your own code first
+   - Test edge cases thoroughly
+   - Verify backward compatibility
+   - Check performance impact
+   - Update documentation
+
+2. Quality Gates:
+   - Maintain existing lint rules
+   - Follow type safety standards
+   - Keep test coverage requirements
+   - Match performance benchmarks
+   - Follow security requirements
+
+## Version Management
+
+### Dependency Updates
+
+- Use caret (^) for minor version updates
+- Pin exact versions for critical dependencies
+- Document breaking changes in CHANGELOG.md
+- Update dependencies in batches by category
+- Test thoroughly after major version bumps
+
+### Breaking Changes
+
+- Avoid breaking changes in minor versions
+- Document migration steps in UPGRADE.md
+- Provide codemods for automated updates
+- Keep backwards compatibility when possible
+- Add deprecation warnings before removal
+
+## Security Best Practices
+
+### Input Validation
+
+```typescript
+// ✅ Proper validation
+const userSchema = z.object({
+  email: z.string().email(),
+  age: z.number().min(13),
+});
+
+// ❌ Unsafe
+function createUser(data: any) {
+  // Implementation
+}
+```
+
+### Authentication
+
+```typescript
+// ✅ Secure
+const user = await authenticateAndAuthorize(request);
+if (!user.canAccess(resource)) {
+  throw new AuthError('Unauthorized');
+}
+
+// ❌ Insecure
+const user = await getUser(request);
+// Missing authorization check
+```

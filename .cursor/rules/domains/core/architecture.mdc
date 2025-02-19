@@ -9,6 +9,11 @@ globs: ['**/*']
 
 These architectural guidelines establish the foundational patterns and principles for building maintainable, scalable, and robust applications using TanStack Start.
 
+## Related Guidelines
+
+- [Principles](./principles.mdc) - Core development principles
+- [Standards](./standards.mdc) - Code style and quality standards
+
 ## Core Architecture Principles
 
 ### 1. Separation of Concerns
@@ -249,83 +254,4 @@ export class AppError extends Error {
     super(message);
   }
 }
-
-export class ValidationError extends AppError {
-  constructor(message: string) {
-    super(message, 'VALIDATION_ERROR', 400);
-  }
-}
 ```
-
-## Performance Architecture
-
-### 1. Code Splitting
-
-```typescript
-// ✅ Good - Proper code splitting
-const UserDashboard = lazy(() => import('./UserDashboard'));
-
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <UserDashboard />
-    </Suspense>
-  );
-}
-```
-
-### 2. Data Loading
-
-```typescript
-// ✅ Good - Optimized data loading
-function Dashboard() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <UserProfile />
-      <Suspense fallback={<Loading />}>
-        <ParallelDataComponents />
-      </Suspense>
-    </Suspense>
-  );
-}
-```
-
-## Security Architecture
-
-### 1. Authentication
-
-```typescript
-// ✅ Good - Proper auth architecture
-// routes/_app/route.tsx
-export const Route = createFileRoute('/_app')({
-  beforeLoad: ({ context }) => {
-    if (!context.user) {
-      throw redirect({ to: '/signin' });
-    }
-  },
-});
-```
-
-### 2. Authorization
-
-```typescript
-// ✅ Good - Structured authorization
-// lib/server/auth.ts
-export function checkPermission(
-  user: User,
-  resource: string,
-  action: string,
-): boolean {
-  return user.permissions.some(
-    (p) => p.resource === resource && p.action === action,
-  );
-}
-```
-
-## Related Guidelines
-
-- [Core Principles](../core/core-principles.mdc) - Core development principles and consistency standards
-- [Code Style](../core/code-style.mdc) - Language-agnostic code style guidelines
-- [Testing Quality](../development/testing/testing.mdc) - Testing standards
-
-Remember: This architecture aims to create maintainable, scalable applications while ensuring proper separation of concerns and clear boundaries between different parts of the system.
