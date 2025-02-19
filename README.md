@@ -79,7 +79,7 @@ TanStack Development:
 
 ### Getting Started
 
-```bash
+```zsh
 # Clone the repository
 git clone https://github.com/yourusername/tanstack-start-starter.git
 

@@ -1,0 +1,75 @@
+---
+description: Overview of documentation maintenance procedures and guidelines
+globs: ['**/*.mdc']
+---
+
+# Documentation Maintenance
+
+## Overview
+
+This directory contains guidelines and procedures for maintaining documentation, ensuring its accuracy, quality, and consistency over time.
+
+## Quick Reference
+
+### Update Procedures
+
+- [Updates](mdc:updates.mdc) - Guidelines for updating documentation
+- [Verification](mdc:verification.mdc) - Procedures for verifying updates
+
+## Directory Structure
+
+```sh
+maintenance/
+├── _index.mdc           # This file
+├── updates.mdc          # Update procedures
+└── verification.mdc     # Verification procedures
+```
+
+## Maintenance Process
+
+1. **Regular Updates**
+
+   - Content updates
+   - Structure improvements
+   - Reference management
+   - Quality assurance
+
+2. **Verification**
+
+   - Content verification
+   - Structure verification
+   - Reference validation
+   - Standards compliance
+
+3. **Documentation**
+   - Change tracking
+   - Version control
+   - Update history
+   - Status reporting
+
+## Best Practices
+
+1. **Content Management**
+
+   - Keep content accurate and up-to-date
+   - Maintain consistent formatting
+   - Follow style guidelines
+   - Preserve content structure
+
+2. **Quality Assurance**
+
+   - Regular verification
+   - Comprehensive testing
+   - Error correction
+   - Standards compliance
+
+3. **Version Control**
+   - Clear commit messages
+   - Meaningful changes
+   - Change documentation
+   - History preservation
+
+## Related Guidelines
+
+- [Planning](mdc:../migration/planning.mdc) - Migration planning
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates

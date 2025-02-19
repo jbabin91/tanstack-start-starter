@@ -1,0 +1,152 @@
+---
+description: Comprehensive verification procedures for documentation migrations
+globs: ['**/*.mdc']
+---
+
+# Migration Verification
+
+## Overview
+
+This document outlines the verification procedures to ensure documentation migrations are complete and accurate.
+
+## Verification Process
+
+### 1. File Structure Verification
+
+```zsh
+verify_structure() {
+  local base_dir=$1
+  local issues_found=0
+
+  print "Verifying file structure..."
+
+  # Check required directories exist
+  for dir in migration decision-making maintenance; do
+    if [[ ! -d "$base_dir/processes/$dir" ]]; then
+      print "❌ Missing directory: processes/$dir"
+      issues_found=1
+    else
+      print "✅ Found directory: processes/$dir"
+    fi
+  done
+
+  # Check required files exist
+  for file in \
+    "_index.mdc" \
+    "migration/planning.mdc" \
+    "migration/execution.mdc" \
+    "migration/verification.mdc" \
+    "decision-making/evaluation.mdc" \
+    "decision-making/templates.mdc" \
+    "maintenance/updates.mdc" \
+    "maintenance/verification.mdc"; do
+    if [[ ! -f "$base_dir/processes/$file" ]]; then
+      print "❌ Missing file: processes/$file"
+      issues_found=1
+    else
+      print "✅ Found file: processes/$file"
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+### 2. Content Verification
+
+```zsh
+verify_content() {
+  local file=$1
+  local issues_found=0
+
+  print "Verifying content..."
+
+  # Check for empty files
+  if [[ ! -s "$file" ]]; then
+    print "❌ Empty file: $file"
+    issues_found=1
+  fi
+
+  # Check frontmatter
+  if ! grep -q "^---$" "$file"; then
+    print "❌ Missing frontmatter: $file"
+    issues_found=1
+  fi
+
+  # Check required sections
+  if ! grep -q "^# " "$file"; then
+    print "❌ Missing title: $file"
+    issues_found=1
+  fi
+  if ! grep -q "^## Overview" "$file"; then
+    print "❌ Missing overview: $file"
+    issues_found=1
+  fi
+
+  return $issues_found
+}
+```
+
+### 3. Reference Verification
+
+```zsh
+verify_references() {
+  local file=$1
+  local issues_found=0
+
+  print "Checking references..."
+
+  # Check for references without mdc: prefix
+  if grep -o '\[.*\]([^)]*)' "$file" | grep -v 'mdc:' | grep -q '\.mdc'; then
+    print "❌ Found .mdc references without mdc: prefix"
+    issues_found=1
+  fi
+
+  # Check all references point to existing files
+  grep -o "mdc:[^]]*" "$file" | while read -r ref; do
+    local target="${ref#mdc:}"
+    if [[ ! -f "$target" ]]; then
+      print "❌ Broken reference: $ref"
+      issues_found=1
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+## Verification Checklist
+
+1. **Content Quality**
+
+   - [ ] All required sections present
+   - [ ] Content is accurate and clear
+   - [ ] Formatting is consistent
+   - [ ] No spelling or grammar errors
+
+2. **Structure Integrity**
+
+   - [ ] Directory structure is valid
+   - [ ] File naming follows conventions
+   - [ ] Index files are present
+   - [ ] No empty directories
+
+3. **Reference Validity**
+
+   - [ ] All .mdc references use mdc: prefix
+   - [ ] All references are valid
+   - [ ] No broken links
+   - [ ] Proper reference format
+   - [ ] Bidirectional references
+
+4. **Documentation Standards**
+   - [ ] Frontmatter is complete
+   - [ ] Headers follow convention
+   - [ ] Code blocks are formatted
+   - [ ] Lists are properly indented
+
+## Related Guidelines
+
+- [Updates](mdc:updates.mdc) - Update procedures
+- [Planning](mdc:../migration/planning.mdc) - Planning guidelines
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates

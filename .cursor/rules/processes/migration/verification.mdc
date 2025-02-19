@@ -1,0 +1,250 @@
+---
+description: Comprehensive verification procedures for documentation migrations
+globs: ['**/*.mdc']
+---
+
+# Migration Verification
+
+## Overview
+
+This document outlines the verification procedures to ensure documentation migrations are complete and accurate.
+
+## Verification Process
+
+### 1. File Structure Verification
+
+```zsh
+verify_structure() {
+  local base_dir=$1
+  local issues_found=0
+
+  print "Verifying file structure..."
+
+  # Check required directories exist
+  for dir in migration decision-making maintenance; do
+    if [[ ! -d "$base_dir/processes/$dir" ]]; then
+      print "❌ Missing directory: processes/$dir"
+      issues_found=1
+    else
+      print "✅ Found directory: processes/$dir"
+    fi
+  done
+
+  # Check required files exist
+  for file in \
+    "_index.mdc" \
+    "migration/planning.mdc" \
+    "migration/execution.mdc" \
+    "migration/verification.mdc" \
+    "decision-making/evaluation.mdc" \
+    "decision-making/templates.mdc" \
+    "maintenance/updates.mdc" \
+    "maintenance/verification.mdc"; do
+    if [[ ! -f "$base_dir/processes/$file" ]]; then
+      print "❌ Missing file: processes/$file"
+      issues_found=1
+    else
+      print "✅ Found file: processes/$file"
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+### 2. Content Verification
+
+```zsh
+verify_content() {
+  local base_dir=$1
+  local issues_found=0
+
+  print "Verifying content..."
+
+  # Check for empty files
+  for file in $base_dir/**/*.mdc(.); do
+    if [[ ! -s "$file" ]]; then
+      print "❌ Empty file: $file"
+      issues_found=1
+    fi
+  done
+
+  # Check frontmatter
+  for file in $base_dir/**/*.mdc(.); do
+    if ! grep -q "^---$" "$file"; then
+      print "❌ Missing frontmatter: $file"
+      issues_found=1
+    fi
+  done
+
+  # Check required sections
+  for file in $base_dir/**/*.mdc(.); do
+    if ! grep -q "^# " "$file"; then
+      print "❌ Missing title: $file"
+      issues_found=1
+    fi
+    if ! grep -q "^## Overview" "$file"; then
+      print "❌ Missing overview: $file"
+      issues_found=1
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+### 3. Cross-Reference Verification
+
+```zsh
+verify_references() {
+  local base_dir=$1
+  local issues_found=0
+
+  print "Verifying cross-references..."
+
+  # Check for references without mdc: prefix
+  print "Checking for missing mdc: prefix..."
+  for file in $base_dir/**/*.mdc(.); do
+    if [[ -f $file ]]; then
+      if grep -o '\[.*\]([^)]*)' $file | grep -v '^mdc:' | grep -q '\.mdc'; then
+        print "❌ Found .mdc references without mdc: prefix in: $file"
+        grep -o '\[.*\]([^)]*)' $file | grep -v '^mdc:' | grep '\.mdc' | while read -r ref; do
+          print "   - $ref"
+        done
+        issues_found=1
+      fi
+    fi
+  done
+
+  # Check all references point to existing files
+  print "Verifying reference targets exist..."
+  for file in $base_dir/**/*.mdc(.); do
+    if [[ -f $file ]] && grep -q "mdc:" $file; then
+      grep -o "mdc:[^)]*" $file | while read -r ref; do
+        # Extract the path after mdc:
+        local target="${ref#mdc:}"
+        # Handle both absolute and relative paths
+        if [[ $target == /* ]]; then
+          # Absolute path
+          if [[ ! -f $base_dir/$target ]]; then
+            print "❌ Broken absolute reference in $file: $ref"
+            issues_found=1
+          else
+            print "✅ Valid reference in $file: $ref"
+          fi
+        else
+          # Relative path - resolve relative to the file's location
+          local file_dir=${file:h}  # zsh dirname equivalent
+          local resolved_path="$file_dir/$target"
+          resolved_path=${resolved_path:A}  # zsh realpath equivalent
+          if [[ ! -f $resolved_path ]]; then
+            print "❌ Broken relative reference in $file: $ref"
+            print "   Resolved to: $resolved_path"
+            issues_found=1
+          else
+            print "✅ Valid reference in $file: $ref"
+          fi
+        fi
+      done
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+### 4. Content Comparison
+
+```zsh
+compare_content() {
+  local source_dir=$1
+  local target_dir=$2
+  local issues_found=0
+
+  print "Comparing content..."
+
+  # Compare section content
+  grep -h "^## " $source_dir/*.mdc | cut -d' ' -f2- | sort -u | while read -r section; do
+    if ! grep -q "^## $section" $target_dir/*.mdc; then
+      print "❌ Missing section: $section"
+      issues_found=1
+    fi
+  done
+
+  return $issues_found
+}
+```
+
+## Verification Checklist
+
+1. **Structure Verification**
+
+   - [ ] All directories exist
+   - [ ] All required files present
+   - [ ] Proper file naming
+   - [ ] Correct file extensions
+
+2. **Content Verification**
+
+   - [ ] No empty files
+   - [ ] Valid frontmatter
+   - [ ] Required sections present
+   - [ ] Proper formatting
+
+3. **Cross-Reference Verification**
+
+   - [ ] All references use mdc: prefix
+   - [ ] All reference targets exist
+   - [ ] Relative paths resolve correctly
+   - [ ] Absolute paths resolve correctly
+   - [ ] Bidirectional references exist where appropriate
+   - [ ] No broken links
+   - [ ] No malformed references
+
+4. **Content Comparison**
+   - [ ] All sections migrated
+   - [ ] Content accuracy
+   - [ ] No data loss
+   - [ ] Proper formatting preserved
+
+## Verification Report
+
+```zsh
+generate_report() {
+  local base_dir=$1
+
+  print "Migration Verification Report" > verification_report.md
+  print "==========================" >> verification_report.md
+  print "" >> verification_report.md
+
+  print "## Structure Status" >> verification_report.md
+  verify_structure "$base_dir" >> verification_report.md
+
+  print "" >> verification_report.md
+  print "## Content Status" >> verification_report.md
+  verify_content "$base_dir" >> verification_report.md
+
+  print "" >> verification_report.md
+  print "## Reference Status" >> verification_report.md
+  verify_references "$base_dir" >> verification_report.md
+
+  print "" >> verification_report.md
+  print "## Recommendations" >> verification_report.md
+  print "1. [Action items based on verification results]" >> verification_report.md
+}
+```
+
+## Success Criteria
+
+- All verification scripts pass
+- No empty files
+- No broken references
+- All content properly migrated
+- Proper formatting maintained
+- All cross-references valid
+
+## Related Guidelines
+
+- [Planning](mdc:planning.mdc) - Migration planning
+- [Execution](mdc:execution.mdc) - Migration execution
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates

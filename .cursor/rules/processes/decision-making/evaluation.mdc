@@ -1,0 +1,84 @@
+---
+description: Evaluation criteria and scoring system for decision making
+globs: ['**/*.mdc']
+---
+
+# Evaluation Criteria
+
+## Overview
+
+This document outlines the systematic approach for evaluating changes and making decisions about documentation structure and content.
+
+## Decision Making Process
+
+1. **Generate Initial Options (8-10)**
+
+   - Brainstorm different approaches
+   - Consider various architectural patterns
+   - Include both conservative and innovative solutions
+   - Document pros and cons for each
+
+2. **Scoring System**
+
+   ```sh
+   Score = (
+     (Separation of Concerns * 0.30) +
+     (Clarity and Organization * 0.25) +
+     (Ease of Maintenance * 0.20) +
+     (Migration Complexity * 0.15) +
+     (Backward Compatibility * 0.10)
+   ) * 100
+   ```
+
+3. **Evaluation Criteria**
+
+   | Criterion                | Weight | Description                                                                                                       |
+   | ------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------- |
+   | Separation of Concerns   | 30%    | - Clear boundaries between topics<br>- Minimal cross-domain dependencies<br>- Logical grouping of related content |
+   | Clarity and Organization | 25%    | - Intuitive structure<br>- Easy to navigate<br>- Clear documentation hierarchy                                    |
+   | Ease of Maintenance      | 20%    | - Simple to update<br>- Clear ownership<br>- Minimal duplication                                                  |
+   | Migration Complexity     | 15%    | - Effort required to implement<br>- Risk level<br>- Technical challenges                                          |
+   | Backward Compatibility   | 10%    | - Impact on existing references<br>- Transition strategy<br>- Learning curve                                      |
+
+4. **Scoring Guidelines**
+
+   Score each criterion from 0-10:
+
+   - 0-2: Poor - Significant issues or concerns
+   - 3-4: Fair - Notable drawbacks
+   - 5-6: Good - Meets basic requirements
+   - 7-8: Very Good - Exceeds requirements
+   - 9-10: Excellent - Outstanding solution
+
+## Implementation Requirements
+
+For each top-rated option (1-3 highest scores), provide:
+
+1. **Implementation Plan**
+
+   - Step-by-step execution guide
+   - Required resources
+   - Timeline estimates
+
+2. **Risk Assessment**
+
+   - Potential issues
+   - Mitigation strategies
+   - Fallback plans
+
+3. **Resource Requirements**
+
+   - Time estimates
+   - Technical requirements
+   - Dependencies
+
+4. **Success Metrics**
+   - Verification steps
+   - Acceptance criteria
+   - Quality checks
+
+## Related Guidelines
+
+- [Templates](mdc:templates.mdc) - Templates for evaluation
+- [Planning](mdc:../migration/planning.mdc) - Migration planning
+- [Updates](mdc:../maintenance/updates.mdc) - Update procedures

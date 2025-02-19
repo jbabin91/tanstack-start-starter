@@ -1,0 +1,193 @@
+---
+description: Procedures for maintaining and updating documentation
+globs: ['**/*.mdc']
+---
+
+# Documentation Updates
+
+## Overview
+
+This document outlines the procedures for maintaining and updating documentation, ensuring consistency and quality across all changes.
+
+## Update Types
+
+1. **Content Updates**
+
+   - Adding new information
+   - Updating existing content
+   - Fixing inaccuracies
+   - Improving clarity
+
+2. **Structure Updates**
+
+   - Reorganizing content
+   - Adding new sections
+   - Splitting documents
+   - Merging documents
+
+3. **Cross-Reference Updates**
+   - Updating links
+   - Adding new references
+   - Removing obsolete references
+   - Verifying bidirectional links
+
+## Update Process
+
+### 1. Planning Phase
+
+1. **Assessment**
+
+   - Review change requirements
+   - Identify affected documents
+   - Map dependencies
+   - Document cross-references
+
+2. **Impact Analysis**
+
+   - Evaluate scope of changes
+   - Identify affected sections
+   - Check reference impacts
+   - Consider backward compatibility
+
+3. **Update Strategy**
+   - Define update approach
+   - Create content plan
+   - Plan reference updates
+   - Prepare verification steps
+
+### 2. Implementation Phase
+
+1. **Content Updates**
+
+   ```zsh
+   # Update content while preserving structure
+   update_content() {
+     local file=$1
+     local section=$2
+     local new_content=$3
+
+     # Create backup
+     cp "$file" "${file}.bak"
+
+     # Update section using awk
+     awk -v section="$section" -v content="$new_content" '
+       /^## / {
+         if ($0 ~ section) {
+           print $0
+           print content
+           p=1
+           next
+         } else {
+           p=0
+         }
+       }
+       !p { print }
+     ' "${file}.bak" > "$file"
+   }
+   ```
+
+2. **Reference Updates**
+
+   ```zsh
+   # Update cross-references
+   update_refs() {
+     local dir=$1
+     local old_ref=$2
+     local new_ref=$3
+
+     for file in $dir/**/*.mdc(.); do
+       sed -i '' -e "s|$old_ref|$new_ref|g" "$file"
+     done
+   }
+   ```
+
+### 3. Verification Phase
+
+1. **Content Verification**
+
+   ```zsh
+   # Verify updates
+   verify_updates() {
+     local file=$1
+
+     # Check structure
+     if ! grep -q "^---$" "$file"; then
+       print "❌ Missing frontmatter"
+       return 1
+     fi
+
+     # Check sections
+     if ! grep -q "^# " "$file"; then
+       print "❌ Missing title"
+       return 1
+     fi
+
+     # Check references
+     grep -o "mdc:[^]]*" "$file" | while read -r ref; do
+       local target="${ref#mdc:}"
+       if [[ ! -f "${target}" ]]; then
+         print "❌ Broken reference: $ref"
+         return 1
+       fi
+     done
+
+     return 0
+   }
+   ```
+
+## Update Checklist
+
+1. **Pre-Update**
+
+   - [ ] Review change requirements
+   - [ ] Identify affected documents
+   - [ ] Create backup if needed
+   - [ ] Plan reference updates
+
+2. **Implementation**
+
+   - [ ] Update content
+   - [ ] Update references
+   - [ ] Update related documents
+   - [ ] Verify formatting
+
+3. **Verification**
+
+   - [ ] Check content accuracy
+   - [ ] Verify references
+   - [ ] Test navigation
+   - [ ] Review formatting
+
+4. **Post-Update**
+   - [ ] Update indexes
+   - [ ] Update changelogs
+   - [ ] Commit changes
+   - [ ] Clean up backups
+
+## Best Practices
+
+1. **Content Updates**
+
+   - Keep formatting consistent
+   - Preserve section structure
+   - Update all related content
+   - Maintain clear organization
+
+2. **Reference Management**
+
+   - Use relative paths
+   - Update bidirectional links
+   - Verify all references
+   - Remove obsolete links
+
+3. **Version Control**
+   - Create meaningful commits
+   - Use clear commit messages
+   - Group related changes
+   - Maintain change history
+
+## Related Guidelines
+
+- [Verification](mdc:verification.mdc) - Verification procedures
+- [Planning](mdc:../migration/planning.mdc) - Planning guidelines
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates

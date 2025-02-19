@@ -1,0 +1,81 @@
+---
+description: Guidelines for updating and maintaining documentation rules
+globs: ['**/*.mdc']
+---
+
+# Rule Updates
+
+## Overview
+
+This document outlines the procedures and guidelines for updating documentation rules, ensuring consistent and maintainable documentation.
+
+## Update Process
+
+1. **Assessment**
+
+   - Review current state
+   - Identify needed changes
+   - Evaluate impact
+   - Plan updates
+
+2. **Implementation**
+
+   - Follow guidelines
+   - Update content
+   - Maintain structure
+   - Verify changes
+
+3. **Verification**
+   - Run checks
+   - Test navigation
+   - Review content
+   - Validate links
+
+## Update Guidelines
+
+1. **Content Updates**
+
+   - Maintain consistency
+   - Follow structure
+   - Update references
+   - Preserve context
+
+2. **Structure Changes**
+
+   - Plan carefully
+   - Document changes
+   - Update navigation
+   - Verify integrity
+
+3. **Version Control**
+   - Create branches
+   - Make focused commits
+   - Write clear messages
+   - Follow workflow
+
+## Best Practices
+
+1. **Documentation**
+
+   - Clear descriptions
+   - Consistent format
+   - Complete sections
+   - Updated references
+
+2. **Quality Control**
+
+   - Regular reviews
+   - Automated checks
+   - Manual testing
+   - User feedback
+
+3. **Maintenance**
+   - Regular updates
+   - Version control
+   - Backup procedures
+   - Change tracking
+
+## Related Guidelines
+
+- [Contributing](mdc:contributing.mdc) - Contribution guidelines
+- [Verification](mdc:../maintenance/verification.mdc) - Verification procedures

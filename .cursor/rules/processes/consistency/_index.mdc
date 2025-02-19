@@ -1,0 +1,29 @@
+---
+description: Index of consistency-related documentation rules and guidelines
+globs: ['**/*.mdc']
+---
+
+# Consistency Guidelines
+
+## Overview
+
+This section contains guidelines and procedures for maintaining consistency across documentation rules.
+
+## Contents
+
+1. [Contributing Guidelines](mdc:contributing.mdc)
+
+   - Guidelines for contributing to documentation
+   - Best practices for maintaining consistency
+   - Contribution workflow and procedures
+
+2. [Update Guidelines](mdc:updates.mdc)
+   - Procedures for updating documentation rules
+   - Version control and change management
+   - Quality control and verification
+
+## Related Sections
+
+- [Maintenance](mdc:../maintenance/_index.mdc) - Documentation maintenance procedures
+- [Decision Making](mdc:../decision-making/_index.mdc) - Guidelines for documentation decisions
+- [Migration](mdc:../migration/_index.mdc) - Documentation migration procedures

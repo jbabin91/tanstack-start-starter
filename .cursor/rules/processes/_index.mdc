@@ -1,0 +1,99 @@
+---
+description: Overview and quick reference for all process documentation
+globs: ['**/*.mdc']
+---
+
+# Process Documentation
+
+## Overview
+
+This directory contains all process-related documentation, organized by type:
+
+- **Migration**: Guidelines for migrating and restructuring documentation
+- **Decision Making**: Frameworks for evaluating and making changes
+- **Maintenance**: Procedures for updating and verifying documentation
+
+## Quick Reference
+
+### Migration Processes
+
+- [Planning](mdc:migration/planning.mdc) - Migration planning guidelines
+- [Execution](mdc:migration/execution.mdc) - Migration execution steps
+- [Verification](mdc:migration/verification.mdc) - Migration verification procedures
+
+### Decision Making
+
+- [Evaluation](mdc:decision-making/evaluation.mdc) - Evaluation criteria and scoring
+- [Templates](mdc:decision-making/templates.mdc) - Templates and examples
+
+### Maintenance
+
+- [Updates](mdc:maintenance/updates.mdc) - Update procedures
+- [Verification](mdc:maintenance/verification.mdc) - Verification procedures
+
+## Directory Structure
+
+```sh
+processes/
+├── _index.mdc                 # This file
+├── migration/                 # Migration processes
+│   ├── planning.mdc          # Migration planning
+│   ├── execution.mdc         # Migration execution
+│   └── verification.mdc      # Migration verification
+├── decision-making/          # Decision making processes
+│   ├── evaluation.mdc        # Evaluation criteria
+│   └── templates.mdc         # Templates and examples
+└── maintenance/              # Maintenance processes
+    ├── updates.mdc          # Update procedures
+    └── verification.mdc     # Verification procedures
+```
+
+## Process Flow
+
+1. **Decision Making**
+
+   - Evaluate changes using criteria
+   - Score options systematically
+   - Document decisions with templates
+   - Plan implementation
+
+2. **Migration**
+
+   - Plan changes carefully
+   - Execute systematically
+   - Verify thoroughly
+   - Document results
+
+3. **Maintenance**
+   - Regular updates
+   - Continuous verification
+   - Quality assurance
+   - Documentation upkeep
+
+## Best Practices
+
+1. **Documentation Structure**
+
+   - Clear organization
+   - Consistent naming
+   - Proper cross-references
+   - Complete metadata
+
+2. **Process Management**
+
+   - Systematic approach
+   - Clear documentation
+   - Regular verification
+   - Continuous improvement
+
+3. **Quality Assurance**
+   - Regular checks
+   - Comprehensive testing
+   - Error tracking
+   - Performance monitoring
+
+## Related Guidelines
+
+- [Migration](mdc:migration/planning.mdc) - Migration guidelines
+- [Evaluation](mdc:decision-making/evaluation.mdc) - Decision making framework
+- [Updates](mdc:maintenance/updates.mdc) - Maintenance procedures

@@ -1,0 +1,221 @@
+---
+description: Step-by-step procedures for executing documentation migrations
+globs: ['**/*.mdc']
+---
+
+# Migration Execution
+
+## Overview
+
+This document provides detailed steps for executing documentation migrations, ensuring content is properly transferred and verified.
+
+## Pre-Execution Checklist
+
+- [ ] Migration plan reviewed and approved
+- [ ] All templates prepared
+- [ ] Target structure created
+- [ ] Verification tools ready
+- [ ] Git repository clean
+- [ ] Current directory verified
+
+## Directory Validation
+
+```bash
+validate_directory() {
+  # Ensure we're in the correct directory
+  if [[ "$(pwd)" != *"/.cursor/rules" ]]; then
+    echo "❌ Must be run from .cursor/rules directory"
+    echo "Current directory: $(pwd)"
+    return 1
+  fi
+
+  # Check for existing directories to prevent duplicates
+  if [[ -d "../processes" || -d "./processes/.cursor" ]]; then
+    echo "❌ Duplicate directories detected"
+    echo "Please clean up existing directories first"
+    return 1
+  }
+
+  return 0
+}
+```
+
+## Execution Steps
+
+### 1. Setup Phase
+
+```bash
+# Ensure we're in the correct directory and validate
+if ! validate_directory; then
+  echo "❌ Directory validation failed"
+  exit 1
+fi
+
+# Create directory structure using absolute paths
+RULES_DIR="$(pwd)"
+mkdir -p "${RULES_DIR}/processes/{migration,decision-making,maintenance}"
+
+# Create index files
+for dir in "${RULES_DIR}/processes/"*; do
+  create_doc "$dir/_index.mdc" "$(basename $dir) Documentation"
+done
+```
+
+### 2. Content Migration
+
+```bash
+# Extract sections based on headers
+extract_section() {
+  local source=$1
+  local target=$2
+  local section=$3
+  awk -v section="$section" '
+    /^## / { if (p) exit; if ($0 ~ section) p=1; next }
+    p { print }
+  ' "$source" >> "$target"
+}
+
+# Migrate content
+migrate_content() {
+  local source_dir=$1
+  local target_dir=$2
+
+  # Copy and transform content
+  for file in "$source_dir"/*.mdc; do
+    local base_name=$(basename "$file")
+    local target_file="$target_dir/$base_name"
+
+    # Extract and transform content
+    extract_section "$file" "$target_file" "Content"
+
+    # Update cross-references
+    sed -i '' \
+      -e 's|mdc:old/path.mdc|mdc:new/path.mdc|g' \
+      "$target_file"
+  done
+}
+```
+
+### 3. Cross-Reference Updates
+
+```bash
+# Update references in all files
+update_refs() {
+  local dir=$1
+  find "$dir" -type f -name "*.mdc" -exec sed -i '' \
+    -e 's|mdc:old/path.mdc|mdc:new/path.mdc|g' \
+    {} +
+}
+```
+
+### 4. Verification
+
+```bash
+# Verify migration
+verify_migration() {
+  local base_dir=$1
+  local issues_found=0
+
+  # Check files exist and have content
+  for file in $(find "$base_dir" -type f -name "*.mdc"); do
+    [ ! -s "$file" ] && echo "❌ Empty: $file" && issues_found=1
+  done
+
+  # Check cross-references
+  grep -r "mdc:" "$base_dir" | while read -r ref; do
+    local target=$(echo "$ref" | awk -F'[][]' '{print $2}' | cut -d: -f2)
+    [ ! -f "$base_dir/$target" ] && echo "❌ Broken ref: $target" && issues_found=1
+  done
+
+  return $issues_found
+}
+```
+
+## Execution Process
+
+1. **Initial Setup**
+
+   ```bash
+   # Create structure
+   mkdir -p .cursor/rules/processes/{migration,decision-making,maintenance}
+
+   # Create initial files
+   for dir in migration decision-making maintenance; do
+     create_doc "processes/$dir/_index.mdc" "${dir^} Documentation"
+   done
+   ```
+
+2. **Content Migration**
+
+   ```bash
+   # Migrate content by section
+   for section in planning execution verification; do
+     migrate_content "old/migration" "processes/migration/$section.mdc"
+   done
+   ```
+
+3. **Update References**
+
+   ```bash
+   # Update all cross-references
+   update_refs "processes"
+   ```
+
+4. **Verification**
+
+   ```bash
+   # Verify migration
+   verify_migration "processes"
+   ```
+
+## Error Handling
+
+1. **Common Issues**
+
+   - Missing files
+   - Empty content
+   - Broken references
+   - Formatting issues
+
+2. **Resolution Steps**
+
+   - Check source content
+   - Verify file paths
+   - Update references
+   - Re-run verification
+
+3. **Rollback Procedure**
+
+   ```bash
+   # Revert to previous state
+   git reset --hard HEAD
+   git clean -fd
+   ```
+
+## Related Guidelines
+
+- [Planning](mdc:planning.mdc) - Migration planning
+- [Verification](mdc:verification.mdc) - Verification procedures
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+
+## Error Prevention
+
+1. **Path Validation**
+
+   - Always validate working directory
+   - Use absolute paths for file operations
+   - Check for existing directories
+   - Prevent duplicate creation
+
+2. **Error Handling**
+
+   - Validate before executing
+   - Roll back on failure
+   - Clean up partial migrations
+   - Log all operations
+
+3. **Directory Management**
+   - Use absolute paths
+   - Validate target locations
+   - Check for duplicates
+   - Clean up on failure

@@ -1,0 +1,149 @@
+---
+description: Guidelines for planning documentation migrations
+globs: ['**/*.mdc']
+---
+
+# Migration Planning
+
+## Overview
+
+This document outlines the process for planning documentation migrations, ensuring smooth transitions while preserving content integrity.
+
+## Core Principles
+
+1. **Preserve Original Content**
+
+   - Never delete files during migration
+   - Copy content instead of moving it
+   - Keep original files until verification is complete
+   - Use Git for version control and rollback capability
+
+2. **Separation of Concerns**
+   - Break down large files into focused topics
+   - Maintain clear boundaries between domains
+   - Use consistent file naming and structure
+   - Create proper cross-references between related content
+
+## Planning Process
+
+1. **Assessment Phase**
+
+   - Review current structure
+   - Identify pain points
+   - Document dependencies
+   - Map cross-references
+
+2. **Design Phase**
+
+   - Create target structure
+   - Define file organization
+   - Plan content separation
+   - Design cross-reference strategy
+
+3. **Migration Strategy**
+   - Create file templates
+   - Define content mapping
+   - Plan verification steps
+   - Prepare rollback procedures
+
+## File Templates
+
+```bash
+# Standard file template
+cat > _template.mdc << 'EOF'
+---
+description: Purpose of this document
+globs: ['**/*.{ts,tsx}']
+related: []
+---
+
+# Title
+
+## Overview
+Brief overview of the topic.
+
+## Guidelines
+Main content goes here.
+
+## Related Guidelines
+Cross-references to other documents.
+EOF
+
+# Helper function for file creation
+create_doc() {
+  local file=$1
+  local title=$2
+  sed "s/# Title/# ${title}/" _template.mdc > "$file"
+}
+```
+
+## Directory Structure
+
+```sh
+target_directory/
+├── _index.mdc                 # Overview and quick reference
+├── domain1/                   # First domain
+│   ├── _index.mdc            # Domain overview
+│   └── topic/                # Topic-specific content
+└── domain2/                   # Second domain
+    ├── _index.mdc            # Domain overview
+    └── topic/                # Topic-specific content
+```
+
+## Migration Checklist
+
+1. **Pre-Migration**
+
+   - [ ] Review current structure
+   - [ ] Document cross-references
+   - [ ] Create target structure
+   - [ ] Prepare templates
+   - [ ] Set up verification tools
+
+2. **Content Planning**
+
+   - [ ] Map content to new structure
+   - [ ] Identify shared content
+   - [ ] Plan cross-references
+   - [ ] Document dependencies
+
+3. **Verification Planning**
+
+   - [ ] Define success criteria
+   - [ ] Create verification scripts
+   - [ ] Plan manual checks
+   - [ ] Prepare rollback procedures
+
+4. **Timeline Planning**
+   - [ ] Estimate durations
+   - [ ] Identify dependencies
+   - [ ] Set milestones
+   - [ ] Schedule reviews
+
+## Success Criteria
+
+1. **Content Integrity**
+
+   - All content preserved
+   - No data loss
+   - Proper formatting maintained
+   - Cross-references intact
+
+2. **Structure Quality**
+
+   - Clear organization
+   - Consistent naming
+   - Proper hierarchy
+   - Complete metadata
+
+3. **Documentation**
+   - Migration plan documented
+   - Changes tracked
+   - Decisions recorded
+   - Results verified
+
+## Related Guidelines
+
+- [Execution](mdc:execution.mdc) - Migration execution steps
+- [Verification](mdc:verification.mdc) - Verification procedures
+- [Templates](mdc:../decision-making/templates.mdc) - Document templates

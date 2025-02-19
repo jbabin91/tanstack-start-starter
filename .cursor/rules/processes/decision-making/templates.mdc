@@ -1,0 +1,185 @@
+---
+description: Templates and examples for decision making and evaluation
+globs: ['**/*.mdc']
+---
+
+# Decision Making Templates
+
+## Overview
+
+This document provides templates and examples for evaluating changes and documenting decisions.
+
+## Option Evaluation Template
+
+```markdown
+## Option N: [Name]
+
+### Approach
+
+Brief description of the approach and key characteristics.
+
+### Implementation
+
+- Key steps required
+- Technical requirements
+- Dependencies
+
+### Pros and Cons
+
+#### Pros
+
+- [List key advantages]
+
+#### Cons
+
+- [List key disadvantages]
+
+### Scoring
+
+- Separation of Concerns: [0-10]
+  - [Justification]
+- Clarity and Organization: [0-10]
+  - [Justification]
+- Ease of Maintenance: [0-10]
+  - [Justification]
+- Migration Complexity: [0-10]
+  - [Justification]
+- Backward Compatibility: [0-10]
+  - [Justification]
+
+Total Score: [Calculated Score]/100
+
+### Risk Assessment
+
+- [List potential risks]
+- [Mitigation strategies]
+
+### Timeline
+
+- Planning: [Duration]
+- Implementation: [Duration]
+- Verification: [Duration]
+```
+
+## Example Evaluation
+
+```markdown
+## Option 1: Hierarchical Process Structure
+
+### Approach
+
+Organize documentation in a hierarchical structure by process type, with clear separation between planning, execution, and verification steps.
+
+### Implementation
+
+- Create process-based directory structure
+- Migrate content by process type
+- Update cross-references
+- Add navigation helpers
+
+### Pros and Cons
+
+#### Pros
+
+- Clear separation of concerns
+- Intuitive navigation
+- Easy to maintain
+- Scalable structure
+
+#### Cons
+
+- More complex initial setup
+- Requires updating references
+- Learning curve for new structure
+
+### Scoring
+
+- Separation of Concerns: 10/10
+  - Perfect separation by process type
+  - Clear boundaries between concerns
+- Clarity and Organization: 9/10
+  - Intuitive hierarchy
+  - Easy to navigate
+- Ease of Maintenance: 9/10
+  - Each process owns its documentation
+  - Clear update paths
+- Migration Complexity: 6/10
+  - More files to manage
+  - Complex reference updates
+- Backward Compatibility: 7/10
+  - Requires reference updates
+  - Clear migration path
+
+Total Score: 86/100
+
+### Risk Assessment
+
+- Risk: Complex migration process
+  - Mitigation: Detailed migration plan and verification
+- Risk: Broken references
+  - Mitigation: Automated reference checking
+- Risk: Learning curve
+  - Mitigation: Clear documentation and examples
+
+### Timeline
+
+- Planning: 1 day
+- Implementation: 2-3 days
+- Verification: 1 day
+```
+
+## Implementation Plan Template
+
+```markdown
+# Implementation Plan: [Option Name]
+
+## Overview
+
+Brief description of the selected option and its benefits.
+
+## Steps
+
+1. **Preparation**
+
+   - [ ] Task 1
+   - [ ] Task 2
+
+2. **Implementation**
+
+   - [ ] Task 1
+   - [ ] Task 2
+
+3. **Verification**
+   - [ ] Task 1
+   - [ ] Task 2
+
+## Timeline
+
+- Start Date: [Date]
+- End Date: [Date]
+- Key Milestones:
+  - Milestone 1: [Date]
+  - Milestone 2: [Date]
+
+## Resources
+
+- Required Tools
+- Dependencies
+- Team Members
+
+## Success Criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Rollback Plan
+
+1. Step 1
+2. Step 2
+```
+
+## Related Guidelines
+
+- [Evaluation](mdc:evaluation.mdc) - Evaluation criteria
+- [Planning](mdc:../migration/planning.mdc) - Migration planning
+- [Updates](mdc:../maintenance/updates.mdc) - Update procedures
