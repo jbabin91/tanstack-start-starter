@@ -5,14 +5,186 @@ globs: ['**/*.{ts,tsx}']
 
 # TanStack Query Guidelines
 
+## React Integration
+
+This project uses TanStack Query with:
+
+- **React 19**: Latest version with automatic optimizations
+- **React Compiler**: Automatic fine-grained updates
+- **Suspense**: Native data fetching integration
+
+Key benefits with React 19 + Compiler:
+
+- Automatic dependency tracking in queries
+- Optimized re-renders for query updates
+- Better integration with Suspense
+- Improved error boundary handling
+- No need for manual query result memoization
+
 ## Overview
 
-These guidelines establish best practices for using TanStack Query in our application, focusing on data fetching, caching, and state management.
+These guidelines establish best practices for using TanStack Query in our application, focusing on data fetching, caching, state management, and performance optimizations. These guidelines are optimized for React 19 and modern TanStack Query patterns.
 
 ## Related Guidelines
 
 - [Start](mdc:start.mdc) - TanStack Start setup and configuration
 - [Router](mdc:router.mdc) - Routing patterns and practices
+
+## Performance Optimizations
+
+### Query Client Configuration
+
+```typescript
+// app/router.tsx
+export function createRouter() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Optimize stale time for better cache hit rates
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        // Keep inactive queries cached
+        gcTime: 30 * 60 * 1000, // 30 minutes
+        // Retry configuration
+        retry: (failureCount, error) => {
+          if (error instanceof AuthError) return false;
+          return failureCount < 3;
+        },
+        // Automatic background refetching
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+        // Suspense mode for React 19
+        suspense: true,
+      },
+    },
+  });
+
+  return routerWithQueryClient(
+    createTanStackRouter({
+      context: { queryClient },
+      defaultPreload: 'intent',
+      routeTree,
+    }),
+    queryClient,
+  );
+}
+```
+
+### Suspense Integration
+
+```typescript
+// ✅ Good - Proper Suspense usage with queries
+function Dashboard() {
+  return (
+    <div className="grid gap-4">
+      <Suspense fallback={<UserProfileSkeleton />}>
+        <UserProfile />
+      </Suspense>
+      <Suspense fallback={<ActivityFeedSkeleton />}>
+        <ActivityFeed />
+      </Suspense>
+    </div>
+  );
+}
+
+// components/user-profile.tsx
+function UserProfile() {
+  // Query will suspend instead of returning loading state
+  const { data: user } = useUser({ suspense: true });
+  return <div>{user.name}</div>;
+}
+```
+
+### Parallel Queries
+
+```typescript
+// ✅ Good - Parallel data fetching
+function Dashboard() {
+  // Queries run in parallel
+  const { data: user } = useUser();
+  const { data: posts } = usePosts();
+  const { data: notifications } = useNotifications();
+
+  return (
+    <div>
+      <UserProfile user={user} />
+      <PostList posts={posts} />
+      <NotificationList notifications={notifications} />
+    </div>
+  );
+}
+```
+
+### Prefetching Strategies
+
+```typescript
+// ✅ Good - Smart prefetching
+function PostList() {
+  const { data: posts } = usePosts();
+  const queryClient = useQueryClient();
+
+  // Prefetch on hover
+  const prefetchPost = (id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['post', id],
+      queryFn: () => $getPost({ id }),
+      // Shorter stale time for prefetched data
+      staleTime: 30 * 1000, // 30 seconds
+    });
+  };
+
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li
+          key={post.id}
+          onMouseEnter={() => prefetchPost(post.id)}
+        >
+          {post.title}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Infinite Queries
+
+```typescript
+// ✅ Good - Optimized infinite queries
+function PostFeed() {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['posts'],
+    queryFn: ({ pageParam = 1 }) => $getPosts({ page: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    // Prefetch next page
+    select: (data) => ({
+      ...data,
+      pages: data.pages.flat(),
+    }),
+  });
+
+  return (
+    <div>
+      {data.pages.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+      {hasNextPage && (
+        <button
+          onClick={() => fetchNextPage()}
+          disabled={isFetchingNextPage}
+        >
+          {isFetchingNextPage ? 'Loading...' : 'Load More'}
+        </button>
+      )}
+    </div>
+  );
+}
+```
 
 ## Query Organization
 
@@ -42,22 +214,24 @@ function UserProfile({ id }: { id: string }) {
 ### Mutation Patterns
 
 ```typescript
-// ✅ Good - Proper mutation with optimistic updates
-// features/users/hooks/useUpdateUser.ts
+// ✅ Good - Optimistic updates with proper error handling
 export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: UpdateUserData) => $updateUser(data),
+    // Optimistic update
     onMutate: async (newUser) => {
       await queryClient.cancelQueries({ queryKey: ['user'] });
       const previousUser = queryClient.getQueryData(['user']);
       queryClient.setQueryData(['user'], newUser);
       return { previousUser };
     },
+    // Rollback on error
     onError: (err, newUser, context) => {
       queryClient.setQueryData(['user'], context?.previousUser);
     },
+    // Refetch after success
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
     },
@@ -253,6 +427,133 @@ function useInfinitePosts() {
     queryFn: ({ pageParam = 0 }) => $getPosts({ page: pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     getPreviousPageParam: (firstPage) => firstPage.prevCursor,
+  });
+}
+```
+
+## Data Synchronization
+
+### Real-time Updates
+
+```typescript
+// ✅ Good - Real-time data synchronization
+function useRealtimeMessages() {
+  const queryClient = useQueryClient();
+
+  // Set up WebSocket connection
+  useEffect(() => {
+    const ws = new WebSocket('wss://api.example.com/messages');
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      // Update query cache with new message
+      queryClient.setQueryData(['messages'], (old: Message[]) => [
+        message,
+        ...old,
+      ]);
+    };
+
+    return () => ws.close();
+  }, [queryClient]);
+
+  // Regular query for initial data
+  return useQuery({
+    queryKey: ['messages'],
+    queryFn: () => $getMessages(),
+    // Keep real-time data fresh
+    staleTime: Infinity,
+  });
+}
+```
+
+### Optimistic Updates
+
+```typescript
+// ✅ Good - Optimistic UI with proper error handling
+function MessageList() {
+  const mutation = useMutation({
+    mutationFn: (message: string) => $sendMessage({ text: message }),
+    // Optimistically add message
+    onMutate: async (newMessage) => {
+      await queryClient.cancelQueries({ queryKey: ['messages'] });
+      const previousMessages = queryClient.getQueryData(['messages']);
+
+      queryClient.setQueryData(['messages'], (old: Message[]) => [
+        { id: 'temp', text: newMessage, pending: true },
+        ...old,
+      ]);
+
+      return { previousMessages };
+    },
+    // Handle errors
+    onError: (err, newMessage, context) => {
+      queryClient.setQueryData(['messages'], context?.previousMessages);
+      toast.error('Failed to send message');
+    },
+    // Update with server response
+    onSuccess: (result) => {
+      queryClient.setQueryData(['messages'], (old: Message[]) =>
+        old.map((msg) =>
+          msg.id === 'temp' ? { ...result, pending: false } : msg
+        )
+      );
+    },
+  });
+
+  return (/* ... */);
+}
+```
+
+## Error Handling
+
+### Query Error Boundaries
+
+```typescript
+// ✅ Good - Error boundary integration
+function QueryErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary
+      fallback={({ error }) => (
+        <div className="p-4">
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error.message}</AlertDescription>
+          </Alert>
+        </div>
+      )}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
+
+function UserProfile() {
+  return (
+    <QueryErrorBoundary>
+      <Suspense fallback={<UserProfileSkeleton />}>
+        <UserData />
+      </Suspense>
+    </QueryErrorBoundary>
+  );
+}
+```
+
+### Retry Configuration
+
+```typescript
+// ✅ Good - Smart retry logic
+function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => $getUser({ id }),
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error instanceof AuthError) return false;
+      // Don't retry not found
+      if (error instanceof NotFoundError) return false;
+      // Retry other errors up to 3 times
+      return failureCount < 3;
+    },
   });
 }
 ```

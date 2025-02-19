@@ -5,14 +5,312 @@ globs: ['**/*.{ts,tsx}']
 
 # TanStack Start Guidelines
 
+## Core Configuration
+
+This project is configured to use:
+
+- **React 19**: Latest version with automatic optimizations
+- **React Compiler**: Automatic fine-grained updates
+- **TanStack Suite**: Fully integrated with React 19 and React Compiler
+
+### React Configuration
+
+```typescript
+// app.config.ts
+import { defineConfig } from '@tanstack/start/config';
+
+export default defineConfig({
+  react: {
+    // Enable React Compiler
+    compiler: true,
+    // React 19 features
+    runtime: 'automatic',
+    // Development tools
+    devTools: process.env.NODE_ENV === 'development',
+  },
+  // ... rest of config
+});
+```
+
 ## Overview
 
-These guidelines establish best practices for setting up and configuring TanStack Start applications, including project structure, server functions, and API routes.
+These guidelines establish best practices for setting up and configuring TanStack Start applications, including project structure, server functions, API routes, security, and performance optimizations. All patterns are optimized for React 19 with React Compiler enabled.
 
 ## Related Guidelines
 
 - [Query](mdc:domains/tanstack/query.mdc) - Query patterns and practices
 - [Router](mdc:domains/tanstack/router.mdc) - Routing patterns and practices
+
+## Security Architecture
+
+### Authentication & Authorization
+
+1. **Auth Middleware**:
+
+```typescript
+// lib/server/middleware/auth-guard.ts
+import { createMiddleware } from '@tanstack/start';
+import { getWebRequest, setResponseStatus } from '@tanstack/start/server';
+
+export const authMiddleware = createMiddleware().server(async ({ next }) => {
+  const { headers } = getWebRequest()!;
+
+  const session = await auth.api.getSession({
+    headers,
+    query: {
+      disableCookieCache: true, // Ensure fresh session
+    },
+  });
+
+  if (!session) {
+    setResponseStatus(401);
+    throw new Error('Unauthorized');
+  }
+
+  return next({ context: { user: session.user } });
+});
+```
+
+2. **Route Protection**:
+
+```typescript
+// routes/_app/route.tsx
+export const Route = createFileRoute('/_app')({
+  beforeLoad: [authGuard], // Protect all app routes
+  component: AppLayout,
+});
+```
+
+### Input Validation
+
+1. **Server Function Validation**:
+
+```typescript
+// features/users/server/update-user.ts
+import { createServerFn } from '@tanstack/start';
+import { z } from 'zod';
+
+const userSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string().min(2),
+});
+
+export const $updateUser = createServerFn({ method: 'POST' })
+  .input(userSchema) // Validate input
+  .handler(async ({ input }) => {
+    return db.user.update({
+      where: { id: input.id },
+      data: input,
+    });
+  });
+```
+
+2. **API Route Validation**:
+
+```typescript
+// routes/api/email/send.ts
+import { z } from 'zod';
+
+const emailSchema = z.object({
+  to: z.string().email(),
+  template: z.string(),
+  data: z.record(z.unknown()),
+});
+
+export const APIRoute = createAPIFileRoute('/api/email/send')({
+  POST: async ({ request }) => {
+    const body = await request.json();
+    const { to, template, data } = emailSchema.parse(body);
+    return resend.emails.send({ to, template, data });
+  },
+});
+```
+
+### CSRF Protection
+
+1. **CSRF Token Validation**:
+
+```typescript
+// lib/server/middleware/csrf.ts
+import { createMiddleware } from '@tanstack/start';
+
+export const csrfMiddleware = createMiddleware().server(async ({ next }) => {
+  const { headers } = getWebRequest()!;
+  const token = headers.get('x-csrf-token');
+
+  if (!token || !validateCsrfToken(token)) {
+    setResponseStatus(403);
+    throw new Error('Invalid CSRF token');
+  }
+
+  return next();
+});
+```
+
+### Rate Limiting
+
+1. **API Rate Limiting**:
+
+```typescript
+// lib/server/middleware/rate-limit.ts
+import { createMiddleware } from '@tanstack/start';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '10 s'),
+});
+
+export const rateLimitMiddleware = createMiddleware().server(
+  async ({ next }) => {
+    const { headers } = getWebRequest()!;
+    const ip = headers.get('x-forwarded-for');
+
+    const { success } = await ratelimit.limit(ip ?? 'anonymous');
+
+    if (!success) {
+      setResponseStatus(429);
+      throw new Error('Too many requests');
+    }
+
+    return next();
+  },
+);
+```
+
+## Performance Optimizations
+
+### Server Functions
+
+1. **Caching Strategy**:
+
+```typescript
+// features/users/server/get-user.ts
+import { createServerFn } from '@tanstack/start';
+
+export const $getUser = createServerFn({ method: 'GET' })
+  .input(z.object({ id: z.string() }))
+  .handler(async ({ input }) => {
+    // Use cache-control headers
+    setResponseHeader('Cache-Control', 's-maxage=60');
+
+    return db.user.findUnique({
+      where: { id: input.id },
+      // Select only needed fields
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+  });
+```
+
+2. **Batch Operations**:
+
+```typescript
+// features/users/server/get-users.ts
+export const $getUsers = createServerFn({ method: 'GET' })
+  .input(z.object({ ids: z.array(z.string()) }))
+  .handler(async ({ input }) => {
+    // Batch fetch users
+    return db.user.findMany({
+      where: { id: { in: input.ids } },
+    });
+  });
+```
+
+### Asset Optimization
+
+1. **Image Optimization**:
+
+```typescript
+// components/ui/image.tsx
+import { ImageResponse } from '@tanstack/start/image';
+
+export const APIRoute = createAPIFileRoute('/api/image/$')({
+  GET: ({ request }) => {
+    return new ImageResponse({
+      url: request.url,
+      width: 800,
+      height: 400,
+      quality: 80,
+      format: 'webp',
+    });
+  },
+});
+```
+
+2. **Static Asset Handling**:
+
+```typescript
+// app.config.ts
+import { defineConfig } from '@tanstack/start/config';
+
+export default defineConfig({
+  vite: {
+    build: {
+      // Optimize chunks
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+### Query Optimization
+
+1. **Parallel Queries**:
+
+```typescript
+// features/dashboard/components/dashboard.tsx
+function Dashboard() {
+  // Fetch data in parallel
+  const { data: user } = useUser();
+  const { data: posts } = usePosts();
+  const { data: stats } = useStats();
+
+  return (/* ... */);
+}
+```
+
+2. **Prefetching**:
+
+```typescript
+// features/posts/components/post-list.tsx
+function PostList() {
+  const { data: posts } = usePosts();
+  const queryClient = useQueryClient();
+
+  // Prefetch on hover
+  const prefetchPost = (id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['post', id],
+      queryFn: () => $getPost({ id }),
+    });
+  };
+
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li
+          key={post.id}
+          onMouseEnter={() => prefetchPost(post.id)}
+        >
+          {post.title}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
 
 ## Project Structure
 
@@ -20,44 +318,24 @@ These guidelines establish best practices for setting up and configuring TanStac
 app/
 ├── components/                   # Shared UI components
 │   ├── ui/                      # Base UI components
-│   │   ├── Button.tsx          # Button component
-│   │   ├── Button.test.tsx     # Button tests
-│   │   ├── Input.tsx           # Input component
-│   │   └── Input.test.tsx      # Input tests
 │   └── layout/                  # Layout components
 ├── lib/                         # Shared utilities
 │   ├── client/                 # Client-only code
 │   ├── server/                 # Server-only code
 │   └── shared/                 # Shared utilities
-├── db/                          # Database configuration
-│   ├── schema.ts
-│   └── client.ts
-├── types/                      # Shared type definitions
 ├── features/                   # Feature-specific code
 │   ├── auth/                  # Authentication feature
-│   │   ├── components/       # Auth components
-│   │   ├── server/          # Auth server functions
-│   │   ├── hooks/          # Auth hooks
-│   │   └── types.ts        # Auth types
-│   └── users/              # Users feature
-│       ├── components/    # User components
-│       ├── server/       # User server functions
-│       ├── hooks/       # User hooks
-│       └── types.ts     # User types
+│   └── users/                 # Users feature
 ├── routes/                    # File-based routes
 │   ├── __root.tsx            # Root layout
-│   ├── api/                 # Third-party integration endpoints
-│   │   ├── auth/           # Better Auth endpoints
-│   │   └── email/          # Resend email endpoints
+│   ├── api/                 # API routes
 │   ├── _public/             # Public routes
 │   ├── _auth/              # Auth routes
 │   └── _app/               # Protected routes
-├── tests/                    # Global test files
-│   └── e2e/                # End-to-end tests
-├── api.ts                    # API route handler configuration
-├── client.tsx                # Client entry point
-├── router.tsx                # Router configuration
-└── ssr.tsx                   # Server entry point
+├── api.ts                    # API configuration
+├── client.tsx                # Client entry
+├── router.tsx                # Router config
+└── ssr.tsx                   # Server entry
 ```
 
 ## Core Configuration
