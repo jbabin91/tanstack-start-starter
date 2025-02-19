@@ -12,39 +12,16 @@ These guidelines establish fundamental code standards and style patterns that ap
 ## Related Guidelines
 
 - [Principles](mdc:principles.mdc) - Core development principles
-- [Architecture](mdc:architecture.mdc) - System design patterns
+- [Architecture](mdc:architecture.mdc) - System design patterns and project structure
 
-## Directory Structure
-
-### Project Organization
-
-```sh
-app/
-├── api.ts                  # Root API configuration
-├── components/            # Shared components
-│   ├── ui/               # UI components
-│   └── features/         # Feature components
-├── lib/                  # Shared utilities
-│   ├── client/          # Client-only code
-│   ├── server/          # Server-only code
-│   └── shared/          # Shared code
-├── routes/               # File-based routes
-│   ├── __root.tsx       # Root layout
-│   ├── api/             # API routes
-│   ├── _public/         # Public routes
-│   ├── _auth/           # Auth routes
-│   └── _app/            # Protected routes
-├── types/               # Type definitions
-└── tests/               # Test files
-```
-
-### General Principles
+## General Principles
 
 - Group files by feature or domain
 - Separate concerns (UI, logic, types)
 - Keep related files close together
-- Use clear, descriptive directory names
-- Maintain consistent depth
+- Use clear, descriptive names
+- Maintain consistent structure
+- Follow the project structure defined in [Architecture](mdc:architecture.mdc)
 
 ## Naming Conventions
 
@@ -54,24 +31,31 @@ app/
 
    - `__root.tsx` - Root layout
    - `route.tsx` - Layout files
-   - `index.tsx` - Page components
-   - `[param].tsx` - Dynamic routes
+   - `index.tsx` - Index/main content for a route
+   - `$paramName.tsx` - Dynamic route parameters
 
 2. API Routes:
 
-   - `$.ts` - Catch-all handlers
+   - `$.ts` - Catch-all handlers (for third-party integrations)
    - `[feature].ts` - Feature-specific endpoints
 
 3. Component Files:
 
    - Use PascalCase
-   - Suffix with type: `.component.tsx`
-   - Example: `UserProfile.component.tsx`
+   - Keep names simple and descriptive
+   - Example: `Button.tsx`, `UserProfile.tsx`
 
 4. Server Functions:
+
+   - Keep in feature's server directory
    - Prefix with `$`
    - Use camelCase after prefix
    - Example: `$getUser`, `$updateProfile`
+
+5. Test Files:
+   - Unit/Integration Tests: `[name].test.{ts,tsx}`
+   - E2E Tests: `[name].spec.ts`
+   - Schema Definitions: `[name].schema.ts`
 
 ### Code Naming
 
@@ -106,7 +90,7 @@ app/
 1. Order of Content:
 
    ```markdown
-   1. File description/license
+   1. File description/license (if needed)
    2. Imports/dependencies
    3. Type definitions
    4. Constants
@@ -123,16 +107,47 @@ import { useState } from 'react';
 import { createServerFn } from '@tanstack/start';
 
 // Internal dependencies
-import { UserProfile } from '~/components/features/user';
-import { Button } from '~/components/ui/button';
+import { Button } from '~/components/ui/Button';
+import { useAuth } from '~/features/auth/hooks/useAuth';
 
 // Types
-import type { User } from '~/lib/shared/types';
+import type { User } from '~/features/users/types';
 ```
 
-## Type Safety
+### Naming Conventions
 
-### Type Definitions
+1. Variables and Functions:
+
+   ```typescript
+   // ✅ Good
+   const isUserAuthenticated = true;
+   const handleProfileUpdate = () => {};
+   function getUserProfile(id: string): Promise<User> {}
+
+   // ❌ Bad
+   const auth = true;
+   const update = () => {};
+   function getStuff(id) {}
+   ```
+
+2. Component Names:
+
+   - Use PascalCase
+   - Be descriptive and specific
+   - Include parent component name if nested
+
+3. Hook Names:
+
+   - Start with 'use'
+   - Describe the functionality
+   - Be specific about return value
+
+4. Type Names:
+   - Use PascalCase
+   - Be descriptive
+   - Suffix with type role (Props, State, etc.)
+
+### Type Safety
 
 1. Use `type` over `interface`:
 
@@ -161,9 +176,7 @@ import type { User } from '~/lib/shared/types';
    }
    ```
 
-## Error Handling
-
-### Principles
+### Error Handling
 
 1. Use Error Boundaries:
 
@@ -192,28 +205,28 @@ import type { User } from '~/lib/shared/types';
    }
    ```
 
-## Documentation
+### Documentation
 
-### Comments
+1. Comments:
 
-```typescript
-// ✅ Good - Explains why, not what
-// Retry three times to handle temporary network issues
-function fetchWithRetry() { ... }
+   ```typescript
+   // ✅ Good - Explains why, not what
+   // Retry three times to handle temporary network issues
+   function fetchWithRetry() { ... }
 
-// ❌ Bad - States the obvious
-// Function to fetch data
-function fetchData() { ... }
-```
+   // ❌ Bad - States the obvious
+   // Function to fetch data
+   function fetchData() { ... }
+   ```
 
-### API Documentation
+2. JSDoc (for public APIs):
 
-```typescript
-/**
- * Brief description of purpose
- *
- * @param {type} name - Parameter description
- * @returns {type} Description of return value
- * @throws {type} Description of error cases
- */
-```
+   ```typescript
+   /**
+    * Brief description of purpose
+    *
+    * @param {type} name - Parameter description
+    * @returns {type} Description of return value
+    * @throws {type} Description of error cases
+    */
+   ```

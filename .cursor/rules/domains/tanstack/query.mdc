@@ -20,7 +20,7 @@ These guidelines establish best practices for using TanStack Query in our applic
 
 ```typescript
 // ✅ Good - Proper query organization
-// lib/queries/users.ts
+// features/users/hooks/useUser.ts
 export function useUser(id: string) {
   return useQuery({
     queryKey: ['user', id],
@@ -43,6 +43,7 @@ function UserProfile({ id }: { id: string }) {
 
 ```typescript
 // ✅ Good - Proper mutation with optimistic updates
+// features/users/hooks/useUpdateUser.ts
 export function useUpdateUser() {
   const queryClient = useQueryClient();
 

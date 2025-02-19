@@ -19,18 +19,192 @@ These guidelines establish best practices for using TanStack Router in our appli
 ### Directory Structure
 
 ```sh
-routes/
-├── __root.tsx           # Root layout with providers and meta
-├── _public/            # Public routes
-│   ├── index.tsx      # Landing page
-│   └── about.tsx      # About page
-├── _auth/             # Authentication routes
-│   ├── signin.tsx     # Sign in page
-│   └── signup.tsx     # Sign up page
-└── dashboard/         # Dashboard feature
-    ├── route.tsx      # Dashboard layout with auth guard
-    └── index.tsx      # Dashboard page
+app/
+├── routes/                    # File-based routes
+│   ├── __root.tsx           # Root layout with providers and meta
+│   ├── api/                 # Third-party integration endpoints
+│   │   ├── auth/           # Better Auth endpoints
+│   │   └── email/          # Resend email endpoints
+│   ├── _public/            # Public routes (no path prefix)
+│   │   ├── index.tsx      # Landing page (/)
+│   │   └── about.tsx      # About page (/about)
+│   ├── _auth/             # Auth routes (no path prefix)
+│   │   ├── signin.tsx     # Sign in page (/signin)
+│   │   └── signup.tsx     # Sign up page (/signup)
+│   └── _app/              # Protected routes (no path prefix)
+│       ├── route.tsx      # App layout with auth guard
+│       ├── settings.tsx   # Settings page (/settings)
+│       ├── settings/      # Settings feature routes
+│       │   ├── route.tsx  # Settings layout
+│       │   ├── index.tsx  # Settings index
+│       │   └── profile.tsx # Settings profile
+│       ├── posts/         # Posts feature routes
+│       │   ├── route.tsx  # Posts layout
+│       │   ├── index.tsx  # Posts listing
+│       │   ├── $postId.tsx # Single post view
+│       │   └── $postId/    # Nested post routes
+│       │       ├── route.tsx # Post layout
+│       │       └── edit.tsx  # Edit post page
+│       └── dashboard/     # Dashboard feature
+│           ├── route.tsx  # Dashboard layout
+│           └── index.tsx  # Dashboard index
 ```
+
+### Routing Conventions
+
+We follow a mixed approach of flat and directory-based routing, with specific conventions for different types of routes:
+
+1. **Route Grouping**:
+
+   - Use `_` prefixed directories to group related routes without affecting URL paths
+   - `_public/` for public routes (landing, about)
+   - `_auth/` for authentication routes (signin, signup)
+   - `_app/` for protected routes requiring authentication
+
+2. **Simple Routes**:
+
+   - Use flat files for simple routes
+   - Example: `about.tsx` for `/about`
+   - Keep routes flat when they don't need layouts or complex nesting
+
+3. **Complex Routes**:
+
+   - Use directories for features requiring:
+     - Shared layouts
+     - Multiple related routes
+     - Nested routes
+   - Always use `route.tsx` for layout definitions
+   - Use `index.tsx` for the index route of a directory
+
+4. **File Naming**:
+
+   - `__root.tsx` - Root layout and providers
+   - `route.tsx` - Layout definitions
+   - `index.tsx` - Index/main content for a route
+   - `$paramName.tsx` - Dynamic route parameters
+
+5. **Route Organization**:
+   - Group by access level (`_public`, `_auth`, `_app`)
+   - Keep related routes together
+   - Use nesting for complex features
+   - Co-locate route components with their routes
+
+### Routing Examples
+
+1. **Simple Flat Routes**:
+
+   ```sh
+   routes/
+   ├── _public/
+   │   ├── index.tsx         # / (home page)
+   │   ├── about.tsx         # /about
+   │   └── contact.tsx       # /contact
+   ```
+
+   ```typescript
+   // routes/_public/about.tsx
+   export const Route = createFileRoute('/_public/about')({
+     component: AboutPage,
+   });
+   ```
+
+2. **Routes with Layouts**:
+
+   ```sh
+   routes/
+   └── _app/
+       ├── route.tsx         # App layout with nav/sidebar
+       ├── dashboard.tsx     # /dashboard
+       └── settings/
+           ├── route.tsx     # Settings layout
+           ├── index.tsx     # /settings
+           ├── profile.tsx   # /settings/profile
+           └── billing.tsx   # /settings/billing
+   ```
+
+   ```typescript
+   // routes/_app/route.tsx - Layout
+   export const Route = createFileRoute('/_app')({
+     component: AppLayout,
+   });
+
+   // routes/_app/settings/route.tsx - Nested layout
+   export const Route = createFileRoute('/_app/settings')({
+     component: SettingsLayout,
+   });
+
+   // routes/_app/settings/profile.tsx - Page
+   export const Route = createFileRoute('/_app/settings/profile')({
+     component: ProfilePage,
+   });
+   ```
+
+3. **Dynamic Routes**:
+
+   ```sh
+   routes/
+   └── _app/
+       └── posts/
+           ├── index.tsx     # /posts (listing)
+           ├── $postId.tsx   # /posts/123 (view)
+           └── $postId/
+               ├── route.tsx # Layout for edit/delete
+               └── edit.tsx  # /posts/123/edit
+   ```
+
+   ```typescript
+   // routes/_app/posts/$postId.tsx
+   export const Route = createFileRoute('/_app/posts/$postId')({
+     component: PostPage,
+     loader: ({ params }) => {
+       return fetchPost(params.postId);
+     },
+   });
+   ```
+
+4. **Auth Protected Routes**:
+
+   ```sh
+   routes/
+   ├── _auth/
+   │   ├── signin.tsx       # /signin
+   │   └── signup.tsx       # /signup
+   └── _app/
+       ├── route.tsx        # Protected layout
+       └── profile.tsx      # /profile
+   ```
+
+   ```typescript
+   // routes/_app/route.tsx
+   export const Route = createFileRoute('/_app')({
+     beforeLoad: ({ context }) => {
+       if (!context.user) {
+         throw redirect({
+           to: '/signin',
+           search: { redirect: router.state.location.pathname },
+         });
+       }
+     },
+     component: ProtectedLayout,
+   });
+   ```
+
+5. **Lazy Loaded Routes**:
+
+   ```sh
+   routes/
+   └── _app/
+       └── admin/
+           ├── route.tsx         # Admin layout
+           └── route.lazy.tsx    # Lazy loaded admin pages
+   ```
+
+   ```typescript
+   // routes/_app/admin/route.lazy.tsx
+   export const Route = createLazyFileRoute('/_app/admin')({
+     component: lazy(() => import('./AdminPage')),
+   });
+   ```
 
 ### Route Definition
 
@@ -123,40 +297,123 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
 ## Route Organization
 
-### Lazy Loading
+For the complete project structure, see [Architecture](mdc:domains/core/architecture.mdc#project-structure).
 
-```typescript
-// ✅ Good - Lazy route loading
-// routes/dashboard/route.lazy.tsx
-export const Route = createLazyFileRoute('/dashboard')({
-  component: lazy(() => import('./DashboardPage')),
-});
+### Route Types
 
-// routes/settings/route.lazy.tsx
-export const Route = createLazyFileRoute('/settings')({
-  component: lazy(() => import('./SettingsPage')),
-});
-```
+1. **Root Layout** (`__root.tsx`):
+
+   ```typescript
+   // routes/__root.tsx
+   export const Route = createRootRoute({
+     component: RootLayout,
+     beforeLoad: [authGuard],
+   });
+   ```
+
+2. **Feature Layout** (`route.tsx`):
+
+   ```typescript
+   // routes/_app/dashboard/route.tsx
+   export const Route = createFileRoute('/_app/dashboard')({
+     component: DashboardLayout,
+   });
+   ```
+
+3. **Index Route** (`index.tsx`):
+
+   ```typescript
+   // routes/_app/dashboard/index.tsx
+   export const Route = createFileRoute('/_app/dashboard/')({
+     component: DashboardPage,
+   });
+   ```
+
+4. **Dynamic Route** (`$paramName.tsx`):
+
+   ```typescript
+   // routes/_app/posts/$postId.tsx
+   export const Route = createFileRoute('/_app/posts/$postId')({
+     component: PostPage,
+     loader: ({ params }) => $getPost({ id: params.postId }),
+   });
+   ```
 
 ### Route Groups
 
-```typescript
-// ✅ Good - Route grouping
-// routes/_app/route.tsx
-export const Route = createFileRoute('/_app')({
-  beforeLoad: ({ context }) => {
-    if (!context.user) {
-      throw redirect({ to: '/signin' });
-    }
-  },
-  component: AppLayout,
-});
+Routes are organized into groups using underscore-prefixed directories:
 
-// routes/_app/dashboard/route.tsx
-export const Route = createFileRoute('/_app/dashboard')({
-  component: DashboardPage,
-});
-```
+1. **Public Routes** (`_public/`):
+
+   - No authentication required
+   - Example: Landing page, About page
+   - No URL prefix in final path
+
+2. **Auth Routes** (`_auth/`):
+
+   - Authentication-related pages
+   - Example: Sign in, Sign up
+   - No URL prefix in final path
+
+3. **Protected Routes** (`_app/`):
+   - Requires authentication
+   - Example: Dashboard, Settings
+   - No URL prefix in final path
+
+### Route Configuration
+
+1. **Route Guards**:
+
+   ```typescript
+   // routes/_app/route.tsx
+   export const Route = createFileRoute('/_app')({
+     beforeLoad: [authGuard],
+     component: AppLayout,
+   });
+   ```
+
+2. **Route Loaders**:
+
+   ```typescript
+   // routes/_app/dashboard/index.tsx
+   export const Route = createFileRoute('/_app/dashboard/')({
+     loader: () => $getDashboardData(),
+     component: DashboardPage,
+   });
+   ```
+
+3. **Route Actions**:
+
+   ```typescript
+   // routes/_app/posts/$postId/edit.tsx
+   export const Route = createFileRoute('/_app/posts/$postId/edit')({
+     action: ({ params, formData }) =>
+       $updatePost({ id: params.postId, data: formData }),
+     component: EditPostPage,
+   });
+   ```
+
+### API Routes
+
+API routes are used for third-party integrations and follow these patterns:
+
+1. **Catch-all Handler** (`$.ts`):
+
+   ```typescript
+   // routes/api/auth/$.ts
+   export const Route = createFileRoute('/api/auth/$')({
+     handler: betterAuthHandler,
+   });
+   ```
+
+2. **Specific Endpoint** (`[name].ts`):
+
+   ```typescript
+   // routes/api/email/send.ts
+   export const Route = createFileRoute('/api/email/send')({
+     handler: resendEmailHandler,
+   });
+   ```
 
 ## Error Handling
 
@@ -272,4 +529,56 @@ function SearchPage() {
   // search is fully typed based on schema
   const { q, page, limit } = search;
 }
+```
+
+## API Integration
+
+### Server Functions (Primary API Pattern)
+
+```typescript
+// features/users/server/get-user.ts
+import { createServerFn } from '@tanstack/start';
+import { z } from 'zod';
+
+export const $getUser = createServerFn({ method: 'GET' })
+  .input(z.object({ id: z.string() }))
+  .handler(async ({ input }) => {
+    return db.user.findUnique({ where: { id: input.id } });
+  });
+
+// features/users/server/update-user.ts
+export const $updateUser = createServerFn({ method: 'POST' })
+  .input(userSchema)
+  .handler(async ({ input }) => {
+    return db.user.update({
+      where: { id: input.id },
+      data: input,
+    });
+  });
+```
+
+### Third-Party Integration Routes
+
+```sh
+routes/api/
+├── auth/                # Better Auth integration
+│   └── $.ts           # Auth handler (catch-all)
+└── email/              # Resend integration
+    └── send.ts        # Email sending endpoint
+```
+
+```typescript
+// routes/api/auth/$.ts
+export const APIRoute = createAPIFileRoute('/api/auth/$')({
+  GET: ({ request }) => auth.handler(request),
+  POST: ({ request }) => auth.handler(request),
+});
+
+// routes/api/email/send.ts
+export const APIRoute = createAPIFileRoute('/api/email/send')({
+  POST: async ({ request }) => {
+    const { to, template, data } = await request.json();
+    return resend.emails.send({ to, template, data });
+  },
+});
 ```

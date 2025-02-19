@@ -18,29 +18,59 @@ These guidelines establish best practices for setting up and configuring TanStac
 
 ```sh
 app/
-├── api.ts                  # Root API configuration
-├── components/             # Shared components
-│   ├── ui/                # UI components
-│   └── features/          # Feature components
-├── lib/                   # Shared utilities
-│   ├── client/           # Client-only code
-│   ├── server/           # Server-only code
-│   └── shared/           # Shared code
-├── routes/                # File-based routes
-│   ├── __root.tsx        # Root layout
-│   ├── api/              # API routes
-│   │   ├── auth/         # Auth-related endpoints
-│   │   │   └── $.ts     # Auth handler (catch-all)
-│   │   └── send.ts      # Email sending endpoint
-│   ├── _public/          # Public routes
-│   ├── _auth/           # Auth routes
-│   └── _app/            # Protected routes
-├── client.tsx            # Client entry
-├── router.tsx            # Router config
-└── ssr.tsx              # Server entry
+├── components/                   # Shared UI components
+│   ├── ui/                      # Base UI components
+│   │   ├── Button.tsx          # Button component
+│   │   ├── Button.test.tsx     # Button tests
+│   │   ├── Input.tsx           # Input component
+│   │   └── Input.test.tsx      # Input tests
+│   └── layout/                  # Layout components
+├── lib/                         # Shared utilities
+│   ├── client/                 # Client-only code
+│   ├── server/                 # Server-only code
+│   └── shared/                 # Shared utilities
+├── db/                          # Database configuration
+│   ├── schema.ts
+│   └── client.ts
+├── types/                      # Shared type definitions
+├── features/                   # Feature-specific code
+│   ├── auth/                  # Authentication feature
+│   │   ├── components/       # Auth components
+│   │   ├── server/          # Auth server functions
+│   │   ├── hooks/          # Auth hooks
+│   │   └── types.ts        # Auth types
+│   └── users/              # Users feature
+│       ├── components/    # User components
+│       ├── server/       # User server functions
+│       ├── hooks/       # User hooks
+│       └── types.ts     # User types
+├── routes/                    # File-based routes
+│   ├── __root.tsx            # Root layout
+│   ├── api/                 # Third-party integration endpoints
+│   │   ├── auth/           # Better Auth endpoints
+│   │   └── email/          # Resend email endpoints
+│   ├── _public/             # Public routes
+│   ├── _auth/              # Auth routes
+│   └── _app/               # Protected routes
+├── tests/                    # Global test files
+│   └── e2e/                # End-to-end tests
+├── api.ts                    # API route handler configuration
+├── client.tsx                # Client entry point
+├── router.tsx                # Router configuration
+└── ssr.tsx                   # Server entry point
 ```
 
 ## Core Configuration
+
+### Entry Points
+
+```sh
+app/
+├── api.ts       # API route handler configuration
+├── client.tsx   # Client entry point
+├── router.tsx   # Router configuration
+└── ssr.tsx      # Server entry point
+```
 
 ### API Configuration
 
@@ -51,6 +81,7 @@ import {
   defaultAPIFileRouteHandler,
 } from '@tanstack/start/api';
 
+// This configures how TanStack Start handles routes/api endpoints
 export default createStartAPIHandler(defaultAPIFileRouteHandler);
 ```
 

@@ -40,41 +40,176 @@ These architectural guidelines establish the foundational patterns and principle
 - Optimize for performance
 - Plan for future growth
 
-## Application Structure
+## Project Structure
 
-### Layer Separation
+The following structure represents the canonical organization of a TanStack Start project:
 
 ```sh
 app/
-├── components/             # UI Components
-│   ├── ui/                # Reusable UI components
-│   └── features/          # Feature-specific components
-├── lib/                   # Core Logic
-│   ├── client/           # Client-only code
-│   ├── server/           # Server-only code
-│   └── shared/           # Shared utilities
-├── routes/                # Routing and Pages
-│   ├── __root.tsx        # Root layout
-│   ├── api/              # API endpoints
-│   ├── _public/          # Public routes
-│   ├── _auth/            # Auth routes
-│   └── _app/             # Protected routes
-└── types/                # Type definitions
+├── components/               # Shared UI components
+│   ├── ui/                  # Base UI components
+│   │   ├── button.tsx      # Button component
+│   │   ├── button.test.tsx # Button tests
+│   │   ├── input.tsx       # Input component
+│   │   └── input.test.tsx  # Input tests
+│   └── layout/             # Layout components
+│       ├── header.tsx
+│       └── footer.tsx
+├── lib/                     # Shared utilities
+│   ├── client/             # Client-only code
+│   ├── server/             # Server-only code
+│   └── shared/             # Shared utilities
+├── db/                      # Database configuration
+│   ├── schema.ts           # Database schema
+│   └── client.ts           # Database client
+├── types/                   # Shared type definitions
+├── features/                # Feature-specific code
+│   ├── auth/               # Authentication feature
+│   │   ├── components/     # Auth components
+│   │   ├── server/         # Auth server functions
+│   │   ├── hooks/          # Auth hooks
+│   │   ├── schema.ts       # Auth schemas
+│   │   └── types.ts        # Auth types
+│   └── users/              # Users feature
+│       ├── components/     # User components
+│       ├── server/         # User server functions
+│       ├── hooks/          # User hooks
+│       ├── schema.ts       # User schemas
+│       └── types.ts        # User types
+├── routes/                  # File-based routes
+│   ├── __root.tsx          # Root layout with providers
+│   ├── api/                # Third-party integration endpoints
+│   │   ├── auth/          # Better Auth endpoints
+│   │   │   └── $.ts      # Auth handler (catch-all)
+│   │   └── email/         # Resend email endpoints
+│   │       └── send.ts    # Email sending endpoint
+│   ├── _public/           # Public routes (no path prefix)
+│   │   ├── index.tsx     # Landing page (/)
+│   │   └── about.tsx     # About page (/about)
+│   ├── _auth/            # Auth routes (no path prefix)
+│   │   ├── sign-in.tsx   # Sign in page (/sign-in)
+│   │   └── sign-up.tsx   # Sign up page (/sign-up)
+│   └── _app/             # Protected routes (no path prefix)
+│       ├── route.tsx     # App layout with auth guard
+│       ├── settings.tsx  # Settings page (/settings)
+│       ├── settings/     # Settings feature routes
+│       │   ├── route.tsx # Settings layout
+│       │   ├── index.tsx # Settings index
+│       │   └── profile.tsx # Settings profile
+│       ├── posts/        # Posts feature routes
+│       │   ├── route.tsx # Posts layout
+│       │   ├── index.tsx # Posts listing
+│       │   ├── $postId.tsx # Single post view
+│       │   └── $postId/   # Nested post routes
+│       │       ├── route.tsx # Post layout
+│       │       └── edit.tsx  # Edit post page
+│       └── dashboard/    # Dashboard feature
+│           ├── route.tsx # Dashboard layout
+│           └── index.tsx # Dashboard index
+├── tests/                  # Global test files
+│   └── e2e/               # End-to-end tests
+├── api.ts                  # API route handler configuration
+├── client.tsx             # Client entry point
+├── router.tsx             # Router configuration
+└── ssr.tsx               # Server entry point
 ```
+
+### Directory Conventions
+
+1. **`components/`**: Shared UI components
+
+   - `ui/`: Base UI components (buttons, inputs, etc.)
+   - `layout/`: Layout components (header, footer, etc.)
+   - All component files use kebab-case: `user-profile.tsx`
+   - Component names in code remain PascalCase: `export function UserProfile()`
+
+2. **`lib/`**: Shared utilities
+
+   - `client/`: Client-only code
+   - `server/`: Server-only code
+   - `shared/`: Shared utilities
+   - All utility files use kebab-case: `date-utils.ts`
+
+3. **`features/`**: Feature-specific code
+
+   - Each feature has its own directory
+   - Contains components, server functions, hooks, and types
+   - All files use kebab-case: `auth-provider.tsx`, `use-auth.ts`
+   - Follows consistent internal structure
+
+4. **`routes/`**: File-based routes
+
+   - `__root.tsx`: Root layout with providers
+   - `_public/`: Public routes
+   - `_auth/`: Authentication routes
+   - `_app/`: Protected application routes
+   - `api/`: Third-party integration endpoints
+   - Route files use kebab-case: `user-profile.tsx`
+   - Dynamic parameters use camelCase to match parameter names: `$userId.tsx`, `$postId.tsx`
+   - Example usage:
+
+     ```typescript
+     // File: routes/posts/$postId.tsx
+     export const Route = createFileRoute('/posts/$postId')({
+       component: PostComponent,
+       loader: ({ params: { postId } }) => {
+         return fetchPost(postId)
+       },
+     })
+
+     function PostComponent() {
+       // Access params in your component
+       const { postId } = useParams()
+       // Or get the full route match
+       const { params: { postId: id } } = useMatch()
+
+       return <div>Post ID: {postId}</div>
+     }
+     ```
+
+5. **Root Files**:
+   - All configuration and entry point files use kebab-case
+   - Example: `api.ts`, `client.tsx`, `router.tsx`, `ssr.tsx`
 
 ### Feature Organization
 
+Each feature follows a consistent internal structure:
+
 ```sh
-features/
-├── auth/                  # Authentication feature
-│   ├── components/       # Auth-specific components
-│   ├── lib/             # Auth business logic
-│   └── types/           # Auth type definitions
-└── users/                # Users feature
-    ├── components/       # User-specific components
-    ├── lib/             # User business logic
-    └── types/           # User type definitions
+feature-name/
+├── components/           # Feature-specific components
+├── server/              # Server functions
+├── hooks/               # Custom hooks
+├── schema.ts           # Zod schemas
+└── types.ts            # Type definitions
 ```
+
+### Route Organization
+
+Routes are organized by access level and feature:
+
+1. **Public Routes** (`_public/`):
+
+   - Landing page
+   - About page
+   - Contact page
+
+2. **Auth Routes** (`_auth/`):
+
+   - Sign in
+   - Sign up
+   - Password reset
+
+3. **Protected Routes** (`_app/`):
+
+   - Dashboard
+   - Settings
+   - Feature-specific routes
+
+4. **API Routes** (`api/`):
+   - Third-party integrations
+   - Webhook handlers
+   - External service endpoints
 
 ## Data Flow Architecture
 
@@ -100,19 +235,113 @@ function UserProfile() {
 
 ```typescript
 // ✅ Good - Clean API route architecture
-// routes/api/auth/$.ts
-export const APIRoute = createAPIFileRoute('/api/auth/$')({
-  GET: ({ request }) => auth.handler(request),
-  POST: ({ request }) => auth.handler(request),
+// routes/api/hello.ts
+import { createAPIFileRoute } from '@tanstack/start/api';
+import { json } from '@tanstack/start';
+
+export const APIRoute = createAPIFileRoute('/api/hello')({
+  GET: async ({ request }) => {
+    return json({ message: 'Hello, World!' });
+  },
 });
 
 // ❌ Bad - Mixed responsibilities
-export const APIRoute = createAPIFileRoute('/api/mixed')({
-  GET: ({ request }) => {
+export const Route = createFileRoute('/api/mixed')({
+  handler: ({ request }) => {
     // Auth, email, and other mixed logic
   },
 });
 ```
+
+API routes follow these conventions:
+
+1. **File Location**
+
+   - Place in `app/routes/api` directory
+   - Can use either directory or dot notation:
+     - `routes/api/users.ts` → `/api/users`
+     - `routes/api.users.ts` → `/api/users`
+     - `routes/api/users/index.ts` → `/api/users`
+
+2. **Dynamic Parameters**
+
+   - Use `$` prefix with camelCase for dynamic segments (matching parameter names):
+     - `routes/api/users/$userId.ts` → params: `{ userId: string }`
+     - `routes/api/users/$userId/posts/$postId.ts` → params: `{ userId: string, postId: string }`
+   - Example usage:
+
+     ```typescript
+     export const APIRoute = createAPIFileRoute('/api/users/$userId')({
+       GET: async ({ params: { userId } }) => {
+         // Parameter name matches file name
+         const user = await fetchUser(userId);
+         return json({ user });
+       },
+     });
+     ```
+
+3. **Response Handling**
+
+   - Use `json` helper for JSON responses:
+
+     ```typescript
+     return json({ data: result });
+     ```
+
+   - Set status codes explicitly:
+
+     ```typescript
+     return new Response('Not Found', { status: 404 });
+     ```
+
+   - Set headers when needed:
+
+     ```typescript
+     return new Response(data, {
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     });
+     ```
+
+4. **Request Handling**
+
+   - Access body with appropriate method:
+
+     ```typescript
+     const body = await request.json();
+     const formData = await request.formData();
+     ```
+
+   - Access URL parameters via params:
+
+     ```typescript
+     GET: async ({ params }) => {
+       const { id } = params;
+       return json({ id });
+     };
+     ```
+
+5. **HTTP Methods**
+
+   - Define handlers for specific HTTP methods:
+
+     ```typescript
+     export const APIRoute = createAPIFileRoute('/api/resource')({
+       GET: async ({ request }) => {
+         /* ... */
+       },
+       POST: async ({ request }) => {
+         /* ... */
+       },
+       PUT: async ({ request }) => {
+         /* ... */
+       },
+       DELETE: async ({ request }) => {
+         /* ... */
+       },
+     });
+     ```
 
 ## State Management Architecture
 
