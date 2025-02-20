@@ -1,0 +1,241 @@
+---
+description: Guidelines for implementing mutations with TanStack Query in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/query/setup.mdc',
+    'domains/tanstack/query/patterns.mdc',
+    'domains/frontend/react/forms.mdc',
+  ]
+---
+
+# TanStack Query Mutation Guidelines
+
+## Overview
+
+These guidelines establish best practices for implementing mutations in our TanStack Start application using TanStack Query, focusing on data updates, optimistic updates, and error handling.
+
+## Guidelines
+
+### Basic Mutation Pattern
+
+```typescript
+// ✅ Good - Basic mutation pattern
+function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, data }: UpdateUserInput) => {
+      const response = await api.patch<User>(`/users/${userId}`, data);
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate affected queries
+      queryClient.invalidateQueries({
+        queryKey: ['user', variables.userId],
+      });
+    },
+  });
+}
+
+// Usage in components
+function UserForm({ userId }: { userId: string }) {
+  const updateUser = useUpdateUser();
+
+  return (
+    <Form
+      onSubmit={async (data) => {
+        await updateUser.mutateAsync({ userId, data });
+      }}
+    >
+      {/* Form fields */}
+    </Form>
+  );
+}
+```
+
+### Optimistic Updates
+
+```typescript
+// ✅ Good - Mutation with optimistic updates
+function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, data }: UpdateUserInput) => {
+      const response = await api.patch<User>(`/users/${userId}`, data);
+      return response.data;
+    },
+    onMutate: async ({ userId, data }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ['user', userId],
+      });
+
+      // Snapshot previous value
+      const previousUser = queryClient.getQueryData<User>(['user', userId]);
+
+      // Optimistically update
+      queryClient.setQueryData<User>(['user', userId], (old) => ({
+        ...old!,
+        ...data,
+      }));
+
+      return { previousUser };
+    },
+    onError: (err, { userId }, context) => {
+      // Rollback on error
+      queryClient.setQueryData(['user', userId], context?.previousUser);
+    },
+    onSettled: (_, __, { userId }) => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({
+        queryKey: ['user', userId],
+      });
+    },
+  });
+}
+```
+
+### List Mutations
+
+```typescript
+// ✅ Good - List mutation with optimistic updates
+function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: NewUser) => {
+      const response = await api.post<User>('/users', data);
+      return response.data;
+    },
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries({
+        queryKey: ['users'],
+      });
+
+      const previousUsers = queryClient.getQueryData<User[]>(['users']);
+
+      queryClient.setQueryData<User[]>(['users'], (old = []) => [
+        ...old,
+        {
+          ...newUser,
+          id: 'temp-' + Date.now(),
+        } as User,
+      ]);
+
+      return { previousUsers };
+    },
+    onError: (_, __, context) => {
+      queryClient.setQueryData(['users'], context?.previousUsers);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users'],
+      });
+    },
+  });
+}
+```
+
+### Mutation States
+
+```typescript
+// ✅ Good - Handling mutation states
+function UserProfile({ userId }: { userId: string }) {
+  const updateUser = useUpdateUser();
+
+  return (
+    <div>
+      {updateUser.isPending && <LoadingSpinner />}
+      {updateUser.isError && (
+        <Alert variant="destructive">
+          {updateUser.error.message}
+        </Alert>
+      )}
+      {updateUser.isSuccess && (
+        <Alert variant="success">
+          Profile updated successfully!
+        </Alert>
+      )}
+      <Form
+        onSubmit={async (data) => {
+          try {
+            await updateUser.mutateAsync({ userId, data });
+          } catch (error) {
+            // Error is handled by the mutation
+          }
+        }}
+        disabled={updateUser.isPending}
+      >
+        {/* Form fields */}
+      </Form>
+    </div>
+  );
+}
+```
+
+### Mutation Error Handling
+
+```typescript
+// ✅ Good - Comprehensive error handling
+function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      try {
+        await api.delete(`/users/${userId}`);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          switch (error.response?.status) {
+            case 404:
+              throw new Error('User not found');
+            case 403:
+              throw new Error('Permission denied');
+            default:
+              throw new Error('Failed to delete user');
+          }
+        }
+        throw error;
+      }
+    },
+    onMutate: async (userId) => {
+      await queryClient.cancelQueries({
+        queryKey: ['users'],
+      });
+
+      const previousUsers = queryClient.getQueryData<User[]>(['users']);
+
+      queryClient.setQueryData<User[]>(['users'], (old = []) =>
+        old.filter((user) => user.id !== userId),
+      );
+
+      return { previousUsers };
+    },
+    onError: (error, _, context) => {
+      // Restore previous data
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['users'], context.previousUsers);
+      }
+
+      // Show error notification
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success('User deleted successfully');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users'],
+      });
+    },
+  });
+}
+```
+
+## Related Guidelines
+
+- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query client configuration
+- [Query Patterns](mdc:domains/tanstack/query/patterns.mdc) - Query patterns and best practices
+- [Form Handling](mdc:domains/frontend/react/forms.mdc) - Form implementation guidelines

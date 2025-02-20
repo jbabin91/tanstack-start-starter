@@ -1,0 +1,140 @@
+---
+description: Setup and configuration guidelines for TanStack Query in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/tanstack/query/patterns.mdc', 'domains/frontend/react/core.mdc']
+---
+
+# TanStack Query Setup Guidelines
+
+## Overview
+
+These guidelines establish best practices for setting up and configuring TanStack Query in our TanStack Start application, focusing on React 19 integration, configuration, and performance optimization.
+
+## React Integration
+
+This project uses TanStack Query with:
+
+- **React 19**: Latest version with automatic optimizations
+- **React Compiler**: Automatic fine-grained updates
+- **Suspense**: Native data fetching integration
+
+Key benefits with React 19 + Compiler:
+
+- Automatic dependency tracking in queries
+- Optimized re-renders for query updates
+- Better integration with Suspense
+- Improved error boundary handling
+- No need for manual query result memoization
+
+## Configuration
+
+### Query Client Setup
+
+```typescript
+// ✅ Good - Query client configuration
+// app/lib/query.ts
+import { QueryClient } from '@tanstack/react-query';
+import { AuthError } from './errors';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Optimize stale time for better cache hit rates
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      // Keep inactive queries cached
+      gcTime: 30 * 60 * 1000, // 30 minutes
+      // Retry configuration
+      retry: (failureCount, error) => {
+        if (error instanceof AuthError) return false;
+        return failureCount < 3;
+      },
+      // Suspense mode enabled by default
+      suspense: true,
+      // Disable automatic background refetches
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+    },
+    mutations: {
+      // Don't retry mutations by default
+      retry: false,
+      // Optimistic updates by default
+      onMutate: async (variables) => {
+        // Cancel related queries
+        await queryClient.cancelQueries({ queryKey: ['related'] });
+        // Get snapshot of previous data
+        const previousData = queryClient.getQueryData(['related']);
+        return { previousData };
+      },
+      onError: (err, variables, context) => {
+        // Restore previous data on error
+        if (context?.previousData) {
+          queryClient.setQueryData(['related'], context.previousData);
+        }
+      },
+    },
+  },
+});
+
+// Provider setup
+export function QueryProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+    </QueryClientProvider>
+  );
+}
+```
+
+### Error Handling
+
+```typescript
+// ✅ Good - Global error handling
+// app/lib/query.ts
+import { QueryCache } from '@tanstack/react-query';
+
+const queryCache = new QueryCache({
+  onError: (error, query) => {
+    // Global error handling
+    if (error instanceof AuthError) {
+      // Handle authentication errors
+      router.navigate({ to: '/auth/login' });
+    } else if (error instanceof NetworkError) {
+      // Handle network errors
+      toast.error('Network error occurred');
+    } else {
+      // Handle other errors
+      console.error('Query error:', error, query);
+      toast.error('An unexpected error occurred');
+    }
+  },
+});
+```
+
+### Devtools Configuration
+
+```typescript
+// ✅ Good - Devtools setup
+// app/lib/query.ts
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+export function QueryDevtools() {
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        position="bottom-right"
+        buttonPosition="bottom-right"
+      />
+    );
+  }
+  return null;
+}
+```
+
+## Related Guidelines
+
+- [Query Patterns](mdc:domains/tanstack/query/patterns.mdc) - Query patterns and best practices
+- [Query Optimization](mdc:domains/tanstack/query/optimization.mdc) - Performance optimization guidelines

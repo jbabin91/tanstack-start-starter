@@ -1,0 +1,214 @@
+---
+description: Query patterns and best practices for TanStack Query in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/query/setup.mdc',
+    'domains/tanstack/query/optimization.mdc',
+  ]
+---
+
+# TanStack Query Patterns
+
+## Overview
+
+These guidelines establish best practices for implementing queries and mutations in our TanStack Start application, focusing on type safety, error handling, and data management patterns.
+
+## Type Definitions
+
+```typescript
+// ✅ Good - Type definitions for queries and mutations
+// app/types/query.ts
+import { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
+
+// Generic query result type
+export type QueryResult<TData> = UseQueryResult<TData, Error>;
+
+// Generic mutation result type
+export type MutationResult<TData, TVariables> = UseMutationResult<
+  TData,
+  Error,
+  TVariables
+>;
+
+// API error type
+export interface ApiError {
+  code: string;
+  message: string;
+  status: number;
+}
+
+// Query key factory
+export const createQueryKeys = <T extends string>(prefix: T) => {
+  return {
+    all: [prefix] as const,
+    lists: () => [...createQueryKeys(prefix).all, 'list'] as const,
+    list: (filters: string) =>
+      [...createQueryKeys(prefix).lists(), filters] as const,
+    details: () => [...createQueryKeys(prefix).all, 'detail'] as const,
+    detail: (id: string) => [...createQueryKeys(prefix).details(), id] as const,
+  };
+};
+```
+
+## API Integration
+
+```typescript
+// ✅ Good - API integration with TanStack Query
+// app/lib/api.ts
+import axios from 'axios';
+import { queryClient } from './query';
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Clear all queries on unauthorized
+      queryClient.clear();
+      // Redirect to login
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  },
+);
+
+// Add request interceptor for authentication
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+## Error Handling
+
+```typescript
+// ✅ Good - Error handling setup
+// app/lib/error.ts
+export class QueryError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public status: number,
+  ) {
+    super(message);
+    this.name = 'QueryError';
+  }
+}
+
+// Error handling utilities
+export function handleQueryError(error: unknown): QueryError {
+  if (error instanceof QueryError) {
+    return error;
+  }
+
+  if (axios.isAxiosError(error)) {
+    return new QueryError(
+      error.response?.data?.message || 'An error occurred',
+      error.response?.data?.code || 'UNKNOWN_ERROR',
+      error.response?.status || 500,
+    );
+  }
+
+  return new QueryError('An unexpected error occurred', 'UNKNOWN_ERROR', 500);
+}
+
+// Usage in query functions
+function useUser(userId: string) {
+  return useQuery({
+    queryKey: ['user', userId],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<User>(`/users/${userId}`);
+        return data;
+      } catch (error) {
+        throw handleQueryError(error);
+      }
+    },
+  });
+}
+```
+
+## Prefetching Patterns
+
+```typescript
+// ✅ Good - Prefetching configuration
+// app/lib/prefetch.ts
+import { queryClient } from './query';
+
+// Prefetch configuration
+export const prefetchConfig = {
+  // Stale time for prefetched queries
+  staleTime: 10 * 1000, // 10 seconds
+  // Cache time for prefetched queries
+  cacheTime: 5 * 60 * 1000, // 5 minutes
+};
+
+// Prefetch utilities
+export async function prefetchUser(userId: string) {
+  await queryClient.prefetchQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    ...prefetchConfig,
+  });
+}
+
+// Usage in components
+function UserList() {
+  const users = useUsers();
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li
+          key={user.id}
+          onMouseEnter={() => prefetchUser(user.id)}
+        >
+          <Link to={`/users/${user.id}`}>{user.name}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Persistence Patterns
+
+```typescript
+// ✅ Good - Persistence configuration
+// app/lib/query.ts
+import { persistQueryClient } from '@tanstack/react-query-persist-client';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+
+// Create storage persister
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: 'TANSTACK_QUERY_CACHE',
+  throttleTime: 1000,
+  serialize: (data) => JSON.stringify(data),
+  deserialize: (data) => JSON.parse(data),
+});
+
+// Configure persistence
+persistQueryClient({
+  queryClient,
+  persister,
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  buster: APP_VERSION, // Cache buster based on app version
+});
+```
+
+## Related Guidelines
+
+- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query setup and configuration
+- [Query Optimization](mdc:domains/tanstack/query/optimization.mdc) - Performance optimization guidelines

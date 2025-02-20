@@ -1,0 +1,330 @@
+---
+description: Design patterns and best practices for using TanStack Router in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/tanstack/router/setup.mdc', 'domains/frontend/react/core.mdc']
+---
+
+# TanStack Router Patterns
+
+## Overview
+
+These guidelines establish design patterns and best practices for using TanStack Router in our TanStack Start application, focusing on routing patterns, data loading, and navigation.
+
+## Guidelines
+
+### Route Definition Patterns
+
+```typescript
+// ✅ Good - Basic route definition
+// src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/')({
+  component: HomePage,
+});
+
+// ✅ Good - Route with params
+// src/routes/users/$userId.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const userParamsSchema = z.object({
+  userId: z.string(),
+});
+
+export const Route = createFileRoute('/users/$userId')({
+  validateParams: userParamsSchema.parse,
+  component: UserProfilePage,
+});
+
+// ✅ Good - Route with search params
+// src/routes/users/index.tsx
+const searchParamsSchema = z.object({
+  page: z.number().default(1),
+  search: z.string().optional(),
+});
+
+export const Route = createFileRoute('/users/')({
+  validateSearch: searchParamsSchema.parse,
+  component: UsersListPage,
+});
+```
+
+### Data Loading Patterns
+
+```typescript
+// ✅ Good - Data loading with TanStack Query
+// src/routes/users/$userId.tsx
+export const Route = createFileRoute('/users/$userId')({
+  loader: async ({ params: { userId }, context: { queryClient } }) => {
+    // Load primary data
+    const user = await queryClient.ensureQueryData({
+      queryKey: ['user', userId],
+      queryFn: () => fetchUser(userId),
+    });
+
+    // Parallel load related data
+    await Promise.all([
+      queryClient.prefetchQuery({
+        queryKey: ['user-posts', userId],
+        queryFn: () => fetchUserPosts(userId),
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['user-followers', userId],
+        queryFn: () => fetchUserFollowers(userId),
+      }),
+    ]);
+
+    return user;
+  },
+  // Use loader data in component
+  component: function UserProfile() {
+    const { loaderData: user } = useRouteContext();
+    const { data: posts } = useQuery({
+      queryKey: ['user-posts', user.id],
+    });
+    const { data: followers } = useQuery({
+      queryKey: ['user-followers', user.id],
+    });
+
+    return (
+      <div>
+        <UserHeader user={user} />
+        <UserPosts posts={posts} />
+        <UserFollowers followers={followers} />
+      </div>
+    );
+  },
+});
+```
+
+### Navigation Patterns
+
+```typescript
+// ✅ Good - Navigation patterns
+function UserActions({ userId }: { userId: string }) {
+  const navigate = useNavigate();
+  const { auth } = useRouteContext();
+
+  // Navigate with params
+  const handleEdit = () => {
+    navigate({
+      to: '/users/$userId/edit',
+      params: { userId },
+    });
+  };
+
+  // Navigate with search params
+  const handleFilter = (filters: UserFilters) => {
+    navigate({
+      to: '/users',
+      search: filters,
+    });
+  };
+
+  // Navigate with state
+  const handleView = () => {
+    navigate({
+      to: '/users/$userId',
+      params: { userId },
+      state: { from: 'list' },
+    });
+  };
+
+  return (/* ... */);
+}
+
+// ✅ Good - Link patterns
+function UsersList() {
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>
+          {/* Basic link */}
+          <Link
+            to="/users/$userId"
+            params={{ userId: user.id }}
+          >
+            {user.name}
+          </Link>
+
+          {/* Link with search params */}
+          <Link
+            to="/users"
+            search={{ search: user.name }}
+          >
+            Search similar
+          </Link>
+
+          {/* Active link */}
+          <Link
+            to="/users/$userId"
+            params={{ userId: user.id }}
+            activeProps={{ className: 'font-bold' }}
+          >
+            {user.name}
+          </Link>
+
+          {/* Pending link */}
+          <Link
+            to="/users/$userId"
+            params={{ userId: user.id }}
+            pendingProps={{ className: 'opacity-50' }}
+          >
+            {user.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Route Guard Patterns
+
+```typescript
+// ✅ Good - Route guard patterns
+// src/lib/guards.ts
+export function requireAuth({ context }: { context: RouteContext }) {
+  if (!context.auth.isAuthenticated) {
+    throw redirect({
+      to: '/auth/login',
+      search: {
+        redirect: window.location.pathname,
+      },
+    });
+  }
+}
+
+export function requireAdmin({ context }: { context: RouteContext }) {
+  requireAuth({ context });
+
+  if (!context.auth.user?.isAdmin) {
+    throw redirect({
+      to: '/',
+      search: {
+        error: 'unauthorized',
+      },
+    });
+  }
+}
+
+// Usage in routes
+export const Route = createFileRoute('/admin')({
+  beforeLoad: ({ context }) => {
+    requireAdmin({ context });
+    // Additional setup
+    return {
+      meta: {
+        title: 'Admin Dashboard',
+      },
+    };
+  },
+  component: AdminPage,
+});
+
+// Auth redirect handling
+export const Route = createFileRoute('/auth/login')({
+  component: function LoginPage() {
+    const { search } = useRouteContext();
+    const navigate = useNavigate();
+
+    const handleLogin = async (credentials: Credentials) => {
+      await login(credentials);
+      navigate({
+        to: search.redirect || '/',
+      });
+    };
+
+    return <LoginForm onSubmit={handleLogin} />;
+  },
+});
+```
+
+### Error Handling Patterns
+
+```typescript
+// ✅ Good - Error handling patterns
+export const Route = createFileRoute('/users/$userId')({
+  // Route-level error handling
+  errorComponent: ({ error }) => {
+    if (error instanceof QueryError) {
+      switch (error.status) {
+        case 404:
+          return <UserNotFound />;
+        case 403:
+          return <UserAccessDenied />;
+        default:
+          return <QueryErrorAlert error={error} />;
+      }
+    }
+    return <UnexpectedError error={error} />;
+  },
+  // Component-level error handling
+  component: function UserProfile() {
+    const { error } = useRouteError();
+
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+
+    return <UserProfileContent />;
+  },
+});
+
+// Root error handling
+export const Route = createRootRoute({
+  component: RootLayout,
+  errorComponent: ({ error }) => {
+    if (error instanceof AuthError) {
+      return <AuthErrorPage error={error} />;
+    }
+    if (error instanceof NetworkError) {
+      return <NetworkErrorPage error={error} />;
+    }
+    return <GenericErrorPage error={error} />;
+  },
+});
+```
+
+### Pending State Patterns
+
+```typescript
+// ✅ Good - Pending state patterns
+export const Route = createFileRoute('/users/$userId')({
+  // Route-level pending state
+  pendingComponent: () => <UserProfileSkeleton />,
+  // Component-level pending state
+  component: function UserProfile() {
+    const { isPending } = useRoutePending();
+
+    if (isPending) {
+      return <LoadingSpinner />;
+    }
+
+    return <UserProfileContent />;
+  },
+});
+
+// Pending UI elements
+function Navigation() {
+  const { isPending } = useRoutePending();
+
+  return (
+    <nav className={isPending ? 'opacity-50' : ''}>
+      <Link
+        to="/users"
+        pendingProps={{ className: 'animate-pulse' }}
+      >
+        Users
+      </Link>
+    </nav>
+  );
+}
+```
+
+## Related Guidelines
+
+- [TanStack Router Setup](mdc:domains/tanstack/router/setup.mdc) - Setup guidelines
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns

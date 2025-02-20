@@ -1,0 +1,257 @@
+---
+description: Security best practices for React applications in TanStack Start
+globs: ['**/*.{ts,tsx}']
+related: ['domains/frontend/react/core.mdc', 'domains/frontend/react/forms.mdc']
+---
+
+# React Security Guidelines
+
+## Overview
+
+These guidelines establish security best practices for React development in our TanStack Start application, focusing on preventing common vulnerabilities and implementing proper security measures.
+
+## Guidelines
+
+### Input Validation and Sanitization
+
+```typescript
+// ✅ Good - Proper input validation and sanitization
+import { z } from 'zod';
+import DOMPurify from 'dompurify';
+
+// 1. Input Validation with Zod
+const commentSchema = z.object({
+  content: z
+    .string()
+    .min(1, 'Comment cannot be empty')
+    .max(1000, 'Comment is too long')
+    .transform((str) => DOMPurify.sanitize(str)),
+});
+
+function CommentForm() {
+  const form = useForm<z.infer<typeof commentSchema>>({
+    schema: commentSchema,
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      <FormField
+        name="content"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Comment</FormLabel>
+            <FormControl>
+              <Textarea {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+}
+
+// ❌ Bad - No input validation or sanitization
+function UnsafeCommentForm() {
+  const [comment, setComment] = useState('');
+
+  return (
+    <form onSubmit={() => submitComment(comment)}>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+### XSS Prevention
+
+```typescript
+// ✅ Good - Safe HTML rendering
+function SafeHtmlContent({ html }: { html: string }) {
+  // 1. Sanitize HTML content
+  const sanitizedHtml = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a'],
+    ALLOWED_ATTR: ['href'],
+  });
+
+  // 2. Only use dangerouslySetInnerHTML when necessary
+  return <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+}
+
+// ✅ Good - Text content rendering
+function SafeTextContent({ content }: { content: string }) {
+  // No need for sanitization when rendering text content
+  return <div>{content}</div>;
+}
+
+// ❌ Bad - Unsafe HTML rendering
+function UnsafeContent({ html }: { html: string }) {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
+```
+
+### CSRF Protection
+
+```typescript
+// ✅ Good - CSRF token handling
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'X-CSRF-Token': getCsrfToken(),
+  },
+});
+
+function getCsrfToken(): string {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta?.getAttribute('content') ?? '';
+}
+
+// Usage in components
+function SecureForm() {
+  const form = useForm<FormData>({
+    onSubmit: async (values) => {
+      await api.post('/submit', values);
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      {/* Form fields */}
+    </Form>
+  );
+}
+```
+
+### Authentication and Authorization
+
+```typescript
+// ✅ Good - Protected routes and components
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// Usage
+export const Route = createFileRoute('/admin')({
+  component: AdminPage,
+  beforeLoad: ({ context }) => {
+    if (!context.auth.isAdmin) {
+      throw redirect({ to: '/login' });
+    }
+  },
+});
+
+// ✅ Good - Role-based component rendering
+function AdminPanel() {
+  const { user } = useAuth();
+  const canManageUsers = usePermission('users.manage');
+
+  if (!canManageUsers) {
+    return <AccessDenied />;
+  }
+
+  return (
+    <div>
+      <h1>Admin Panel</h1>
+      {/* Admin content */}
+    </div>
+  );
+}
+```
+
+### Secure Data Handling
+
+```typescript
+// ✅ Good - Secure data handling
+function UserProfile() {
+  const { data: user, isLoading } = useUser();
+
+  // 1. Never expose sensitive data
+  const safeUser = useMemo(() => ({
+    id: user?.id,
+    name: user?.name,
+    email: user?.email,
+    // Don't include password, SSN, etc.
+  }), [user]);
+
+  // 2. Clear sensitive data on unmount
+  useEffect(() => {
+    return () => {
+      // Clear any sensitive data from memory
+      sessionStorage.removeItem('temp_user_data');
+    };
+  }, []);
+
+  return (
+    <div>
+      <h1>{safeUser.name}</h1>
+      {/* Only display non-sensitive information */}
+    </div>
+  );
+}
+```
+
+### Secure Communication
+
+```typescript
+// ✅ Good - Secure API communication
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': getCsrfToken(),
+  },
+  // 1. Timeout requests
+  timeout: 5000,
+  // 2. Validate status
+  validateStatus: (status) => status >= 200 && status < 300,
+});
+
+// 3. Error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Usage in components
+function SecureComponent() {
+  const { data, error } = useQuery({
+    queryKey: ['secure-data'],
+    queryFn: async () => {
+      const response = await api.get('/secure-endpoint');
+      return response.data;
+    },
+  });
+
+  if (error) {
+    return <ErrorHandler error={error} />;
+  }
+
+  return <div>{/* Render secure data */}</div>;
+}
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Forms](mdc:domains/frontend/react/forms.mdc) - Form implementation guidelines

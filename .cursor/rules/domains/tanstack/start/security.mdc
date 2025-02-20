@@ -1,0 +1,389 @@
+---
+description: Security guidelines for TanStack Start applications using better-auth
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/start/api.mdc',
+    'domains/tanstack/router/guards.mdc',
+    'domains/frontend/react/security.mdc',
+  ]
+---
+
+# TanStack Start Security Guidelines
+
+## Overview
+
+These guidelines establish best practices for implementing security in our TanStack Start application using better-auth, focusing on authentication, authorization, data protection, and secure coding practices.
+
+## Guidelines
+
+### Authentication with better-auth
+
+```typescript
+// ✅ Good - Secure authentication setup with better-auth
+// src/lib/auth/client.ts
+import { createAuthClient } from '@better-auth/client';
+import { queryClient } from '~/lib/query';
+
+export const authClient = createAuthClient({
+  baseUrl: import.meta.env.VITE_API_URL,
+  // Configure storage methods
+  storage: {
+    accessToken: {
+      get: () => sessionStorage.getItem('auth_token'),
+      set: (token) => sessionStorage.setItem('auth_token', token),
+      remove: () => sessionStorage.removeItem('auth_token'),
+    },
+    refreshToken: {
+      get: () => localStorage.getItem('refresh_token'),
+      set: (token) => localStorage.setItem('refresh_token', token),
+      remove: () => localStorage.removeItem('refresh_token'),
+    },
+  },
+  // Configure refresh token behavior
+  refresh: {
+    enabled: true,
+    interval: 5 * 60 * 1000, // 5 minutes
+    endpoint: '/auth/refresh',
+    onSuccess: (response) => {
+      authClient.storage.accessToken.set(response.accessToken);
+      if (response.refreshToken) {
+        authClient.storage.refreshToken.set(response.refreshToken);
+      }
+    },
+    onError: () => {
+      authClient.logout();
+    },
+  },
+  // Configure request interceptors
+  interceptors: {
+    request: (config) => {
+      const token = authClient.storage.accessToken.get();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    response: (error) => {
+      if (error.response?.status === 401) {
+        return authClient.refresh();
+      }
+      return Promise.reject(error);
+    },
+  },
+  // Configure session management
+  session: {
+    // Automatic session refresh
+    autoRefresh: true,
+    // Session timeout (30 minutes)
+    timeout: 30 * 60 * 1000,
+    // Inactivity timeout (15 minutes)
+    inactivityTimeout: 15 * 60 * 1000,
+    // Session persistence
+    persist: true,
+  },
+  // Configure logout behavior
+  onLogout: () => {
+    queryClient.clear();
+    window.location.href = '/login';
+  },
+});
+
+// ✅ Good - Auth provider setup
+// src/providers/AuthProvider.tsx
+import { AuthProvider as BetterAuthProvider } from '@better-auth/react';
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <BetterAuthProvider
+      client={authClient}
+      LoadingComponent={LoadingSpinner}
+      onError={(error) => <AuthError error={error} />}
+    >
+      {children}
+    </BetterAuthProvider>
+  );
+}
+
+// ✅ Good - Auth hooks usage
+// src/features/auth/hooks/useAuth.ts
+import { useAuth as useBetterAuth } from '@better-auth/react';
+
+export function useAuth() {
+  const auth = useBetterAuth();
+
+  return {
+    user: auth.user,
+    isAuthenticated: auth.isAuthenticated,
+    login: auth.login,
+    logout: auth.logout,
+    refresh: auth.refresh,
+    session: auth.session,
+  };
+}
+```
+
+### Authorization with better-auth
+
+```typescript
+// ✅ Good - Role-based access control
+// src/lib/auth/rbac.ts
+import { createRBAC } from '@better-auth/rbac';
+
+export const rbac = createRBAC({
+  roles: {
+    ADMIN: {
+      permissions: ['*'], // All permissions
+      inherits: ['USER'],
+    },
+    USER: {
+      permissions: [
+        'users:read',
+        'users:write',
+        'posts:read',
+        'posts:write',
+      ],
+      inherits: ['GUEST'],
+    },
+    GUEST: {
+      permissions: ['posts:read'],
+    },
+  },
+  // Custom permission checks
+  checks: {
+    'users:write': (user, resource) => {
+      return user.id === resource.userId || user.roles.includes('ADMIN');
+    },
+    'posts:write': (user, resource) => {
+      return user.id === resource.authorId || user.roles.includes('ADMIN');
+    },
+  },
+});
+
+// ✅ Good - Permission hooks
+// src/features/auth/hooks/usePermissions.ts
+import { usePermissions } from '@better-auth/react';
+
+export function useHasPermission(permission: string) {
+  const { check } = usePermissions();
+  return check(permission);
+}
+
+export function useRequirePermission(permission: string) {
+  const hasPermission = useHasPermission(permission);
+
+  if (!hasPermission) {
+    throw new Error(`Missing permission: ${permission}`);
+  }
+}
+
+// Usage in components
+function UserActions({ user }: { user: User }) {
+  const canEdit = useHasPermission('users:write');
+  const canDelete = useHasPermission('users:delete');
+
+  return (
+    <div>
+      {canEdit && (
+        <Button onClick={() => editUser(user)}>Edit</Button>
+      )}
+      {canDelete && (
+        <Button onClick={() => deleteUser(user)}>Delete</Button>
+      )}
+    </div>
+  );
+}
+```
+
+### Secure Data Handling
+
+```typescript
+// ✅ Good - Secure data handling with better-auth
+// src/lib/auth/storage.ts
+import { createSecureStorage } from '@better-auth/storage';
+import { encryptData, decryptData } from '@better-auth/crypto';
+
+// Create secure storage
+export const secureStorage = createSecureStorage({
+  prefix: 'app',
+  storage: localStorage,
+  // Encrypt data before storage
+  serialize: (data) => encryptData(JSON.stringify(data)),
+  // Decrypt data after retrieval
+  deserialize: (data) => JSON.parse(decryptData(data)),
+});
+
+// Secure data transmission
+export const secureTransport = {
+  encrypt: async (data: unknown) => {
+    return encryptData(data, process.env.VITE_ENCRYPTION_KEY);
+  },
+  decrypt: async (data: string) => {
+    return decryptData(data, process.env.VITE_ENCRYPTION_KEY);
+  },
+};
+
+// Secure user data handling
+export function sanitizeUserData(user: User): PublicUser {
+  // Remove sensitive data
+  const { password, securityQuestions, ...publicData } = user;
+  return publicData;
+}
+```
+
+### Secure Forms
+
+```typescript
+// ✅ Good - Secure form handling with better-auth
+// src/features/auth/components/LoginForm.tsx
+import { useForm } from '@tanstack/react-form';
+import { useAuth } from '@better-auth/react';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export function LoginForm() {
+  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+
+  const form = useForm({
+    schema: loginSchema,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async (values) => {
+      try {
+        await login(values);
+      } catch (err) {
+        if (err instanceof AuthError) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred');
+        }
+      }
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      <Field
+        name="email"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input {...field} type="email" autoComplete="email" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Field
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                type="password"
+                autoComplete="current-password"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button type="submit" disabled={form.isSubmitting}>
+        {form.isSubmitting ? 'Logging in...' : 'Log in'}
+      </Button>
+    </Form>
+  );
+}
+```
+
+### Session Management
+
+```typescript
+// ✅ Good - Session management with better-auth
+// src/features/auth/hooks/useSession.ts
+import { useSession } from '@better-auth/react';
+
+export function useSessionManagement() {
+  const session = useSession();
+
+  useEffect(() => {
+    // Handle session expiration
+    const cleanup = session.onExpire(() => {
+      toast.warn('Your session is about to expire');
+      // Attempt to refresh the session
+      session.refresh();
+    });
+
+    // Handle session timeout
+    const timeoutCleanup = session.onTimeout(() => {
+      toast.error('Session expired');
+      session.logout();
+    });
+
+    return () => {
+      cleanup();
+      timeoutCleanup();
+    };
+  }, [session]);
+
+  return session;
+}
+
+// Usage in app
+function App() {
+  useSessionManagement();
+  return <>{/* App content */}</>;
+}
+```
+
+### Security Headers
+
+```typescript
+// ✅ Good - Security headers configuration for Vite
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { betterAuthPlugin } from '@better-auth/vite';
+
+export default defineConfig({
+  plugins: [
+    betterAuthPlugin({
+      // CSRF protection
+      csrf: {
+        enabled: true,
+        cookieName: 'csrf-token',
+        headerName: 'X-CSRF-Token',
+      },
+      // Security headers
+      headers: {
+        'Content-Security-Policy': "default-src 'self'",
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'geolocation=(), microphone=()',
+      },
+    }),
+  ],
+});
+```
+
+## Related Guidelines
+
+- [API Integration](mdc:domains/tanstack/start/api.mdc) - API integration guidelines
+- [Router Guards](mdc:domains/tanstack/router/guards.mdc) - Route protection guidelines
+- [React Security](mdc:domains/frontend/react/security.mdc) - React security best practices

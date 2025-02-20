@@ -1,0 +1,266 @@
+---
+description: Performance optimization guidelines for TanStack Query in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/query/setup.mdc',
+    'domains/tanstack/query/patterns.mdc',
+    'domains/frontend/react/performance.mdc',
+  ]
+---
+
+# TanStack Query Optimization
+
+## Overview
+
+These guidelines establish best practices for optimizing TanStack Query performance in our application, focusing on caching strategies, background updates, and efficient data fetching patterns.
+
+## Suspense Integration
+
+```typescript
+// ✅ Good - Suspense-enabled queries
+// app/features/users/components/UserProfile.tsx
+import { Suspense } from 'react';
+import { useUser } from '../hooks/useUser';
+
+function UserProfile({ userId }: { userId: string }) {
+  return (
+    <Suspense fallback={<UserProfileSkeleton />}>
+      <UserProfileContent userId={userId} />
+    </Suspense>
+  );
+}
+
+function UserProfileContent({ userId }: { userId: string }) {
+  const { data: user } = useUser(userId);
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <Suspense fallback={<UserPostsSkeleton />}>
+        <UserPosts userId={userId} />
+      </Suspense>
+    </div>
+  );
+}
+
+// Usage in routes
+export const Route = createFileRoute('/users/$userId')({
+  component: UserProfile,
+  loader: ({ params: { userId } }) =>
+    queryClient.ensureQueryData(userKeys.detail(userId)),
+});
+```
+
+## Background Updates
+
+```typescript
+// ✅ Good - Background fetching patterns
+// app/features/users/hooks/useUserWithUpdates.ts
+function useUserWithUpdates(userId: string) {
+  const queryClient = useQueryClient();
+
+  // Initial query
+  const query = useUser(userId);
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    const subscription = subscribeToUserUpdates(userId, (updatedUser) => {
+      queryClient.setQueryData(userKeys.detail(userId), updatedUser);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [userId, queryClient]);
+
+  return query;
+}
+
+// Polling example
+function useActiveUsers() {
+  return useQuery({
+    queryKey: ['active-users'],
+    queryFn: fetchActiveUsers,
+    refetchInterval: 30 * 1000, // Poll every 30 seconds
+  });
+}
+```
+
+## Parallel Queries
+
+```typescript
+// ✅ Good - Parallel query fetching
+// app/features/users/hooks/useUserData.ts
+function useUserData(userId: string) {
+  // Fetch user and related data in parallel
+  const userQuery = useUser(userId);
+  const postsQuery = useUserPosts(userId);
+  const followersQuery = useUserFollowers(userId);
+
+  // Wait for all queries to complete
+  const isLoading = userQuery.isLoading || postsQuery.isLoading || followersQuery.isLoading;
+  const isError = userQuery.isError || postsQuery.isError || followersQuery.isError;
+
+  return {
+    user: userQuery.data,
+    posts: postsQuery.data,
+    followers: followersQuery.data,
+    isLoading,
+    isError,
+  };
+}
+
+// Usage in components
+function UserProfile({ userId }: { userId: string }) {
+  const { user, posts, followers, isLoading, isError } = useUserData(userId);
+
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
+
+  return (
+    <div>
+      <UserInfo user={user} />
+      <UserPosts posts={posts} />
+      <UserFollowers followers={followers} />
+    </div>
+  );
+}
+```
+
+## Infinite Queries
+
+```typescript
+// ✅ Good - Infinite query optimization
+// app/features/posts/hooks/useInfinitePosts.ts
+function useInfinitePosts(filters: PostFilters) {
+  return useInfiniteQuery({
+    queryKey: ['posts', filters],
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await api.get<Post[]>('/posts', {
+        params: { ...filters, page: pageParam },
+      });
+      return data;
+    },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.length === 0 ? undefined : pages.length + 1;
+    },
+    // Optimize performance
+    suspense: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+}
+
+// Usage with virtualization
+function PostList({ filters }: { filters: PostFilters }) {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfinitePosts(filters);
+
+  return (
+    <VirtualList
+      items={data?.pages.flat() ?? []}
+      hasMore={hasNextPage}
+      isLoading={isFetchingNextPage}
+      onLoadMore={() => fetchNextPage()}
+      renderItem={(post) => <PostCard post={post} />}
+    />
+  );
+}
+```
+
+## Mutation Optimization
+
+```typescript
+// ✅ Good - Optimized mutations
+// app/features/users/hooks/useUpdateUser.ts
+function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      data,
+    }: {
+      userId: string;
+      data: Partial<User>;
+    }) => {
+      const response = await api.patch<User>(`/users/${userId}`, data);
+      return response.data;
+    },
+    // Optimistic updates
+    onMutate: async ({ userId, data }) => {
+      await queryClient.cancelQueries({
+        queryKey: userKeys.detail(userId),
+      });
+
+      const previousUser = queryClient.getQueryData<User>(
+        userKeys.detail(userId),
+      );
+
+      queryClient.setQueryData<User>(userKeys.detail(userId), (old) => ({
+        ...old!,
+        ...data,
+      }));
+
+      return { previousUser };
+    },
+    // Error handling
+    onError: (err, { userId }, context) => {
+      queryClient.setQueryData(userKeys.detail(userId), context?.previousUser);
+    },
+    // Smart invalidation
+    onSettled: (_, __, { userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: userKeys.detail(userId),
+        exact: true,
+      });
+      queryClient.invalidateQueries({
+        queryKey: userKeys.lists(),
+        exact: false,
+      });
+    },
+  });
+}
+```
+
+## Cache Optimization
+
+```typescript
+// ✅ Good - Cache optimization
+// app/lib/query.ts
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Optimize stale time based on data type
+      staleTime: (query) => {
+        if (query.queryKey[0] === 'user') {
+          return 5 * 60 * 1000; // User data stale after 5 minutes
+        }
+        if (query.queryKey[0] === 'posts') {
+          return 2 * 60 * 1000; // Posts stale after 2 minutes
+        }
+        return 0; // Default to always stale
+      },
+      // Optimize cache time based on data type
+      gcTime: (query) => {
+        if (query.queryKey[0] === 'user') {
+          return 30 * 60 * 1000; // Keep user data for 30 minutes
+        }
+        if (query.queryKey[0] === 'posts') {
+          return 15 * 60 * 1000; // Keep posts for 15 minutes
+        }
+        return 5 * 60 * 1000; // Default to 5 minutes
+      },
+    },
+  },
+});
+```
+
+## Related Guidelines
+
+- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query setup and configuration
+- [Query Patterns](mdc:domains/tanstack/query/patterns.mdc) - Query patterns and best practices
+- [Performance](mdc:domains/frontend/react/performance.mdc) - React performance optimization

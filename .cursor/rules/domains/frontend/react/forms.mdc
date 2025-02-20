@@ -1,0 +1,269 @@
+---
+description: Guidelines for implementing forms in TanStack Start applications using TanStack Form and Zod
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/frontend/react/core.mdc', 'domains/frontend/react/components.mdc']
+---
+
+# React Forms Guidelines
+
+## Overview
+
+These guidelines establish best practices for implementing forms in our TanStack Start application using TanStack Form and Zod for validation.
+
+## Guidelines
+
+### Form Schema Definition
+
+```typescript
+// ✅ Good - Proper schema definition
+import { z } from 'zod';
+
+const userSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  age: z.number().min(18, 'Must be at least 18 years old'),
+  preferences: z.object({
+    newsletter: z.boolean(),
+    theme: z.enum(['light', 'dark']),
+  }),
+});
+
+type UserFormData = z.infer<typeof userSchema>;
+```
+
+### Form Component Structure
+
+```typescript
+// ✅ Good - Proper form component structure
+function UserForm({ onSubmit }: { onSubmit: (data: UserFormData) => void }) {
+  const form = useForm<UserFormData>({
+    defaultValues: {
+      name: '',
+      email: '',
+      age: 18,
+      preferences: {
+        newsletter: false,
+        theme: 'light',
+      },
+    },
+    onSubmit: async (values) => {
+      await onSubmit(values);
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      <FormField
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {/* Other form fields */}
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+}
+```
+
+### Form Validation
+
+```typescript
+// ✅ Good - Form validation with Zod
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+});
+
+function LoginForm() {
+  const form = useForm<z.infer<typeof loginSchema>>({
+    schema: loginSchema,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async (values) => {
+      await login(values);
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      <FormField
+        name="email"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input {...field} type="email" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <Input {...field} type="password" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button type="submit">Login</Button>
+    </Form>
+  );
+}
+```
+
+### Form Error Handling
+
+```typescript
+// ✅ Good - Form error handling
+function RegistrationForm() {
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const form = useForm<RegistrationData>({
+    schema: registrationSchema,
+    onSubmit: async (values) => {
+      try {
+        setServerError(null);
+        await register(values);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          setServerError(error.message);
+        } else {
+          setServerError('An unexpected error occurred');
+        }
+      }
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      {serverError && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{serverError}</AlertDescription>
+        </Alert>
+      )}
+      {/* Form fields */}
+    </Form>
+  );
+}
+```
+
+### Form Field Components
+
+```typescript
+// ✅ Good - Reusable form field components
+interface FormInputProps extends FormFieldProps {
+  label: string;
+  type?: HTMLInputTypeAttribute;
+}
+
+function FormInput({ label, type = 'text', ...props }: FormInputProps) {
+  return (
+    <FormField
+      {...props}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Input {...field} type={type} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+// Usage
+function ProfileForm() {
+  const form = useForm<ProfileData>({
+    schema: profileSchema,
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      <FormInput name="name" label="Name" />
+      <FormInput name="email" label="Email" type="email" />
+      <FormInput name="phone" label="Phone" type="tel" />
+      <Button type="submit">Update Profile</Button>
+    </Form>
+  );
+}
+```
+
+### Form Submission States
+
+```typescript
+// ✅ Good - Form submission states
+function ContactForm() {
+  const form = useForm<ContactData>({
+    schema: contactSchema,
+  });
+
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  return (
+    <Form
+      {...form.getFormProps({
+        onSubmit: async (values) => {
+          setStatus('submitting');
+          try {
+            await submitContact(values);
+            setStatus('success');
+          } catch (error) {
+            setStatus('error');
+          }
+        },
+      })}
+    >
+      {/* Form fields */}
+      <Button
+        type="submit"
+        disabled={status === 'submitting'}
+      >
+        {status === 'submitting' ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Sending...
+          </>
+        ) : (
+          'Send Message'
+        )}
+      </Button>
+      {status === 'success' && (
+        <Alert>
+          <AlertTitle>Success</AlertTitle>
+          <AlertDescription>
+            Your message has been sent successfully.
+          </AlertDescription>
+        </Alert>
+      )}
+    </Form>
+  );
+}
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Components](mdc:domains/frontend/react/components.mdc) - Component guidelines

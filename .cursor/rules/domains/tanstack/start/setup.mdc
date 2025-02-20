@@ -1,0 +1,323 @@
+---
+description: Setup and configuration guidelines for TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/start/patterns.mdc',
+    'domains/tanstack/start/security.mdc',
+    'domains/tanstack/router/setup.mdc',
+    'domains/tanstack/query/setup.mdc',
+    'domains/frontend/react/core.mdc',
+  ]
+---
+
+# TanStack Start Setup Guidelines
+
+## Overview
+
+These guidelines establish best practices for setting up and configuring TanStack Start applications, focusing on project structure, configuration, and integration with other TanStack libraries.
+
+## Core Configuration
+
+This project is configured to use:
+
+- **React 19**: Latest version with automatic optimizations
+- **React Compiler**: Automatic fine-grained updates
+- **TanStack Suite**: Fully integrated with React 19 and React Compiler
+
+### React Configuration
+
+```typescript
+// app.config.ts
+import { defineConfig } from '@tanstack/start/config';
+
+export default defineConfig({
+  react: {
+    // Enable React Compiler
+    compiler: true,
+    // React 19 features
+    runtime: 'automatic',
+    // Development tools
+    devTools: process.env.NODE_ENV === 'development',
+  },
+  // ... rest of config
+});
+```
+
+### Project Structure
+
+```sh
+app/
+├── components/           # Shared components
+│   ├── ui/             # UI components (Shadcn)
+│   └── shared/         # Shared business components
+├── features/           # Feature-based modules
+│   ├── auth/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── server/
+│   │   ├── schema.ts
+│   │   └── types.ts
+│   └── users/
+│       ├── components/
+│       ├── hooks/
+│       ├── server/
+│       ├── schema.ts
+│       └── types.ts
+├── lib/                # Shared utilities
+│   ├── utils.ts
+│   ├── api.ts
+│   ├── router.ts      # Router configuration
+│   └── query.ts       # Query client setup
+├── server/             # Server-side code
+│   ├── db.ts
+│   └── auth.ts
+├── styles/             # Global styles
+│   └── globals.css
+├── types/              # Global types
+│   └── index.ts
+└── routes/            # TanStack Router routes (see router.mdc for details)
+```
+
+### Integration with TanStack Suite
+
+```typescript
+// lib/query.ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 60, // 1 hour
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
+
+// ... existing code ...
+```
+
+## Guidelines
+
+### Configuration
+
+```typescript
+// ✅ Good - TanStack Start configuration
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    TanStackRouterVite(),
+  ],
+  resolve: {
+    alias: {
+      '~': path.resolve(__dirname, './app'),
+    },
+  },
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
+});
+
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    }
+  },
+  "include": ["app"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+```
+
+### Environment Variables
+
+```sh
+# .env.example
+# API Configuration
+VITE_API_URL=http://localhost:8080
+VITE_API_VERSION=v1
+
+# Authentication
+VITE_AUTH_DOMAIN=your-auth-domain
+VITE_AUTH_CLIENT_ID=your-client-id
+
+# Feature Flags
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_BETA_FEATURES=false
+
+# Third-party Services
+VITE_SENTRY_DSN=your-sentry-dsn
+VITE_GA_TRACKING_ID=your-ga-id
+```
+
+### Entry Point
+
+```typescript
+// ✅ Good - Application entry point
+// app/main.tsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { routeTree } from './routeTree.gen';
+
+// Create router instance
+const router = createRouter({ routeTree });
+
+// Declare routes for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+// Create query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    },
+  },
+});
+
+// Create root element
+const rootElement = document.getElementById('root')!;
+if (!rootElement.innerHTML) {
+  const root = createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+}
+```
+
+### Route Configuration
+
+```typescript
+// ✅ Good - Route configuration
+// app/routes/__root.tsx
+import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+export const Route = createRootRoute({
+  component: () => (
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="container mx-auto py-8">
+        <Outlet />
+      </main>
+      <Footer />
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </>
+      )}
+    </div>
+  ),
+});
+
+// app/routes/_public/index.tsx
+import { createFileRoute } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/_public/')({
+  component: HomePage,
+});
+
+// app/routes/_app/users/$userId.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const userParamsSchema = z.object({
+  userId: z.string(),
+});
+
+export const Route = createFileRoute('/_app/users/$userId')({
+  validateParams: userParamsSchema.parse,
+  loader: ({ params: { userId } }) =>
+    queryClient.ensureQueryData(['user', userId], () => fetchUser(userId)),
+  component: UserProfilePage,
+});
+```
+
+### API Configuration
+
+```typescript
+// ✅ Good - API configuration
+// src/lib/api.ts
+import axios from 'axios';
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add request interceptor
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Add response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Handle token refresh or redirect to login
+      await refreshToken();
+      return api.request(error.config);
+    }
+    return Promise.reject(error);
+  },
+);
+```
+
+## Related Guidelines
+
+- [Start Patterns](mdc:domains/tanstack/start/patterns.mdc) - TanStack Start patterns and best practices
+- [Start Security](mdc:domains/tanstack/start/security.mdc) - Security configuration and practices
+- [Router Setup](mdc:domains/tanstack/router/setup.mdc) - Router configuration
+- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query configuration

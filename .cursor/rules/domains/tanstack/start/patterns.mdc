@@ -1,0 +1,292 @@
+---
+description: Design patterns and best practices for TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related: ['domains/tanstack/start/setup.mdc', 'domains/frontend/react/core.mdc']
+---
+
+# TanStack Start Patterns
+
+## Overview
+
+These guidelines establish design patterns and best practices for building TanStack Start applications, focusing on integration with TanStack Query, Router, and Form libraries.
+
+## Guidelines
+
+### Data Fetching Patterns
+
+```typescript
+// ✅ Good - Data fetching with TanStack Query
+// src/features/users/hooks/useUser.ts
+import { useQuery } from '@tanstack/react-query';
+import { api } from '~/lib/api';
+import { type User } from '../types';
+
+export function useUser(userId: string) {
+  return useQuery({
+    queryKey: ['user', userId],
+    queryFn: async () => {
+      const { data } = await api.get<User>(`/users/${userId}`);
+      return data;
+    },
+  });
+}
+
+// Usage in components
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user, isLoading, error } = useUser(userId);
+
+  if (isLoading) {
+    return <UserProfileSkeleton />;
+  }
+
+  if (error) {
+    return <UserProfileError error={error} />;
+  }
+
+  return <UserProfileContent user={user} />;
+}
+```
+
+### Routing Patterns
+
+```typescript
+// ✅ Good - Routing with TanStack Router
+// src/routes/users/index.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const searchParamsSchema = z.object({
+  page: z.number().default(1),
+  limit: z.number().default(10),
+  search: z.string().optional(),
+});
+
+export const Route = createFileRoute('/users/')({
+  validateSearch: searchParamsSchema.parse,
+  loader: ({ search }) =>
+    queryClient.ensureQueryData({
+      queryKey: ['users', search],
+      queryFn: () => fetchUsers(search),
+    }),
+  component: UsersListPage,
+});
+
+// src/routes/users/$userId.tsx
+export const Route = createFileRoute('/users/$userId')({
+  loader: ({ params: { userId } }) =>
+    queryClient.ensureQueryData({
+      queryKey: ['user', userId],
+      queryFn: () => fetchUser(userId),
+    }),
+  component: UserProfilePage,
+  pendingComponent: UserProfileSkeleton,
+  errorComponent: UserProfileError,
+});
+
+// Usage in components
+function UsersList() {
+  const {
+    loaderData: users,
+    search,
+    useSearch,
+  } = useRouteContext();
+
+  return (
+    <div>
+      <SearchInput
+        value={search.search}
+        onChange={(value) => useSearch({ search: value })}
+      />
+      <DataTable data={users} columns={userColumns} />
+    </div>
+  );
+}
+```
+
+### Form Patterns
+
+```typescript
+// ✅ Good - Form handling with TanStack Form
+// src/features/users/components/UserForm.tsx
+import { createTsForm } from '@tanstack/react-form';
+import { z } from 'zod';
+
+const userSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  role: z.enum(['user', 'admin']),
+});
+
+const Form = createTsForm(userSchema);
+
+function UserForm({ onSubmit }: { onSubmit: (data: User) => void }) {
+  return (
+    <Form
+      onSubmit={async (values) => {
+        await onSubmit(values);
+      }}
+      renderAfter={({ submit }) => (
+        <Button type="submit" onClick={submit}>
+          Save
+        </Button>
+      )}
+    >
+      <Field
+        name="name"
+        children={(field) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input {...field.props} />
+            </FormControl>
+            <FormMessage>{field.error}</FormMessage>
+          </FormItem>
+        )}
+      />
+      <Field
+        name="email"
+        children={(field) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input {...field.props} type="email" />
+            </FormControl>
+            <FormMessage>{field.error}</FormMessage>
+          </FormItem>
+        )}
+      />
+      <Field
+        name="role"
+        children={(field) => (
+          <FormItem>
+            <FormLabel>Role</FormLabel>
+            <FormControl>
+              <Select {...field.props}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage>{field.error}</FormMessage>
+          </FormItem>
+        )}
+      />
+    </Form>
+  );
+}
+```
+
+### Data Mutation Patterns
+
+```typescript
+// ✅ Good - Data mutation with TanStack Query
+// src/features/users/hooks/useUpdateUser.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '~/lib/api';
+import { type User } from '../types';
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
+      const response = await api.patch<User>(`/users/${userId}`, data);
+      return response.data;
+    },
+    onMutate: async ({ userId, data }) => {
+      await queryClient.cancelQueries({ queryKey: ['user', userId] });
+      const previousUser = queryClient.getQueryData<User>(['user', userId]);
+
+      queryClient.setQueryData<User>(['user', userId], (old) => ({
+        ...old!,
+        ...data,
+      }));
+
+      return { previousUser };
+    },
+    onError: (err, { userId }, context) => {
+      queryClient.setQueryData(['user', userId], context?.previousUser);
+    },
+    onSettled: (_, __, { userId }) => {
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+    },
+  });
+}
+
+// Usage in components
+function UserProfileEdit({ userId }: { userId: string }) {
+  const { data: user } = useUser(userId);
+  const updateUser = useUpdateUser();
+
+  return (
+    <UserForm
+      defaultValues={user}
+      onSubmit={async (data) => {
+        await updateUser.mutateAsync({ userId, data });
+      }}
+    />
+  );
+}
+```
+
+### Error Handling Patterns
+
+```typescript
+// ✅ Good - Error handling patterns
+// src/lib/error.ts
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public code: string,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+// src/components/ErrorBoundary.tsx
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundaryImpl
+      fallback={({ error }) => {
+        if (error instanceof ApiError) {
+          switch (error.status) {
+            case 401:
+              return <UnauthorizedError />;
+            case 403:
+              return <ForbiddenError />;
+            case 404:
+              return <NotFoundError />;
+            default:
+              return <GenericError error={error} />;
+          }
+        }
+        return <UnexpectedError error={error} />;
+      }}
+    >
+      {children}
+    </ErrorBoundaryImpl>
+  );
+}
+
+// Usage in routes
+export const Route = createFileRoute('/users/$userId')({
+  component: UserProfilePage,
+  errorComponent: ({ error }) => {
+    if (error instanceof ApiError && error.status === 404) {
+      return <UserNotFound />;
+    }
+    return <GenericError error={error} />;
+  },
+});
+```
+
+## Related Guidelines
+
+- [TanStack Start Setup](mdc:domains/tanstack/start/setup.mdc) - Setup guidelines
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns

@@ -1,0 +1,293 @@
+---
+description: Guidelines for implementing API integration in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/query/setup.mdc',
+    'domains/tanstack/start/security.mdc',
+    'domains/frontend/react/error-handling.mdc',
+  ]
+---
+
+# TanStack Start API Guidelines
+
+## Overview
+
+These guidelines establish best practices for implementing API integration in our TanStack Start application, focusing on type safety, error handling, and consistent patterns.
+
+## Guidelines
+
+### API Client Setup
+
+```typescript
+// ✅ Good - Type-safe API client setup
+// src/lib/api/client.ts
+import axios from 'axios';
+import type { ApiResponse, ErrorResponse } from '~/types/api';
+
+export const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// ✅ Good - Request interceptor
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// ✅ Good - Response interceptor
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await refreshToken();
+      return apiClient.request(error.config);
+    }
+    return Promise.reject(error);
+  },
+);
+```
+
+### API Routes
+
+```typescript
+// ✅ Good - Type-safe API routes
+// src/lib/api/routes.ts
+export const apiRoutes = {
+  auth: {
+    login: () => '/auth/login',
+    register: () => '/auth/register',
+    refreshToken: () => '/auth/refresh',
+    logout: () => '/auth/logout',
+  },
+  users: {
+    list: (params?: PaginationParams) =>
+      `/users${params ? `?${queryString.stringify(params)}` : ''}`,
+    get: (id: string) => `/users/${id}`,
+    create: () => '/users',
+    update: (id: string) => `/users/${id}`,
+    delete: (id: string) => `/users/${id}`,
+  },
+  // Add more route definitions...
+} as const;
+
+// ✅ Good - Type-safe route parameters
+type RouteParams<T extends keyof typeof apiRoutes> = Parameters<
+  (typeof apiRoutes)[T]
+>[0];
+
+// Usage
+const url = apiRoutes.users.list({ page: 1, limit: 10 });
+```
+
+### API Methods
+
+```typescript
+// ✅ Good - Type-safe API methods
+// src/lib/api/methods.ts
+export async function get<T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<ApiResponse<T>> {
+  try {
+    const response = await apiClient.get<ApiResponse<T>>(url, config);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function post<T, D = unknown>(
+  url: string,
+  data?: D,
+  config?: AxiosRequestConfig,
+): Promise<ApiResponse<T>> {
+  try {
+    const response = await apiClient.post<ApiResponse<T>>(url, data, config);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+// Add other methods (put, patch, delete)...
+
+// ✅ Good - Type-safe error handling
+export function handleApiError(error: unknown): never {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as ErrorResponse;
+
+    switch (error.response?.status) {
+      case 400:
+        throw new ApiError('Bad Request', data);
+      case 401:
+        throw new AuthError('Unauthorized', data);
+      case 403:
+        throw new ForbiddenError('Forbidden', data);
+      case 404:
+        throw new NotFoundError('Not Found', data);
+      case 422:
+        throw new ValidationError('Validation Error', data);
+      default:
+        throw new ApiError('API Error', data);
+    }
+  }
+  throw error;
+}
+```
+
+### API Services
+
+```typescript
+// ✅ Good - Type-safe API services
+// src/lib/api/services/users.ts
+import type { User, CreateUserInput, UpdateUserInput } from '~/types/user';
+
+export const userService = {
+  list: async (params?: PaginationParams) => {
+    const response = await get<User[]>(apiRoutes.users.list(params));
+    return response.data;
+  },
+
+  get: async (id: string) => {
+    const response = await get<User>(apiRoutes.users.get(id));
+    return response.data;
+  },
+
+  create: async (input: CreateUserInput) => {
+    const response = await post<User>(apiRoutes.users.create(), input);
+    return response.data;
+  },
+
+  update: async (id: string, input: UpdateUserInput) => {
+    const response = await patch<User>(apiRoutes.users.update(id), input);
+    return response.data;
+  },
+
+  delete: async (id: string) => {
+    await del(apiRoutes.users.delete(id));
+  },
+} as const;
+
+// Usage with TanStack Query
+export function useUsers(params?: PaginationParams) {
+  return useQuery({
+    queryKey: ['users', params],
+    queryFn: () => userService.list(params),
+  });
+}
+
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => userService.get(id),
+  });
+}
+```
+
+### API Error Types
+
+```typescript
+// ✅ Good - Type-safe API error types
+// src/lib/api/errors.ts
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public data: ErrorResponse,
+    public status?: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+export class AuthError extends ApiError {
+  constructor(message: string, data: ErrorResponse) {
+    super(message, data, 401);
+    this.name = 'AuthError';
+  }
+}
+
+export class ForbiddenError extends ApiError {
+  constructor(message: string, data: ErrorResponse) {
+    super(message, data, 403);
+    this.name = 'ForbiddenError';
+  }
+}
+
+export class ValidationError extends ApiError {
+  constructor(message: string, data: ErrorResponse) {
+    super(message, data, 422);
+    this.name = 'ValidationError';
+  }
+}
+
+// Usage in error handling
+try {
+  await userService.create(input);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    // Handle validation errors
+    showFieldErrors(error.data.errors);
+  } else if (error instanceof AuthError) {
+    // Handle authentication errors
+    redirectToLogin();
+  } else {
+    // Handle other errors
+    showErrorToast(error.message);
+  }
+}
+```
+
+### API Response Types
+
+```typescript
+// ✅ Good - Type-safe API response types
+// src/types/api.ts
+export interface ApiResponse<T> {
+  data: T;
+  meta?: {
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+}
+
+export interface ErrorResponse {
+  message: string;
+  code: string;
+  errors?: Record<string, string[]>;
+  meta?: Record<string, unknown>;
+}
+
+// Usage in services
+async function fetchUsers(params: PaginationParams) {
+  const response = await get<ApiResponse<User[]>>(apiRoutes.users.list(params));
+
+  return {
+    users: response.data,
+    pagination: response.meta?.pagination,
+  };
+}
+```
+
+## Related Guidelines
+
+- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query client configuration
+- [Security](mdc:domains/tanstack/start/security.mdc) - Security guidelines
+- [Error Handling](mdc:domains/frontend/react/error-handling.mdc) - Error handling patterns

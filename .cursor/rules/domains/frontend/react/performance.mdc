@@ -1,0 +1,312 @@
+---
+description: Performance optimization guidelines for React applications in TanStack Start
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/frontend/react/core.mdc', 'domains/frontend/react/compiler.mdc']
+---
+
+# React Performance Guidelines
+
+## Overview
+
+These guidelines establish best practices for optimizing performance in our TanStack Start application, focusing on React 19 features, code splitting, and efficient rendering strategies.
+
+## Guidelines
+
+### Code Splitting
+
+```typescript
+// ✅ Good - Route-based code splitting
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/profile" element={<UserProfile />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
+// ✅ Good - Component-based code splitting
+function UserDashboard() {
+  const DataGrid = lazy(() => import('./components/DataGrid'));
+  const [showGrid, setShowGrid] = useState(false);
+
+  return (
+    <div>
+      <Button onClick={() => setShowGrid(true)}>Show Grid</Button>
+      {showGrid && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <DataGrid />
+        </Suspense>
+      )}
+    </div>
+  );
+}
+```
+
+### Efficient Rendering
+
+```typescript
+// ✅ Good - Efficient list rendering with TanStack Virtual
+function VirtualizedList({ items }: { items: Item[] }) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 40,
+  });
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-[400px] overflow-auto"
+    >
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          position: 'relative',
+        }}
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <ListItem item={items[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ❌ Bad - Inefficient list rendering
+function IneffientList({ items }: { items: Item[] }) {
+  return (
+    <div className="h-[400px] overflow-auto">
+      {items.map((item) => (
+        <ListItem key={item.id} item={item} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Data Fetching and Caching
+
+```typescript
+// ✅ Good - Efficient data fetching with TanStack Query
+function UserProfile({ userId }: { userId: string }) {
+  const queryClient = useQueryClient();
+
+  // 1. Automatic caching and revalidation
+  const { data: user } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+  });
+
+  // 2. Optimistic updates
+  const { mutate } = useMutation({
+    mutationFn: updateUser,
+    onMutate: async (newUser) => {
+      await queryClient.cancelQueries({ queryKey: ['user', userId] });
+      const previousUser = queryClient.getQueryData(['user', userId]);
+      queryClient.setQueryData(['user', userId], newUser);
+      return { previousUser };
+    },
+    onError: (err, newUser, context) => {
+      queryClient.setQueryData(['user', userId], context?.previousUser);
+    },
+  });
+
+  return (/* ... */);
+}
+
+// ✅ Good - Prefetching data
+function UserList() {
+  const queryClient = useQueryClient();
+
+  // Prefetch on hover
+  const prefetchUser = (userId: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['user', userId],
+      queryFn: () => fetchUser(userId),
+    });
+  };
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li
+          key={user.id}
+          onMouseEnter={() => prefetchUser(user.id)}
+        >
+          <Link to={`/users/${user.id}`}>{user.name}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Image Optimization
+
+```typescript
+// ✅ Good - Image optimization
+function OptimizedImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="aspect-video">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover"
+        loading="lazy"
+        quality={75}
+      />
+    </div>
+  );
+}
+
+// ✅ Good - Responsive images with art direction
+function ResponsiveImage({ images }: { images: ResponsiveImages }) {
+  return (
+    <picture>
+      <source
+        media="(min-width: 1024px)"
+        srcSet={images.desktop}
+        width={1200}
+        height={600}
+      />
+      <source
+        media="(min-width: 768px)"
+        srcSet={images.tablet}
+        width={800}
+        height={400}
+      />
+      <Image
+        src={images.mobile}
+        alt="Responsive image"
+        width={400}
+        height={200}
+        className="w-full h-auto"
+      />
+    </picture>
+  );
+}
+```
+
+### Bundle Size Optimization
+
+```typescript
+// ✅ Good - Dynamic imports for large dependencies
+const Chart = lazy(() => import('./components/Chart'));
+const CodeEditor = lazy(() => import('./components/CodeEditor'));
+
+// ✅ Good - Tree-shakeable imports
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+
+// ❌ Bad - Non-tree-shakeable imports
+import * as UI from '~/components/ui';
+```
+
+### React 19 Performance Features
+
+```typescript
+// ✅ Good - Let React 19 handle optimizations
+function UserDashboard() {
+  // No need for useMemo or useCallback
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat().format(date);
+  };
+
+  const handleClick = () => {
+    console.log('Clicked');
+  };
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <Button onClick={handleClick}>Click me</Button>
+      <span>{formatDate(new Date())}</span>
+    </div>
+  );
+}
+
+// ❌ Bad - Unnecessary optimizations in React 19
+function OverOptimizedDashboard() {
+  const formatDate = useMemo(
+    () => (date: Date) => new Intl.DateTimeFormat().format(date),
+    []
+  );
+
+  const handleClick = useCallback(() => {
+    console.log('Clicked');
+  }, []);
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <Button onClick={handleClick}>Click me</Button>
+      <span>{formatDate(new Date())}</span>
+    </div>
+  );
+}
+```
+
+### Performance Monitoring
+
+```typescript
+// ✅ Good - Performance monitoring
+import { trace } from '@opentelemetry/api';
+
+function MonitoredComponent() {
+  useEffect(() => {
+    const span = trace.getTracer('react-app').startSpan('component-render');
+
+    return () => {
+      span.end();
+    };
+  }, []);
+
+  // Monitor expensive operations
+  const processData = async (data: Data) => {
+    const span = trace.getTracer('react-app').startSpan('process-data');
+    try {
+      const result = await performExpensiveOperation(data);
+      span.setStatus({ code: SpanStatusCode.OK });
+      return result;
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: error.message,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  };
+
+  return (/* ... */);
+}
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [React Compiler](mdc:domains/frontend/react/compiler.mdc) - React Compiler guidelines

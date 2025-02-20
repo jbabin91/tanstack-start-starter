@@ -1,0 +1,287 @@
+---
+description: Guidelines for implementing route guards and protection in TanStack Router
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/tanstack/router/setup.mdc',
+    'domains/tanstack/router/patterns.mdc',
+    'domains/frontend/react/security.mdc',
+  ]
+---
+
+# TanStack Router Guards
+
+## Overview
+
+These guidelines establish best practices for implementing route guards and protection in our TanStack Start application using TanStack Router, focusing on authentication, authorization, and route-level security.
+
+## Guidelines
+
+### Authentication Guards
+
+```typescript
+// ✅ Good - Basic authentication guard
+// src/lib/guards/auth.ts
+import { redirect } from '@tanstack/react-router';
+import type { RouteContext } from '~/types/router';
+
+export function requireAuth({ context }: { context: RouteContext }) {
+  if (!context.auth.isAuthenticated) {
+    throw redirect({
+      to: '/auth/login',
+      search: {
+        redirect: window.location.pathname,
+      },
+    });
+  }
+}
+
+// Usage in routes
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: requireAuth,
+  component: DashboardPage,
+});
+
+// ✅ Good - Role-based guard
+export function requireRole(role: string) {
+  return ({ context }: { context: RouteContext }) => {
+    requireAuth({ context });
+
+    if (!context.auth.user?.roles.includes(role)) {
+      throw redirect({
+        to: '/',
+        search: {
+          error: 'unauthorized',
+        },
+      });
+    }
+  };
+}
+
+// Usage
+export const Route = createFileRoute('/admin')({
+  beforeLoad: requireRole('admin'),
+  component: AdminPage,
+});
+```
+
+### Permission Guards
+
+```typescript
+// ✅ Good - Permission-based guards
+// src/lib/guards/permissions.ts
+export function requirePermission(permission: string) {
+  return ({ context }: { context: RouteContext }) => {
+    requireAuth({ context });
+
+    if (!context.auth.hasPermission(permission)) {
+      throw new Error('Insufficient permissions');
+    }
+  };
+}
+
+// ✅ Good - Multiple permission check
+export function requirePermissions(permissions: string[]) {
+  return ({ context }: { context: RouteContext }) => {
+    requireAuth({ context });
+
+    const missingPermissions = permissions.filter(
+      (permission) => !context.auth.hasPermission(permission)
+    );
+
+    if (missingPermissions.length > 0) {
+      throw new Error(
+        `Missing permissions: ${missingPermissions.join(', ')}`
+      );
+    }
+  };
+}
+
+// Usage in routes
+export const Route = createFileRoute('/users/$userId/edit')({
+  beforeLoad: requirePermission('users.edit'),
+  component: EditUserPage,
+  errorComponent: ({ error }) => <PermissionError error={error} />,
+});
+```
+
+### Resource Guards
+
+```typescript
+// ✅ Good - Resource access guard
+// src/lib/guards/resources.ts
+export function requireResourceAccess(resourceType: string) {
+  return async ({ context, params }: { context: RouteContext; params: any }) => {
+    requireAuth({ context });
+
+    const resource = await context.queryClient.fetchQuery({
+      queryKey: [resourceType, params.id],
+      queryFn: () => fetchResource(resourceType, params.id),
+    });
+
+    if (!resource) {
+      throw new Error('Resource not found');
+    }
+
+    if (!canAccessResource(context.auth.user!, resource)) {
+      throw new Error('Access denied');
+    }
+
+    return resource;
+  };
+}
+
+// Usage in routes
+export const Route = createFileRoute('/documents/$documentId')({
+  beforeLoad: requireResourceAccess('document'),
+  component: DocumentPage,
+  errorComponent: ({ error }) => <ResourceError error={error} />,
+});
+```
+
+### Composite Guards
+
+```typescript
+// ✅ Good - Combining multiple guards
+// src/lib/guards/composite.ts
+export function combineGuards(...guards: RouteGuard[]) {
+  return async (context: RouteGuardContext) => {
+    for (const guard of guards) {
+      await guard(context);
+    }
+  };
+}
+
+// Usage in routes
+export const Route = createFileRoute('/organizations/$orgId/settings')({
+  beforeLoad: combineGuards(
+    requireAuth,
+    requireRole('admin'),
+    requireResourceAccess('organization'),
+  ),
+  component: OrganizationSettingsPage,
+});
+```
+
+### Guard Error Handling
+
+```typescript
+// ✅ Good - Error handling for guards
+// src/lib/guards/errors.ts
+export class GuardError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public redirect?: string,
+  ) {
+    super(message);
+    this.name = 'GuardError';
+  }
+}
+
+export function handleGuardError(error: unknown) {
+  if (error instanceof GuardError) {
+    switch (error.code) {
+      case 'UNAUTHORIZED':
+        throw redirect({
+          to: '/auth/login',
+          search: { redirect: error.redirect },
+        });
+      case 'FORBIDDEN':
+        throw redirect({
+          to: '/403',
+          search: { message: error.message },
+        });
+      case 'NOT_FOUND':
+        throw redirect({
+          to: '/404',
+          search: { message: error.message },
+        });
+      default:
+        throw redirect({
+          to: '/error',
+          search: { message: error.message },
+        });
+    }
+  }
+  throw error;
+}
+
+// Usage in guards
+export function requireTeamAccess(teamId: string) {
+  return async ({ context }: { context: RouteContext }) => {
+    try {
+      requireAuth({ context });
+
+      const team = await context.queryClient.fetchQuery({
+        queryKey: ['team', teamId],
+        queryFn: () => fetchTeam(teamId),
+      });
+
+      if (!team) {
+        throw new GuardError('Team not found', 'NOT_FOUND');
+      }
+
+      if (!canAccessTeam(context.auth.user!, team)) {
+        throw new GuardError('Access denied', 'FORBIDDEN');
+      }
+
+      return team;
+    } catch (error) {
+      handleGuardError(error);
+    }
+  };
+}
+```
+
+### Guard Utilities
+
+```typescript
+// ✅ Good - Guard utilities
+// src/lib/guards/utils.ts
+export function isAuthenticated(context: RouteContext): boolean {
+  return context.auth.isAuthenticated;
+}
+
+export function hasRole(context: RouteContext, role: string): boolean {
+  return context.auth.user?.roles.includes(role) ?? false;
+}
+
+export function hasPermission(
+  context: RouteContext,
+  permission: string,
+): boolean {
+  return context.auth.hasPermission(permission);
+}
+
+export function canAccessResource(
+  context: RouteContext,
+  resourceType: string,
+  resourceId: string,
+): boolean {
+  return context.auth.canAccess(resourceType, resourceId);
+}
+
+// Usage in custom guards
+export function requireCustomAccess() {
+  return ({ context }: { context: RouteContext }) => {
+    if (!isAuthenticated(context)) {
+      throw redirect({ to: '/login' });
+    }
+
+    if (!hasRole(context, 'user')) {
+      throw redirect({ to: '/403' });
+    }
+
+    if (!hasPermission(context, 'custom.access')) {
+      throw redirect({ to: '/403' });
+    }
+  };
+}
+```
+
+## Related Guidelines
+
+- [Router Setup](mdc:domains/tanstack/router/setup.mdc) - Router configuration
+- [Router Patterns](mdc:domains/tanstack/router/patterns.mdc) - Router patterns
+- [Security](mdc:domains/frontend/react/security.mdc) - Security guidelines

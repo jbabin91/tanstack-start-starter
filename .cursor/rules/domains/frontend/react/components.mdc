@@ -1,0 +1,344 @@
+---
+description: Guidelines for creating and organizing React components in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
+---
+
+# React Component Guidelines
+
+## Overview
+
+These guidelines establish best practices for creating and organizing React components in our TanStack Start application, focusing on component design, composition, and reusability.
+
+## Guidelines
+
+### Component Structure
+
+1. **Function Components**:
+
+```typescript
+// ✅ Good - Proper component structure
+interface UserProfileProps {
+  userId: string;
+  onUpdate?: (user: User) => void;
+}
+
+export function UserProfile({ userId, onUpdate }: UserProfileProps) {
+  const { data: user } = useUser(userId);
+
+  if (!user) {
+    return <UserProfileSkeleton />;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <UserDetails user={user} />
+        {onUpdate && (
+          <Button onClick={() => onUpdate(user)}>
+            Update Profile
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ❌ Bad - Poor component structure
+export default function Profile(props: any) {
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    fetch(`/api/users/${props.id}`).then(setUserData);
+  }, [props.id]);
+
+  if (!userData) return <div>Loading...</div>;
+
+  return <div>{userData.name}</div>;
+}
+```
+
+### Component Organization
+
+```typescript
+// features/users/components/UserProfile/index.tsx
+
+// 1. Imports
+import { type User } from '~/types';
+import { useUser } from '~/features/users/hooks/useUser';
+import { UserAvatar } from './UserAvatar';
+import { UserDetails } from './UserDetails';
+import { UserActions } from './UserActions';
+
+// 2. Types
+interface UserProfileProps {
+  userId: string;
+  onUpdate?: (user: User) => void;
+}
+
+// 3. Subcomponents
+function UserHeader({ user }: { user: User }) {
+  return (
+    <div className="flex items-center gap-4">
+      <UserAvatar user={user} />
+      <h2 className="text-2xl font-bold">{user.name}</h2>
+    </div>
+  );
+}
+
+// 4. Main Component
+export function UserProfile({ userId, onUpdate }: UserProfileProps) {
+  const { data: user, isLoading, error } = useUser(userId);
+
+  if (isLoading) {
+    return <UserProfileSkeleton />;
+  }
+
+  if (error) {
+    return <UserProfileError error={error} />;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <UserHeader user={user} />
+      </CardHeader>
+      <CardContent>
+        <UserDetails user={user} />
+        <UserActions user={user} onUpdate={onUpdate} />
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Component Composition
+
+```typescript
+// ✅ Good - Proper component composition
+function DataTable<T>({ data, columns }: DataTableProps<T>) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          {columns.map((column) => (
+            <TableHead key={column.id}>{column.header}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((row) => (
+          <TableRow key={row.id}>
+            {columns.map((column) => (
+              <TableCell key={column.id}>
+                {column.cell(row)}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+// Usage
+function UserTable() {
+  const columns = [
+    {
+      id: 'name',
+      header: 'Name',
+      cell: (user: User) => <UserName user={user} />,
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      cell: (user: User) => <UserEmail user={user} />,
+    },
+  ];
+
+  return <DataTable data={users} columns={columns} />;
+}
+```
+
+### Error Boundaries
+
+```typescript
+// ✅ Good - Error boundary implementation
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ErrorBoundaryImpl>
+        {children}
+      </ErrorBoundaryImpl>
+    </Suspense>
+  );
+}
+
+// Usage with routes
+export const Route = createFileRoute('/dashboard')({
+  component: DashboardPage,
+  errorComponent: DashboardErrorBoundary,
+});
+```
+
+### Component Loading States
+
+```typescript
+// ✅ Good - Proper loading states
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user, isLoading, error } = useUser(userId);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-8 w-48" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-32" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error loading profile</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  return <UserProfileContent user={user} />;
+}
+```
+
+### Component Directory Structure
+
+```sh
+features/
+└── users/
+    ├── components/              # User-specific components
+    │   ├── UserProfile/        # Complex component with subcomponents
+    │   │   ├── index.tsx      # Main component
+    │   │   ├── UserAvatar.tsx # Subcomponent
+    │   │   ├── UserDetails.tsx# Subcomponent
+    │   │   └── UserActions.tsx# Subcomponent
+    │   └── UserList/          # Another complex component
+    │       ├── index.tsx
+    │       └── UserItem.tsx
+    ├── hooks/                  # Custom hooks
+    │   └── useUser.ts
+    ├── server/                 # Server functions
+    │   ├── get-user.ts
+    │   └── update-user.ts
+    ├── schema.ts              # Zod schemas
+    └── types.ts               # Type definitions
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines
+
+## Hooks Usage
+
+### Built-in Hooks
+
+1. useState:
+
+```typescript
+// ✅ Good - Proper state usage
+function UserForm() {
+  const [user, setUser] = useState<User | null>(null);
+
+  // Use updater function for derived state
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : null);
+  };
+
+  return (/* ... */);
+}
+```
+
+2. useEffect:
+
+```typescript
+// ✅ Good - Proper effect usage
+function UserProfile({ userId }: { userId: string }) {
+  useEffect(() => {
+    // Cleanup function
+    const subscription = subscribe(userId);
+    return () => subscription.unsubscribe();
+  }, [userId]); // Clear dependencies
+
+  // Separate effects for different concerns
+  useEffect(() => {
+    logProfileView(userId);
+  }, [userId]);
+
+  return (/* ... */);
+}
+```
+
+3. useCallback:
+
+```typescript
+// ✅ Good - Proper callback usage
+function UserList({ onUserSelect }: { onUserSelect: (user: User) => void }) {
+  const handleUserClick = useCallback((user: User) => {
+    analytics.track('user_selected', { userId: user.id });
+    onUserSelect(user);
+  }, [onUserSelect]);
+
+  return (/* ... */);
+}
+```
+
+### Custom Hooks
+
+```typescript
+// ✅ Good - Proper custom hook
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchUser() {
+      setIsLoading(true);
+      try {
+        const data = await fetchUserData(userId);
+        if (isMounted) {
+          setUser(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err as Error);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
+  return { user, error, isLoading };
+}
+```

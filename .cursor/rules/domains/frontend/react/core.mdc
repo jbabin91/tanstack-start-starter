@@ -1,0 +1,111 @@
+---
+description: Core React patterns and best practices for TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  [
+    'domains/frontend/typescript.mdc',
+    'domains/frontend/testing.mdc',
+    'domains/frontend/react/performance.mdc',
+    'domains/frontend/react/components.mdc',
+    'domains/tanstack/start/setup.mdc',
+  ]
+---
+
+# Core React Patterns
+
+## Overview
+
+These guidelines establish core patterns for React development in our TanStack Start application, focusing on component design, state management, and performance optimization.
+
+## Guidelines
+
+### Function Components
+
+```typescript
+// ✅ Good - Proper component structure
+interface UserProfileProps {
+  userId: string;
+  onUpdate?: (user: User) => void;
+}
+
+export function UserProfile({ userId, onUpdate }: UserProfileProps) {
+  const { data: user } = useUser(userId);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>{/* ... */}</CardContent>
+    </Card>
+  );
+}
+
+// ❌ Bad - Poor component structure
+export default function Profile(props: any) {
+  const [userData, setUserData] = useState(null);
+  // Mixing data fetching and UI
+  useEffect(() => {
+    fetch(`/api/users/${props.id}`).then(setUserData);
+  }, [props.id]);
+
+  return <div>{/* ... */}</div>;
+}
+```
+
+### File Organization
+
+```typescript
+// features/users/components/UserProfile.tsx
+
+// 1. Imports
+import { type User } from '~/types';
+import { useUser } from '~/features/users/hooks/useUser';
+import { UserAvatar } from './UserAvatar';
+
+// 2. Types
+interface UserProfileProps {
+  userId: string;
+}
+
+// 3. Helper Functions
+function formatUserName(user: User): string {
+  return `${user.firstName} ${user.lastName}`;
+}
+
+// 4. Component
+export function UserProfile({ userId }: UserProfileProps) {
+  const { data: user } = useUser(userId);
+
+  if (!user) return null;
+
+  return (
+    <div>
+      <UserAvatar user={user} />
+      <h2>{formatUserName(user)}</h2>
+    </div>
+  );
+}
+```
+
+### Directory Structure
+
+```sh
+features/
+└── users/
+    ├── components/           # User-specific components
+    │   ├── UserProfile.tsx
+    │   └── UserAvatar.tsx
+    ├── server/              # Server functions
+    │   ├── get-user.ts
+    │   └── update-user.ts
+    ├── hooks/               # Custom hooks
+    │   └── useUser.ts
+    ├── schema.ts           # Zod schemas
+    └── types.ts            # Type definitions
+```
+
+## Related Guidelines
+
+- [TypeScript](mdc:domains/frontend/typescript.mdc) - TypeScript guidelines
+- [Testing](mdc:domains/frontend/testing.mdc) - Testing guidelines and practices

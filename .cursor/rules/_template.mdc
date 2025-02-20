@@ -1,0 +1,19 @@
+---
+description: Purpose of this document
+globs: ['**/*.{ts,tsx}']
+related: []
+---
+
+# Title
+
+## Overview
+
+Brief overview of the topic.
+
+## Guidelines
+
+Main content goes here.
+
+## Related Guidelines
+
+Cross-references to other documents.

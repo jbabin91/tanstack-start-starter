@@ -1,0 +1,116 @@
+---
+description: React 19 and React Compiler features, optimizations, and best practices
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
+---
+
+# React 19 and Compiler Guidelines
+
+## Overview
+
+This document outlines how to leverage React 19 and React Compiler features for optimal performance and development experience in our TanStack Start application.
+
+## Guidelines
+
+### Automatic Performance Optimizations
+
+React 19 includes built-in performance optimizations that eliminate the need for manual optimizations:
+
+```typescript
+// ✅ Good - Let React 19 handle optimizations
+function UserProfile({ userId }: { userId: string }) {
+  // No need for useCallback
+  const handleClick = () => {
+    console.log('User clicked:', userId);
+  };
+
+  // No need for useMemo for simple computations
+  const userDisplayName = `User ${userId}`;
+
+  return <button onClick={handleClick}>{userDisplayName}</button>;
+}
+
+// ❌ Bad - Unnecessary manual optimizations
+function UserProfile({ userId }: { userId: string }) {
+  // Unnecessary in React 19
+  const handleClick = useCallback(() => {
+    console.log('User clicked:', userId);
+  }, [userId]);
+
+  // Unnecessary in React 19
+  const userDisplayName = useMemo(() => `User ${userId}`, [userId]);
+
+  // Unnecessary in React 19
+  return React.memo(({ children }) => (
+    <button onClick={handleClick}>{userDisplayName}</button>
+  ));
+}
+```
+
+### When to Use Optimization Hooks
+
+With React Compiler in TanStack Start, optimization hooks are almost never needed as the compiler automatically handles:
+
+- Function stability
+- Memoization of expensive computations
+- Referential equality
+- Fine-grained updates
+
+However, there are still two specific scenarios where you might need them:
+
+1. **External Library Requirements**:
+
+```typescript
+// ✅ Good - Library requires stable reference
+function VirtualizedList({ data }: { data: Row[] }) {
+  // TanStack Virtual API requires stable function
+  const estimateSize = useCallback(() => 40, []);
+
+  const rowVirtualizer = useVirtualizer({
+    count: data.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize,
+  });
+
+  return (/* ... */);
+}
+```
+
+2. **Non-Compiler Environments**:
+
+```typescript
+// ✅ Good - Only if not using React Compiler
+function DataAnalytics({ data }: { data: DataPoint[] }) {
+  // Only needed without React Compiler
+  const statistics = useMemo(() => {
+    return complexStatisticalCalculations(data);
+  }, [data]);
+
+  return <StatisticsDisplay data={statistics} />;
+}
+```
+
+### Automatic Batching
+
+React 19 automatically batches all state updates:
+
+```typescript
+// ✅ Good - React 19 will batch these updates
+function UserSettings() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = () => {
+    // These will be batched automatically
+    setName(newName);
+    setEmail(newEmail);
+    setIsSubmitting(true);
+  };
+}
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines

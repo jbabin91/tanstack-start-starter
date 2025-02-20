@@ -1,0 +1,203 @@
+---
+description: Guidelines for using React hooks effectively in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
+---
+
+# React Hooks Guidelines
+
+## Overview
+
+These guidelines establish best practices for using React hooks in our application, focusing on both built-in hooks and custom hook patterns.
+
+## Guidelines
+
+### Built-in Hooks
+
+1. **useState**:
+
+```typescript
+// ✅ Good - Proper state usage
+function UserForm() {
+  const [user, setUser] = useState<User | null>(null);
+
+  // Use updater function for derived state
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : null);
+  };
+
+  return (/* ... */);
+}
+```
+
+2. **useEffect**:
+
+```typescript
+// ✅ Good - Proper effect usage
+function UserProfile({ userId }: { userId: string }) {
+  useEffect(() => {
+    // Cleanup function
+    const subscription = subscribe(userId);
+    return () => subscription.unsubscribe();
+  }, [userId]); // Clear dependencies
+
+  // Separate effects for different concerns
+  useEffect(() => {
+    logProfileView(userId);
+  }, [userId]);
+
+  return (/* ... */);
+}
+```
+
+### Custom Hooks
+
+```typescript
+// ✅ Good - Proper custom hook
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchUser() {
+      setIsLoading(true);
+      try {
+        const data = await fetchUserData(userId);
+        if (isMounted) {
+          setUser(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err as Error);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
+  return { user, error, isLoading };
+}
+```
+
+### Hook Rules
+
+1. **Only Call Hooks at the Top Level**:
+
+```typescript
+// ✅ Good - Hooks at top level
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  useEffect(() => {/* ... */}, [userId]);
+
+  return (/* ... */);
+}
+
+// ❌ Bad - Hooks in conditions or loops
+function BadProfile({ userId }: { userId: string }) {
+  if (userId) {
+    // Error: Hook inside condition
+    const [user] = useState(null);
+  }
+
+  for (let i = 0; i < 5; i++) {
+    // Error: Hook inside loop
+    useEffect(() => {/* ... */}, []);
+  }
+}
+```
+
+2. **Only Call Hooks from React Functions**:
+
+```typescript
+// ✅ Good - Hooks in React components and custom hooks
+function useCustomHook() {
+  const [state, setState] = useState(null);
+  return state;
+}
+
+// ❌ Bad - Hooks in regular functions
+function regularFunction() {
+  // Error: Hook in regular function
+  const [state] = useState(null);
+}
+```
+
+### Custom Hook Patterns
+
+1. **Resource Hooks**:
+
+```typescript
+// ✅ Good - Resource hook pattern
+function useResource<T>(resourceId: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchResource() {
+      setIsLoading(true);
+      try {
+        const result = await fetchData<T>(resourceId);
+        if (isMounted) setData(result);
+      } catch (err) {
+        if (isMounted) setError(err as Error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    fetchResource();
+    return () => {
+      isMounted = false;
+    };
+  }, [resourceId]);
+
+  return { data, error, isLoading };
+}
+```
+
+2. **Event Hooks**:
+
+```typescript
+// ✅ Good - Event hook pattern
+function useEventListener(
+  eventName: string,
+  handler: (event: Event) => void,
+  element: HTMLElement | Window = window,
+) {
+  const savedHandler = useRef(handler);
+
+  useEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
+  useEffect(() => {
+    const eventListener = (event: Event) => savedHandler.current(event);
+    element.addEventListener(eventName, eventListener);
+    return () => element.removeEventListener(eventName, eventListener);
+  }, [eventName, element]);
+}
+```
+
+## Related Guidelines
+
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines

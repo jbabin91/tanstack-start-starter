@@ -1,0 +1,345 @@
+---
+description: Setup and configuration guidelines for TanStack Router in TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+related:
+  ['domains/tanstack/router/patterns.mdc', 'domains/frontend/react/core.mdc']
+---
+
+# TanStack Router Setup Guidelines
+
+## Overview
+
+These guidelines establish best practices for setting up and configuring TanStack Router in our TanStack Start application, focusing on file-based routing, type safety, and integration with other libraries.
+
+## Guidelines
+
+### Project Structure
+
+```sh
+app/
+├── routes/                    # File-based routes
+│   ├── __root.tsx           # Root layout with providers and meta
+│   ├── api/                 # Third-party integration endpoints
+│   │   ├── auth/           # Better Auth endpoints
+│   │   └── email/          # Resend email endpoints
+│   ├── _public/            # Public routes (no path prefix)
+│   │   ├── index.tsx      # Landing page (/)
+│   │   └── about.tsx      # About page (/about)
+│   ├── _auth/             # Auth routes (no path prefix)
+│   │   ├── signin.tsx     # Sign in page (/signin)
+│   │   └── signup.tsx     # Sign up page (/signup)
+│   └── _app/              # Protected routes (no path prefix)
+│       ├── route.tsx      # App layout with auth guard
+│       ├── settings.tsx   # Settings page (/settings)
+│       ├── settings/      # Settings feature routes
+│       │   ├── route.tsx  # Settings layout
+│       │   ├── index.tsx  # Settings index
+│       │   └── profile.tsx # Settings profile
+│       ├── posts/         # Posts feature routes
+│       │   ├── route.tsx  # Posts layout
+│       │   ├── index.tsx  # Posts listing
+│       │   ├── $postId.tsx # Single post view
+│       │   └── $postId/    # Nested post routes
+│       │       ├── route.tsx # Post layout
+│       │       └── edit.tsx  # Edit post page
+│       └── dashboard/     # Dashboard feature
+│           ├── route.tsx  # Dashboard layout
+│           └── index.tsx  # Dashboard index
+```
+
+### Router Configuration
+
+```typescript
+// ✅ Good - Router configuration
+// app/lib/router.ts
+import { createRouter } from '@tanstack/react-router';
+import { routeTree } from './routeTree.gen';
+import { queryClient } from './query';
+
+export const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+    auth: undefined!, // Will be set by AuthProvider
+  },
+  defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0,
+});
+
+// Ensure type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+```
+
+### Root Layout
+
+```typescript
+// ✅ Good - Root layout configuration
+// app/routes/__root.tsx
+import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+export const Route = createRootRoute({
+  component: () => (
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="container mx-auto py-8">
+        <Outlet />
+      </main>
+      <Footer />
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </>
+      )}
+    </div>
+  ),
+  // Validate context
+  beforeLoad: ({ context }) => {
+    if (!context.auth) {
+      throw new Error('Auth context not found');
+    }
+  },
+  // Error boundaries
+  errorComponent: ({ error }) => <RootErrorBoundary error={error} />,
+});
+```
+
+### Protected Routes
+
+```typescript
+// ✅ Good - Protected route configuration
+// app/routes/_app/route.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { requireAuth } from '~/lib/guards';
+
+export const Route = createFileRoute('/_app')({
+  beforeLoad: requireAuth,
+  component: () => (
+    <div>
+      <AppSidebar />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+  ),
+});
+
+// app/routes/_app/settings/route.tsx
+export const Route = createFileRoute('/_app/settings')({
+  component: () => (
+    <div>
+      <SettingsSidebar />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+  ),
+});
+```
+
+### Public Routes
+
+```typescript
+// ✅ Good - Public route configuration
+// app/routes/_public/about.tsx
+export const Route = createFileRoute('/_public/about')({
+  component: AboutPage,
+});
+
+// app/routes/_public/index.tsx
+export const Route = createFileRoute('/_public/')({
+  component: HomePage,
+});
+```
+
+### Auth Routes
+
+```typescript
+// ✅ Good - Auth route configuration
+// app/routes/_auth/signin.tsx
+import { z } from 'zod';
+
+const signinSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export const Route = createFileRoute('/_auth/signin')({
+  validateSearch: signinSchema.partial().parse,
+  component: SignInPage,
+});
+```
+
+### Route Types
+
+```typescript
+// ✅ Good - Route type definitions
+// src/types/router.ts
+import {
+  type inferRouteParams,
+  type inferSearchParams,
+} from '@tanstack/react-router';
+
+// Route params type helper
+export type RouteParams<T extends string> = inferRouteParams<T>;
+
+// Search params type helper
+export type SearchParams<T extends string> = inferSearchParams<T>;
+
+// Link props type helper
+export type LinkProps<T extends string> = {
+  params: RouteParams<T>;
+  search?: SearchParams<T>;
+};
+
+// Route context type
+export interface RouteContext {
+  queryClient: QueryClient;
+  auth: {
+    user: User | null;
+    isAuthenticated: boolean;
+    login: (credentials: Credentials) => Promise<void>;
+    logout: () => Promise<void>;
+  };
+}
+
+// Declare module augmentation
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+    routeTree: ReturnType<typeof routeTree>;
+    context: RouteContext;
+  }
+}
+```
+
+### Route Guards
+
+```typescript
+// ✅ Good - Route guard configuration
+// src/lib/guards.ts
+import { redirect } from '@tanstack/react-router';
+
+export function requireAuth({ context }: { context: RouteContext }) {
+  if (!context.auth.isAuthenticated) {
+    throw redirect({
+      to: '/auth/login',
+      search: {
+        redirect: window.location.pathname,
+      },
+    });
+  }
+}
+
+export function requireAdmin({ context }: { context: RouteContext }) {
+  requireAuth({ context });
+
+  if (!context.auth.user?.isAdmin) {
+    throw redirect({
+      to: '/',
+      search: {
+        error: 'unauthorized',
+      },
+    });
+  }
+}
+
+// Usage in routes
+export const Route = createFileRoute('/admin')({
+  beforeLoad: requireAdmin,
+  component: AdminPage,
+});
+```
+
+### Route Loaders
+
+```typescript
+// ✅ Good - Route loader configuration
+// src/routes/users/$userId.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const userParamsSchema = z.object({
+  userId: z.string(),
+});
+
+export const Route = createFileRoute('/users/$userId')({
+  validateParams: userParamsSchema.parse,
+  loader: async ({ params: { userId }, context: { queryClient } }) => {
+    // Ensure data is available
+    await queryClient.ensureQueryData({
+      queryKey: ['user', userId],
+      queryFn: () => fetchUser(userId),
+    });
+
+    // Prefetch related data
+    await Promise.all([
+      queryClient.prefetchQuery({
+        queryKey: ['user-posts', userId],
+        queryFn: () => fetchUserPosts(userId),
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['user-followers', userId],
+        queryFn: () => fetchUserFollowers(userId),
+      }),
+    ]);
+  },
+  // Loader error handling
+  errorComponent: ({ error }) => {
+    if (error instanceof QueryError) {
+      switch (error.status) {
+        case 404:
+          return <UserNotFound />;
+        case 403:
+          return <UserAccessDenied />;
+        default:
+          return <QueryErrorAlert error={error} />;
+      }
+    }
+    return <UnexpectedError error={error} />;
+  },
+  // Loader pending state
+  pendingComponent: () => <UserProfileSkeleton />,
+  component: UserProfilePage,
+});
+```
+
+### Search Params
+
+```typescript
+// ✅ Good - Search params configuration
+// src/routes/users/index.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const searchParamsSchema = z.object({
+  page: z.number().default(1),
+  limit: z.number().default(10),
+  search: z.string().optional(),
+  sort: z.enum(['name', 'email', 'createdAt']).default('createdAt'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const Route = createFileRoute('/users/')({
+  validateSearch: searchParamsSchema.parse,
+  loader: async ({ search, context: { queryClient } }) => {
+    await queryClient.ensureQueryData({
+      queryKey: ['users', search],
+      queryFn: () => fetchUsers(search),
+    });
+  },
+  component: UsersListPage,
+});
+```
+
+## Related Guidelines
+
+- [Router Patterns](mdc:domains/tanstack/router/patterns.mdc) - Router patterns and best practices
+- [Router Guards](mdc:domains/tanstack/router/guards.mdc) - Route protection and authorization
+- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
