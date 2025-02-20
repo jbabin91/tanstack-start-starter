@@ -1,0 +1,302 @@
+---
+description: Shell scripting standards and best practices, with a focus on zsh
+globs: ['**/*.{sh,zsh}', '**/scripts/*']
+---
+
+# Shell Scripting Standards
+
+## Overview
+
+These guidelines establish standards for shell scripting in our project, with a focus on zsh as our primary shell.
+
+## Shell Selection
+
+### Use Zsh
+
+```zsh
+# ✅ Good - Explicit zsh shebang
+#!/usr/bin/env zsh
+
+# ❌ Bad - Don't use bash or sh
+#!/bin/bash
+#!/bin/sh
+```
+
+### Script Header
+
+Every script should start with:
+
+```zsh
+#!/usr/bin/env zsh
+
+# Enable strict error handling
+setopt ERR_EXIT
+setopt PIPE_FAIL
+setopt EXTENDED_GLOB
+setopt NULL_GLOB
+setopt WARN_CREATE_GLOBAL
+setopt WARN_NESTED_VAR
+
+# Ensure we're using zsh
+if [[ "$ZSH_VERSION" == "" ]]; then
+  print "❌ This script requires zsh"
+  exit 1
+fi
+```
+
+## Error Handling
+
+### Use Proper Error Handling
+
+```zsh
+# ✅ Good - Proper error handling
+function some_task() {
+  local result=0
+
+  if ! command_that_might_fail; then
+    print "❌ Command failed"
+    return 1
+  fi
+
+  return $result
+}
+
+# ❌ Bad - No error handling
+function bad_task() {
+  command_that_might_fail
+  next_command # Might never run if previous command fails
+}
+```
+
+### Directory Operations
+
+```zsh
+# ✅ Good - Safe directory handling
+function change_dir() {
+  cd "$1" || {
+    print "❌ Failed to change to directory: $1"
+    return 1
+  }
+}
+
+# ❌ Bad - Unsafe directory handling
+function bad_dir() {
+  cd $1
+  do_something # Might run in wrong directory
+}
+```
+
+## Variable Usage
+
+### Use Local Variables
+
+```zsh
+# ✅ Good - Local variables
+function process_file() {
+  local file=$1
+  local temp_dir=$(mktemp -d)
+  local result=0
+
+  # Process file...
+
+  return $result
+}
+
+# ❌ Bad - Global variables
+function bad_process() {
+  file=$1  # Global variable!
+  temp_dir=/tmp/process  # Global variable!
+}
+```
+
+### Array Handling
+
+```zsh
+# ✅ Good - Proper array handling
+function process_files() {
+  local -a files=("$@")
+  local file
+
+  for file in "${files[@]}"; do
+    process_file "$file"
+  done
+}
+
+# ❌ Bad - Poor array handling
+function bad_files() {
+  for file in $*; do  # Word splitting issues
+    process $file
+  done
+}
+```
+
+## File Operations
+
+### Safe File Handling
+
+```zsh
+# ✅ Good - Safe file operations
+function backup_file() {
+  local file=$1
+  local backup="${file}.bak"
+
+  if [[ ! -f "$file" ]]; then
+    print "❌ File not found: $file"
+    return 1
+  fi
+
+  cp -p "$file" "$backup" || {
+    print "❌ Failed to create backup"
+    return 1
+  }
+}
+
+# ❌ Bad - Unsafe file operations
+function bad_backup() {
+  cp $1 $1.bak
+}
+```
+
+### Temporary Files
+
+```zsh
+# ✅ Good - Proper temp file handling
+function process_data() {
+  local temp_file=$(mktemp)
+  local temp_dir=$(mktemp -d)
+
+  # Ensure cleanup
+  trap "rm -f '$temp_file'; rm -rf '$temp_dir'" EXIT
+
+  # Process data...
+}
+
+# ❌ Bad - Poor temp file handling
+function bad_temp() {
+  local temp=/tmp/data  # Fixed path, no cleanup
+}
+```
+
+## Command Execution
+
+### Command Checking
+
+```zsh
+# ✅ Good - Check commands exist
+function process_images() {
+  if ! command -v convert > /dev/null; then
+    print "❌ ImageMagick 'convert' command not found"
+    return 1
+  fi
+
+  # Process images...
+}
+
+# ❌ Bad - No command checking
+function bad_process() {
+  convert image.jpg image.png  # Might not exist
+}
+```
+
+### Background Jobs
+
+```zsh
+# ✅ Good - Proper job handling
+function run_tasks() {
+  local -a pids=()
+
+  # Start background jobs
+  for task in "$@"; do
+    process_task "$task" &
+    pids+=($!)
+  done
+
+  # Wait for all jobs
+  for pid in "${pids[@]}"; do
+    wait "$pid"
+  done
+}
+
+# ❌ Bad - Poor job handling
+function bad_tasks() {
+  process_task &  # No tracking
+  process_task &  # No tracking
+  wait  # Waits for all jobs, no individual status
+}
+```
+
+## Output Handling
+
+### Status Messages
+
+```zsh
+# ✅ Good - Clear status messages
+function deploy_app() {
+  print "Deploying application..."
+
+  if ! run_deployment; then
+    print "❌ Deployment failed"
+    return 1
+  fi
+
+  print "✅ Deployment successful"
+}
+
+# ❌ Bad - Unclear status
+function bad_deploy() {
+  run_deployment
+  echo "Done"  # Success or failure?
+}
+```
+
+### Error Output
+
+```zsh
+# ✅ Good - Proper error output
+function validate_input() {
+  if [[ ! -f "$1" ]]; then
+    print -u2 "❌ Error: File not found: $1"
+    return 1
+  fi
+}
+
+# ❌ Bad - Poor error handling
+function bad_validate() {
+  [[ -f $1 ]] || exit 1  # No error message
+}
+```
+
+## Testing
+
+### Script Testing
+
+```zsh
+# ✅ Good - Test function
+function test_process() {
+  local test_file=$(mktemp)
+  local result=0
+
+  # Setup test data
+  print "test data" > "$test_file"
+
+  # Run test
+  if ! process_file "$test_file"; then
+    print "❌ Test failed"
+    result=1
+  fi
+
+  # Cleanup
+  rm -f "$test_file"
+  return $result
+}
+
+# ❌ Bad - No testing
+function bad_test() {
+  process_file  # No test data, no validation
+}
+```
+
+## Related Guidelines
+
+- [Core Standards](mdc:domains/core/standards.mdc) - General coding standards
+- [Security](mdc:domains/core/security.mdc) - Security practices
