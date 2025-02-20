@@ -60,7 +60,7 @@ This document outlines the procedures for maintaining and updating documentation
 1. **Content Updates**
 
    ```zsh
-   # Update content while preserving structure
+   # Update content while preserving structure and formatting
    update_content() {
      local file=$1
      local section=$2
@@ -83,6 +83,9 @@ This document outlines the procedures for maintaining and updating documentation
        }
        !p { print }
      ' "${file}.bak" > "$file"
+
+     # Format with Prettier
+     prettier --write "$file"
    }
    ```
 
@@ -97,11 +100,90 @@ This document outlines the procedures for maintaining and updating documentation
 
      for file in $dir/**/*.mdc(.); do
        sed -i '' -e "s|$old_ref|$new_ref|g" "$file"
+       # Format with Prettier
+       prettier --write "$file"
      done
    }
    ```
 
-### 3. Verification Phase
+### 3. Formatting and Linting Phase
+
+1. **Markdown Linting**
+
+   ```zsh
+   # Run markdown linting
+   lint_markdown() {
+     local file=$1
+
+     # Check markdown formatting
+     markdownlint "$file"
+
+     # Common markdown rules:
+     # MD001 - Heading levels should only increment by one level at a time
+     # MD002 - First heading should be a top-level heading
+     # MD003 - Heading style (atx)
+     # MD004 - Unordered list style (consistent)
+     # MD005 - List indentation
+     # MD006 - Consider starting bulleted lists at the beginning of the line
+     # MD007 - Unordered list indentation space (2 spaces)
+     # MD009 - No trailing spaces
+     # MD010 - No hard tabs
+     # MD011 - Reversed link syntax
+     # MD012 - Multiple consecutive blank lines
+     # MD013 - Line length (disabled)
+     # MD014 - Dollar signs used before commands without showing output
+     # MD018 - No space after hash on atx style heading
+     # MD019 - Multiple spaces after hash on atx style heading
+     # MD020 - No space inside hashes on closed atx style heading
+     # MD021 - Multiple spaces inside hashes on closed atx style heading
+     # MD022 - Headings should be surrounded by blank lines
+     # MD023 - Headings must start at the beginning of the line
+     # MD024 - Multiple headings with the same content
+     # MD025 - Multiple top-level headings in the same document
+     # MD026 - Trailing punctuation in heading
+     # MD027 - Multiple spaces after blockquote symbol
+     # MD028 - Blank line inside blockquote
+     # MD029 - Ordered list item prefix
+     # MD030 - Spaces after list markers
+     # MD031 - Fenced code blocks should be surrounded by blank lines
+     # MD032 - Lists should be surrounded by blank lines
+     # MD033 - Inline HTML (disabled)
+     # MD034 - Bare URL used
+     # MD035 - Horizontal rule style
+     # MD036 - Emphasis used instead of a heading
+     # MD037 - Spaces inside emphasis markers
+     # MD038 - Spaces inside code span elements
+     # MD039 - Spaces inside link text
+     # MD040 - Fenced code blocks should have a language specified
+     # MD041 - First line in a file should be a top-level heading
+     # MD042 - No empty links
+     # MD043 - Required heading structure
+     # MD044 - Proper names should have the correct capitalization
+     # MD045 - Images should have alternate text
+     # MD046 - Code block style
+     # MD047 - Files should end with a single newline character
+     # MD048 - Code fence style
+     # MD049 - Emphasis style should be consistent
+     # MD050 - Strong style should be consistent
+   }
+   ```
+
+2. **Prettier Formatting**
+
+   ```zsh
+   # Format with Prettier
+   format_with_prettier() {
+     local file=$1
+
+     # Format using project's Prettier config
+     prettier --write "$file" \
+       --single-quote \
+       --plugin=prettier-plugin-packagejson \
+       --plugin=prettier-plugin-tailwindcss
+   }
+   ```
+
+### 4. Verification Phase
 
 1. **Content Verification**
 
@@ -109,6 +191,12 @@ This document outlines the procedures for maintaining and updating documentation
    # Verify updates
    verify_updates() {
      local file=$1
+
+     # Run markdown linting
+     lint_markdown "$file"
+
+     # Format with Prettier
+     format_with_prettier "$file"
 
      # Check structure
      if ! grep -q "^---$" "$file"; then
@@ -149,14 +237,16 @@ This document outlines the procedures for maintaining and updating documentation
    - [ ] Update content
    - [ ] Update references
    - [ ] Update related documents
-   - [ ] Verify formatting
+   - [ ] Run markdown linting
+   - [ ] Format with Prettier
 
 3. **Verification**
 
    - [ ] Check content accuracy
    - [ ] Verify references
    - [ ] Test navigation
-   - [ ] Review formatting
+   - [ ] Verify markdown formatting
+   - [ ] Verify Prettier formatting
 
 4. **Post-Update**
    - [ ] Update indexes
@@ -169,6 +259,9 @@ This document outlines the procedures for maintaining and updating documentation
 1. **Content Updates**
 
    - Keep formatting consistent
+   - Follow markdown best practices
+   - Use Prettier for consistent formatting
+   - Run markdown linting before committing
    - Preserve section structure
    - Update all related content
    - Maintain clear organization
