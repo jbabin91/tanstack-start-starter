@@ -4,7 +4,7 @@ A modern, full-stack web application starter template built with TanStack Start,
 
 ## Development Guidelines
 
-This project follows a set of carefully crafted development rules and patterns. For a complete overview, see our [Development Rules & Guidelines](.cursor/rules/_INDEX.mdc).
+This project follows a set of carefully crafted development rules and patterns. For a complete overview, see our [Development Rules & Guidelines](.cursor/rules/_index.mdc).
 
 Core Guidelines:
 
@@ -92,7 +92,7 @@ pnpm dev
 
 ### Development Process
 
-1. Read through the [Development Rules & Guidelines](.cursor/rules/_INDEX.mdc)
+1. Read through the [Development Rules & Guidelines](.cursor/rules/_index.mdc)
 2. Follow the [Core Principles](.cursor/rules/domains/core/principles.mdc)
 3. Adhere to [Standards](.cursor/rules/domains/core/standards.mdc)
 4. Write tests following [Testing Guidelines](.cursor/rules/domains/frontend/testing.mdc)

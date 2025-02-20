@@ -1,0 +1,139 @@
+---
+description: Primary navigation and index for all development rules and guidelines, organized by domain and responsibility.
+globs: ['**/*']
+emoji: '📄'
+---
+
+# 📄 Development Rules and Guidelines
+
+## Overview
+
+This documentation contains comprehensive development guidelines and best practices for our TanStack Start application. The documentation is organized using a domain-driven hierarchy, making it easy to find relevant information for specific needs.
+
+## Directory Structure
+
+```sh
+domains/
+├── core/               # Core principles and standards
+│   ├── principles.mdc  # Fundamental development principles
+│   ├── architecture.mdc# System design and patterns
+│   ├── standards.mdc   # Code quality and style
+│   └── shell.mdc      # Shell and terminal guidelines
+├── frontend/          # Frontend-specific rules
+│   ├── react/        # React patterns and practices
+│   ├── typescript.mdc # TypeScript guidelines
+│   └── testing.mdc   # Frontend testing
+└── tanstack/         # TanStack-specific guidelines
+    ├── start/        # Start framework guidelines
+    ├── query/        # Query patterns
+    └── router/       # Routing patterns
+
+processes/
+├── consistency/      # Consistency guidelines
+├── maintenance/      # Maintenance procedures
+├── migration/        # Migration guides
+└── decision-making/  # Decision processes
+```
+
+## Quick Links
+
+### Core Development
+
+- [Core Principles](mdc:.cursor/rules/domains/core/principles.mdc) - Fundamental development principles and practices
+- [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc) - System design patterns and architectural guidelines
+- [Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality and style standards
+- [Shell Guidelines](mdc:.cursor/rules/domains/core/shell.mdc) - Shell and terminal usage guidelines
+
+### Frontend Development
+
+- [React Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development patterns and practices
+- [TypeScript Guidelines](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript patterns and best practices
+- [Testing Guidelines](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing standards and practices
+
+### TanStack Development
+
+- [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start setup and configuration
+- [Query Guidelines](mdc:.cursor/rules/domains/tanstack/query/_index.mdc) - TanStack Query patterns and practices
+- [Router Guidelines](mdc:.cursor/rules/domains/tanstack/router/_index.mdc) - TanStack Router patterns and practices
+
+## Process Guidelines
+
+- [Contributing](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution process
+- [Documentation](mdc:.cursor/rules/processes/consistency/documentation.mdc) - Documentation standards
+- [Verification](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Verification process
+
+## Document Format
+
+Each guideline document (.mdc) follows a consistent structure:
+
+```markdown
+---
+description: Purpose of the document
+globs: Files this applies to
+emoji: 'appropriate-emoji'  # Required: Choose from emoji-rules.mdc
+---
+
+# Title
+
+## Overview
+
+Purpose and scope
+
+## Guidelines
+
+Main content organized by topic
+
+## Related
+
+Cross-references to other guidelines
+```
+
+## Usage Guidelines
+
+### Finding Information
+
+1. Use the Quick Links section for direct access to commonly needed guidelines
+2. Browse the domain directories for specific areas of interest
+3. Use your IDE's search functionality to find specific topics
+4. Follow cross-references within documents to explore related guidelines
+
+### Best Practices
+
+1. Start with Core Principles:
+   - Begin with fundamental development principles
+   - Understand architectural patterns
+   - Follow established standards
+
+2. Apply Domain Knowledge:
+   - Use domain-specific guidelines
+   - Follow best practices
+   - Implement patterns consistently
+
+3. Keep Current:
+   - Review guidelines regularly
+   - Stay informed of updates
+   - Suggest improvements when needed
+
+## Contributing
+
+For maintaining and contributing to these guidelines:
+
+1. Document Structure:
+   - Follow the established document format
+   - Use clear, concise language
+   - Include practical examples
+   - Maintain proper cross-references
+
+2. Review Process:
+   - Ensure accuracy and relevance
+   - Verify cross-references
+   - Test code examples
+   - Update related documents
+
+3. Version Control:
+   - Make atomic changes
+   - Provide clear commit messages
+   - Update related documents together
+   - Document breaking changes
+
+For detailed contribution guidelines, see [Contributing Guidelines](mdc:.cursor/rules/processes/consistency/contributing.mdc).

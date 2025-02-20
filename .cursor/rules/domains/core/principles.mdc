@@ -1,9 +1,10 @@
 ---
 description: Core development principles, consistency standards, and quality guidelines for writing maintainable, reliable, and predictable code.
 globs: ['**/*']
+emoji: '📐'
 ---
 
-# Core Development Principles
+# 📐 Core Development Principles
 
 ## Overview
 
@@ -11,8 +12,8 @@ These guidelines establish the foundational principles and consistency standards
 
 ## Related Guidelines
 
-- [Architecture](mdc:domains/core/architecture.mdc) - For system design patterns
-- [Standards](mdc:domains/core/standards.mdc) - For detailed style and quality guidelines
+- [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc) - For system design patterns
+- [Standards](mdc:.cursor/rules/domains/core/standards.mdc) - For detailed style and quality guidelines
 
 ## Fundamental Principles
 

@@ -1,0 +1,22 @@
+---
+description: Index of migration process guidelines and procedures
+globs: ['**/*']
+emoji: '🔄'
+---
+
+# 🔄 Migration Process Guidelines
+
+## Overview
+
+This section contains guidelines and procedures for planning, executing, and verifying migration processes.
+
+## Quick Links
+
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning and preparation
+- [Execution](mdc:.cursor/rules/processes/migration/execution.mdc) - Migration execution procedures
+- [Verification](mdc:.cursor/rules/processes/migration/verification.mdc) - Post-migration verification steps
+
+## Related Guidelines
+
+- [Maintenance Guidelines](mdc:.cursor/rules/processes/maintenance/_index.mdc) - System maintenance procedures
+- [Decision Making](mdc:.cursor/rules/processes/decision-making/_index.mdc) - Decision-making processes

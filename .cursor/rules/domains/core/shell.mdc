@@ -1,9 +1,10 @@
 ---
 description: Shell scripting standards and best practices, with a focus on zsh
 globs: ['**/*.{sh,zsh}', '**/scripts/*']
+emoji: '💻'
 ---
 
-# Shell Scripting Standards
+# 💻 Shell Scripting Standards
 
 ## Overview
 
@@ -298,5 +299,5 @@ function bad_test() {
 
 ## Related Guidelines
 
-- [Core Standards](mdc:domains/core/standards.mdc) - General coding standards
-- [Security](mdc:domains/core/security.mdc) - Security practices
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - General coding standards
+- [Security](mdc:.cursor/rules/domains/core/security.mdc) - Security practices

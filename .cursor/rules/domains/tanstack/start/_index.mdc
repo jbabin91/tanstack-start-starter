@@ -1,0 +1,23 @@
+---
+description: Index of TanStack Start framework guidelines and best practices
+globs: ['**/*']
+emoji: '🚀'
+---
+
+# 🚀 TanStack Start Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for using the TanStack Start framework, covering setup, patterns, API integration, and security.
+
+## Quick Links
+
+- [Setup](mdc:.cursor/rules/domains/tanstack/start/setup.mdc) - Initial setup and configuration
+- [Architecture](mdc:.cursor/rules/domains/tanstack/start/architecture.mdc) - Project structure and patterns
+- [Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - Security best practices
+
+## Related Guidelines
+
+- [Router](mdc:.cursor/rules/domains/tanstack/router/_index.mdc) - TanStack Router guidelines
+- [Query](mdc:.cursor/rules/domains/tanstack/query/_index.mdc) - TanStack Query guidelines
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards

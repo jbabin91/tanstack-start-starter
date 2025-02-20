@@ -1,0 +1,23 @@
+---
+description: Index of core development principles and standards
+globs: ['**/*']
+emoji: '📐'
+---
+
+# 📐 Core Development Guidelines
+
+## Overview
+
+This section contains the fundamental principles, architectural patterns, and development standards that form the foundation of our development practices.
+
+## Quick Links
+
+- [Core Principles](mdc:.cursor/rules/domains/core/principles.mdc) - Fundamental development principles and practices
+- [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc) - System design patterns and architectural guidelines
+- [Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality and style standards
+- [Shell Guidelines](mdc:.cursor/rules/domains/core/shell.mdc) - Shell and terminal usage guidelines
+
+## Related Guidelines
+
+- [Frontend Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - Frontend development standards
+- [TanStack Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack framework guidelines

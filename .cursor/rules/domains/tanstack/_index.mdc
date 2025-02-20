@@ -1,0 +1,25 @@
+---
+description: Index of TanStack framework guidelines and best practices
+globs: ['**/*']
+emoji: '⚡'
+---
+
+# ⚡ TanStack Framework Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for using the TanStack suite of tools, including Start, Query, and Router.
+
+## Quick Links
+
+### Framework Components
+
+- [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start setup and configuration
+- [Query Guidelines](mdc:.cursor/rules/domains/tanstack/query/_index.mdc) - TanStack Query patterns and practices
+- [Router Guidelines](mdc:.cursor/rules/domains/tanstack/router/_index.mdc) - TanStack Router patterns and practices
+
+## Related Guidelines
+
+- [React Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development standards
+- [TypeScript Guidelines](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript standards
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards

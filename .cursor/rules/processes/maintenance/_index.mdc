@@ -1,9 +1,10 @@
 ---
 description: Overview of documentation maintenance procedures and guidelines
 globs: ['**/*.mdc']
+emoji: '🔧'
 ---
 
-# Documentation Maintenance
+# 🔧 Documentation Maintenance
 
 ## Overview
 
@@ -13,8 +14,8 @@ This directory contains guidelines and procedures for maintaining documentation,
 
 ### Update Procedures
 
-- [Updates](mdc:updates.mdc) - Guidelines for updating documentation
-- [Verification](mdc:verification.mdc) - Procedures for verifying updates
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Guidelines for updating documentation
+- [Verification](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Procedures for verifying updates
 
 ## Directory Structure
 
@@ -71,5 +72,5 @@ maintenance/
 
 ## Related Guidelines
 
-- [Planning](mdc:../migration/planning.mdc) - Migration planning
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates

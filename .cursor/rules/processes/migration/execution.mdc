@@ -194,9 +194,9 @@ verify_migration() {
 
 ## Related Guidelines
 
-- [Planning](mdc:planning.mdc) - Migration planning
-- [Verification](mdc:verification.mdc) - Verification procedures
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning
+- [Verification](mdc:.cursor/rules/processes/migration/verification.mdc) - Verification procedures
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates
 
 ## Error Prevention
 

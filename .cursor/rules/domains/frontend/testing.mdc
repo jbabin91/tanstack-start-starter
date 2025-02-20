@@ -1,9 +1,10 @@
 ---
 description: Comprehensive testing standards and quality assurance practices for TanStack Start applications.
 globs: ['**/*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}']
+emoji: '🧪'
 ---
 
-# Testing and Quality Assurance Guidelines
+# 🧪 Testing and Quality Assurance Guidelines
 
 ## Overview
 
@@ -11,8 +12,8 @@ These guidelines establish comprehensive testing standards for TanStack Start ap
 
 ## Related Guidelines
 
-- [React](mdc:react.mdc) - React development guidelines
-- [TypeScript](mdc:typescript.mdc) - TypeScript guidelines
+- [React](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development guidelines
+- [TypeScript](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript guidelines
 
 ## Core Testing Principles
 

@@ -1,14 +1,17 @@
 ---
-description: Query patterns and best practices for TanStack Query in TanStack Start applications
-globs: ['**/*.{ts,tsx}']
+description: Common patterns and best practices for TanStack Query
+globs: ['**/*']
+emoji: '📊'
 related:
   [
     'domains/tanstack/query/setup.mdc',
     'domains/tanstack/query/optimization.mdc',
+    'domains/frontend/react/core.mdc',
+    'domains/frontend/react/performance.mdc',
   ]
 ---
 
-# TanStack Query Patterns
+# 📊 TanStack Query Patterns
 
 ## Overview
 
@@ -210,5 +213,7 @@ persistQueryClient({
 
 ## Related Guidelines
 
-- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query setup and configuration
-- [Query Optimization](mdc:domains/tanstack/query/optimization.mdc) - Performance optimization guidelines
+- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query setup and configuration
+- [Query Optimization](mdc:.cursor/rules/domains/tanstack/query/optimization.mdc) - Performance optimization guidelines
+- [React Core](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance guidelines

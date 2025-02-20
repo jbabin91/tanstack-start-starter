@@ -1,9 +1,10 @@
 ---
 description: Procedures for maintaining and updating documentation
 globs: ['**/*.mdc']
+emoji: '🔄'
 ---
 
-# Documentation Updates
+# 🔄 Documentation Updates
 
 ## Overview
 
@@ -281,6 +282,6 @@ This document outlines the procedures for maintaining and updating documentation
 
 ## Related Guidelines
 
-- [Verification](mdc:verification.mdc) - Verification procedures
-- [Planning](mdc:../migration/planning.mdc) - Planning guidelines
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Verification](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Verification procedures
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Planning guidelines
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates

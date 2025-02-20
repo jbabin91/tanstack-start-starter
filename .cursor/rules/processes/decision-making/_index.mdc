@@ -1,0 +1,22 @@
+---
+description: Index of decision-making process guidelines and templates
+globs: ['**/*']
+emoji: '📐'
+---
+
+# 📐 Decision Making Guidelines
+
+## Overview
+
+This section contains guidelines and templates for making and documenting technical decisions.
+
+## Quick Links
+
+- [Evaluation](mdc:.cursor/rules/processes/decision-making/evaluation.mdc) - Evaluation criteria and scoring
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Templates and examples
+
+## Related Guidelines
+
+- [Migration](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration guidelines
+- [Evaluation](mdc:.cursor/rules/processes/decision-making/evaluation.mdc) - Decision making framework
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Maintenance procedures

@@ -3,9 +3,10 @@ description: Guidelines for implementing forms in TanStack Start applications us
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/frontend/react/core.mdc', 'domains/frontend/react/components.mdc']
+emoji: '✅'
 ---
 
-# React Forms Guidelines
+# ✅ React Forms Guidelines
 
 ## Overview
 
@@ -265,5 +266,7 @@ function ContactForm() {
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [Components](mdc:domains/frontend/react/components.mdc) - Component guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component guidelines
+- [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook patterns
+- [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - Security guidelines

@@ -144,6 +144,6 @@ target_directory/
 
 ## Related Guidelines
 
-- [Execution](mdc:execution.mdc) - Migration execution steps
-- [Verification](mdc:verification.mdc) - Verification procedures
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Execution](mdc:.cursor/rules/processes/migration/execution.mdc) - Migration execution steps
+- [Verification](mdc:.cursor/rules/processes/migration/verification.mdc) - Verification procedures
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates

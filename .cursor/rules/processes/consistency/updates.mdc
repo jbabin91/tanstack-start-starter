@@ -1,9 +1,10 @@
 ---
 description: Guidelines for updating and maintaining documentation rules
 globs: ['**/*.mdc']
+emoji: '🔄'
 ---
 
-# Rule Updates
+# 🔄 Rule Updates
 
 ## Overview
 
@@ -77,5 +78,5 @@ This document outlines the procedures and guidelines for updating documentation 
 
 ## Related Guidelines
 
-- [Contributing](mdc:contributing.mdc) - Contribution guidelines
-- [Verification](mdc:../maintenance/verification.mdc) - Verification procedures
+- [Contributing](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution guidelines
+- [Verification](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Verification procedures

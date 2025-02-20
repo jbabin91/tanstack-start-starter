@@ -3,9 +3,10 @@ description: Guidelines for using React hooks effectively in TanStack Start appl
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
+emoji: '⚛️'
 ---
 
-# React Hooks Guidelines
+# ⚛️ React Hooks Guidelines
 
 ## Overview
 
@@ -199,5 +200,7 @@ function useEventListener(
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component patterns
+- [Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form hooks

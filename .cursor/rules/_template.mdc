@@ -1,10 +1,10 @@
 ---
 description: Purpose of this document
 globs: ['**/*.{ts,tsx}']
-related: []
+emoji: '📐'
 ---
 
-# Title
+# 📐 Title
 
 ## Overview
 
@@ -16,4 +16,12 @@ Main content goes here.
 
 ## Related Guidelines
 
-Cross-references to other documents.
+- [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Required: Follow emoji guidelines before submitting
+- Cross-references to other documents
+
+## Required Steps
+
+1. Follow the [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) for document formatting
+2. Remove this section after completing all requirements
+
+Note: The AI will validate your document against all rules when reviewing.

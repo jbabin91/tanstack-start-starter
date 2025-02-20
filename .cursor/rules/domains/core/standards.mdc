@@ -1,9 +1,10 @@
 ---
 description: Comprehensive code style, structure, and quality standards for maintaining clean, consistent, and maintainable code across all languages and frameworks.
 globs: ['**/*']
+emoji: '📐'
 ---
 
-# Code Standards and Style Guidelines
+# 📐 Code Standards and Style Guidelines
 
 ## Overview
 
@@ -11,8 +12,8 @@ These guidelines establish fundamental code standards and style patterns that ap
 
 ## Related Guidelines
 
-- [Principles](mdc:principles.mdc) - Core development principles
-- [Architecture](mdc:architecture.mdc) - System design patterns and project structure
+- [Principles](mdc:.cursor/rules/domains/core/principles.mdc) - Core development principles
+- [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc) - System design patterns and project structure
 
 ## General Principles
 
@@ -21,7 +22,7 @@ These guidelines establish fundamental code standards and style patterns that ap
 - Keep related files close together
 - Use clear, descriptive names
 - Maintain consistent structure
-- Follow the project structure defined in [Architecture](mdc:architecture.mdc)
+- Follow the project structure defined in [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc)
 
 ## Naming Conventions
 

@@ -1,11 +1,12 @@
 ---
-description: React 19 and React Compiler features, optimizations, and best practices
-globs: ['**/*.{ts,tsx}']
+description: Guidelines for React compiler configuration and optimization
+globs: ['**/*.{tsx,jsx}']
+emoji: '🛠️'
 related:
   ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
 ---
 
-# React 19 and Compiler Guidelines
+# 🛠️ React Compiler Guidelines
 
 ## Overview
 
@@ -112,5 +113,7 @@ function UserSettings() {
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component compilation
+- [TypeScript](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript configuration

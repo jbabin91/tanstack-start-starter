@@ -3,7 +3,7 @@ description: Evaluation criteria and scoring system for decision making
 globs: ['**/*.mdc']
 ---
 
-# Evaluation Criteria
+# 📐 Evaluation Criteria
 
 ## Overview
 
@@ -79,6 +79,6 @@ For each top-rated option (1-3 highest scores), provide:
 
 ## Related Guidelines
 
-- [Templates](mdc:templates.mdc) - Templates for evaluation
-- [Planning](mdc:../migration/planning.mdc) - Migration planning
-- [Updates](mdc:../maintenance/updates.mdc) - Update procedures
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Templates for evaluation
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Update procedures

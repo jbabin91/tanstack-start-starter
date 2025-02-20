@@ -1,0 +1,22 @@
+---
+description: Index of frontend development guidelines and best practices
+globs: ['**/*.{ts,tsx,js,jsx}']
+emoji: '🎨'
+---
+
+# 🎨 Frontend Development Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for frontend development, covering React, TypeScript, and testing practices.
+
+## Quick Links
+
+- [React Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development patterns and practices
+- [TypeScript Guidelines](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript patterns and best practices
+- [Testing Guidelines](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing standards and practices
+
+## Related Guidelines
+
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality and style standards
+- [TanStack Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack framework guidelines

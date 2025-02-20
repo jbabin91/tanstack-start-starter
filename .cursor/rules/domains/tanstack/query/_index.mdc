@@ -1,0 +1,22 @@
+---
+description: Index of TanStack Query guidelines and best practices
+globs: ['**/*']
+emoji: '📊'
+---
+
+# 📊 TanStack Query Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for using TanStack Query, covering setup, patterns, mutations, and optimization.
+
+## Quick Links
+
+- [Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query setup and configuration
+- [Patterns](mdc:.cursor/rules/domains/tanstack/query/patterns.mdc) - Common query patterns
+- [Caching](mdc:.cursor/rules/domains/tanstack/query/caching.mdc) - Caching strategies
+
+## Related Guidelines
+
+- [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start framework guidelines
+- [API Integration](mdc:.cursor/rules/domains/tanstack/start/api.mdc) - API integration patterns

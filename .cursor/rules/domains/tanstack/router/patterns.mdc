@@ -3,9 +3,10 @@ description: Design patterns and best practices for using TanStack Router in Tan
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/tanstack/router/setup.mdc', 'domains/frontend/react/core.mdc']
+emoji: '🌐'
 ---
 
-# TanStack Router Patterns
+# 🌐 TanStack Router Patterns
 
 ## Overview
 
@@ -326,5 +327,7 @@ function Navigation() {
 
 ## Related Guidelines
 
-- [TanStack Router Setup](mdc:domains/tanstack/router/setup.mdc) - Setup guidelines
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [TanStack Router Setup](mdc:.cursor/rules/domains/tanstack/router/setup.mdc) - Setup guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Router Guards](mdc:.cursor/rules/domains/tanstack/router/guards.mdc) - Route protection
+- [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - Security guidelines

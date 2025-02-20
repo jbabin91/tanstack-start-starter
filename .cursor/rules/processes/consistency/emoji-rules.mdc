@@ -1,0 +1,590 @@
+---
+description: Comprehensive guidelines for emoji usage in documentation and rules
+globs: ['**/*.mdc', '**/*']
+emoji: '😄'
+---
+
+# 😄 Emoji Rules
+
+## Overview
+
+This document defines the standards for using emojis across our documentation, rules, and responses. Every rule file must include an appropriate emoji that represents its purpose, both in the frontmatter and the title.
+
+## Emoji Selection Philosophy
+
+### Priority System
+
+Our emoji selection follows a strict priority system to ensure consistency:
+
+1. **Security (Priority 1)** 🔒
+   - Highest priority due to critical nature
+   - Always takes precedence over domain-specific emojis
+   - Used for authentication, authorization, and data protection
+
+2. **Architecture (Priority 2)** 🏗️
+   - Core system design and patterns
+   - Reserved for actual architectural components
+   - Not used for general guidelines or standards
+
+3. **Performance (Priority 3)** 🚀
+   - Performance optimization and improvements
+   - Used when the primary focus is speed/efficiency
+   - Takes precedence over general domain emojis
+
+4. **Testing (Priority 4)** 🧪
+   - Quality assurance and verification
+   - Consistent across all testing-related content
+   - Used for both unit and integration testing
+
+5. **Domain-Specific (Priority 5)**
+   - React (⚛️): Core React concepts and patterns
+   - UI/UX (🎨): Visual and design patterns
+   - Components (🧩): Reusable UI components
+   - Data (📊): Data management and queries
+   - Routing (🌐): Navigation and routing
+   - Forms (✅): Form handling and validation
+
+6. **Supporting Concepts (Priority 6)**
+   - Standards (📐): Code standards and style guides
+   - API (🔌): API integration patterns
+   - Contribution (✍️): Contributing guidelines
+
+7. **Documentation (Priority 7)**
+   - Rules (😄): Rule definitions and guidelines
+   - Documentation (📄): General documentation
+
+### Inheritance Rules
+
+1. **Direct Inheritance**
+   - Child documents can inherit parent's emoji ONLY when representing the same concept
+   - Example: React core files (⚛️) under React domain (⚛️)
+
+2. **Concept Override**
+   - High-priority concepts override domain emojis
+   - Example: Security (🔒) overrides React (⚛️) for security guidelines
+
+3. **Domain Specificity**
+   - Domain-specific emojis take precedence over general tools
+   - Example: Query (📊) over tools (🛠️) for query setup
+
+### Common Patterns
+
+1. **Framework Guidelines**
+
+   ```markdown
+   domains/react/_index.mdc: ⚛️      # Parent domain
+   ├── core.mdc: ⚛️                  # Inherits (same concept)
+   ├── security.mdc: 🔒              # Overrides (security priority)
+   └── forms.mdc: ✅                 # Different concept
+   ```
+
+2. **Core Standards**
+
+   ```markdown
+   domains/core/_index.mdc: 📐       # Standards domain
+   ├── principles.mdc: 📐            # Inherits (same concept)
+   ├── architecture.mdc: 🏗️         # Different concept
+   └── security.mdc: 🔒              # Security priority
+   ```
+
+3. **Feature Domains**
+
+   ```markdown
+   domains/query/_index.mdc: 📊      # Data domain
+   ├── setup.mdc: 📊                 # Inherits (same concept)
+   ├── optimization.mdc: 🚀          # Performance priority
+   └── security.mdc: 🔒              # Security priority
+   ```
+
+### Decision Making Guide
+
+When choosing an emoji, follow this process:
+
+1. **Check Security**
+   - Is this about security? → Use 🔒
+   - Is this about authentication/authorization? → Use 🔒
+
+2. **Check Architecture**
+   - Is this about system design? → Use 🏗️
+   - Is this about core architecture? → Use 🏗️
+
+3. **Check Performance**
+   - Is this about optimization? → Use 🚀
+   - Is this about speed/efficiency? → Use 🚀
+
+4. **Check Testing**
+   - Is this about testing? → Use 🧪
+   - Is this about verification? → Use 🧪
+
+5. **Check Domain**
+   - Is this React-specific? → Use ⚛️
+   - Is this about data? → Use 📊
+   - Is this about routing? → Use 🌐
+
+6. **Check Supporting Concepts**
+   - Is this about standards? → Use 📐
+   - Is this about APIs? → Use 🔌
+
+7. **Default to Documentation**
+   - Is this about rules? → Use 😄
+   - Is this general documentation? → Use 📄
+
+## Validation Rules
+
+### Rule File Structure
+
+1. Every `.mdc` rule file MUST include:
+   - An `emoji` field in the frontmatter
+   - The same emoji at the start of the title
+2. The emoji in the title MUST be followed by a single space
+3. The emoji MUST match the document's primary purpose
+4. Each emoji should be unique within its domain/topic
+5. No emoji should be used for multiple unrelated concepts
+
+### Emoji Uniqueness Rules
+
+1. **Domain Inheritance**:
+   - Parent domains can share emojis with direct children when representing the same concept
+   - Example: React (⚛️) can be used for core React concepts and direct React-specific files
+
+2. **Topic Separation**:
+   - Different topics must use different emojis even within the same domain
+   - Example: React Security (🔒) vs React Forms (✅)
+
+3. **Domain-Specific Priority**:
+   - Domain-specific emojis take precedence over general ones
+   - Example: Query files should use 📊 instead of 🛠️ for setup
+
+4. **Concept Consistency**:
+   - Same concepts across different domains should use the same emoji
+   - Example: Security always uses 🔒, regardless of domain
+
+### Validation Process
+
+When starting a new chat or reviewing files, the AI will:
+
+1. Check for the presence of an emoji in both frontmatter and title
+2. Verify the emojis match
+3. Confirm the emoji is from the approved list
+4. Ensure proper spacing after the title emoji
+5. Validate that the chosen emoji matches the document's purpose
+6. Verify emoji uniqueness within domains
+7. Check for proper emoji inheritance in parent-child relationships
+
+## Approved Emojis and Their Uses
+
+| Category | Emoji | Use Case | Priority | Inheritance Rules |
+|----------|-------|----------|----------|-------------------|
+| Security | 🔒 | Security, authentication, guards | 1 | Can be used across domains for security |
+| Architecture | 🏗️ | System architecture, core principles | 2 | Limited to core architecture concepts |
+| Performance | 🚀 | Performance optimization | 3 | Use for direct performance improvements |
+| Testing | 🧪 | Testing, QA, verification | 4 | Use for all testing-related content |
+| React | ⚛️ | React core concepts | 5 | Only for React-specific guidelines |
+| UI/UX | 🎨 | Frontend design, styling | 5 | For visual and design patterns |
+| Documentation | 📄 | Documentation standards | 5 | For general documentation |
+| Search | 🔍 | Search functionality | 5 | For search-specific features |
+| Tools | 🛠️ | Development tools | 5 | Only when no domain-specific emoji exists |
+| Components | 🧩 | UI components | 5 | For component-specific guidelines |
+| State | ⚡ | State management | 5 | For state-related patterns |
+| Routing | 🌐 | Routing patterns | 5 | For all routing-related content |
+| Data | 📊 | Data handling, queries | 5 | For data management patterns |
+| Forms | ✅ | Form handling, validation | 5 | For form-specific content |
+| Process | 🔄 | Development processes | 5 | For process-related guidelines |
+| Standards | 📐 | Code standards | 6 | For standardization guidelines |
+| API | 🔌 | API integration | 6 | For API-specific content |
+| Contribution | ✍️ | Contributing guidelines | 6 | For contribution-related content |
+| Rules | 😄 | Rule definitions | 7 | For rule documentation |
+
+## Usage Examples
+
+### Correct Emoji Usage
+
+```markdown
+# Domain Parent-Child
+domains/react/_index.mdc: ⚛️ (Parent React domain)
+domains/react/core.mdc: ⚛️ (Core React concepts)
+
+# Different Topics in Same Domain
+domains/react/security.mdc: 🔒 (Security)
+domains/react/forms.mdc: ✅ (Forms)
+
+# Domain-Specific vs General
+domains/query/setup.mdc: 📊 (Query-specific)
+domains/tools/setup.mdc: 🛠️ (General tools)
+
+# Cross-Domain Concepts
+domains/*/security.mdc: 🔒 (Security across all domains)
+```
+
+### Incorrect Emoji Usage
+
+```markdown
+# ❌ Bad - Same emoji for unrelated concepts
+domains/react/components.mdc: 🛠️ (Should be 🧩)
+domains/tools/compiler.mdc: 🛠️ (Correct usage)
+
+# ❌ Bad - General emoji when domain-specific exists
+domains/query/mutations.mdc: 🛠️ (Should be 📊)
+
+# ❌ Bad - Wrong concept emoji
+domains/react/forms.mdc: 📄 (Should be ✅)
+```
+
+## Usage Guidelines
+
+### Topic Selection
+
+1. Choose the most specific emoji for your topic
+2. Follow the priority order for overlapping topics
+3. Use domain-specific emojis over general ones
+4. For equal weight topics:
+   - Use the more specific emoji
+   - Follow directory structure precedence
+   - Prefer domain-specific over general emojis
+
+### Examples
+
+#### Valid Rule Files
+
+```markdown
+---
+description: Component development guidelines
+globs: ['**/*.tsx']
+emoji: '🧩'
+---
+
+# 🧩 Component Guidelines
+```
+
+#### Invalid Rule Files
+
+```markdown
+---
+description: Component development guidelines
+globs: ['**/*.tsx']
+---
+
+# Component Guidelines
+```
+
+## Directory Structure
+
+```zsh
+domains/
+├── core/               # 📐 Standards and principles
+│   ├── principles.mdc  # 📐 Core principles
+│   ├── architecture.mdc# 🏗️ System architecture
+│   └── standards.mdc   # ✅ Code standards
+├── frontend/           # 🎨 Frontend guidelines
+│   ├── react.mdc      # ⚛️ React patterns
+│   ├── typescript.mdc  # ✅ TypeScript standards
+│   └── testing.mdc    # 🧪 Testing guidelines
+└── tanstack/          # 🔌 TanStack integration
+    ├── start.mdc      # 🏗️ Start framework
+    ├── query.mdc      # 📊 Query patterns
+    └── router.mdc     # 🌐 Routing patterns
+
+processes/
+├── consistency/       # 📄 Documentation rules
+├── maintenance/       # 🛠️ Maintenance procedures
+├── migration/        # 🔄 Migration guides
+└── decision-making/  # 📐 Decision processes
+```
+
+## Related Guidelines
+
+- [Verification Process](mdc:.cursor/rules/processes/maintenance/verification.mdc) - 🧪 Verification procedures
+- [Migration Guide](mdc:.cursor/rules/processes/migration/_index.mdc) - 🔄 Migration procedures
+
+### See Also
+
+- [Verification Process](mdc:.cursor/rules/processes/maintenance/verification.mdc) - 🧪 Verification procedures
+- [Migration Guide](mdc:.cursor/rules/processes/migration/_index.mdc) - 🔄 Migration procedures
+
+### Quick Reference Guide
+
+| If the document is about... | Use this emoji | Example file |
+|----------------------------|----------------|---------------|
+| Security/Auth/Guards | 🔒 | `auth/guards.mdc` |
+| System Architecture | 🏗️ | `core/architecture.mdc` |
+| Performance/Speed | 🚀 | `optimization.mdc` |
+| Testing/QA | 🧪 | `testing/unit.mdc` |
+| React Core | ⚛️ | `react/core.mdc` |
+| UI/Design | 🎨 | `frontend/styles.mdc` |
+| Components | 🧩 | `components/button.mdc` |
+| Data/Queries | 📊 | `query/patterns.mdc` |
+| Routing | 🌐 | `router/setup.mdc` |
+| Forms | ✅ | `forms/validation.mdc` |
+| Standards | 📐 | `core/standards.mdc` |
+| APIs | 🔌 | `api/integration.mdc` |
+| Contributing | ✍️ | `contributing.mdc` |
+| Documentation | 📄 | `docs/structure.mdc` |
+
+### Domain-Specific Conventions
+
+#### React Domain (⚛️)
+
+```markdown
+domains/react/
+├── _index.mdc         # ⚛️ React Overview
+├── core.mdc           # ⚛️ Core Concepts (inherits)
+├── components/        # 🧩 Component Guidelines
+│   ├── _index.mdc    # 🧩 Components Overview
+│   ├── buttons.mdc   # 🧩 Button Components
+│   └── forms.mdc     # ✅ Form Components (form priority)
+├── hooks/            # ⚛️ Hook Guidelines
+│   ├── _index.mdc    # ⚛️ Hooks Overview
+│   └── state.mdc     # ⚡ State Management
+├── security/         # 🔒 Security Guidelines
+│   ├── _index.mdc    # 🔒 Security Overview
+│   └── auth.mdc      # 🔒 Authentication
+└── performance/      # 🚀 Performance Guidelines
+    ├── _index.mdc    # 🚀 Performance Overview
+    └── optimization.mdc # 🚀 Optimizations
+```
+
+#### Query Domain (📊)
+
+```markdown
+domains/query/
+├── _index.mdc         # 📊 Query Overview
+├── setup.mdc          # 📊 Setup Guide (inherits)
+├── patterns.mdc       # 📊 Query Patterns
+├── mutations/         # 📊 Mutation Guidelines
+│   ├── _index.mdc    # 📊 Mutations Overview
+│   └── optimistic.mdc # 🚀 Optimistic Updates (performance)
+├── security/         # 🔒 Security Guidelines
+│   ├── _index.mdc    # 🔒 Security Overview
+│   └── validation.mdc # 🔒 Data Validation
+└── caching/          # 📊 Cache Guidelines
+    ├── _index.mdc    # 📊 Cache Overview
+    └── strategies.mdc # 🚀 Cache Optimization
+```
+
+#### Router Domain (🌐)
+
+```markdown
+domains/router/
+├── _index.mdc         # 🌐 Router Overview
+├── setup.mdc          # 🌐 Setup Guide (inherits)
+├── patterns.mdc       # 🌐 Routing Patterns
+├── guards/           # 🔒 Route Guards
+│   ├── _index.mdc    # 🔒 Guards Overview
+│   └── auth.mdc      # 🔒 Auth Guards
+└── optimization/     # 🚀 Performance Guidelines
+    ├── _index.mdc    # 🚀 Performance Overview
+    └── code-splitting.mdc # 🚀 Code Splitting
+```
+
+### Additional Examples
+
+#### Mixed Priority Examples
+
+```markdown
+# Security Always Wins (Priority 1)
+security/auth.mdc: 🔒        # Security over domain
+react/auth/guards.mdc: 🔒    # Security over React
+query/security.mdc: 🔒       # Security over Query
+
+# Architecture Next (Priority 2)
+core/architecture.mdc: 🏗️    # Architecture over domain
+system/design.mdc: 🏗️       # Architecture over system
+
+# Performance Third (Priority 3)
+react/optimization.mdc: 🚀   # Performance over React
+query/caching.mdc: 🚀       # Performance over Query
+
+# Testing Fourth (Priority 4)
+react/testing.mdc: 🧪       # Testing over React
+api/tests.mdc: 🧪          # Testing over API
+```
+
+#### Edge Cases and Resolutions
+
+```markdown
+# Competing Priorities
+forms/validation.mdc: ✅     # Forms (specific) over Tools (general)
+api/forms.mdc: ✅           # Forms (specific) over API (general)
+
+# Inherited vs Override
+react/_index.mdc: ⚛️        # Parent React domain
+react/core.mdc: ⚛️          # Inherits React
+react/security.mdc: 🔒      # Overrides with Security
+react/forms.mdc: ✅         # Overrides with Forms
+
+# Multiple Concepts
+security/forms.mdc: 🔒      # Security wins over Forms
+performance/api.mdc: 🚀     # Performance wins over API
+```
+
+## Migration Guide
+
+### Migration Process
+
+1. **Audit Current State**
+
+   ```markdown
+   # Step 1: Document Current Structure
+   domains/
+   ├── core/               # List current emoji usage
+   ├── frontend/          # Note inconsistencies
+   └── tanstack/          # Mark missing emojis
+   ```
+
+2. **Plan Migration**
+   - Identify high-priority files (security, architecture)
+   - Group files by domain
+   - Note inheritance relationships
+   - Document override cases
+   - Create migration schedule
+
+3. **Migration Steps**
+
+   a. **Security First**
+
+   ```markdown
+   # Step 1: Security Files
+   security/*.mdc → 🔒
+   */security/*.mdc → 🔒
+   auth/*.mdc → 🔒
+   ```
+
+   b. **Architecture Next**
+
+   ```markdown
+   # Step 2: Architecture Files
+   architecture/*.mdc → 🏗️
+   design/*.mdc → 🏗️
+   ```
+
+   c. **Performance and Testing**
+
+   ```markdown
+   # Step 3: Performance and Testing
+   performance/*.mdc → 🚀
+   testing/*.mdc → 🧪
+   ```
+
+   d. **Domain-Specific**
+
+   ```markdown
+   # Step 4: Domain Files
+   react/*.mdc → ⚛️
+   query/*.mdc → 📊
+   router/*.mdc → 🌐
+   ```
+
+4. **Validation Checklist**
+
+   ```markdown
+   # For each file:
+   - [ ] Frontmatter emoji added
+   - [ ] Title emoji matches frontmatter
+   - [ ] Proper spacing after title emoji
+   - [ ] Emoji matches file purpose
+   - [ ] Inheritance rules followed
+   - [ ] Priority system respected
+   ```
+
+### Migration Script Example
+
+```zsh
+#!/usr/bin/env zsh
+
+# Migration helper script
+migrate_emoji() {
+  local file=$1
+  local emoji=$2
+  local title=$3
+
+  # Update frontmatter
+  sed -i '' "s/emoji: '.*'/emoji: '$emoji'/" "$file"
+
+  # Update title
+  sed -i '' "s/^# .*$/# $emoji $title/" "$file"
+
+  echo "✅ Updated $file"
+}
+
+# Usage examples:
+migrate_emoji "security/auth.mdc" "🔒" "Authentication Guidelines"
+migrate_emoji "react/core.mdc" "⚛️" "React Core Concepts"
+```
+
+### Common Migration Challenges
+
+1. **Multiple Concepts**
+
+   ```markdown
+   # Challenge: File covers multiple topics
+   performance/security.mdc  # Which emoji?
+
+   # Solution: Use higher priority
+   performance/security.mdc → 🔒  # Security wins
+   ```
+
+2. **Inherited vs. Override**
+
+   ```markdown
+   # Challenge: When to inherit vs. override
+   react/_index.mdc: ⚛️
+   react/components.mdc  # Inherit ⚛️ or use 🧩?
+
+   # Solution: Use more specific (🧩)
+   ```
+
+3. **Missing Categories**
+
+   ```markdown
+   # Challenge: No emoji matches exactly
+   tooling/misc.mdc  # No specific emoji
+
+   # Solution: Use general category (🛠️)
+   ```
+
+### Migration Verification
+
+1. **Automated Checks**
+
+   ```zsh
+   # Verify frontmatter
+   grep -r "emoji:" .
+
+   # Verify titles
+   grep -r "^# " .
+
+   # Check matching
+   for file in **/*.mdc; do
+     front=$(grep "emoji:" $file | cut -d"'" -f2)
+     title=$(head -n1 $file | cut -d" " -f2)
+     if [[ $front != $title ]]; then
+       echo "Mismatch in $file"
+     fi
+   done
+   ```
+
+2. **Manual Review**
+   - Check priority system application
+   - Verify inheritance patterns
+   - Review override decisions
+   - Validate concept separation
+
+### Post-Migration Tasks
+
+1. **Documentation Updates**
+   - Update navigation files
+   - Update cross-references
+   - Update documentation indexes
+   - Add emoji legend to READMEs
+
+2. **Team Communication**
+   - Share migration completion
+   - Highlight major changes
+   - Provide quick reference
+   - Update contribution guides
+
+3. **Maintenance Plan**
+   - Regular emoji audits
+   - Update process for new files
+   - Review process for changes
+   - Automated validation

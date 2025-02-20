@@ -1,9 +1,10 @@
 ---
 description: TypeScript-specific code style guidelines for maintaining clean, type-safe, and maintainable code.
 globs: ['**/*.{ts,tsx}']
+emoji: '📘'
 ---
 
-# TypeScript Style Guide
+# 📘 TypeScript Style Guide
 
 ## Overview
 
@@ -11,8 +12,9 @@ These guidelines establish TypeScript-specific patterns and best practices for m
 
 ## Related Guidelines
 
-- [React](mdc:react.mdc) - React development guidelines
-- [Testing](mdc:testing.mdc) - Testing guidelines and practices
+- [React](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development guidelines
+- [Testing](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing standards
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards
 
 ## Type System
 

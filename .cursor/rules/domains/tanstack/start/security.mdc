@@ -6,10 +6,12 @@ related:
     'domains/tanstack/start/api.mdc',
     'domains/tanstack/router/guards.mdc',
     'domains/frontend/react/security.mdc',
+    'domains/core/security.mdc',
   ]
+emoji: '🔒'
 ---
 
-# TanStack Start Security Guidelines
+# 🔒 TanStack Start Security Guidelines
 
 ## Overview
 
@@ -384,6 +386,7 @@ export default defineConfig({
 
 ## Related Guidelines
 
-- [API Integration](mdc:domains/tanstack/start/api.mdc) - API integration guidelines
-- [Router Guards](mdc:domains/tanstack/router/guards.mdc) - Route protection guidelines
-- [React Security](mdc:domains/frontend/react/security.mdc) - React security best practices
+- [API Integration](mdc:.cursor/rules/domains/tanstack/start/api.mdc) - API integration guidelines
+- [Router Guards](mdc:.cursor/rules/domains/tanstack/router/guards.mdc) - Route protection guidelines
+- [React Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - React security best practices
+- [Core Security](mdc:.cursor/rules/domains/core/security.mdc) - Core security practices

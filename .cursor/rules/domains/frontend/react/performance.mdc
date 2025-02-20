@@ -3,9 +3,10 @@ description: Performance optimization guidelines for React applications in TanSt
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/frontend/react/core.mdc', 'domains/frontend/react/compiler.mdc']
+emoji: '🚀'
 ---
 
-# React Performance Guidelines
+# 🚀 React Performance Guidelines
 
 ## Overview
 
@@ -308,5 +309,7 @@ function MonitoredComponent() {
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [React Compiler](mdc:domains/frontend/react/compiler.mdc) - React Compiler guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [React Compiler](mdc:.cursor/rules/domains/frontend/react/compiler.mdc) - React Compiler guidelines
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component optimization
+- [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook optimization

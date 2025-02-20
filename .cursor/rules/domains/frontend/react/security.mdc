@@ -2,9 +2,10 @@
 description: Security best practices for React applications in TanStack Start
 globs: ['**/*.{ts,tsx}']
 related: ['domains/frontend/react/core.mdc', 'domains/frontend/react/forms.mdc']
+emoji: '🔒'
 ---
 
-# React Security Guidelines
+# 🔒 React Security Guidelines
 
 ## Overview
 
@@ -253,5 +254,7 @@ function SecureComponent() {
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [Forms](mdc:domains/frontend/react/forms.mdc) - Form implementation guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form implementation guidelines
+- [Core Security](mdc:.cursor/rules/domains/core/security.mdc) - Security best practices
+- [API Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - API security guidelines

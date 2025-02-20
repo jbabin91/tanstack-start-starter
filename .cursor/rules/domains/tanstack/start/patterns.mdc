@@ -1,10 +1,11 @@
 ---
-description: Design patterns and best practices for TanStack Start applications
-globs: ['**/*.{ts,tsx}']
+description: Common patterns and best practices for TanStack Start applications
+globs: ['**/*']
+emoji: '🏗️'
 related: ['domains/tanstack/start/setup.mdc', 'domains/frontend/react/core.mdc']
 ---
 
-# TanStack Start Patterns
+# 🏗️ TanStack Start Patterns
 
 ## Overview
 
@@ -288,5 +289,7 @@ export const Route = createFileRoute('/users/$userId')({
 
 ## Related Guidelines
 
-- [TanStack Start Setup](mdc:domains/tanstack/start/setup.mdc) - Setup guidelines
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [TanStack Start Setup](mdc:.cursor/rules/domains/tanstack/start/setup.mdc) - Setup guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [API Integration](mdc:.cursor/rules/domains/tanstack/start/api.mdc) - API patterns
+- [Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - Security guidelines

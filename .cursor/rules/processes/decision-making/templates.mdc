@@ -1,9 +1,10 @@
 ---
 description: Templates and examples for decision making and evaluation
 globs: ['**/*.mdc']
+emoji: '📋'
 ---
 
-# Decision Making Templates
+# 📋 Decision Making Templates
 
 ## Overview
 
@@ -180,6 +181,6 @@ Brief description of the selected option and its benefits.
 
 ## Related Guidelines
 
-- [Evaluation](mdc:evaluation.mdc) - Evaluation criteria
-- [Planning](mdc:../migration/planning.mdc) - Migration planning
-- [Updates](mdc:../maintenance/updates.mdc) - Update procedures
+- [Evaluation](mdc:.cursor/rules/processes/decision-making/evaluation.mdc) - Evaluation criteria
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Update procedures

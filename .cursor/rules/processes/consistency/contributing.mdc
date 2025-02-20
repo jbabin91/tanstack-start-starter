@@ -3,11 +3,15 @@ description: Guidelines for contributing to documentation rules and maintaining 
 globs: ['**/*.mdc']
 ---
 
-# Contributing Guidelines
+# ✍️ Contributing Guidelines
 
 ## Overview
 
 This document outlines the guidelines and best practices for contributing to documentation rules, ensuring consistency and quality across all contributions.
+
+## Response Format
+
+All documentation and responses must follow the [Emoji Usage Guidelines](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) for consistent topic identification and visual organization.
 
 ## Contribution Process
 
@@ -47,30 +51,55 @@ This document outlines the guidelines and best practices for contributing to doc
    - Include code examples
    - Add clear descriptions
 
-3. **Cross-References**
+## Cross-References
 
-   - Always use `mdc:` prefix for file references (required for Cursor AI)
-   - Use relative paths after the `mdc:` prefix
-   - Example: `[Link Text](mdc:path/to/file.mdc)`
-   - Keep references within `.cursor/rules` directory
-   - Check link validity
-   - Update bidirectional links
-   - Document relationships
+All documentation must use Cursor AI's cross-reference format:
 
-4. **Reference Examples**
+- Use `mdc:` prefix for all documentation references
+- References must include the full path starting with `.cursor/rules/`
+- Use forward slashes for paths
+- Include `.mdc` extension
 
-   ```markdown
-   # ✅ Good - Proper reference format
+**Format Rules:**
 
-   [Migration Guidelines](mdc:processes/migration/planning.mdc)
-   [Core Standards](mdc:domains/core/standards.mdc)
+```markdown
+# ✅ Good - Proper reference format
+[Core Standards](mdc:.cursor/rules/domains/core/standards.mdc)
+[Migration Guide](mdc:.cursor/rules/processes/migration/_index.mdc)
+[Development Rules](mdc:.cursor/rules/_index.mdc)
 
-   # ❌ Bad - Incorrect reference formats
+# ❌ Bad - Incorrect formats
+[Wrong Format](./domains/core/standards.mdc)
+[Wrong Format](/domains/core/standards.mdc)
+[Wrong Format](domains/core/standards.mdc)
+[Wrong Format](mdc:/domains/core/standards.mdc)
+[Wrong Format](mdc:domains/core/standards.mdc)
+```
 
-   [Wrong Link](./processes/migration/planning.mdc)
-   [Wrong Link](/processes/migration/planning.mdc)
-   [Wrong Link](processes/migration/planning.mdc)
-   ```
+**Requirements:**
+
+1. **Prefix**
+   - Always use `mdc:` prefix
+   - Prefix must be lowercase
+   - No space between prefix and path
+
+2. **Path Format**
+   - Must start with `.cursor/rules/`
+   - Use forward slashes
+   - Include `.mdc` extension
+   - No spaces in paths
+
+3. **Path Rules**
+   - Full path required (starting with `.cursor/rules/`)
+   - ASCII characters only
+   - Must point to existing files
+   - Must be within rules directory
+
+4. **Validation**
+   - Links are validated by Cursor AI
+   - Broken links will be flagged
+   - Invalid formats will be rejected
+   - Paths must be exact matches
 
 ## Best Practices
 
@@ -96,21 +125,11 @@ This document outlines the guidelines and best practices for contributing to doc
 
 ## Related Guidelines
 
-- [Updates](mdc:updates.mdc) - Update procedures
-- [Verification](mdc:../maintenance/verification.mdc) - Verification procedures
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Documentation Standards](mdc:.cursor/rules/processes/consistency/documentation.mdc) - Documentation formatting and structure
+- [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Emoji usage guidelines
+- [Verification Process](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Contribution verification
 
-## Example References
+### See Also
 
-```markdown
-# ✅ Good - Proper reference format
-
-[Migration Guidelines](mdc:processes/migration/planning.mdc)
-[Core Standards](mdc:domains/core/standards.mdc)
-
-# ❌ Bad - Incorrect reference formats
-
-[Wrong Link](./processes/migration/planning.mdc) # Missing mdc: prefix
-[Wrong Link](/processes/migration/planning.mdc) # Missing mdc: prefix
-[Wrong Link](processes/migration/planning.mdc) # Missing mdc: prefix
-```
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - 📐 Code standards and style guide
+- [Development Guidelines](mdc:.cursor/rules/_index.mdc) - 📄 Primary documentation index

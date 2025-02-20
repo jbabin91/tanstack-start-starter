@@ -1,15 +1,17 @@
 ---
-description: Guidelines for implementing route guards and protection in TanStack Router
-globs: ['**/*.{ts,tsx}']
+description: Guidelines for implementing route guards in TanStack Router
+globs: ['**/*']
+emoji: '🔒'
 related:
   [
     'domains/tanstack/router/setup.mdc',
     'domains/tanstack/router/patterns.mdc',
     'domains/frontend/react/security.mdc',
+    'domains/core/security.mdc',
   ]
 ---
 
-# TanStack Router Guards
+# 🔒 TanStack Router Guards
 
 ## Overview
 
@@ -282,6 +284,7 @@ export function requireCustomAccess() {
 
 ## Related Guidelines
 
-- [Router Setup](mdc:domains/tanstack/router/setup.mdc) - Router configuration
-- [Router Patterns](mdc:domains/tanstack/router/patterns.mdc) - Router patterns
-- [Security](mdc:domains/frontend/react/security.mdc) - Security guidelines
+- [Router Setup](mdc:.cursor/rules/domains/tanstack/router/setup.mdc) - Router configuration
+- [Router Patterns](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc) - Router patterns
+- [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - Security guidelines
+- [Core Security](mdc:.cursor/rules/domains/core/security.mdc) - Core security practices

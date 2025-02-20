@@ -1,0 +1,27 @@
+---
+description: Index of React development guidelines and best practices
+globs: ['**/*.{tsx,jsx}']
+emoji: '⚛️'
+---
+
+# ⚛️ React Development Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for React development, covering components, hooks, forms, security, and performance optimization.
+
+## Quick Links
+
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component patterns and practices
+- [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook patterns and best practices
+- [State](mdc:.cursor/rules/domains/frontend/react/state.mdc) - State management patterns
+- [Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form handling and validation
+- [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - React security best practices
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance optimization techniques
+- [Compiler](mdc:.cursor/rules/domains/frontend/react/compiler.mdc) - React compiler configuration and usage
+
+## Related Guidelines
+
+- [TypeScript](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript guidelines
+- [Testing](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing standards
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards

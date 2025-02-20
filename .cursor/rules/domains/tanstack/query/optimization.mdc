@@ -6,10 +6,12 @@ related:
     'domains/tanstack/query/setup.mdc',
     'domains/tanstack/query/patterns.mdc',
     'domains/frontend/react/performance.mdc',
+    'domains/frontend/react/core.mdc',
   ]
+emoji: '🚀'
 ---
 
-# TanStack Query Optimization
+# 🚀 TanStack Query Optimization Guidelines
 
 ## Overview
 
@@ -261,6 +263,7 @@ const queryClient = new QueryClient({
 
 ## Related Guidelines
 
-- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query setup and configuration
-- [Query Patterns](mdc:domains/tanstack/query/patterns.mdc) - Query patterns and best practices
-- [Performance](mdc:domains/frontend/react/performance.mdc) - React performance optimization
+- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query setup and configuration
+- [Query Patterns](mdc:.cursor/rules/domains/tanstack/query/patterns.mdc) - Query patterns and best practices
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - React performance optimization
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns

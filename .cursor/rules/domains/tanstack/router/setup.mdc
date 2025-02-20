@@ -3,9 +3,10 @@ description: Setup and configuration guidelines for TanStack Router in TanStack 
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/tanstack/router/patterns.mdc', 'domains/frontend/react/core.mdc']
+emoji: '🌐'
 ---
 
-# TanStack Router Setup Guidelines
+# 🌐 TanStack Router Setup Guidelines
 
 ## Overview
 
@@ -340,6 +341,7 @@ export const Route = createFileRoute('/users/')({
 
 ## Related Guidelines
 
-- [Router Patterns](mdc:domains/tanstack/router/patterns.mdc) - Router patterns and best practices
-- [Router Guards](mdc:domains/tanstack/router/guards.mdc) - Route protection and authorization
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
+- [Router Patterns](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc) - Router patterns and best practices
+- [Router Guards](mdc:.cursor/rules/domains/tanstack/router/guards.mdc) - Route protection and authorization
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - Security guidelines

@@ -6,10 +6,12 @@ related:
     'domains/tanstack/query/setup.mdc',
     'domains/tanstack/start/security.mdc',
     'domains/frontend/react/error-handling.mdc',
+    'domains/core/security.mdc',
   ]
+emoji: '🔌'
 ---
 
-# TanStack Start API Guidelines
+# 🔌 TanStack Start API Guidelines
 
 ## Overview
 
@@ -288,6 +290,7 @@ async function fetchUsers(params: PaginationParams) {
 
 ## Related Guidelines
 
-- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query client configuration
-- [Security](mdc:domains/tanstack/start/security.mdc) - Security guidelines
-- [Error Handling](mdc:domains/frontend/react/error-handling.mdc) - Error handling patterns
+- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query client configuration
+- [Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - Security guidelines
+- [Error Handling](mdc:.cursor/rules/domains/frontend/react/error-handling.mdc) - Error handling patterns
+- [Core Security](mdc:.cursor/rules/domains/core/security.mdc) - Core security practices

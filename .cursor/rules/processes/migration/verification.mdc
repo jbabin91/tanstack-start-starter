@@ -245,6 +245,6 @@ generate_report() {
 
 ## Related Guidelines
 
-- [Planning](mdc:planning.mdc) - Migration planning
-- [Execution](mdc:execution.mdc) - Migration execution
-- [Templates](mdc:../decision-making/templates.mdc) - Document templates
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning
+- [Execution](mdc:.cursor/rules/processes/migration/execution.mdc) - Migration execution
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates

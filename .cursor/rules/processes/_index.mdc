@@ -1,9 +1,10 @@
 ---
 description: Overview and quick reference for all process documentation
 globs: ['**/*.mdc']
+emoji: '🔄'
 ---
 
-# Process Documentation
+# 🔄 Process Documentation
 
 ## Overview
 
@@ -15,21 +16,21 @@ This directory contains all process-related documentation, organized by type:
 
 ## Quick Reference
 
-### Migration Processes
+### Migration
 
-- [Planning](mdc:migration/planning.mdc) - Migration planning guidelines
-- [Execution](mdc:migration/execution.mdc) - Migration execution steps
-- [Verification](mdc:migration/verification.mdc) - Migration verification procedures
+- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration planning guidelines
+- [Execution](mdc:.cursor/rules/processes/migration/execution.mdc) - Migration execution steps
+- [Verification](mdc:.cursor/rules/processes/migration/verification.mdc) - Migration verification procedures
 
 ### Decision Making
 
-- [Evaluation](mdc:decision-making/evaluation.mdc) - Evaluation criteria and scoring
-- [Templates](mdc:decision-making/templates.mdc) - Templates and examples
+- [Evaluation](mdc:.cursor/rules/processes/decision-making/evaluation.mdc) - Evaluation criteria and scoring
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Templates and examples
 
 ### Maintenance
 
-- [Updates](mdc:maintenance/updates.mdc) - Update procedures
-- [Verification](mdc:maintenance/verification.mdc) - Verification procedures
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Update procedures
+- [Verification](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Verification procedures
 
 ## Directory Structure
 
@@ -94,6 +95,6 @@ processes/
 
 ## Related Guidelines
 
-- [Migration](mdc:migration/planning.mdc) - Migration guidelines
-- [Evaluation](mdc:decision-making/evaluation.mdc) - Decision making framework
-- [Updates](mdc:maintenance/updates.mdc) - Maintenance procedures
+- [Migration](mdc:.cursor/rules/processes/migration/planning.mdc) - Migration guidelines
+- [Evaluation](mdc:.cursor/rules/processes/decision-making/evaluation.mdc) - Decision making framework
+- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Maintenance procedures

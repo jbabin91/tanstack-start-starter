@@ -6,10 +6,12 @@ related:
     'domains/tanstack/query/setup.mdc',
     'domains/tanstack/query/patterns.mdc',
     'domains/frontend/react/forms.mdc',
+    'domains/frontend/react/error-handling.mdc',
   ]
+emoji: '📊'
 ---
 
-# TanStack Query Mutation Guidelines
+# 📊 TanStack Query Mutations
 
 ## Overview
 
@@ -236,6 +238,7 @@ function useDeleteUser() {
 
 ## Related Guidelines
 
-- [Query Setup](mdc:domains/tanstack/query/setup.mdc) - Query client configuration
-- [Query Patterns](mdc:domains/tanstack/query/patterns.mdc) - Query patterns and best practices
-- [Form Handling](mdc:domains/frontend/react/forms.mdc) - Form implementation guidelines
+- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query client configuration
+- [Query Patterns](mdc:.cursor/rules/domains/tanstack/query/patterns.mdc) - Query patterns and best practices
+- [Form Handling](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form implementation guidelines
+- [Error Handling](mdc:.cursor/rules/domains/frontend/react/error-handling.mdc) - Error handling patterns

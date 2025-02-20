@@ -1,0 +1,22 @@
+---
+description: Index of TanStack Router guidelines and best practices
+globs: ['**/*']
+emoji: '🌐'
+---
+
+# 🌐 TanStack Router Guidelines
+
+## Overview
+
+This section contains comprehensive guidelines for using TanStack Router, covering setup, patterns, and route guards.
+
+## Quick Links
+
+- [Setup](mdc:.cursor/rules/domains/tanstack/router/setup.mdc) - Router setup and configuration
+- [Patterns](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc) - Common routing patterns
+- [Guards](mdc:.cursor/rules/domains/tanstack/router/guards.mdc) - Route guard implementation
+
+## Related Guidelines
+
+- [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start framework guidelines
+- [Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - Security best practices

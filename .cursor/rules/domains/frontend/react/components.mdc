@@ -3,9 +3,10 @@ description: Guidelines for creating and organizing React components in TanStack
 globs: ['**/*.{ts,tsx}']
 related:
   ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
+emoji: '🧩'
 ---
 
-# React Component Guidelines
+# 🧩 React Component Guidelines
 
 ## Overview
 
@@ -243,8 +244,10 @@ features/
 
 ## Related Guidelines
 
-- [Core React](mdc:domains/frontend/react/core.mdc) - Core React patterns
-- [Performance](mdc:domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance optimization guidelines
+- [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook patterns
+- [Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form components
 
 ## Hooks Usage
 

@@ -1,0 +1,32 @@
+---
+description: Index of all domain-specific development guidelines
+globs: ['**/*']
+emoji: '📄'
+---
+
+# 📄 Domain Guidelines
+
+## Overview
+
+This section organizes development guidelines by domain, providing comprehensive coverage of core principles, frontend development, and TanStack framework usage.
+
+## Quick Links
+
+### Core Development
+
+- [Core Guidelines](mdc:.cursor/rules/domains/core/_index.mdc) - Fundamental development principles and standards
+
+### Frontend Development
+
+- [Frontend Guidelines](mdc:.cursor/rules/domains/frontend/_index.mdc) - Frontend development patterns and practices
+
+### TanStack Development
+
+- [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start framework guidelines
+- [Query Guidelines](mdc:.cursor/rules/domains/tanstack/query/_index.mdc) - TanStack Query patterns
+- [Router Guidelines](mdc:.cursor/rules/domains/tanstack/router/_index.mdc) - TanStack Router patterns
+
+## Related Guidelines
+
+- [Process Guidelines](mdc:.cursor/rules/processes/_index.mdc) - Development processes and procedures
+- [Contributing Guidelines](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution standards

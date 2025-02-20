@@ -9,9 +9,10 @@ related:
     'domains/frontend/react/components.mdc',
     'domains/tanstack/start/setup.mdc',
   ]
+emoji: '⚛️'
 ---
 
-# Core React Patterns
+# ⚛️ Core React Guidelines
 
 ## Overview
 
@@ -107,5 +108,7 @@ features/
 
 ## Related Guidelines
 
-- [TypeScript](mdc:domains/frontend/typescript.mdc) - TypeScript guidelines
-- [Testing](mdc:domains/frontend/testing.mdc) - Testing guidelines and practices
+- [TypeScript](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript guidelines
+- [Testing](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing guidelines and practices
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component patterns
+- [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook patterns
