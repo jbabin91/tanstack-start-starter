@@ -1,9 +1,6 @@
 ---
 description: Guidelines for implementing forms in TanStack Start applications using TanStack Form and Zod
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/frontend/react/core.mdc', 'domains/frontend/react/components.mdc']
-emoji: '✅'
 ---
 
 # ✅ React Forms Guidelines

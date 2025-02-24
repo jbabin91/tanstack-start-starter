@@ -1,9 +1,6 @@
 ---
 description: Guidelines for React compiler configuration and optimization
 globs: ['**/*.{tsx,jsx}']
-emoji: '🛠️'
-related:
-  ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
 ---
 
 # 🛠️ React Compiler Guidelines

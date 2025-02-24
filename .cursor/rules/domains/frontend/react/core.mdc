@@ -1,15 +1,6 @@
 ---
 description: Core React patterns and best practices for TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/frontend/typescript.mdc',
-    'domains/frontend/testing.mdc',
-    'domains/frontend/react/performance.mdc',
-    'domains/frontend/react/components.mdc',
-    'domains/tanstack/start/setup.mdc',
-  ]
-emoji: '⚛️'
 ---
 
 # ⚛️ Core React Guidelines

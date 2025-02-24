@@ -1,27 +1,6 @@
 ---
 description: Common patterns and best practices for using TanStack Query in our TanStack Start application, focusing on query definitions, caching strategies, and state management.
 globs: ['**/*.{ts,tsx}']
-emoji: '📊'
-related:
-  [
-    'domains/tanstack/query/setup.mdc',
-    'domains/tanstack/router/patterns.mdc',
-    'domains/frontend/react/core.mdc',
-    'domains/frontend/react/performance.mdc',
-  ]
-tags:
-  [
-    'tanstack',
-    'query',
-    'patterns',
-    'start',
-    'data-management',
-    'caching',
-    'state',
-  ]
-version: '1.0.0'
-created: '2024-03-21'
-updated: '2024-03-21'
 ---
 
 # 📊 TanStack Query Patterns

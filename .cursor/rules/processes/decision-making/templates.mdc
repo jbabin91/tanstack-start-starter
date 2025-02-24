@@ -1,7 +1,6 @@
 ---
 description: Templates and examples for decision making and evaluation
 globs: ['**/*.mdc']
-emoji: '📋'
 ---
 
 # 📋 Decision Making Templates

@@ -1,7 +1,6 @@
 ---
 description: System architecture and design patterns for building maintainable, scalable applications.
 globs: ['**/*']
-emoji: '🏗️'
 ---
 
 # 🏗️ System Architecture

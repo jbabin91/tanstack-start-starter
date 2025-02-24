@@ -1,9 +1,6 @@
 ---
 description: Setup and configuration guidelines for TanStack Router in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/tanstack/router/patterns.mdc', 'domains/frontend/react/core.mdc']
-emoji: '🌐'
 ---
 
 # 🌐 TanStack Router Setup Guidelines

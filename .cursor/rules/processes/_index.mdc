@@ -1,7 +1,6 @@
 ---
 description: Overview and quick reference for all process documentation
 globs: ['**/*.mdc']
-emoji: '🔄'
 ---
 
 # 🔄 Process Documentation

@@ -1,14 +1,6 @@
 ---
 description: Guidelines for implementing API integration in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/tanstack/query/setup.mdc',
-    'domains/tanstack/start/security.mdc',
-    'domains/frontend/react/error-handling.mdc',
-    'domains/core/security.mdc',
-  ]
-emoji: '🔌'
 ---
 
 # 🔌 TanStack Start API Guidelines

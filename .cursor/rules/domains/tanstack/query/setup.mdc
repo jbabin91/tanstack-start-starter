@@ -1,9 +1,6 @@
 ---
 description: Setup and configuration guidelines for TanStack Query in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/tanstack/query/patterns.mdc', 'domains/frontend/react/core.mdc']
-emoji: '📊'
 ---
 
 # 📊 TanStack Query Setup Guidelines

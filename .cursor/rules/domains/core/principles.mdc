@@ -1,7 +1,6 @@
 ---
 description: Core development principles, consistency standards, and quality guidelines for writing maintainable, reliable, and predictable code.
 globs: ['**/*']
-emoji: '📐'
 ---
 
 # 📐 Core Development Principles

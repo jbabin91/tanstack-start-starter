@@ -1,9 +1,6 @@
 ---
 description: Guidelines for using React hooks effectively in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/frontend/react/core.mdc', 'domains/frontend/react/performance.mdc']
-emoji: '⚛️'
 ---
 
 # ⚛️ React Hooks Guidelines

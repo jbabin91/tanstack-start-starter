@@ -1,7 +1,6 @@
 ---
 description: Comprehensive code style, structure, and quality standards for maintaining clean, consistent, and maintainable code across all languages and frameworks.
 globs: ['**/*']
-emoji: '📐'
 ---
 
 # 📐 Code Standards and Style Guidelines

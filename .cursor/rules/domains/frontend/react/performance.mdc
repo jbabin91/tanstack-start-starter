@@ -1,9 +1,6 @@
 ---
 description: Performance optimization guidelines for React applications in TanStack Start
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/frontend/react/core.mdc', 'domains/frontend/react/compiler.mdc']
-emoji: '🚀'
 ---
 
 # 🚀 React Performance Guidelines

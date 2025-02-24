@@ -1,7 +1,6 @@
 ---
 description: Index of migration process guidelines and procedures
 globs: ['**/*']
-emoji: '🔄'
 ---
 
 # 🔄 Migration Process Guidelines

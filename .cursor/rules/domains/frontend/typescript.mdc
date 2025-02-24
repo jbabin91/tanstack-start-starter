@@ -1,7 +1,6 @@
 ---
 description: TypeScript-specific code style guidelines for maintaining clean, type-safe, and maintainable code.
 globs: ['**/*.{ts,tsx}']
-emoji: '📘'
 ---
 
 # 📘 TypeScript Style Guide

@@ -1,7 +1,6 @@
 ---
 description: Shell scripting standards and best practices, with a focus on zsh
 globs: ['**/*.{sh,zsh}', '**/scripts/*']
-emoji: '💻'
 ---
 
 # 💻 Shell Scripting Standards

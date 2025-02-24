@@ -1,8 +1,6 @@
 ---
 description: Common patterns and best practices for TanStack Start applications
 globs: ['**/*']
-emoji: '🏗️'
-related: ['domains/tanstack/start/setup.mdc', 'domains/frontend/react/core.mdc']
 ---
 
 # 🏗️ TanStack Start Patterns

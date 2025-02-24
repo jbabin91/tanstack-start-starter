@@ -1,7 +1,6 @@
 ---
 description: Index of core development principles and standards
 globs: ['**/*']
-emoji: '📐'
 ---
 
 # 📐 Core Development Guidelines

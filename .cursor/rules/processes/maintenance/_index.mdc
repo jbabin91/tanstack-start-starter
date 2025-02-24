@@ -1,7 +1,6 @@
 ---
 description: Overview of documentation maintenance procedures and guidelines
 globs: ['**/*.mdc']
-emoji: '🔧'
 ---
 
 # 🔧 Documentation Maintenance

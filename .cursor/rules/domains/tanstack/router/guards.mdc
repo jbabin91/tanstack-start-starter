@@ -1,14 +1,6 @@
 ---
 description: Guidelines for implementing route guards in TanStack Router
 globs: ['**/*']
-emoji: '🔒'
-related:
-  [
-    'domains/tanstack/router/setup.mdc',
-    'domains/tanstack/router/patterns.mdc',
-    'domains/frontend/react/security.mdc',
-    'domains/core/security.mdc',
-  ]
 ---
 
 # 🔒 TanStack Router Guards

@@ -1,7 +1,6 @@
 ---
 description: Primary navigation and index for all development rules and guidelines, organized by domain and responsibility.
 globs: ['**/*']
-emoji: '📄'
 ---
 
 # 📄 Development Rules and Guidelines

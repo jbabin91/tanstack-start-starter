@@ -1,8 +1,6 @@
 ---
 description: Security best practices for React applications in TanStack Start
 globs: ['**/*.{ts,tsx}']
-related: ['domains/frontend/react/core.mdc', 'domains/frontend/react/forms.mdc']
-emoji: '🔒'
 ---
 
 # 🔒 React Security Guidelines

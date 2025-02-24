@@ -1,7 +1,6 @@
 ---
 description: Index of React development guidelines and best practices
 globs: ['**/*.{tsx,jsx}']
-emoji: '⚛️'
 ---
 
 # ⚛️ React Development Guidelines

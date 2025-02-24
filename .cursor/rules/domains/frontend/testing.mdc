@@ -1,7 +1,6 @@
 ---
 description: Comprehensive testing standards and quality assurance practices for TanStack Start applications.
 globs: ['**/*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}']
-emoji: '🧪'
 ---
 
 # 🧪 Testing and Quality Assurance Guidelines

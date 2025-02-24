@@ -1,7 +1,6 @@
 ---
 description: Comprehensive guidelines for emoji usage in documentation and rules
 globs: ['**/*.mdc', '**/*']
-emoji: '😄'
 ---
 
 # 😄 Emoji Rules

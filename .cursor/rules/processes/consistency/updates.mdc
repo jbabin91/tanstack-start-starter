@@ -1,7 +1,6 @@
 ---
 description: Guidelines for updating and maintaining documentation rules
 globs: ['**/*.mdc']
-emoji: '🔄'
 ---
 
 # 🔄 Rule Updates

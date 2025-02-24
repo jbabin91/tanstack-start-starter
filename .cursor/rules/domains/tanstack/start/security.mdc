@@ -1,14 +1,6 @@
 ---
 description: Security guidelines for TanStack Start applications using better-auth
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/tanstack/start/api.mdc',
-    'domains/tanstack/router/guards.mdc',
-    'domains/frontend/react/security.mdc',
-    'domains/core/security.mdc',
-  ]
-emoji: '🔒'
 ---
 
 # 🔒 TanStack Start Security Guidelines

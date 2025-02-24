@@ -1,7 +1,6 @@
 ---
 description: Index of consistency-related documentation rules and guidelines
 globs: ['**/*.mdc']
-emoji: '📋'
 ---
 
 # 📋 Consistency Guidelines

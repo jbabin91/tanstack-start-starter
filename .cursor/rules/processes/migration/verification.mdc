@@ -106,9 +106,9 @@ verify_references() {
   print "Checking for missing mdc: prefix..."
   for file in $base_dir/**/*.mdc(.); do
     if [[ -f $file ]]; then
-      if grep -o '\[.*\]([^)]*)' $file | grep -v '^mdc:' | grep -q '\.mdc'; then
+      if grep -o '\[.*\](mdc:[^)]*)' $file | grep -v '^mdc:' | grep -q '\.mdc'; then
         print "❌ Found .mdc references without mdc: prefix in: $file"
-        grep -o '\[.*\]([^)]*)' $file | grep -v '^mdc:' | grep '\.mdc' | while read -r ref; do
+        grep -o '\[.*\](mdc:[^)]*)' $file | grep -v '^mdc:' | grep '\.mdc' | while read -r ref; do
           print "   - $ref"
         done
         issues_found=1

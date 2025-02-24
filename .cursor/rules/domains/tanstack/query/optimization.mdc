@@ -1,14 +1,6 @@
 ---
 description: Performance optimization guidelines for TanStack Query in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/tanstack/query/setup.mdc',
-    'domains/tanstack/query/patterns.mdc',
-    'domains/frontend/react/performance.mdc',
-    'domains/frontend/react/core.mdc',
-  ]
-emoji: '🚀'
 ---
 
 # 🚀 TanStack Query Optimization Guidelines

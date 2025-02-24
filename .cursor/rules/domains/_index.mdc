@@ -1,7 +1,6 @@
 ---
 description: Index of all domain-specific development guidelines
 globs: ['**/*']
-emoji: '📄'
 ---
 
 # 📄 Domain Guidelines

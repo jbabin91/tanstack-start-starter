@@ -1,15 +1,6 @@
 ---
 description: Setup and configuration guidelines for TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/tanstack/start/patterns.mdc',
-    'domains/tanstack/start/security.mdc',
-    'domains/tanstack/router/setup.mdc',
-    'domains/tanstack/query/setup.mdc',
-    'domains/frontend/react/core.mdc',
-  ]
-emoji: '🛠️'
 ---
 
 # 🛠️ TanStack Start Setup Guidelines

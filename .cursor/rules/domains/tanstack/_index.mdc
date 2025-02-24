@@ -1,7 +1,6 @@
 ---
 description: Index of TanStack framework guidelines and best practices
 globs: ['**/*']
-emoji: '⚡'
 ---
 
 # ⚡ TanStack Framework Guidelines

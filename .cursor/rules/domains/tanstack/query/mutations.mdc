@@ -1,14 +1,6 @@
 ---
 description: Guidelines for implementing mutations with TanStack Query in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  [
-    'domains/tanstack/query/setup.mdc',
-    'domains/tanstack/query/patterns.mdc',
-    'domains/frontend/react/forms.mdc',
-    'domains/frontend/react/error-handling.mdc',
-  ]
-emoji: '📊'
 ---
 
 # 📊 TanStack Query Mutations

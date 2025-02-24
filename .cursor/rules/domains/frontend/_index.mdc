@@ -1,7 +1,6 @@
 ---
 description: Index of frontend development guidelines and best practices
 globs: ['**/*.{ts,tsx,js,jsx}']
-emoji: '🎨'
 ---
 
 # 🎨 Frontend Development Guidelines

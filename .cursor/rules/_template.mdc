@@ -1,7 +1,6 @@
 ---
 description: Purpose of this document
 globs: ['**/*.{ts,tsx}']
-emoji: '📐'
 ---
 
 # 📐 Title

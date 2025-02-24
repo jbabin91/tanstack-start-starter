@@ -1,9 +1,6 @@
 ---
 description: Design patterns and best practices for using TanStack Router in TanStack Start applications
 globs: ['**/*.{ts,tsx}']
-related:
-  ['domains/tanstack/router/setup.mdc', 'domains/frontend/react/core.mdc']
-emoji: '🌐'
 ---
 
 # 🌐 TanStack Router Patterns
