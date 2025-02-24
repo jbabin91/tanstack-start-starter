@@ -1,219 +1,265 @@
 ---
-description: Common patterns and best practices for TanStack Query
-globs: ['**/*']
+description: Common patterns and best practices for using TanStack Query in our TanStack Start application, focusing on query definitions, caching strategies, and state management.
+globs: ['**/*.{ts,tsx}']
 emoji: '📊'
 related:
   [
     'domains/tanstack/query/setup.mdc',
-    'domains/tanstack/query/optimization.mdc',
+    'domains/tanstack/router/patterns.mdc',
     'domains/frontend/react/core.mdc',
     'domains/frontend/react/performance.mdc',
   ]
+tags:
+  [
+    'tanstack',
+    'query',
+    'patterns',
+    'start',
+    'data-management',
+    'caching',
+    'state',
+  ]
+version: '1.0.0'
+created: '2024-03-21'
+updated: '2024-03-21'
 ---
 
 # 📊 TanStack Query Patterns
 
 ## Overview
 
-These guidelines establish best practices for implementing queries and mutations in our TanStack Start application, focusing on type safety, error handling, and data management patterns.
+These guidelines establish patterns and best practices for using TanStack Query in our TanStack Start application, focusing on query definitions, caching strategies, and state management.
 
-## Type Definitions
+## Query Definitions
+
+### Using `queryOptions`
 
 ```typescript
-// ✅ Good - Type definitions for queries and mutations
-// app/types/query.ts
-import { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
+// ✅ Good - Define reusable query options
+// app/features/users/hooks/useUser.ts
+import { queryOptions, useQuery } from '@tanstack/react-query';
+import { $getUser } from '../api';
 
-// Generic query result type
-export type QueryResult<TData> = UseQueryResult<TData, Error>;
+export const userQuery = queryOptions({
+  queryKey: ['user'] as const,
+  queryFn: () => $getUser(),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  cacheTime: 10 * 60 * 1000, // 10 minutes
+});
 
-// Generic mutation result type
-export type MutationResult<TData, TVariables> = UseMutationResult<
-  TData,
-  Error,
-  TVariables
->;
-
-// API error type
-export interface ApiError {
-  code: string;
-  message: string;
-  status: number;
+// Hook using the query options
+export function useUser() {
+  return useQuery(userQuery);
 }
 
-// Query key factory
-export const createQueryKeys = <T extends string>(prefix: T) => {
-  return {
-    all: [prefix] as const,
-    lists: () => [...createQueryKeys(prefix).all, 'list'] as const,
-    list: (filters: string) =>
-      [...createQueryKeys(prefix).lists(), filters] as const,
-    details: () => [...createQueryKeys(prefix).all, 'detail'] as const,
-    detail: (id: string) => [...createQueryKeys(prefix).details(), id] as const,
+// Helper for ensuring data
+export function ensureUser(queryClient: QueryClient) {
+  return queryClient.ensureQueryData(userQuery);
+}
+
+// ❌ Bad - Inline query options
+function useUser() {
+  return useQuery({
+    queryKey: ['user'],
+    queryFn: () => $getUser(),
+  });
+}
+```
+
+### Query Key Management
+
+```typescript
+// ✅ Good - Type-safe query keys
+// app/features/todos/hooks/useTodos.ts
+import { $getTodoList, $getTodoDetail } from '../api';
+import type { TodoFilters } from '../types';
+
+const todoKeys = {
+  all: ['todos'] as const,
+  lists: () => [...todoKeys.all, 'list'] as const,
+  list: (filters: TodoFilters) => [...todoKeys.lists(), filters] as const,
+  details: () => [...todoKeys.all, 'detail'] as const,
+  detail: (id: string) => [...todoKeys.details(), id] as const,
+} as const;
+
+export const todoListQuery = queryOptions({
+  queryKey: todoKeys.lists(),
+  queryFn: () => $getTodoList(),
+});
+
+export const todoDetailQuery = (id: string) =>
+  queryOptions({
+    queryKey: todoKeys.detail(id),
+    queryFn: () => $getTodoDetail(id),
+  });
+```
+
+## Authentication State Management
+
+### Sign Out Pattern
+
+```typescript
+// ✅ Good - Clean sign out with proper state management
+// app/components/layout/header.tsx
+function Header() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: user } = useUser();
+
+  const handleSignOut = async () => {
+    // 1. Sign out from auth service
+    await authClient.signOut();
+
+    // 2. Reset query cache to trigger refetch and update observers
+    await queryClient.resetQueries({ queryKey: userQuery.queryKey });
+
+    // 3. Navigate to appropriate page
+    await router.navigate({ to: '/' });
   };
+
+  return (
+    // ... header JSX
+  );
+}
+
+// ❌ Bad - Incomplete state cleanup
+const handleSignOut = async () => {
+  await authClient.signOut();
+  // Missing query cache cleanup
+  await router.navigate({ to: '/' });
 };
 ```
 
-## API Integration
+### Auth-Aware Queries
 
 ```typescript
-// ✅ Good - API integration with TanStack Query
-// app/lib/api.ts
-import axios from 'axios';
-import { queryClient } from './query';
+// ✅ Good - Query that depends on auth state
+// app/features/dashboard/hooks/useDashboard.ts
+import { $getDashboardData } from '../api';
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
+export const dashboardQuery = queryOptions({
+  queryKey: ['dashboard'] as const,
+  queryFn: () => $getDashboardData(),
+  enabled: !!useUser().data, // Only run if user is logged in
+  retry: (failureCount, error) => {
+    // Don't retry on auth errors
+    if (error instanceof AuthError) return false;
+    return failureCount < 3;
   },
 });
+```
 
-// Add response interceptor for error handling
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      // Clear all queries on unauthorized
-      queryClient.clear();
-      // Redirect to login
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
+## Prefetching and Ensuring Data
+
+### Route Loaders
+
+```typescript
+// ✅ Good - Route with ensured data
+// app/routes/dashboard.tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: async ({ context: { queryClient } }) => {
+    // Ensure critical data is available
+    const user = await ensureUser(queryClient);
+    const settings = await ensureSettings(queryClient);
+
+    return { user, settings };
   },
-);
+  component: DashboardComponent,
+});
+```
 
-// Add request interceptor for authentication
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+### Parallel Data Loading
+
+```typescript
+// ✅ Good - Load related data in parallel
+// app/features/users/hooks/useUserProfile.ts
+export const userProfileQuery = queryOptions({
+  queryKey: ['user-profile'] as const,
+  queryFn: async ({ queryClient }) => {
+    const [user, preferences, notifications] = await Promise.all([
+      queryClient.ensureQueryData(userQuery),
+      queryClient.ensureQueryData(preferencesQuery),
+      queryClient.ensureQueryData(notificationsQuery),
+    ]);
+
+    return { user, preferences, notifications };
+  },
 });
 ```
 
 ## Error Handling
 
+### Query Error Boundaries
+
 ```typescript
-// ✅ Good - Error handling setup
-// app/lib/error.ts
-export class QueryError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public status: number,
-  ) {
-    super(message);
-    this.name = 'QueryError';
+// ✅ Good - Error handling with boundaries
+// app/features/users/components/user-profile.tsx
+function UserProfile() {
+  const { data, error } = useUser();
+
+  if (error) {
+    if (error instanceof AuthError) {
+      return <SignInPrompt />;
+    }
+    if (error instanceof NotFoundError) {
+      return <UserNotFound />;
+    }
+    return <ErrorDisplay error={error} />;
   }
+
+  return <UserProfileContent user={data} />;
 }
+```
 
-// Error handling utilities
-export function handleQueryError(error: unknown): QueryError {
-  if (error instanceof QueryError) {
-    return error;
-  }
+## Optimistic Updates
 
-  if (axios.isAxiosError(error)) {
-    return new QueryError(
-      error.response?.data?.message || 'An error occurred',
-      error.response?.data?.code || 'UNKNOWN_ERROR',
-      error.response?.status || 500,
-    );
-  }
+### Mutation with Optimistic Update
 
-  return new QueryError('An unexpected error occurred', 'UNKNOWN_ERROR', 500);
-}
+```typescript
+// ✅ Good - Mutation with optimistic update
+// app/features/todos/hooks/useTodoMutations.ts
+import { $updateTodo } from '../api';
 
-// Usage in query functions
-function useUser(userId: string) {
-  return useQuery({
-    queryKey: ['user', userId],
-    queryFn: async () => {
-      try {
-        const { data } = await api.get<User>(`/users/${userId}`);
-        return data;
-      } catch (error) {
-        throw handleQueryError(error);
-      }
+export const useUpdateTodo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: $updateTodo,
+    onMutate: async (newTodo) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: todoKeys.detail(newTodo.id),
+      });
+
+      // Snapshot previous value
+      const previousTodo = queryClient.getQueryData(
+        todoKeys.detail(newTodo.id),
+      );
+
+      // Optimistically update
+      queryClient.setQueryData(todoKeys.detail(newTodo.id), newTodo);
+
+      return { previousTodo };
+    },
+    onError: (err, newTodo, context) => {
+      // Restore previous value on error
+      queryClient.setQueryData(
+        todoKeys.detail(newTodo.id),
+        context?.previousTodo,
+      );
+    },
+    onSettled: (newTodo) => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({
+        queryKey: todoKeys.detail(newTodo.id),
+      });
     },
   });
-}
-```
-
-## Prefetching Patterns
-
-```typescript
-// ✅ Good - Prefetching configuration
-// app/lib/prefetch.ts
-import { queryClient } from './query';
-
-// Prefetch configuration
-export const prefetchConfig = {
-  // Stale time for prefetched queries
-  staleTime: 10 * 1000, // 10 seconds
-  // Cache time for prefetched queries
-  cacheTime: 5 * 60 * 1000, // 5 minutes
 };
-
-// Prefetch utilities
-export async function prefetchUser(userId: string) {
-  await queryClient.prefetchQuery({
-    queryKey: ['user', userId],
-    queryFn: () => fetchUser(userId),
-    ...prefetchConfig,
-  });
-}
-
-// Usage in components
-function UserList() {
-  const users = useUsers();
-
-  return (
-    <ul>
-      {users.map((user) => (
-        <li
-          key={user.id}
-          onMouseEnter={() => prefetchUser(user.id)}
-        >
-          <Link to={`/users/${user.id}`}>{user.name}</Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
-```
-
-## Persistence Patterns
-
-```typescript
-// ✅ Good - Persistence configuration
-// app/lib/query.ts
-import { persistQueryClient } from '@tanstack/react-query-persist-client';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
-
-// Create storage persister
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
-  key: 'TANSTACK_QUERY_CACHE',
-  throttleTime: 1000,
-  serialize: (data) => JSON.stringify(data),
-  deserialize: (data) => JSON.parse(data),
-});
-
-// Configure persistence
-persistQueryClient({
-  queryClient,
-  persister,
-  maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  buster: APP_VERSION, // Cache buster based on app version
-});
 ```
 
 ## Related Guidelines
 
-- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query setup and configuration
-- [Query Optimization](mdc:.cursor/rules/domains/tanstack/query/optimization.mdc) - Performance optimization guidelines
-- [React Core](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
-- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance guidelines
+- [Query Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query client configuration
+- [Router Integration](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc) - Router patterns
+- [Error Handling](mdc:.cursor/rules/domains/frontend/react/error-handling.mdc) - Error handling patterns

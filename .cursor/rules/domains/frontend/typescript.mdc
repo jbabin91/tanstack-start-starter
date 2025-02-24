@@ -18,19 +18,51 @@ These guidelines establish TypeScript-specific patterns and best practices for m
 
 ## Type System
 
-### Type Annotations
+### Type Declarations
 
-1. Explicit Types:
+1. Use `type` over `interface`:
 
    ```typescript
-   // ✅ Good - Explicit types for public APIs
-   function processUser(user: User): ProcessedUser {
-     return { ...user, lastProcessed: new Date() };
-   }
+   // ✅ Good - Using type for object shapes
+   type User = {
+     id: string;
+     name: string;
+     email: string;
+   };
 
-   // ❌ Bad - Relying on inference for public APIs
-   function processUser(user) {
-     return { ...user, lastProcessed: new Date() };
+   // ✅ Good - Using type for component props
+   type ButtonProps = {
+     variant: 'primary' | 'secondary';
+     onClick: () => void;
+     children: React.ReactNode;
+   };
+
+   // ❌ Bad - Using interface
+   interface User {
+     id: string;
+     name: string;
+     email: string;
+   }
+   ```
+
+   **Why `type` over `interface`?**
+
+   - More consistent: `type` works for all use cases (unions, intersections, primitives)
+   - Better error messages: `type` errors are typically more precise
+   - No implicit merging: Prevents accidental interface augmentation
+   - More flexible: Can use unions, mapped types, and utility types directly
+
+   **Exception**: Only use `interface` when:
+
+   - Declaring module augmentations
+   - Working with declaration merging in `.d.ts` files
+
+   ```typescript
+   // ✅ Good - Module augmentation
+   declare module '@tanstack/router' {
+     interface Register {
+       router: typeof router;
+     }
    }
    ```
 
@@ -44,23 +76,7 @@ These guidelines establish TypeScript-specific patterns and best practices for m
    const users: string[] = ['Alice', 'Bob'];
    ```
 
-### Type Definitions
-
-1. Use `type` over `interface`:
-
-   ```typescript
-   // ✅ Good - Type for object types
-   type User = {
-     id: string;
-     name: string;
-     email: string;
-   };
-
-   // ✅ Good - Type for unions/intersections
-   type Status = 'active' | 'inactive';
-   ```
-
-2. Generic Types:
+3. Generic Types:
 
    ```typescript
    // ✅ Good - Descriptive type parameters
@@ -74,6 +90,36 @@ These guidelines establish TypeScript-specific patterns and best practices for m
    };
    ```
 
+4. Union Types:
+
+   ```typescript
+   // ✅ Good - Union types for finite options
+   type Status = 'idle' | 'loading' | 'success' | 'error';
+   type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+   // ❌ Bad - Using enums
+   enum Status {
+     Idle,
+     Loading,
+     Success,
+     Error,
+   }
+   ```
+
+5. Utility Types:
+
+   ```typescript
+   // ✅ Good - Using built-in utility types
+   type UserUpdate = Partial<User>;
+   type UserReadOnly = Readonly<User>;
+   type UserKeys = keyof User;
+
+   // ✅ Good - Custom utility types
+   type NonNullableFields<T> = {
+     [P in keyof T]: NonNullable<T[P]>;
+   };
+   ```
+
 ## React TypeScript
 
 ### Component Types
@@ -81,55 +127,35 @@ These guidelines establish TypeScript-specific patterns and best practices for m
 1. Function Components:
 
    ```typescript
-   // ✅ Good - Explicit prop interface
-   type UserCardProps = {
-     user: User;
-     onEdit?: (user: User) => void;
+   // ✅ Good - Using type for props
+   type UserProfileProps = {
+     id: string;
+     onUpdate?: (user: User) => void;
    };
 
-   function UserCard({ user, onEdit }: UserCardProps) {
-     return (/* ... */);
+   function UserProfile({ id, onUpdate }: UserProfileProps) {
+     // Implementation
+   }
+
+   // ❌ Bad - Using interface for props
+   interface UserProfileProps {
+     id: string;
+     onUpdate?: (user: User) => void;
    }
    ```
 
-2. Generic Components:
+2. Event Handlers:
 
    ```typescript
-   // ✅ Good - Reusable generic components
-   type ListProps<T> = {
-     items: T[];
-     renderItem: (item: T) => React.ReactNode;
+   // ✅ Good - Specific event types
+   type ButtonProps = {
+     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+     onKeyPress: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
    };
 
-   function List<T>({ items, renderItem }: ListProps<T>) {
-     return (/* ... */);
-   }
-   ```
-
-### Event Handlers
-
-1. Event Types:
-
-   ```typescript
-   // ✅ Good - Proper event typing
-   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-     const value = event.target.value;
-   }
-
-   // ❌ Bad - any type for events
-   function handleChange(event: any) {
-     const value = event.target.value;
-   }
-   ```
-
-2. Handler Types:
-
-   ```typescript
-   // ✅ Good - Explicit handler types
-   type SubmitHandler = (data: FormData) => Promise<void>;
-
-   const handleSubmit: SubmitHandler = async (data) => {
-     await submitForm(data);
+   // ❌ Bad - Using any or unknown
+   type ButtonProps = {
+     onClick: (event: any) => void;
    };
    ```
 

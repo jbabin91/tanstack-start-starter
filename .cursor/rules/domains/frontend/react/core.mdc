@@ -20,14 +20,90 @@ These guidelines establish core patterns for React development in our TanStack S
 
 ## Guidelines
 
+### Conditional Rendering
+
+```typescript
+// ✅ Good - Using ternary operator
+function Header() {
+  const { data: user } = useUser();
+
+  return (
+    <nav>
+      {user ? (
+        <Link to="/dashboard">Dashboard</Link>
+      ) : null}
+    </nav>
+  );
+}
+
+// ❌ Bad - Using && operator
+function Header() {
+  const { data: user } = useUser();
+
+  return (
+    <nav>
+      {user && <Link to="/dashboard">Dashboard</Link>}
+    </nav>
+  );
+}
+
+// ✅ Good - Explicit handling of both cases
+function UserGreeting() {
+  const { data: user } = useUser();
+
+  return (
+    <div>
+      {user ? (
+        <h1>Welcome back, {user.name}!</h1>
+      ) : (
+        <h1>Welcome, guest!</h1>
+      )}
+    </div>
+  );
+}
+
+// ❌ Bad - Implicit null case and potential falsy value issues
+function UserGreeting() {
+  const { data: user } = useUser();
+  const count = 0;
+
+  return (
+    <div>
+      {user && <h1>Welcome back, {user.name}!</h1>}
+      {/* This will render "0" instead of nothing */}
+      {count && <span>Count: {count}</span>}
+    </div>
+  );
+}
+```
+
+#### Why Ternary Over &&?
+
+1. **Explicit Over Implicit**
+
+   - Ternary makes both success and failure cases clear
+   - Forces you to think about and handle both states
+   - Makes code more maintainable and self-documenting
+
+2. **Avoiding Falsy Pitfalls**
+
+   - && operator can accidentally render falsy values (0, '', etc.)
+   - Ternary gives you full control over what's rendered
+   - Prevents unexpected UI bugs
+
+3. **Future-Proofing**
+   - Easier to add alternative content later
+   - No need to refactor when requirements change
+   - More flexible for complex conditions
+
 ### Function Components
 
 ```typescript
-// ✅ Good - Proper component structure
-interface UserProfileProps {
+// ✅ Good - Using type for props
+type UserProfileProps = {
   userId: string;
   onUpdate?: (user: User) => void;
-}
+};
 
 export function UserProfile({ userId, onUpdate }: UserProfileProps) {
   const { data: user } = useUser(userId);
@@ -42,7 +118,11 @@ export function UserProfile({ userId, onUpdate }: UserProfileProps) {
   );
 }
 
-// ❌ Bad - Poor component structure
+// ❌ Bad - Using interface or any
+interface ProfileProps {
+  id: string;
+}
+
 export default function Profile(props: any) {
   const [userData, setUserData] = useState(null);
   // Mixing data fetching and UI
@@ -65,9 +145,9 @@ import { useUser } from '~/features/users/hooks/useUser';
 import { UserAvatar } from './UserAvatar';
 
 // 2. Types
-interface UserProfileProps {
+type UserProfileProps = {
   userId: string;
-}
+};
 
 // 3. Helper Functions
 function formatUserName(user: User): string {

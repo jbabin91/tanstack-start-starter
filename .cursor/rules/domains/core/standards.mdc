@@ -153,27 +153,67 @@ import type { User } from '~/features/users/types';
 1. Use `type` over `interface`:
 
    ```typescript
-   // ✅ Good
+   // ✅ Good - Using type for object shapes
    type UserData = {
      id: string;
      name: string;
    };
 
-   // ❌ Bad - Don't use interface except in declare module
+   type ComponentProps = {
+     data: UserData;
+     onUpdate: (data: UserData) => void;
+   };
+
+   // ❌ Bad - Using interface
    interface UserData {
      id: string;
      name: string;
    }
+
+   // ✅ Good - Using type for unions and intersections
+   type Status = 'active' | 'inactive';
+   type Role = 'admin' | 'user';
+   type AdminUser = UserData & { role: 'admin' };
+
+   // ✅ Good - Using type for API responses
+   type ApiResponse<T> = {
+     data: T;
+     status: number;
+     message: string;
+   };
+
+   // Exception: Only use interface for declaration merging
+   declare module '@tanstack/router' {
+     interface Register {
+       router: typeof router;
+     }
+   }
    ```
 
-2. Exception for `declare module`:
+2. Type Inference:
 
    ```typescript
-   // ✅ Good - Interface in declare module
-   declare module '@tanstack/react-router' {
-     interface Register {
-       router: ReturnType<typeof createRouter>;
-     }
+   // ✅ Good - Let TypeScript infer when obvious
+   const users = ['Alice', 'Bob']; // string[]
+   const numbers = [1, 2, 3]; // number[]
+   const mixed = [1, 'two', true]; // (string | number | boolean)[]
+
+   // ❌ Bad - Redundant type annotations
+   const users: string[] = ['Alice', 'Bob'];
+   const numbers: number[] = [1, 2, 3];
+   ```
+
+3. Explicit Types for APIs:
+
+   ```typescript
+   // ✅ Good - Explicit types for public APIs
+   function processUser(user: UserData): ProcessedUser {
+     return { ...user, lastProcessed: new Date() };
+   }
+
+   // ❌ Bad - Missing type annotations for public APIs
+   function processUser(user) {
+     return { ...user, lastProcessed: new Date() };
    }
    ```
 

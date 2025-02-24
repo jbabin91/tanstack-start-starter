@@ -10,157 +10,212 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard/route'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
-import { Route as PublicIndexImport } from './routes/_public/index'
-import { Route as AuthSignupImport } from './routes/_auth/signup'
-import { Route as AuthSigninImport } from './routes/_auth/signin'
+import { Route as rootRoute } from './routes/__root';
+import { Route as AppRouteImport } from './routes/_app/route';
+import { Route as PublicIndexImport } from './routes/_public/index';
+import { Route as AuthVerifyImport } from './routes/_auth/verify';
+import { Route as AuthSignupImport } from './routes/_auth/signup';
+import { Route as AuthSigninImport } from './routes/_auth/signin';
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard/route';
+import { Route as AppDashboardIndexImport } from './routes/_app/dashboard/index';
 
 // Create/Update Routes
 
-const DashboardRouteRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
+} as any);
 
 const PublicIndexRoute = PublicIndexImport.update({
   id: '/_public/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
+
+const AuthVerifyRoute = AuthVerifyImport.update({
+  id: '/_auth/verify',
+  path: '/verify',
+  getParentRoute: () => rootRoute,
+} as any);
 
 const AuthSignupRoute = AuthSignupImport.update({
   id: '/_auth/signup',
   path: '/signup',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const AuthSigninRoute = AuthSigninImport.update({
   id: '/_auth/signin',
   path: '/signin',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
+
+const AppDashboardRouteRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRouteRoute,
+} as any);
+
+const AppDashboardIndexRoute = AppDashboardIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDashboardRouteRoute,
+} as any);
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRoute
-    }
+    '/_app': {
+      id: '/_app';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AppRouteImport;
+      parentRoute: typeof rootRoute;
+    };
+    '/_app/dashboard': {
+      id: '/_app/dashboard';
+      path: '/dashboard';
+      fullPath: '/dashboard';
+      preLoaderRoute: typeof AppDashboardRouteImport;
+      parentRoute: typeof AppRouteImport;
+    };
     '/_auth/signin': {
-      id: '/_auth/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof AuthSigninImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/_auth/signin';
+      path: '/signin';
+      fullPath: '/signin';
+      preLoaderRoute: typeof AuthSigninImport;
+      parentRoute: typeof rootRoute;
+    };
     '/_auth/signup': {
-      id: '/_auth/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof AuthSignupImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/_auth/signup';
+      path: '/signup';
+      fullPath: '/signup';
+      preLoaderRoute: typeof AuthSignupImport;
+      parentRoute: typeof rootRoute;
+    };
+    '/_auth/verify': {
+      id: '/_auth/verify';
+      path: '/verify';
+      fullPath: '/verify';
+      preLoaderRoute: typeof AuthVerifyImport;
+      parentRoute: typeof rootRoute;
+    };
     '/_public/': {
-      id: '/_public/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PublicIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof DashboardRouteImport
-    }
+      id: '/_public/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof PublicIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/';
+      path: '/';
+      fullPath: '/dashboard/';
+      preLoaderRoute: typeof AppDashboardIndexImport;
+      parentRoute: typeof AppDashboardRouteImport;
+    };
   }
 }
 
 // Create and export the route tree
 
-interface DashboardRouteRouteChildren {
-  DashboardIndexRoute: typeof DashboardIndexRoute
+interface AppDashboardRouteRouteChildren {
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
 }
 
-const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardIndexRoute: DashboardIndexRoute,
+const AppDashboardRouteRouteChildren: AppDashboardRouteRouteChildren = {
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
+};
+
+const AppDashboardRouteRouteWithChildren =
+  AppDashboardRouteRoute._addFileChildren(AppDashboardRouteRouteChildren);
+
+interface AppRouteRouteChildren {
+  AppDashboardRouteRoute: typeof AppDashboardRouteRouteWithChildren;
 }
 
-const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
-  DashboardRouteRouteChildren,
-)
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppDashboardRouteRoute: AppDashboardRouteRouteWithChildren,
+};
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+);
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof DashboardRouteRouteWithChildren
-  '/signin': typeof AuthSigninRoute
-  '/signup': typeof AuthSignupRoute
-  '/': typeof PublicIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  '': typeof AppRouteRouteWithChildren;
+  '/dashboard': typeof AppDashboardRouteRouteWithChildren;
+  '/signin': typeof AuthSigninRoute;
+  '/signup': typeof AuthSignupRoute;
+  '/verify': typeof AuthVerifyRoute;
+  '/': typeof PublicIndexRoute;
+  '/dashboard/': typeof AppDashboardIndexRoute;
 }
 
 export interface FileRoutesByTo {
-  '/signin': typeof AuthSigninRoute
-  '/signup': typeof AuthSignupRoute
-  '/': typeof PublicIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '': typeof AppRouteRouteWithChildren;
+  '/signin': typeof AuthSigninRoute;
+  '/signup': typeof AuthSignupRoute;
+  '/verify': typeof AuthVerifyRoute;
+  '/': typeof PublicIndexRoute;
+  '/dashboard': typeof AppDashboardIndexRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/dashboard': typeof DashboardRouteRouteWithChildren
-  '/_auth/signin': typeof AuthSigninRoute
-  '/_auth/signup': typeof AuthSignupRoute
-  '/_public/': typeof PublicIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  __root__: typeof rootRoute;
+  '/_app': typeof AppRouteRouteWithChildren;
+  '/_app/dashboard': typeof AppDashboardRouteRouteWithChildren;
+  '/_auth/signin': typeof AuthSigninRoute;
+  '/_auth/signup': typeof AuthSignupRoute;
+  '/_auth/verify': typeof AuthVerifyRoute;
+  '/_public/': typeof PublicIndexRoute;
+  '/_app/dashboard/': typeof AppDashboardIndexRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/signin' | '/signup' | '/' | '/dashboard/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/signin' | '/signup' | '/' | '/dashboard'
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | ''
+    | '/dashboard'
+    | '/signin'
+    | '/signup'
+    | '/verify'
+    | '/'
+    | '/dashboard/';
+  fileRoutesByTo: FileRoutesByTo;
+  to: '' | '/signin' | '/signup' | '/verify' | '/' | '/dashboard';
   id:
     | '__root__'
-    | '/dashboard'
+    | '/_app'
+    | '/_app/dashboard'
     | '/_auth/signin'
     | '/_auth/signup'
+    | '/_auth/verify'
     | '/_public/'
-    | '/dashboard/'
-  fileRoutesById: FileRoutesById
+    | '/_app/dashboard/';
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  AuthSigninRoute: typeof AuthSigninRoute
-  AuthSignupRoute: typeof AuthSignupRoute
-  PublicIndexRoute: typeof PublicIndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren;
+  AuthSigninRoute: typeof AuthSigninRoute;
+  AuthSignupRoute: typeof AuthSignupRoute;
+  AuthVerifyRoute: typeof AuthVerifyRoute;
+  PublicIndexRoute: typeof PublicIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  AppRouteRoute: AppRouteRouteWithChildren,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
   PublicIndexRoute: PublicIndexRoute,
-}
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -168,16 +223,24 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/dashboard",
+        "/_app",
         "/_auth/signin",
         "/_auth/signup",
+        "/_auth/verify",
         "/_public/"
       ]
     },
-    "/dashboard": {
-      "filePath": "dashboard/route.tsx",
+    "/_app": {
+      "filePath": "_app/route.tsx",
       "children": [
-        "/dashboard/"
+        "/_app/dashboard"
+      ]
+    },
+    "/_app/dashboard": {
+      "filePath": "_app/dashboard/route.tsx",
+      "parent": "/_app",
+      "children": [
+        "/_app/dashboard/"
       ]
     },
     "/_auth/signin": {
@@ -186,12 +249,15 @@ export const routeTree = rootRoute
     "/_auth/signup": {
       "filePath": "_auth/signup.tsx"
     },
+    "/_auth/verify": {
+      "filePath": "_auth/verify.tsx"
+    },
     "/_public/": {
       "filePath": "_public/index.tsx"
     },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx",
-      "parent": "/dashboard"
+    "/_app/dashboard/": {
+      "filePath": "_app/dashboard/index.tsx",
+      "parent": "/_app/dashboard"
     }
   }
 }
