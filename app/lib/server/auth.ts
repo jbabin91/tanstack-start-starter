@@ -1,7 +1,11 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { Resend } from 'resend';
 
+import { renderVerificationEmail } from '~/components/email/verification';
 import { db } from '~/lib/server/db';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   account: {
@@ -18,6 +22,27 @@ export const auth = betterAuth({
   // https://www.better-auth.com/docs/authentication/email-password
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+  },
+  // https://www.better-auth.com/docs/concepts/email
+  emailVerification: {
+    autoSignInAfterVerification: true,
+    enabled: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }, _request) => {
+      const { react, text } = await renderVerificationEmail({
+        user,
+        verificationUrl: url,
+      });
+
+      await resend.emails.send({
+        from: 'TanStack Start Starter <onboarding@starter.jacebabin.com>',
+        react,
+        subject: 'Verify your email address',
+        text,
+        to: user.email,
+      });
+    },
   },
   // https://www.better-auth.com/docs/concepts/session-management#session-caching
   session: {

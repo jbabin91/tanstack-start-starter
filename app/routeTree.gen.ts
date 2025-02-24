@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root';
 import { Route as AppRouteImport } from './routes/_app/route';
 import { Route as PublicIndexImport } from './routes/_public/index';
+import { Route as AuthVerifyImport } from './routes/_auth/verify';
 import { Route as AuthSignupImport } from './routes/_auth/signup';
 import { Route as AuthSigninImport } from './routes/_auth/signin';
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard/route';
@@ -28,6 +29,12 @@ const AppRouteRoute = AppRouteImport.update({
 const PublicIndexRoute = PublicIndexImport.update({
   id: '/_public/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any);
+
+const AuthVerifyRoute = AuthVerifyImport.update({
+  id: '/_auth/verify',
+  path: '/verify',
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -87,6 +94,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupImport;
       parentRoute: typeof rootRoute;
     };
+    '/_auth/verify': {
+      id: '/_auth/verify';
+      path: '/verify';
+      fullPath: '/verify';
+      preLoaderRoute: typeof AuthVerifyImport;
+      parentRoute: typeof rootRoute;
+    };
     '/_public/': {
       id: '/_public/';
       path: '/';
@@ -134,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRouteRouteWithChildren;
   '/signin': typeof AuthSigninRoute;
   '/signup': typeof AuthSignupRoute;
+  '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
   '/dashboard/': typeof AppDashboardIndexRoute;
 }
@@ -142,6 +157,7 @@ export interface FileRoutesByTo {
   '': typeof AppRouteRouteWithChildren;
   '/signin': typeof AuthSigninRoute;
   '/signup': typeof AuthSignupRoute;
+  '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
   '/dashboard': typeof AppDashboardIndexRoute;
 }
@@ -152,21 +168,30 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRouteRouteWithChildren;
   '/_auth/signin': typeof AuthSigninRoute;
   '/_auth/signup': typeof AuthSignupRoute;
+  '/_auth/verify': typeof AuthVerifyRoute;
   '/_public/': typeof PublicIndexRoute;
   '/_app/dashboard/': typeof AppDashboardIndexRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '' | '/dashboard' | '/signin' | '/signup' | '/' | '/dashboard/';
+  fullPaths:
+    | ''
+    | '/dashboard'
+    | '/signin'
+    | '/signup'
+    | '/verify'
+    | '/'
+    | '/dashboard/';
   fileRoutesByTo: FileRoutesByTo;
-  to: '' | '/signin' | '/signup' | '/' | '/dashboard';
+  to: '' | '/signin' | '/signup' | '/verify' | '/' | '/dashboard';
   id:
     | '__root__'
     | '/_app'
     | '/_app/dashboard'
     | '/_auth/signin'
     | '/_auth/signup'
+    | '/_auth/verify'
     | '/_public/'
     | '/_app/dashboard/';
   fileRoutesById: FileRoutesById;
@@ -176,6 +201,7 @@ export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren;
   AuthSigninRoute: typeof AuthSigninRoute;
   AuthSignupRoute: typeof AuthSignupRoute;
+  AuthVerifyRoute: typeof AuthVerifyRoute;
   PublicIndexRoute: typeof PublicIndexRoute;
 }
 
@@ -183,6 +209,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
   PublicIndexRoute: PublicIndexRoute,
 };
 
@@ -199,6 +226,7 @@ export const routeTree = rootRoute
         "/_app",
         "/_auth/signin",
         "/_auth/signup",
+        "/_auth/verify",
         "/_public/"
       ]
     },
@@ -220,6 +248,9 @@ export const routeTree = rootRoute
     },
     "/_auth/signup": {
       "filePath": "_auth/signup.tsx"
+    },
+    "/_auth/verify": {
+      "filePath": "_auth/verify.tsx"
     },
     "/_public/": {
       "filePath": "_public/index.tsx"

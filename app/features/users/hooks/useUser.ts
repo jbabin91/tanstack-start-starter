@@ -7,7 +7,14 @@ import {
 import { $getUser } from '../api';
 
 export const userQuery = queryOptions({
-  queryFn: () => $getUser(),
+  queryFn: async () => {
+    try {
+      const user = await $getUser();
+      return user ?? null;
+    } catch {
+      return null;
+    }
+  },
   queryKey: ['user'] as const,
 });
 
