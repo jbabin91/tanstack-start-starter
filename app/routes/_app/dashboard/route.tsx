@@ -1,18 +1,8 @@
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  redirect,
-} from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { Button } from '~/components/ui/button';
 
-export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context }) => {
-    if (!context.user) {
-      throw redirect({ to: '/signin' });
-    }
-  },
+export const Route = createFileRoute('/_app/dashboard')({
   component: RouteComponent,
 });
 
