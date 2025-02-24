@@ -1,18 +1,14 @@
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { Button } from '~/components/ui/button';
-import { authClient } from '~/lib/client/auth-client';
+import { useUser } from '~/features/users/hooks/useUser';
 
 export const Route = createFileRoute('/_public/')({
   component: Home,
-  loader: ({ context }) => {
-    return { user: context.user };
-  },
 });
 
 function Home() {
-  const { user } = Route.useLoaderData();
-  const router = useRouter();
+  const { data: user } = useUser();
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -20,7 +16,7 @@ function Home() {
       <div className="flex items-center gap-2">
         This is an unprotected page:
         <pre className="bg-card text-card-foreground rounded-md border p-1">
-          routes/index.tsx
+          routes/_public/index.tsx
         </pre>
       </div>
       {user ? (
@@ -33,24 +29,10 @@ function Home() {
             More data:
             <pre>{JSON.stringify(user, null, 2)}</pre>
           </div>
-          <Button
-            onClick={async () => {
-              await authClient.signOut();
-              router.invalidate();
-            }}
-            variant="destructive"
-            size="lg"
-            className="w-fit"
-          >
-            Sign out
-          </Button>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
           <p>You are not signed in.</p>
-          <Button asChild className="w-fit" size="sm">
-            <Link to="/signin">Sign in</Link>
-          </Button>
         </div>
       )}
     </div>

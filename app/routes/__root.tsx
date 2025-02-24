@@ -1,6 +1,10 @@
 import { type QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
-import { Meta, Scripts } from '@tanstack/start';
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import { DefaultCatchBoundary } from '~/components/errors/default-catch-boundary';
@@ -8,7 +12,7 @@ import { Header } from '~/components/layout/header';
 import { Spinner } from '~/components/spinner';
 import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
-import { $getUser } from '~/features/users/api';
+import { ensureUser } from '~/features/users/hooks/useUser';
 import { seo } from '~/lib/utils/seo';
 import { Providers } from '~/providers';
 import appCss from '~/styles/app.css?url';
@@ -18,8 +22,8 @@ type RouterContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
-    const user = await $getUser();
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const user = await ensureUser(queryClient);
     return { user };
   },
   component: RootComponent,
@@ -64,7 +68,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <head>
-        <Meta />
+        <HeadContent />
       </head>
       <body>
         <Providers>
