@@ -1,152 +1,240 @@
 ---
-description: Comprehensive verification procedures for documentation migrations
+description: Comprehensive verification procedures for documentation and rules
 globs: ['**/*.mdc']
 ---
 
-# ✅ Migration Verification
+# 🧪 Verification Process
+
+<details>
+<summary>📋 Metadata Reference</summary>
+
+### Document Requirements
+
+1. **Frontmatter (Required)**
+
+   ```yaml
+   ---
+   description: Clear, concise purpose
+   globs: Array of applicable files
+   ---
+   ```
+
+2. **Structure**
+   - Title with appropriate emoji
+   - Overview section
+   - Main content sections
+   - Related Guidelines
+
+3. **Formatting**
+   - Headers: blank line before and after
+   - Lists: space after bullet point
+   - Code blocks: language specified
+   - Links: use `mdc:` prefix for docs
+
+</details>
 
 ## Overview
 
-This document outlines the verification procedures to ensure documentation migrations are complete and accurate.
+This document outlines the verification procedures to ensure documentation and rules maintain consistent quality and structure.
 
-## Verification Process
+## Guidelines
 
-### 1. File Structure Verification
+### 1. Document Validation
 
-```zsh
-verify_structure() {
-  local base_dir=$1
-  local issues_found=0
-
-  print "Verifying file structure..."
-
-  # Check required directories exist
-  for dir in migration decision-making maintenance; do
-    if [[ ! -d "$base_dir/processes/$dir" ]]; then
-      print "❌ Missing directory: processes/$dir"
-      issues_found=1
-    else
-      print "✅ Found directory: processes/$dir"
-    fi
-  done
-
-  # Check required files exist
-  for file in \
-    "_index.mdc" \
-    "migration/planning.mdc" \
-    "migration/execution.mdc" \
-    "migration/verification.mdc" \
-    "decision-making/evaluation.mdc" \
-    "decision-making/templates.mdc" \
-    "maintenance/updates.mdc" \
-    "maintenance/verification.mdc"; do
-    if [[ ! -f "$base_dir/processes/$file" ]]; then
-      print "❌ Missing file: processes/$file"
-      issues_found=1
-    else
-      print "✅ Found file: processes/$file"
-    fi
-  done
-
-  return $issues_found
-}
-```
-
-### 2. Content Verification
+#### Frontmatter Checks
 
 ```zsh
-verify_content() {
+validate_frontmatter() {
   local file=$1
-  local issues_found=0
+  local issues=0
 
-  print "Verifying content..."
-
-  # Check for empty files
-  if [[ ! -s "$file" ]]; then
-    print "❌ Empty file: $file"
-    issues_found=1
-  fi
-
-  # Check frontmatter
+  # Check frontmatter bounds
   if ! grep -q "^---$" "$file"; then
-    print "❌ Missing frontmatter: $file"
-    issues_found=1
+    echo "❌ Missing frontmatter markers"
+    ((issues++))
   fi
 
-  # Check required sections
-  if ! grep -q "^# " "$file"; then
-    print "❌ Missing title: $file"
-    issues_found=1
-  fi
-  if ! grep -q "^## Overview" "$file"; then
-    print "❌ Missing overview: $file"
-    issues_found=1
+  # Check required fields
+  if ! grep -q "^description:" "$file"; then
+    echo "❌ Missing description field"
+    ((issues++))
   fi
 
-  return $issues_found
+  if ! grep -q "^globs:" "$file"; then
+    echo "❌ Missing globs field"
+    ((issues++))
+  fi
+
+  # Check for disallowed fields
+  if grep -q "^emoji:" "$file"; then
+    echo "❌ Emoji field not allowed in frontmatter"
+    ((issues++))
+  fi
+
+  return $issues
 }
 ```
 
-### 3. Reference Verification
+#### Title Format Checks
 
 ```zsh
-verify_references() {
+validate_title() {
   local file=$1
-  local issues_found=0
+  local issues=0
+  local title
 
-  print "Checking references..."
+  # Get first line after frontmatter
+  title=$(awk '/^# /{print;exit}' "$file")
 
-  # Check for references without mdc: prefix
-  if grep -o '\[.*\](mdc:[^)]*)' "$file" | grep -v 'mdc:' | grep -q '\.mdc'; then
-    print "❌ Found .mdc references without mdc: prefix"
-    issues_found=1
+  # Check emoji in title
+  if ! [[ $title =~ ^#\ [[:emoji:]]\ [A-Z] ]]; then
+    echo "❌ Invalid title format"
+    echo "   Expected: # {emoji} Title"
+    echo "   Found: $title"
+    ((issues++))
   fi
 
-  # Check all references point to existing files
-  grep -o "mdc:[^]]*" "$file" | while read -r ref; do
-    local target="${ref#mdc:}"
-    if [[ ! -f "$target" ]]; then
-      print "❌ Broken reference: $ref"
-      issues_found=1
-    fi
-  done
-
-  return $issues_found
+  return $issues
 }
 ```
 
-## Verification Checklist
+#### Structure Checks
 
-1. **Content Quality**
+```zsh
+validate_structure() {
+  local file=$1
+  local issues=0
 
-   - [ ] All required sections present
-   - [ ] Content is accurate and clear
-   - [ ] Formatting is consistent
-   - [ ] No spelling or grammar errors
+  # Check for required sections
+  if ! grep -q "^## Overview$" "$file"; then
+    echo "❌ Missing Overview section"
+    ((issues++))
+  fi
 
-2. **Structure Integrity**
+  # Check heading hierarchy
+  if grep -q "^###" "$file" && ! grep -q "^##[^#]" "$file"; then
+    echo "❌ Invalid heading hierarchy (h3 without h2)"
+    ((issues++))
+  fi
 
-   - [ ] Directory structure is valid
-   - [ ] File naming follows conventions
-   - [ ] Index files are present
-   - [ ] No empty directories
+  # Check blank lines around headers
+  if ! awk '/^#/{if(NR>1 && prev!=""){print NR-1}}{prev=$0}' "$file" | grep -q .; then
+    echo "❌ Headers must be preceded by blank line"
+    ((issues++))
+  fi
 
-3. **Reference Validity**
+  return $issues
+}
+```
 
-   - [ ] All .mdc references use mdc: prefix
-   - [ ] All references are valid
-   - [ ] No broken links
-   - [ ] Proper reference format
-   - [ ] Bidirectional references
+#### Format Checks
 
-4. **Documentation Standards**
-   - [ ] Frontmatter is complete
-   - [ ] Headers follow convention
-   - [ ] Code blocks are formatted
-   - [ ] Lists are properly indented
+```zsh
+validate_format() {
+  local file=$1
+  local issues=0
+
+  # Check list formatting
+  if grep -q "^-[^ ]" "$file"; then
+    echo "❌ Lists must have space after marker"
+    ((issues++))
+  fi
+
+  # Check code block language
+  if grep -q "^\`\`\`$" "$file"; then
+    echo "❌ Code blocks must specify language"
+    ((issues++))
+  fi
+
+  # Check documentation links
+  if grep -q "\[.*\](.*\.mdc)" "$file" | grep -v "mdc:"; then
+    echo "❌ Documentation links must use mdc: prefix"
+    ((issues++))
+  fi
+
+  return $issues
+}
+```
+
+### 2. Verification Process
+
+1. **Pre-verification Setup**
+   - Ensure all files are committed
+   - Run in clean working directory
+   - Set up logging for results
+
+2. **Run Validations**
+
+   ```zsh
+   for file in **/*.mdc; do
+     echo "Validating $file..."
+
+     validate_frontmatter "$file"
+     validate_title "$file"
+     validate_structure "$file"
+     validate_format "$file"
+   done
+   ```
+
+3. **Review Results**
+   - Check validation logs
+   - Address any issues found
+   - Document exceptions
+   - Update guidelines if needed
+
+### 3. Common Issues
+
+#### Frontmatter Problems
+
+```markdown
+# ❌ Bad - Extra fields
+---
+description: My doc
+globs: ['**/*.ts']
+emoji: '🔒'  # Not allowed
+---
+
+# ✅ Good - Only allowed fields
+---
+description: My doc
+globs: ['**/*.ts']
+---
+```
+
+#### Title Format Issues
+
+```markdown
+# ❌ Bad - Various issues
+#🔒Security  # No space after emoji
+# 🔒security  # Not Title Case
+# Security 🔒  # Emoji not at start
+
+# ✅ Good - Correct format
+# 🔒 Security
+```
+
+#### Structure Issues
+
+```markdown
+# ❌ Bad - Missing sections
+# 🔒 Security
+Some content...
+
+# ✅ Good - Complete structure
+# 🔒 Security
+
+## Overview
+Brief overview...
+
+## Guidelines
+Main content...
+
+## Related Guidelines
+- [Link](mdc:path/to/doc.mdc)
+```
 
 ## Related Guidelines
 
-- [Updates](mdc:.cursor/rules/processes/maintenance/updates.mdc) - Update procedures
-- [Planning](mdc:.cursor/rules/processes/migration/planning.mdc) - Planning guidelines
-- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates
+- [Documentation Standards](mdc:.cursor/rules/processes/consistency/documentation.mdc) - Documentation formatting rules
+- [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Emoji usage guidelines
+- [Contributing](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution process

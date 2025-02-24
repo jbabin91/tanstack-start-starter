@@ -69,10 +69,9 @@ Each guideline document (.mdc) follows a consistent structure:
 ---
 description: Purpose of the document
 globs: Files this applies to
-emoji: 'appropriate-emoji'  # Required: Choose from emoji-rules.mdc
 ---
 
-# Title
+# {emoji} Title
 
 ## Overview
 

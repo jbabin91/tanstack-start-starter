@@ -1,9 +1,79 @@
 ---
-description: 
-globs: 
+description: Standards and guidelines for documentation formatting and structure
+globs: ['**/*.mdc']
 ---
+
+# 📄 Documentation Standards
+
+<details>
+<summary>📋 Metadata Reference</summary>
+
+### Document Requirements
+
+1. **Frontmatter (Required)**
+
+   ```yaml
+   ---
+   description: Clear, concise purpose
+   globs: Array of applicable files
+   ---
+   ```
+
+2. **Structure**
+   - Title with appropriate emoji
+   - Overview section
+   - Main content
+   - Related Guidelines
+
+3. **Formatting**
+   - Headers: blank line before and after
+   - Lists: space after bullet point
+   - Code blocks: language specified
+   - Links: use `mdc:` prefix for docs
+
+</details>
+
+## Overview
+
+This document defines the standards and guidelines for maintaining consistent, high-quality documentation across our codebase.
+
+## Guidelines
+
+### 1. File Structure
+
+- Use `.mdc` extension for all documentation files
+- Place files in appropriate domain directories
+- Include index files (`_index.mdc`) in each directory
+- Follow the established directory hierarchy
+
+### 2. Content Format
+
+- Write clear, concise descriptions
+- Use proper markdown formatting
+- Include relevant code examples
+- Maintain consistent terminology
+
+### 3. Cross-References
+
+- Use `mdc:` prefix for all documentation links
+- Include full path from `.cursor/rules/`
+- Add brief description after each link
+- Verify links before committing
+
+### 4. Code Examples
+
+```typescript
+// ✅ Good - Clear, documented example
+function example(): void {
+  // Implementation
+}
+
+// ❌ Bad - Unclear, undocumented
+const x = () => {};
+```
+
 ## Related Guidelines
 
 - [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Emoji usage guidelines
-- [Contributing Guidelines](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution process and standards
-- [Verification Process](mdc:.cursor/rules/processes/maintenance/verification.mdc) - Documentation verification
+- [Contributing](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution process
+- [Templates](mdc:.cursor/rules/processes/decision-making/templates.mdc) - Document templates

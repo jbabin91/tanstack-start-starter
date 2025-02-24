@@ -1,13 +1,46 @@
 ---
 description: Comprehensive guidelines for emoji usage in documentation and rules
-globs: ['**/*.mdc', '**/*']
+globs: ['**/*.mdc']
 ---
 
 # 😄 Emoji Rules
 
 ## Overview
 
-This document defines the standards for using emojis across our documentation, rules, and responses. Every rule file must include an appropriate emoji that represents its purpose, both in the frontmatter and the title.
+This document defines the standards for using emojis across our documentation, rules, and responses. Every rule file must include an appropriate emoji in the title that represents its purpose.
+
+<details>
+<summary>📋 Metadata Reference</summary>
+
+### Document Metadata
+
+Each `.mdc` file should contain:
+
+1. **Frontmatter Requirements**
+
+   ```yaml
+   ---
+   description: Brief description of the document's purpose
+   globs: Array of glob patterns for file matching
+   ---
+   ```
+
+2. **Title Format**
+
+   ```markdown
+   # {emoji} Title
+   ```
+
+   - Single space after emoji
+   - Title in Title Case
+   - No emoji in frontmatter
+
+3. **Required Sections**
+   - Overview
+   - Main content sections
+   - Related Guidelines (if applicable)
+
+</details>
 
 ## Emoji Selection Philosophy
 
@@ -162,13 +195,177 @@ When choosing an emoji, follow this process:
 
 When starting a new chat or reviewing files, the AI will:
 
-1. Check for the presence of an emoji in both frontmatter and title
-2. Verify the emojis match
-3. Confirm the emoji is from the approved list
-4. Ensure proper spacing after the title emoji
-5. Validate that the chosen emoji matches the document's purpose
-6. Verify emoji uniqueness within domains
-7. Check for proper emoji inheritance in parent-child relationships
+1. **Frontmatter Validation**
+
+   ```markdown
+   # Required checks:
+   - [ ] Has frontmatter block (starts and ends with ---)
+   - [ ] Contains only allowed fields:
+     - description: String (required)
+     - globs: Array of strings (required)
+   - [ ] No emoji field in frontmatter
+   - [ ] No extra fields or comments in frontmatter
+   ```
+
+2. **Title Validation**
+
+   ```markdown
+   # Required checks:
+   - [ ] Starts with emoji from approved list
+   - [ ] Single space after emoji
+   - [ ] Title in Title Case
+   - [ ] No other emoji in title
+   ```
+
+3. **Structure Validation**
+
+   ```markdown
+   # Required checks:
+   - [ ] Has Overview section
+   - [ ] Has main content sections
+   - [ ] Has Related Guidelines (if applicable)
+   - [ ] Proper heading hierarchy (h1 > h2 > h3)
+   ```
+
+4. **Formatting Validation**
+
+   ```markdown
+   # Required checks:
+   - [ ] Blank line before and after headers
+   - [ ] Space after list markers (-, *)
+   - [ ] Code blocks have language specified
+   - [ ] Links use mdc: prefix for documentation
+   ```
+
+### Validation Script Example
+
+```zsh
+#!/usr/bin/env zsh
+
+validate_frontmatter() {
+  local file=$1
+  local issues=0
+  local in_frontmatter=0
+  local has_description=0
+  local has_globs=0
+  local line_num=0
+
+  while IFS= read -r line; do
+    ((line_num++))
+
+    # Check frontmatter bounds
+    if [[ $line == "---" ]]; then
+      if ((in_frontmatter == 0)); then
+        in_frontmatter=1
+        continue
+      else
+        in_frontmatter=2
+        # Verify required fields
+        if ((has_description == 0)); then
+          echo "❌ Line $line_num: Missing required 'description' field"
+          ((issues++))
+        fi
+        if ((has_globs == 0)); then
+          echo "❌ Line $line_num: Missing required 'globs' field"
+          ((issues++))
+        fi
+        break
+      fi
+    fi
+
+    # Check frontmatter content
+    if ((in_frontmatter == 1)); then
+      # Check for description
+      if [[ $line =~ ^description: ]]; then
+        has_description=1
+        # Verify format
+        if ! [[ $line =~ ^description:\ .+ ]]; then
+          echo "❌ Line $line_num: Invalid description format"
+          ((issues++))
+        fi
+      # Check for globs
+      elif [[ $line =~ ^globs: ]]; then
+        has_globs=1
+        # Verify format
+        if ! [[ $line =~ ^globs:\ \[.*\]$ ]]; then
+          echo "❌ Line $line_num: Invalid globs format"
+          ((issues++))
+        fi
+      # Check for emoji (not allowed)
+      elif [[ $line =~ ^emoji: ]]; then
+        echo "❌ Line $line_num: Emoji field not allowed in frontmatter"
+        ((issues++))
+      # Check for other fields
+      elif [[ $line =~ ^[a-zA-Z]+: ]]; then
+        echo "❌ Line $line_num: Unknown field in frontmatter"
+        ((issues++))
+      # Check for empty lines
+      elif [[ -n $line ]]; then
+        echo "❌ Line $line_num: Invalid content in frontmatter"
+        ((issues++))
+      fi
+    fi
+  done < "$file"
+
+  # Check if frontmatter exists
+  if ((in_frontmatter < 2)); then
+    echo "❌ Invalid or missing frontmatter in $file"
+    ((issues++))
+  fi
+
+  return $issues
+}
+
+validate_title() {
+  local file=$1
+  local issues=0
+  local title
+
+  # Get first line after frontmatter
+  title=$(awk '/^# /{print;exit}' "$file")
+
+  # Check title format
+  if ! [[ $title =~ ^#\ [[:emoji:]]\ [A-Z] ]]; then
+    echo "❌ Invalid title format in $file"
+    echo "   Expected: # {emoji} Title"
+    echo "   Found: $title"
+    ((issues++))
+  fi
+
+  return $issues
+}
+
+# Main validation function
+validate_mdc() {
+  local file=$1
+  local total_issues=0
+  local issues=0
+
+  echo "Validating $file..."
+
+  # Validate frontmatter
+  validate_frontmatter "$file"
+  issues=$?
+  ((total_issues += issues))
+
+  # Validate title
+  validate_title "$file"
+  issues=$?
+  ((total_issues += issues))
+
+  if ((total_issues == 0)); then
+    echo "✅ All checks passed for $file"
+  else
+    echo "❌ Found $total_issues issue(s) in $file"
+  fi
+
+  return $total_issues
+}
+
+# Usage
+for file in **/*.mdc; do
+  validate_mdc "$file"
+done
 
 ## Approved Emojis and Their Uses
 
@@ -249,7 +446,6 @@ domains/react/forms.mdc: 📄 (Should be ✅)
 ---
 description: Component development guidelines
 globs: ['**/*.tsx']
-emoji: '🧩'
 ---
 
 # 🧩 Component Guidelines

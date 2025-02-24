@@ -1,9 +1,37 @@
 ---
 description: Purpose of this document
-globs: ['**/*.{ts,tsx}']
+globs: ['**/*']
 ---
 
 # 📐 Title
+
+<details>
+<summary>📋 Template Instructions</summary>
+
+### Required Elements
+
+1. **Frontmatter**
+
+   ```yaml
+   ---
+   description: Brief, clear purpose
+   globs: ['**/*.{extension}']
+   ---
+   ```
+
+2. **Document Structure**
+   - Title with emoji (single space after)
+   - Overview section
+   - Main content sections
+   - Related Guidelines
+
+3. **Before Submitting**
+   - Replace placeholder content
+   - Follow emoji guidelines
+   - Verify all links work
+   - Remove these instructions
+
+</details>
 
 ## Overview
 
@@ -15,7 +43,7 @@ Main content goes here.
 
 ## Related Guidelines
 
-- [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Required: Follow emoji guidelines before submitting
+- [Emoji Rules](mdc:.cursor/rules/processes/consistency/emoji-rules.mdc) - Required: Follow emoji guidelines
 - Cross-references to other documents
 
 ## Required Steps
