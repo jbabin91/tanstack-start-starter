@@ -1,0 +1,1210 @@
+---
+description: State management best practices for React applications in TanStack Start
+globs: ['**/*.{ts,tsx}']
+---
+
+# 🧠 React State Management Guidelines
+
+## Overview
+
+These guidelines establish best practices for state management in our TanStack Start application. We follow a structured approach to state management:
+
+1. **URL State**: Prioritize storing client state in the URL when it affects navigation or should be shareable
+2. **Server State**: Use TanStack Query for all server data fetching, caching, and synchronization
+3. **Form State**: Use React Hook Form for all form state management
+4. **Global Client State**: Use Zustand for global application state that doesn't belong in the URL
+5. **Component State**: Use React's built-in APIs (useState, useReducer) for local component state
+
+## Guidelines
+
+### State Management Architecture
+
+```mermaid
+graph TD
+    A[Application State] --> B[Server State]
+    A --> C[Client State]
+    A --> D[Form State]
+    A --> E[URL State]
+    B --> F[TanStack Query]
+    C --> G1[Global State]
+    C --> G2[Component State]
+    G1 --> Z[Zustand]
+    G2 --> H[useState/useReducer]
+    D --> J[React Hook Form]
+    E --> K[TanStack Router]
+```
+
+### 1. URL State with TanStack Router
+
+URL state should be your first choice for any state that:
+
+- Affects the main content displayed on the page
+- Needs to be shareable via links
+- Represents a meaningful navigation point in the application
+
+```typescript
+// ✅ Good - URL state for filters and pagination
+// app/features/products/routes/index.tsx
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { z } from 'zod';
+
+// Define search params schema
+const searchSchema = z.object({
+  category: z.string().optional(),
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+  inStock: z.enum(['true', 'false']).optional().transform(v => v === 'true'),
+  page: z.coerce.number().default(1),
+  sort: z.enum(['price-asc', 'price-desc', 'newest']).default('newest'),
+});
+
+// Create route with validated search params
+export const Route = createFileRoute('/products/')({
+  validateSearch: searchSchema,
+  component: ProductsPage,
+});
+
+// Component using URL state
+function ProductsPage() {
+  // Get validated search params from URL
+  const search = useSearch({ from: '/products/' });
+
+  // Use search params directly in your component
+  const { category, minPrice, maxPrice, inStock, page, sort } = search;
+
+  return (
+    <div>
+      <h1>Products</h1>
+      <ProductFilters
+        initialFilters={{ category, minPrice, maxPrice, inStock }}
+      />
+      <ProductSort sort={sort} />
+      <ProductList
+        filters={{ category, minPrice, maxPrice, inStock }}
+        page={page}
+        sort={sort}
+      />
+      <Pagination currentPage={page} />
+    </div>
+  );
+}
+
+// Filter component that updates URL
+// app/features/products/components/ProductFilters.tsx
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useState } from 'react';
+
+export function ProductFilters({ initialFilters }) {
+  // Local state for form values before submission
+  const [filters, setFilters] = useState(initialFilters);
+  const navigate = useNavigate();
+  const search = useSearch({ from: '/products/' });
+
+  // Update URL when filters are applied
+  const applyFilters = () => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        ...filters,
+        // Reset to page 1 when filters change
+        page: 1,
+      }),
+    });
+  };
+
+  return (
+    <div className="filters">
+      <select
+        value={filters.category || ''}
+        onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value || undefined }))}
+      >
+        <option value="">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+      </select>
+
+      <div className="price-range">
+        <input
+          type="number"
+          placeholder="Min Price"
+          value={filters.minPrice || ''}
+          onChange={(e) => setFilters(prev => ({
+            ...prev,
+            minPrice: e.target.value ? Number(e.target.value) : undefined
+          }))}
+        />
+        <input
+          type="number"
+          placeholder="Max Price"
+          value={filters.maxPrice || ''}
+          onChange={(e) => setFilters(prev => ({
+            ...prev,
+            maxPrice: e.target.value ? Number(e.target.value) : undefined
+          }))}
+        />
+      </div>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={filters.inStock || false}
+          onChange={(e) => setFilters(prev => ({ ...prev, inStock: e.target.checked }))}
+        />
+        In Stock Only
+      </label>
+
+      <button onClick={applyFilters}>Apply Filters</button>
+      <button onClick={() => {
+        setFilters({});
+        navigate({ search: { page: 1 } });
+      }}>Reset</button>
+    </div>
+  );
+}
+
+// Pagination component using URL state
+// app/features/products/components/Pagination.tsx
+export function Pagination({ currentPage, totalPages }) {
+  const navigate = useNavigate();
+
+  const goToPage = (page) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        page,
+      }),
+    });
+
+    // Scroll to top when changing pages
+    window.scrollTo(0, 0);
+  };
+
+  return (
+    <div className="pagination">
+      <button
+        disabled={currentPage <= 1}
+        onClick={() => goToPage(currentPage - 1)}
+      >
+        Previous
+      </button>
+
+      {/* Page numbers */}
+
+      <button
+        disabled={currentPage >= totalPages}
+        onClick={() => goToPage(currentPage + 1)}
+      >
+        Next
+      </button>
+    </div>
+  );
+}
+```
+
+#### URL State Best Practices
+
+1. **Schema Validation**
+
+   - Always validate URL parameters with zod schemas
+   - Provide sensible defaults for optional parameters
+   - Use appropriate type coercion (e.g., string to number)
+
+2. **State Synchronization**
+
+   - Keep URL as the source of truth for shareable state
+   - Use local state for transient UI state before committing to URL
+   - Reset pagination when filters change
+
+3. **User Experience**
+   - Preserve filters when navigating back/forward
+   - Provide clear reset/clear functionality
+   - Ensure bookmarkable and shareable URLs
+
+For more detailed patterns and best practices for URL state management, see [TanStack Router Patterns](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc).
+
+### 2. Server State with TanStack Query
+
+Use TanStack Query for all server data fetching, caching, and synchronization. This includes:
+
+- API data fetching
+- Server function calls
+- Data mutations
+- Optimistic updates
+
+```typescript
+// ✅ Good - Server state management with TanStack Query
+// app/features/products/hooks/useProducts.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getProducts, createProduct } from '../server';
+import type { Product, NewProduct } from '../types';
+
+// Query key factory for consistent keys
+export const productKeys = {
+  all: ['products'] as const,
+  lists: () => [...productKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) => [...productKeys.lists(), filters] as const,
+  details: () => [...productKeys.all, 'detail'] as const,
+  detail: (id: string) => [...productKeys.details(), id] as const,
+};
+
+// Hook for fetching products with URL filters
+export function useProducts(filters: Record<string, unknown> = {}) {
+  return useQuery({
+    queryKey: productKeys.list(filters),
+    queryFn: () => getProducts(filters),
+  });
+}
+
+// Hook for fetching a single product
+export function useProduct(id: string) {
+  return useQuery({
+    queryKey: productKeys.detail(id),
+    queryFn: () => getProduct(id),
+    enabled: !!id, // Only run if id is provided
+  });
+}
+
+// Hook for creating a product with proper cache updates
+export function useCreateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newProduct: NewProduct) => createProduct(newProduct),
+    onSuccess: (createdProduct) => {
+      // Update queries that might be affected
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+
+      // Optionally add to cache directly for immediate UI updates
+      queryClient.setQueryData(productKeys.detail(createdProduct.id), createdProduct);
+    },
+  });
+}
+
+// Usage with URL state in components
+// app/features/products/components/ProductList.tsx
+export function ProductList({ filters, page, sort }) {
+  // Combine URL state with server state
+  const { data, isLoading, error } = useProducts({
+    ...filters,
+    page,
+    sort,
+  });
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage error={error} />;
+
+  return (
+    <div className="product-grid">
+      {data.products.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+#### TanStack Query Best Practices
+
+1. **Query Key Management**
+
+   - Use structured, predictable query keys
+   - Create key factories for consistency
+   - Include all relevant URL parameters in keys
+
+2. **Data Fetching**
+
+   - Separate data fetching logic from UI components
+   - Create custom hooks for reusable queries
+   - Handle loading and error states consistently
+
+3. **Mutations and Cache Updates**
+
+   - Update the cache appropriately after mutations
+   - Use optimistic updates for better UX
+   - Handle errors and rollbacks
+
+4. **Performance Optimization**
+   - Set appropriate staleTime and gcTime
+   - Use enabled option to control when queries run
+   - Implement proper pagination and infinite queries
+
+### 3. Form State with React Hook Form
+
+Use React Hook Form for all form state management, including:
+
+- User input forms
+- Complex multi-step forms
+- Form validation
+- Form submission
+
+```typescript
+// ✅ Good - Form state management with React Hook Form
+// app/features/checkout/components/CheckoutForm.tsx
+import { useForm, FormProvider, useFormContext } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useState } from 'react';
+import { createOrder } from '../server';
+import { useMutation } from '@tanstack/react-query';
+
+// Form validation schemas
+const shippingSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required'),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  zipCode: z.string().min(5, 'Valid zip code is required'),
+});
+
+const paymentSchema = z.object({
+  cardNumber: z.string().regex(/^\d{16}$/, 'Card number must be 16 digits'),
+  cardholderName: z.string().min(1, 'Cardholder name is required'),
+  expiryDate: z.string().regex(/^\d{2}\/\d{2}$/, 'Expiry date must be in MM/YY format'),
+  cvv: z.string().regex(/^\d{3,4}$/, 'CVV must be 3 or 4 digits'),
+});
+
+const checkoutSchema = z.object({
+  shipping: shippingSchema,
+  payment: paymentSchema,
+});
+
+type CheckoutFormValues = z.infer<typeof checkoutSchema>;
+
+// Multi-step form with React Hook Form
+export function CheckoutForm() {
+  const [step, setStep] = useState<'shipping' | 'payment' | 'review'>('shipping');
+
+  // Initialize form with React Hook Form
+  const methods = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      shipping: {
+        fullName: '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+      },
+      payment: {
+        cardNumber: '',
+        cardholderName: '',
+        expiryDate: '',
+        cvv: '',
+      },
+    },
+    mode: 'onChange', // Validate on change for better UX
+  });
+
+  // Create order mutation
+  const { mutate: submitOrder, isPending } = useMutation({
+    mutationFn: createOrder,
+    onSuccess: (data) => {
+      // Navigate to order confirmation
+      navigate(`/orders/${data.orderId}/confirmation`);
+    },
+  });
+
+  // Form submission handler
+  const onSubmit = (data: CheckoutFormValues) => {
+    if (step === 'review') {
+      submitOrder({
+        ...data,
+        // Add any additional order data
+        items: cartItems,
+        total: cartTotal,
+      });
+    } else {
+      // Move to next step
+      setStep(step === 'shipping' ? 'payment' : 'review');
+    }
+  };
+
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        {/* Step indicator */}
+        <div className="steps">
+          <div className={`step ${step === 'shipping' ? 'active' : ''}`}>Shipping</div>
+          <div className={`step ${step === 'payment' ? 'active' : ''}`}>Payment</div>
+          <div className={`step ${step === 'review' ? 'active' : ''}`}>Review</div>
+        </div>
+
+        {/* Form steps */}
+        {step === 'shipping' && <ShippingForm />}
+        {step === 'payment' && <PaymentForm />}
+        {step === 'review' && <OrderReview />}
+
+        {/* Navigation buttons */}
+        <div className="form-navigation">
+          {step !== 'shipping' && (
+            <button
+              type="button"
+              onClick={() => setStep(step === 'payment' ? 'shipping' : 'payment')}
+            >
+              Back
+            </button>
+          )}
+
+          <button type="submit" disabled={isPending}>
+            {step === 'review'
+              ? (isPending ? 'Placing Order...' : 'Place Order')
+              : 'Continue'}
+          </button>
+        </div>
+      </form>
+    </FormProvider>
+  );
+}
+
+// Shipping form step
+function ShippingForm() {
+  const { register, formState: { errors } } = useFormContext<CheckoutFormValues>();
+
+  return (
+    <div className="shipping-form">
+      <h2>Shipping Information</h2>
+
+      <div className="form-group">
+        <label htmlFor="fullName">Full Name</label>
+        <input
+          id="fullName"
+          {...register('shipping.fullName')}
+        />
+        {errors.shipping?.fullName && (
+          <p className="error">{errors.shipping.fullName.message}</p>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="address">Address</label>
+        <input
+          id="address"
+          {...register('shipping.address')}
+        />
+        {errors.shipping?.address && (
+          <p className="error">{errors.shipping.address.message}</p>
+        )}
+      </div>
+
+      {/* Additional shipping fields */}
+    </div>
+  );
+}
+
+// Payment form step
+function PaymentForm() {
+  const { register, formState: { errors } } = useFormContext<CheckoutFormValues>();
+
+  return (
+    <div className="payment-form">
+      <h2>Payment Information</h2>
+
+      <div className="form-group">
+        <label htmlFor="cardNumber">Card Number</label>
+        <input
+          id="cardNumber"
+          {...register('payment.cardNumber')}
+          placeholder="1234 5678 9012 3456"
+        />
+        {errors.payment?.cardNumber && (
+          <p className="error">{errors.payment.cardNumber.message}</p>
+        )}
+      </div>
+
+      {/* Additional payment fields */}
+    </div>
+  );
+}
+
+// Order review step
+function OrderReview() {
+  const { watch } = useFormContext<CheckoutFormValues>();
+  const formValues = watch();
+
+  return (
+    <div className="order-review">
+      <h2>Review Your Order</h2>
+
+      <div className="review-section">
+        <h3>Shipping Information</h3>
+        <p>{formValues.shipping.fullName}</p>
+        <p>{formValues.shipping.address}</p>
+        <p>{formValues.shipping.city}, {formValues.shipping.state} {formValues.shipping.zipCode}</p>
+      </div>
+
+      <div className="review-section">
+        <h3>Payment Information</h3>
+        <p>Card ending in {formValues.payment.cardNumber.slice(-4)}</p>
+        <p>{formValues.payment.cardholderName}</p>
+      </div>
+
+      <div className="review-section">
+        <h3>Order Summary</h3>
+        {/* Display cart items and total */}
+      </div>
+    </div>
+  );
+}
+```
+
+#### React Hook Form Best Practices
+
+1. **Form Setup**
+
+   - Use zod for schema validation
+   - Organize complex forms into logical sections
+   - Set appropriate default values
+
+2. **Form Structure**
+
+   - Use FormProvider for complex multi-step forms
+   - Create reusable form components
+   - Implement proper error handling and display
+
+3. **Validation**
+
+   - Use appropriate validation mode (onChange, onBlur, onSubmit)
+   - Provide clear error messages
+   - Implement field-level and form-level validation
+
+4. **Performance**
+   - Avoid unnecessary re-renders with proper field registration
+   - Use controlled inputs only when necessary
+   - Leverage React Hook Form's performance optimizations
+
+### 4. Global Client State with Zustand
+
+Use Zustand for global application state that doesn't belong in the URL but needs to be accessed by multiple components:
+
+- Application preferences
+- UI state shared across components
+- Cached data that doesn't come from the server
+- Complex state with many actions
+
+```typescript
+// ✅ Good - Global state management with Zustand
+// app/stores/cartStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { type CartItem, addToCart, removeFromCart, updateCartItem } from '../services/cart';
+
+interface CartState {
+  items: CartItem[];
+  isOpen: boolean;
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  openCart: () => void;
+  closeCart: () => void;
+  addItem: (product: Product, quantity: number) => Promise<void>;
+  removeItem: (itemId: string) => Promise<void>;
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+
+  // Derived state
+  totalItems: number;
+  subtotal: number;
+}
+
+export const useCartStore = create<CartState>()(
+  // Add persistence to keep cart between sessions
+  persist(
+    (set, get) => ({
+      // State
+      items: [],
+      isOpen: false,
+      isLoading: false,
+      error: null,
+
+      // Actions
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
+
+      addItem: async (product, quantity) => {
+        try {
+          set({ isLoading: true, error: null });
+          const updatedCart = await addToCart(product.id, quantity);
+          set({ items: updatedCart.items, isLoading: false });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Failed to add item',
+            isLoading: false
+          });
+        }
+      },
+
+      removeItem: async (itemId) => {
+        try {
+          set({ isLoading: true, error: null });
+          const updatedCart = await removeFromCart(itemId);
+          set({ items: updatedCart.items, isLoading: false });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Failed to remove item',
+            isLoading: false
+          });
+        }
+      },
+
+      updateQuantity: async (itemId, quantity) => {
+        try {
+          set({ isLoading: true, error: null });
+          const updatedCart = await updateCartItem(itemId, quantity);
+          set({ items: updatedCart.items, isLoading: false });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Failed to update item',
+            isLoading: false
+          });
+        }
+      },
+
+      clearCart: async () => {
+        try {
+          set({ isLoading: true, error: null });
+          await clearCart();
+          set({ items: [], isLoading: false });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Failed to clear cart',
+            isLoading: false
+          });
+        }
+      },
+
+      // Derived state (computed properties)
+      get totalItems() {
+        return get().items.reduce((total, item) => total + item.quantity, 0);
+      },
+
+      get subtotal() {
+        return get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
+      },
+    }),
+    {
+      name: 'cart-storage', // unique name for localStorage
+      partialize: (state) => ({ items: state.items }), // only persist items
+    }
+  )
+);
+
+// Usage in components
+// app/components/CartButton.tsx
+export function CartButton() {
+  const { openCart, totalItems } = useCartStore();
+
+  return (
+    <button onClick={openCart} className="cart-button">
+      <CartIcon />
+      {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
+    </button>
+  );
+}
+
+// app/components/CartDrawer.tsx
+export function CartDrawer() {
+  const {
+    isOpen,
+    closeCart,
+    items,
+    isLoading,
+    error,
+    removeItem,
+    updateQuantity,
+    subtotal
+  } = useCartStore();
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="cart-drawer">
+      <div className="cart-header">
+        <h2>Your Cart</h2>
+        <button onClick={closeCart}>Close</button>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+
+      <div className="cart-items">
+        {items.length === 0 ? (
+          <p>Your cart is empty</p>
+        ) : (
+          items.map(item => (
+            <div key={item.id} className="cart-item">
+              <img src={item.image} alt={item.name} />
+              <div className="item-details">
+                <h3>{item.name}</h3>
+                <p>${item.price.toFixed(2)}</p>
+              </div>
+              <div className="quantity-controls">
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  disabled={item.quantity <= 1 || isLoading}
+                >
+                  -
+                </button>
+                <span>{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  disabled={isLoading}
+                >
+                  +
+                </button>
+              </div>
+              <button
+                className="remove-button"
+                onClick={() => removeItem(item.id)}
+                disabled={isLoading}
+              >
+                Remove
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {items.length > 0 && (
+        <div className="cart-footer">
+          <div className="cart-total">
+            <span>Subtotal:</span>
+            <span>${subtotal.toFixed(2)}</span>
+          </div>
+          <button
+            className="checkout-button"
+            onClick={() => {
+              closeCart();
+              navigate('/checkout');
+            }}
+          >
+            Checkout
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Another example: Theme store with Zustand
+// app/stores/themeStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+type Theme = 'light' | 'dark' | 'system';
+
+interface ThemeState {
+  theme: Theme;
+  isDarkMode: boolean;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+}
+
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set, get) => {
+      // Helper to determine if dark mode should be active
+      const calculateIsDarkMode = (theme: Theme): boolean => {
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      };
+
+      return {
+        theme: 'system' as Theme,
+        isDarkMode: calculateIsDarkMode('system'),
+
+        setTheme: (theme) => {
+          const isDarkMode = calculateIsDarkMode(theme);
+          set({ theme, isDarkMode });
+
+          // Apply theme to document
+          document.documentElement.classList.toggle('dark', isDarkMode);
+        },
+
+        toggleTheme: () => {
+          const currentTheme = get().theme;
+          const newTheme =
+            currentTheme === 'light' ? 'dark' :
+            currentTheme === 'dark' ? 'system' : 'light';
+
+          get().setTheme(newTheme);
+        },
+      };
+    },
+    {
+      name: 'theme-storage',
+      onRehydrateStorage: () => (state) => {
+        // When state is rehydrated, recalculate isDarkMode and apply theme
+        if (state) {
+          const isDarkMode =
+            state.theme === 'dark' ||
+            (state.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+          state.isDarkMode = isDarkMode;
+          document.documentElement.classList.toggle('dark', isDarkMode);
+
+          // Listen for system preference changes if using system theme
+          if (state.theme === 'system') {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const updateTheme = (e: MediaQueryListEvent) => {
+              state.isDarkMode = e.matches;
+              document.documentElement.classList.toggle('dark', e.matches);
+            };
+
+            mediaQuery.addEventListener('change', updateTheme);
+          }
+        }
+      },
+    }
+  )
+);
+
+// Usage in components
+// app/components/ThemeToggle.tsx
+export function ThemeToggle() {
+  const { theme, toggleTheme } = useThemeStore();
+
+  return (
+    <button onClick={toggleTheme} className="theme-toggle">
+      {theme === 'light' ? <MoonIcon /> : theme === 'dark' ? <SunIcon /> : <SystemIcon />}
+    </button>
+  );
+}
+```
+
+#### Zustand Best Practices
+
+1. **Store Organization**
+
+   - Create separate stores for different domains (cart, auth, theme, etc.)
+   - Keep stores focused on a single concern
+   - Use middleware like `persist` for enhanced functionality
+
+2. **State Structure**
+
+   - Define clear interfaces for your state
+   - Include both state and actions in the store
+   - Add derived state (computed values) when useful
+
+3. **Actions**
+
+   - Define all state mutations as actions within the store
+   - Handle async operations with proper loading and error states
+   - Use immer middleware for complex state updates if needed
+
+4. **Performance**
+   - Use selectors to prevent unnecessary re-renders
+   - Split large stores into smaller ones
+   - Only persist the necessary parts of your state
+
+### 5. Component State with React APIs
+
+For local component state that doesn't need to be shared, use React's built-in state management APIs:
+
+- `useState` for simple state
+- `useReducer` for complex state logic
+
+```typescript
+// ✅ Good - Simple component state with useState
+// app/components/Accordion.tsx
+import { useState } from 'react';
+
+export function Accordion({ items }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleItem = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  return (
+    <div className="accordion">
+      {items.map((item, index) => (
+        <div key={index} className="accordion-item">
+          <button
+            className="accordion-header"
+            onClick={() => toggleItem(index)}
+            aria-expanded={openIndex === index}
+          >
+            {item.title}
+            <span className="icon">{openIndex === index ? '−' : '+'}</span>
+          </button>
+
+          {openIndex === index && (
+            <div className="accordion-content">
+              {item.content}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ✅ Good - Complex component state with useReducer
+// app/components/FileUploader.tsx
+import { useReducer, useRef } from 'react';
+
+type FileState = {
+  files: File[];
+  uploading: boolean;
+  progress: number;
+  error: string | null;
+  success: boolean;
+};
+
+type FileAction =
+  | { type: 'ADD_FILES'; payload: File[] }
+  | { type: 'REMOVE_FILE'; payload: number }
+  | { type: 'UPLOAD_START' }
+  | { type: 'UPLOAD_PROGRESS'; payload: number }
+  | { type: 'UPLOAD_SUCCESS' }
+  | { type: 'UPLOAD_ERROR'; payload: string }
+  | { type: 'RESET' };
+
+function fileReducer(state: FileState, action: FileAction): FileState {
+  switch (action.type) {
+    case 'ADD_FILES':
+      return {
+        ...state,
+        files: [...state.files, ...action.payload],
+        error: null,
+      };
+    case 'REMOVE_FILE':
+      return {
+        ...state,
+        files: state.files.filter((_, index) => index !== action.payload),
+      };
+    case 'UPLOAD_START':
+      return {
+        ...state,
+        uploading: true,
+        progress: 0,
+        error: null,
+        success: false,
+      };
+    case 'UPLOAD_PROGRESS':
+      return {
+        ...state,
+        progress: action.payload,
+      };
+    case 'UPLOAD_SUCCESS':
+      return {
+        ...state,
+        uploading: false,
+        progress: 100,
+        success: true,
+      };
+    case 'UPLOAD_ERROR':
+      return {
+        ...state,
+        uploading: false,
+        error: action.payload,
+      };
+    case 'RESET':
+      return {
+        files: [],
+        uploading: false,
+        progress: 0,
+        error: null,
+        success: false,
+      };
+    default:
+      return state;
+  }
+}
+
+export function FileUploader() {
+  const [state, dispatch] = useReducer(fileReducer, {
+    files: [],
+    uploading: false,
+    progress: 0,
+    error: null,
+    success: false,
+  });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      dispatch({
+        type: 'ADD_FILES',
+        payload: Array.from(e.target.files)
+      });
+    }
+  };
+
+  const handleUpload = async () => {
+    if (state.files.length === 0) return;
+
+    dispatch({ type: 'UPLOAD_START' });
+
+    try {
+      const formData = new FormData();
+      state.files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      // Simulated upload with progress
+      for (let i = 0; i <= 100; i += 10) {
+        dispatch({ type: 'UPLOAD_PROGRESS', payload: i });
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // In a real app, you would use fetch or axios to upload
+      // const response = await fetch('/api/upload', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+
+      // if (!response.ok) throw new Error('Upload failed');
+
+      dispatch({ type: 'UPLOAD_SUCCESS' });
+    } catch (error) {
+      dispatch({
+        type: 'UPLOAD_ERROR',
+        payload: error instanceof Error ? error.message : 'Upload failed'
+      });
+    }
+  };
+
+  return (
+    <div className="file-uploader">
+      <div className="file-input">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          multiple
+          disabled={state.uploading}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={state.uploading}
+          className="select-files-button"
+        >
+          Select Files
+        </button>
+      </div>
+
+      {state.files.length > 0 && (
+        <div className="file-list">
+          <h3>Selected Files ({state.files.length})</h3>
+          <ul>
+            {state.files.map((file, index) => (
+              <li key={index} className="file-item">
+                <span>{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => dispatch({ type: 'REMOVE_FILE', payload: index })}
+                  disabled={state.uploading}
+                  className="remove-file"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {state.error && (
+        <div className="error-message">{state.error}</div>
+      )}
+
+      {state.success && (
+        <div className="success-message">Files uploaded successfully!</div>
+      )}
+
+      {state.uploading && (
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${state.progress}%` }}
+          />
+          <span className="progress-text">{state.progress}%</span>
+        </div>
+      )}
+
+      <div className="actions">
+        <button
+          type="button"
+          onClick={handleUpload}
+          disabled={state.files.length === 0 || state.uploading}
+          className="upload-button"
+        >
+          {state.uploading ? 'Uploading...' : 'Upload Files'}
+        </button>
+
+        {(state.files.length > 0 || state.success) && (
+          <button
+            type="button"
+            onClick={() => dispatch({ type: 'RESET' })}
+            disabled={state.uploading}
+            className="reset-button"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+#### React State API Best Practices
+
+1. **State Organization**
+
+   - Use the simplest state management solution for the job
+   - Keep state close to where it's used
+   - Avoid prop drilling with Zustand or Context API
+
+2. **State Updates**
+
+   - Use functional updates for state that depends on previous state
+   - Batch related state updates
+   - Use useReducer for complex state logic
+
+3. **Performance**
+   - Memoize expensive calculations with useMemo
+   - Prevent unnecessary re-renders with useCallback
+   - Split complex components into smaller ones
+
+## State Management Decision Tree
+
+When deciding which state management approach to use, follow this decision tree:
+
+1. **Does the state affect the URL or need to be shareable?**
+
+   - Yes → Use URL state with TanStack Router
+   - No → Continue to next question
+
+2. **Is the state server data that needs caching and synchronization?**
+
+   - Yes → Use TanStack Query
+   - No → Continue to next question
+
+3. **Is the state part of a form?**
+
+   - Yes → Use React Hook Form
+   - No → Continue to next question
+
+4. **Is the state needed by multiple components across the app?**
+
+   - Yes → Use Zustand
+   - No → Continue to next question
+
+5. **Is the state complex with many related values and actions?**
+   - Yes → Use useReducer
+   - No → Use useState
+
+## Related Guidelines
+
+- [TanStack Query Patterns](mdc:.cursor/rules/domains/tanstack/query/patterns.mdc)
+- [TanStack Router Patterns](mdc:.cursor/rules/domains/tanstack/router/patterns.mdc)
+- [React Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc)
+- [React Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc)
+- [React Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc)
+- [Zustand Best Practices](mdc:.cursor/rules/domains/frontend/react/state.mdc#zustand-best-practices)

@@ -14,7 +14,7 @@ This section contains the fundamental principles, architectural patterns, and de
 - [Core Principles](mdc:.cursor/rules/domains/core/principles.mdc) - Fundamental development principles and practices
 - [Architecture](mdc:.cursor/rules/domains/core/architecture.mdc) - System design patterns and architectural guidelines
 - [Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality and style standards
-- [Shell Guidelines](mdc:.cursor/rules/domains/core/shell.mdc) - Shell and terminal usage guidelines
+- [Security](mdc:.cursor/rules/domains/core/security.mdc) - Core security principles and practices
 
 ## Related Guidelines
 

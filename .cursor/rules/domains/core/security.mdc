@@ -1,0 +1,451 @@
+---
+description: Core security principles and practices for TanStack Start applications across all domains
+globs: ['**/*.{ts,tsx,js,jsx}']
+---
+
+# 🔒 Core Security Principles
+
+## Overview
+
+This document establishes fundamental security principles and practices that apply across all domains of our TanStack Start application. It serves as the foundation for domain-specific security guidelines and ensures a consistent security posture throughout the application.
+
+## Guidelines
+
+### 1. Authentication & Authorization
+
+#### Principle: Zero Trust Architecture
+
+Always verify identity and permissions regardless of where the request originates.
+
+```typescript
+// ✅ Good - Verify authentication on both client and server
+// Client-side route protection with file-based routing
+// app/routes/admin/__root.tsx
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useAuth } from '~/lib/client/auth';
+
+export const Route = createFileRoute('/admin/')({
+  beforeLoad: ({ context }) => {
+    // Check auth before even loading the route
+    const { isAuthenticated, hasPermission } = context.auth;
+
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+
+    // Check permissions
+    if (!hasPermission('admin')) {
+      throw redirect({ to: '/unauthorized' });
+    }
+  },
+  component: AdminPage,
+});
+
+// Server-side endpoint protection with TanStack Start
+// app/lib/server/middleware/auth-guard.ts
+import { createMiddleware } from '@tanstack/start';
+import { getWebRequest, setResponseStatus } from '@tanstack/start/server';
+import { auth } from '~/lib/server/auth';
+
+export const authMiddleware = createMiddleware().server(async ({ next }) => {
+  const { headers } = getWebRequest()!;
+
+  const session = await auth.api.getSession({
+    headers,
+    query: { disableCookieCache: true },
+  });
+
+  if (!session) {
+    setResponseStatus(401);
+    throw new Error('Unauthorized');
+  }
+
+  return next({ context: { user: session.user } });
+});
+
+// Role-based middleware
+// app/lib/server/middleware/role-guard.ts
+export const createRoleMiddleware = (requiredRole: string) => {
+  return createMiddleware()
+    .middleware([authMiddleware])
+    .server(async ({ next, context }) => {
+      const { user } = context;
+
+      if (!user.roles.includes(requiredRole)) {
+        setResponseStatus(403);
+        throw new Error('Forbidden: Insufficient permissions');
+      }
+
+      return next();
+    });
+};
+
+// Usage in server functions
+// app/features/admin/server.ts
+import { createServerFn } from '@tanstack/start';
+import { createRoleMiddleware } from '~/lib/server/middleware/role-guard';
+
+export const getAdminData = createServerFn()
+  .middleware([createRoleMiddleware('admin')])
+  .handler(async () => {
+    // Admin-only logic here
+    return { data: 'admin-only data' };
+  });
+```
+
+#### Principle: Token Security
+
+Properly manage authentication tokens to prevent theft and misuse.
+
+- Store access tokens in memory or sessionStorage (not localStorage)
+- Store refresh tokens in secure, httpOnly cookies
+- Implement token rotation and short expiration times
+- Use CSRF protection for cookie-based auth
+
+### 2. Data Protection
+
+#### Principle: Defense in Depth
+
+Implement multiple layers of security controls.
+
+```typescript
+// ✅ Good - Multiple layers of data validation
+// 1. Client-side validation with Zod
+import { z } from 'zod';
+import { useForm } from '@tanstack/react-form';
+
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+function RegistrationForm() {
+  const form = useForm({
+    schema,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async (values) => {
+      await registerUser(values);
+    },
+  });
+
+  return (
+    <Form {...form.getFormProps()}>
+      {/* Form fields */}
+    </Form>
+  );
+}
+
+// 2. Server-side validation with TanStack Start
+// app/features/auth/server.ts
+import { createServerFn } from '@tanstack/start';
+import { z } from 'zod';
+import { zodValidator } from '@tanstack/zod-adapter';
+
+const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export const registerUser = createServerFn({ method: 'POST' })
+  .validator(zodValidator(userSchema))
+  .handler(async ({ data }) => {
+    // 3. Additional business logic validation
+    const existingUser = await db.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+
+    // 4. Secure data handling
+    const hashedPassword = await hashPassword(data.password);
+
+    // Store in database...
+    const user = await db.user.create({
+      data: {
+        email: data.email,
+        password: hashedPassword,
+      },
+    });
+
+    return { userId: user.id };
+  });
+```
+
+#### Principle: Data Minimization
+
+Only collect, process, and store the minimum data necessary.
+
+- Implement proper data sanitization before storage
+- Use field-level encryption for sensitive data
+- Implement proper data retention policies
+
+### 3. API Security
+
+#### Principle: Input/Output Validation
+
+Always validate and sanitize inputs and outputs.
+
+```typescript
+// ✅ Good - Comprehensive input validation with TanStack Start
+// app/features/users/server.ts
+import { createServerFn } from '@tanstack/start';
+import { z } from 'zod';
+import { zodValidator } from '@tanstack/zod-adapter';
+
+// Define schema with strict validation
+const userSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    email: z.string().email(),
+    role: z.enum(['user', 'admin']),
+    settings: z.object({
+      theme: z.enum(['light', 'dark']),
+      notifications: z.boolean(),
+    }),
+  })
+  .strict(); // No additional properties allowed
+
+// Apply validation to server function
+export const createUser = createServerFn({ method: 'POST' })
+  .validator(zodValidator(userSchema))
+  .middleware([authMiddleware])
+  .handler(async ({ data }) => {
+    // Process validated data...
+    const user = await db.user.create({
+      data,
+    });
+
+    return { userId: user.id };
+  });
+```
+
+#### Principle: Rate Limiting and Throttling
+
+Protect against abuse and DoS attacks.
+
+```typescript
+// ✅ Good - Implement rate limiting with TanStack Start middleware
+// app/lib/server/middleware/rate-limit.ts
+import { createMiddleware } from '@tanstack/start';
+import {
+  getWebRequest,
+  setResponseStatus,
+  setHeader,
+} from '@tanstack/start/server';
+
+// Simple in-memory store for rate limiting
+// In production, use Redis or another distributed store
+const ipRequests = new Map<string, { count: number; resetTime: number }>();
+
+export const createRateLimitMiddleware = (options: {
+  windowMs: number;
+  max: number;
+  message?: string;
+}) => {
+  return createMiddleware().server(async ({ next }) => {
+    const request = getWebRequest()!;
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const now = Date.now();
+
+    // Get or initialize request count for this IP
+    let requestData = ipRequests.get(ip);
+    if (!requestData || requestData.resetTime < now) {
+      requestData = { count: 0, resetTime: now + options.windowMs };
+      ipRequests.set(ip, requestData);
+    }
+
+    // Increment request count
+    requestData.count++;
+
+    // Check if rate limit exceeded
+    if (requestData.count > options.max) {
+      // Set rate limit headers
+      setHeader('X-RateLimit-Limit', options.max.toString());
+      setHeader('X-RateLimit-Remaining', '0');
+      setHeader(
+        'X-RateLimit-Reset',
+        Math.ceil(requestData.resetTime / 1000).toString(),
+      );
+
+      // Return 429 Too Many Requests
+      setResponseStatus(429);
+      throw new Error(
+        options.message || 'Too many requests, please try again later',
+      );
+    }
+
+    // Set rate limit headers
+    setHeader('X-RateLimit-Limit', options.max.toString());
+    setHeader(
+      'X-RateLimit-Remaining',
+      (options.max - requestData.count).toString(),
+    );
+    setHeader(
+      'X-RateLimit-Reset',
+      Math.ceil(requestData.resetTime / 1000).toString(),
+    );
+
+    return next();
+  });
+};
+
+// Usage in server functions
+// app/features/auth/server.ts
+import { createServerFn } from '@tanstack/start';
+import { createRateLimitMiddleware } from '~/lib/server/middleware/rate-limit';
+
+// Create rate limit middleware for login attempts
+const loginRateLimitMiddleware = createRateLimitMiddleware({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per IP in the window
+  message: 'Too many login attempts, please try again later',
+});
+
+export const login = createServerFn({ method: 'POST' })
+  .middleware([loginRateLimitMiddleware])
+  .handler(async ({ data }) => {
+    // Login logic...
+  });
+```
+
+### 4. Secure Coding Practices
+
+#### Principle: Least Privilege
+
+Every component should operate with the minimum privileges necessary.
+
+- Use specific permissions rather than admin/superuser
+- Implement proper database user permissions
+- Use environment-specific configurations
+
+#### Principle: Secure Defaults
+
+Systems should be secure by default, requiring explicit action to reduce security.
+
+```typescript
+// ✅ Good - Secure default configurations
+// app/lib/query.ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Prevent caching sensitive data by default
+      gcTime: 0,
+      // Prevent automatic refetching of sensitive data
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: false,
+    },
+    mutations: {
+      // Don't retry failed mutations by default
+      retry: false,
+    },
+  },
+});
+```
+
+### 5. Security Testing & Monitoring
+
+#### Principle: Continuous Security Validation
+
+Regularly test and validate security controls.
+
+- Implement security-focused unit and integration tests
+- Perform regular security audits and penetration testing
+- Use static analysis tools in CI/CD pipeline
+
+#### Principle: Comprehensive Logging & Monitoring
+
+Monitor and log security-relevant events.
+
+```typescript
+// ✅ Good - Security-focused logging with TanStack Start
+// app/lib/server/middleware/security-logger.ts
+import { createMiddleware } from '@tanstack/start';
+import { getWebRequest } from '@tanstack/start/server';
+
+// Create a security logging middleware
+export const securityLoggingMiddleware = createMiddleware().server(
+  async ({ next, context }) => {
+    const request = getWebRequest()!;
+    const startTime = Date.now();
+    const method = request.method;
+    const url = request.url;
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+    const userId = context.user?.id || 'unauthenticated';
+
+    // Log request details
+    console.info('Security: Request received', {
+      method,
+      url,
+      ip,
+      userAgent,
+      userId,
+      timestamp: new Date().toISOString(),
+    });
+
+    try {
+      // Process the request
+      const result = await next();
+
+      // Log successful request
+      console.info('Security: Request completed', {
+        method,
+        url,
+        duration: Date.now() - startTime,
+        status: 'success',
+        userId,
+      });
+
+      return result;
+    } catch (error) {
+      // Log failed request
+      console.error('Security: Request failed', {
+        method,
+        url,
+        duration: Date.now() - startTime,
+        status: 'error',
+        error: error.message,
+        userId,
+        // Don't log stack traces in production
+        ...(process.env.NODE_ENV !== 'production' && { stack: error.stack }),
+      });
+
+      throw error;
+    }
+  },
+);
+
+// Usage in server functions
+// app/features/auth/server.ts
+import { createServerFn } from '@tanstack/start';
+import { securityLoggingMiddleware } from '~/lib/server/middleware/security-logger';
+
+export const login = createServerFn({ method: 'POST' })
+  .middleware([securityLoggingMiddleware])
+  .handler(async ({ data }) => {
+    // Login logic...
+
+    // Additional security logging for specific events
+    if (loginFailed) {
+      console.warn('Security: Failed login attempt', {
+        email: data.email,
+        reason: 'Invalid credentials',
+        ip: getWebRequest()!.headers.get('x-forwarded-for') || 'unknown',
+      });
+    }
+  });
+```
+
+## Related Guidelines
+
+- [React Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - React-specific security practices
+- [TanStack Start Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - TanStack Start security configuration
+- [Contributing](mdc:.cursor/rules/processes/consistency/contributing.mdc) - Contribution guidelines

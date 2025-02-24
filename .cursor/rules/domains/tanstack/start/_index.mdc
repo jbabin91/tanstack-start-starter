@@ -12,7 +12,8 @@ This section contains comprehensive guidelines for using the TanStack Start fram
 ## Quick Links
 
 - [Setup](mdc:.cursor/rules/domains/tanstack/start/setup.mdc) - Initial setup and configuration
-- [Architecture](mdc:.cursor/rules/domains/tanstack/start/architecture.mdc) - Project structure and patterns
+- [Patterns](mdc:.cursor/rules/domains/tanstack/start/patterns.mdc) - Common patterns and best practices
+- [API Integration](mdc:.cursor/rules/domains/tanstack/start/api.mdc) - API design and implementation
 - [Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - Security best practices
 
 ## Related Guidelines
@@ -20,3 +21,4 @@ This section contains comprehensive guidelines for using the TanStack Start fram
 - [Router](mdc:.cursor/rules/domains/tanstack/router/_index.mdc) - TanStack Router guidelines
 - [Query](mdc:.cursor/rules/domains/tanstack/query/_index.mdc) - TanStack Query guidelines
 - [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards
+- [React State Management](mdc:.cursor/rules/domains/frontend/react/state.mdc) - State management guidelines

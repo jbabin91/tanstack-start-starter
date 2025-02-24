@@ -1,5 +1,5 @@
 ---
-description: Guidelines for implementing forms in TanStack Start applications using TanStack Form and Zod
+description: Guidelines for implementing forms in TanStack Start applications using React Hook Form and Zod
 globs: ['**/*.{ts,tsx}']
 ---
 
@@ -7,7 +7,7 @@ globs: ['**/*.{ts,tsx}']
 
 ## Overview
 
-These guidelines establish best practices for implementing forms in our TanStack Start application using TanStack Form and Zod for validation.
+These guidelines establish best practices for implementing forms in our TanStack Start application using React Hook Form and Zod for validation.
 
 ## Guidelines
 
@@ -267,3 +267,4 @@ function ContactForm() {
 - [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component guidelines
 - [Hooks](mdc:.cursor/rules/domains/frontend/react/hooks.mdc) - Hook patterns
 - [Security](mdc:.cursor/rules/domains/frontend/react/security.mdc) - Security guidelines
+- [State Management](mdc:.cursor/rules/domains/frontend/react/state.mdc) - State management guidelines

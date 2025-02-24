@@ -13,9 +13,12 @@ This section contains comprehensive guidelines for using TanStack Query, coverin
 
 - [Setup](mdc:.cursor/rules/domains/tanstack/query/setup.mdc) - Query setup and configuration
 - [Patterns](mdc:.cursor/rules/domains/tanstack/query/patterns.mdc) - Common query patterns
-- [Caching](mdc:.cursor/rules/domains/tanstack/query/caching.mdc) - Caching strategies
+- [Mutations](mdc:.cursor/rules/domains/tanstack/query/mutations.mdc) - Mutation patterns and best practices
+- [Optimization](mdc:.cursor/rules/domains/tanstack/query/optimization.mdc) - Performance optimization and caching strategies
 
 ## Related Guidelines
 
 - [Start Guidelines](mdc:.cursor/rules/domains/tanstack/start/_index.mdc) - TanStack Start framework guidelines
 - [API Integration](mdc:.cursor/rules/domains/tanstack/start/api.mdc) - API integration patterns
+- [React State Management](mdc:.cursor/rules/domains/frontend/react/state.mdc) - State management with TanStack Query
+- [Core Standards](mdc:.cursor/rules/domains/core/standards.mdc) - Code quality standards

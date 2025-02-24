@@ -129,9 +129,36 @@ function SecureForm() {
 ### Authentication and Authorization
 
 ```typescript
-// ✅ Good - Protected routes and components
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+// ✅ Good - Protected routes with file-based routing
+// app/routes/admin/__root.tsx
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useAuth } from '~/lib/client/auth';
+
+export const Route = createFileRoute('/admin/')({
+  beforeLoad: ({ context }) => {
+    const { isAuthenticated, hasPermission } = context.auth;
+
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+
+    if (!hasPermission('admin')) {
+      throw redirect({ to: '/unauthorized' });
+    }
+  },
+  component: AdminPage,
+});
+
+// ✅ Good - Protected route component wrapper
+// app/components/ProtectedRoute.tsx
+function ProtectedRoute({
+  children,
+  requiredPermission
+}: {
+  children: React.ReactNode;
+  requiredPermission?: string;
+}) {
+  const { isAuthenticated, isLoading, hasPermission } = useAuth();
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -141,20 +168,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" replace />;
   }
 
+  if (requiredPermission && !hasPermission(requiredPermission)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
   return <>{children}</>;
 }
 
-// Usage
-export const Route = createFileRoute('/admin')({
-  component: AdminPage,
-  beforeLoad: ({ context }) => {
-    if (!context.auth.isAdmin) {
-      throw redirect({ to: '/login' });
-    }
-  },
-});
-
 // ✅ Good - Role-based component rendering
+// app/features/admin/components/AdminPanel.tsx
 function AdminPanel() {
   const { user } = useAuth();
   const canManageUsers = usePermission('users.manage');
@@ -207,52 +229,181 @@ function UserProfile() {
 ### Secure Communication
 
 ```typescript
-// ✅ Good - Secure API communication
-const api = axios.create({
-  baseURL: '/api',
+// ✅ Good - Secure communication with API
+// app/lib/api.ts
+import { createApiClient } from '~/lib/client/api';
+
+// Configure API client with secure defaults
+const api = createApiClient({
+  baseUrl: import.meta.env.VITE_API_URL,
+  // Ensure credentials are included for authenticated requests
+  credentials: 'include',
+  // Set secure headers
   headers: {
     'Content-Type': 'application/json',
-    'X-CSRF-Token': getCsrfToken(),
+    'X-Requested-With': 'XMLHttpRequest',
   },
-  // 1. Timeout requests
-  timeout: 5000,
-  // 2. Validate status
-  validateStatus: (status) => status >= 200 && status < 300,
 });
 
-// 3. Error handling
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+// Use the configured client for all API calls
+// app/features/users/components/UserProfile.tsx
+import { useQuery } from '@tanstack/react-query';
+import { api } from '~/lib/api';
 
-// Usage in components
-function SecureComponent() {
-  const { data, error } = useQuery({
-    queryKey: ['secure-data'],
-    queryFn: async () => {
-      const response = await api.get('/secure-endpoint');
-      return response.data;
-    },
+function UserProfile() {
+  const { data: user } = useQuery({
+    queryKey: ['user', 'profile'],
+    queryFn: () => api.get('/api/user/profile'),
   });
 
-  if (error) {
-    return <ErrorHandler error={error} />;
-  }
+  // Render user profile...
+}
+```
 
-  return <div>{/* Render secure data */}</div>;
+### Security Testing & Monitoring
+
+Implement proper testing and monitoring for React components to ensure security vulnerabilities are caught early.
+
+```typescript
+// ✅ Good - Security-focused component testing
+// app/features/auth/components/LoginForm.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { LoginForm } from './LoginForm';
+
+describe('LoginForm', () => {
+  // Test for XSS vulnerabilities
+  test('sanitizes user input to prevent XSS', async () => {
+    const mockSubmit = vi.fn();
+    render(<LoginForm onSubmit={mockSubmit} />);
+
+    // Attempt XSS attack
+    const maliciousInput = '<script>alert("XSS")</script>';
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: `test@example.com${maliciousInput}` },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Verify sanitization occurred before submission
+    expect(mockSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: expect.not.stringContaining('<script>'),
+      })
+    );
+  });
+
+  // Test for proper error handling
+  test('handles authentication errors securely', async () => {
+    const mockSubmit = vi.fn().mockRejectedValue(new Error('Invalid credentials'));
+    render(<LoginForm onSubmit={mockSubmit} />);
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'user@example.com' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'password123' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Verify error is displayed without exposing sensitive information
+    expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument();
+    expect(screen.queryByText(/password123/)).not.toBeInTheDocument();
+  });
+
+  // Test for CSRF token inclusion
+  test('includes CSRF token in form submission', async () => {
+    // Mock CSRF token
+    document.head.innerHTML = '<meta name="csrf-token" content="test-csrf-token" />';
+
+    const mockSubmit = vi.fn();
+    render(<LoginForm onSubmit={mockSubmit} />);
+
+    // Fill form and submit
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'user@example.com' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'password123' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Verify CSRF token was included
+    expect(mockSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        csrfToken: 'test-csrf-token',
+      })
+    );
+  });
+});
+```
+
+### Client-Side Logging
+
+Implement secure client-side logging to monitor security events without exposing sensitive information.
+
+```typescript
+// ✅ Good - Secure client-side logging
+// app/lib/client/logger.ts
+import { createLogger } from '~/lib/client/logging';
+
+export const logger = createLogger({
+  // Redact sensitive fields
+  sensitiveFields: ['password', 'token', 'secret', 'ssn', 'creditCard'],
+  // Configure log levels
+  level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+  // Configure transport
+  transport: {
+    // In production, send logs to server
+    type: process.env.NODE_ENV === 'production' ? 'server' : 'console',
+    // Endpoint for server logging
+    endpoint: '/api/logs',
+    // Batch logs to reduce network requests
+    batchSize: 10,
+    // Flush interval in milliseconds
+    flushInterval: 5000,
+  },
+});
+
+// Usage in components
+// app/features/security/components/SecureComponent.tsx
+function SecureComponent() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Log security-relevant events
+    logger.info('Component mounted', {
+      component: 'SecureComponent',
+      userId: user?.id,
+      // Don't log sensitive user data
+    });
+
+    return () => {
+      logger.info('Component unmounted', {
+        component: 'SecureComponent',
+        userId: user?.id,
+      });
+    };
+  }, [user]);
+
+  // Handle security events
+  const handleSecurityEvent = (event: SecurityEvent) => {
+    logger.warn('Security event detected', {
+      type: event.type,
+      source: event.source,
+      // Redact any sensitive data
+      data: logger.redact(event.data),
+    });
+  };
+
+  return <div>{/* Component content */}</div>;
 }
 ```
 
 ## Related Guidelines
 
-- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
-- [Forms](mdc:.cursor/rules/domains/frontend/react/forms.mdc) - Form implementation guidelines
-- [Core Security](mdc:.cursor/rules/domains/core/security.mdc) - Security best practices
-- [API Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc) - API security guidelines
+- [Core security principles and practices](mdc:.cursor/rules/domains/core/security.mdc)
+- [TanStack Start Security](mdc:.cursor/rules/domains/tanstack/start/security.mdc)
