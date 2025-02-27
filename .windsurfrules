@@ -1,0 +1,153 @@
+# Windsurf Rules for TanStack Project
+
+> These rules define behavior for Windsurf AI assistant when working with this project
+
+## Project Technology Stack
+
+### Frontend
+
+- React
+- TypeScript
+- TanStack Router
+- TanStack Query
+
+### Styling
+
+- Tailwind CSS
+- Radix UI
+- Shadcn UI
+
+### State Management
+
+- Zustand
+
+### Form Handling
+
+- React Hook Form
+- Zod
+
+### Backend
+
+- TanStack Start (prefer server functions over API routes when possible)
+- Server functions using `createServerFn()` from '@tanstack/react-start'
+- Server functions for data fetching, mutations, and business logic
+- API routes only when direct HTTP endpoint access is required
+- Colocate server functions with their related components when appropriate
+
+### Database
+
+- PostgreSQL
+- Drizzle ORM
+
+### Build Tools
+
+- Vinxi
+- Vite
+
+### Package Manager
+
+- pnpm
+
+## Project Structure
+
+### Root Directory
+
+- `app/` - Main application code
+- `public/` - Static assets
+- Configuration files at root level (e.g., `tsconfig.json`, `package.json`, `drizzle.config.ts`)
+
+### App Directory
+
+- `app/components/` - Reusable UI components
+  - `app/components/ui/` - Base UI components (buttons, inputs, etc.)
+  - `app/components/errors/` - Error handling components
+  - `app/components/layout/` - Layout components
+  - `app/components/utils/` - Utility components
+- `app/features/` - Feature-specific modules
+  - `app/features/auth/` - Authentication feature
+  - `app/features/email/` - Email feature
+  - `app/features/users/` - User management feature
+- `app/lib/` - Shared utilities and libraries
+  - `app/lib/server/` - Server-only code
+  - `app/lib/client/` - Client-only code
+  - `app/lib/utils/` - Utility functions
+- `app/routes/` - Application routes (TanStack Router)
+  - `app/routes/__root.tsx` - Root route
+  - `app/routes/_app/` - Main application routes
+  - `app/routes/_auth/` - Authentication routes
+  - `app/routes/_public/` - Public routes
+  - `app/routes/api/` - API routes
+- `app/hooks/` - Custom React hooks
+- `app/providers/` - Context providers
+- `app/styles/` - Global styles and theme configuration
+- `app/api.ts` - API configuration
+- `app/client.tsx` - Client entry point
+- `app/router.tsx` - Router configuration
+- `app/ssr.tsx` - Server-side rendering configuration
+
+### Feature Organization
+
+- Features are organized in the `app/features/` directory
+- Each feature contains its own components, hooks, and utilities
+- Feature-specific server functions are colocated with their client components
+- Common components are kept in `app/components/`
+
+### Component Structure
+
+- One component per file
+- Components are organized by domain or functionality
+- UI components are separated from feature-specific components
+- Follow consistent naming conventions
+- Keep components focused and single-responsibility
+
+## Code Style and Formatting Rules
+
+### General
+
+- Follow project's ESLint and Prettier configurations
+
+### TypeScript
+
+- Use strict typing
+- Prefer types over interfaces
+- Use type imports
+
+### React
+
+- Prefer functional components
+- Use React hooks
+- Use TypeScript for props
+
+### Import Organization
+
+- Group imports by type
+- Order: React, external, internal, relative, CSS
+
+## Documentation Rules
+
+- Require JSDoc comments
+- Require component documentation
+- Require README updates
+- Require type definitions
+
+## File Organization Rules
+
+- Component structure: feature-based
+- Test location: alongside component
+- Styles location: alongside component
+
+## Commit Message Rules
+
+- Follow Conventional Commits format
+- Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert
+
+## AI Assistant Behavior Rules
+
+- Prioritize official documentation
+- Follow project's established patterns
+- Consider mobile compatibility (mobile-first approach)
+- Enforce accessibility
+- Consider performance implications
+- Enforce security best practices
+- Prefer modern React patterns
+- Enforce type safety

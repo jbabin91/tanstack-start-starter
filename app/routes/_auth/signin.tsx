@@ -10,7 +10,6 @@ import {
 } from 'react-icons/lu';
 import { z } from 'zod';
 
-import { SocialAuthButton } from '~/components/auth/social-auth-button';
 import { Button } from '~/components/ui/button';
 import {
   Card,
@@ -29,6 +28,7 @@ import {
   FormMessage,
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { SocialAuthButton } from '~/features/auth/components/social-auth-button';
 import { authClient } from '~/lib/client/auth-client';
 
 const REDIRECT_URL = '/dashboard';

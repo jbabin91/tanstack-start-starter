@@ -2,7 +2,7 @@ import { render } from '@react-email/render';
 import { json } from '@tanstack/react-start';
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
-import { EmailTemplate } from '~/components/email/email-template';
+import { EmailTemplate } from '~/features/email/components/email-template';
 import { resend } from '~/lib/server/resend';
 
 export const APIRoute = createAPIFileRoute('/api/send')({

@@ -2,7 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { Resend } from 'resend';
 
-import { renderVerificationEmail } from '~/components/email/verification';
+import { renderVerificationEmail } from '~/features/email/components/verification';
 import { db } from '~/lib/server/db';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
