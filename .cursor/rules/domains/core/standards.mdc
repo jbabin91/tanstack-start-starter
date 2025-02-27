@@ -104,7 +104,7 @@ These guidelines establish fundamental code standards and style patterns that ap
 ```typescript
 // External dependencies
 import { useState } from 'react';
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 
 // Internal dependencies
 import { Button } from '~/components/ui/Button';
@@ -112,7 +112,6 @@ import { useAuth } from '~/features/auth/hooks/useAuth';
 
 // Types
 import type { User } from '~/features/users/types';
-```
 
 ### Naming Conventions
 

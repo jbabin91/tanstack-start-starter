@@ -43,8 +43,8 @@ export const Route = createFileRoute('/admin/')({
 
 // Server-side endpoint protection with TanStack Start
 // app/lib/server/middleware/auth-guard.ts
-import { createMiddleware } from '@tanstack/start';
-import { getWebRequest, setResponseStatus } from '@tanstack/start/server';
+import { createMiddleware } from '@tanstack/react-start';
+import { getWebRequest, setResponseStatus } from '@tanstack/react-start/server';
 import { auth } from '~/lib/server/auth';
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
@@ -82,7 +82,7 @@ export const createRoleMiddleware = (requiredRole: string) => {
 
 // Usage in server functions
 // app/features/admin/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { createRoleMiddleware } from '~/lib/server/middleware/role-guard';
 
 export const getAdminData = createServerFn()
@@ -140,7 +140,7 @@ function RegistrationForm() {
 
 // 2. Server-side validation with TanStack Start
 // app/features/auth/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 
@@ -193,7 +193,7 @@ Always validate and sanitize inputs and outputs.
 ```typescript
 // ✅ Good - Comprehensive input validation with TanStack Start
 // app/features/users/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 
@@ -231,12 +231,12 @@ Protect against abuse and DoS attacks.
 ```typescript
 // ✅ Good - Implement rate limiting with TanStack Start middleware
 // app/lib/server/middleware/rate-limit.ts
-import { createMiddleware } from '@tanstack/start';
+import { createMiddleware } from '@tanstack/react-start';
 import {
   getWebRequest,
   setResponseStatus,
   setHeader,
-} from '@tanstack/start/server';
+} from '@tanstack/react-start/server';
 
 // Simple in-memory store for rate limiting
 // In production, use Redis or another distributed store
@@ -296,7 +296,7 @@ export const createRateLimitMiddleware = (options: {
 
 // Usage in server functions
 // app/features/auth/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { createRateLimitMiddleware } from '~/lib/server/middleware/rate-limit';
 
 // Create rate limit middleware for login attempts
@@ -367,8 +367,8 @@ Monitor and log security-relevant events.
 ```typescript
 // ✅ Good - Security-focused logging with TanStack Start
 // app/lib/server/middleware/security-logger.ts
-import { createMiddleware } from '@tanstack/start';
-import { getWebRequest } from '@tanstack/start/server';
+import { createMiddleware } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
 
 // Create a security logging middleware
 export const securityLoggingMiddleware = createMiddleware().server(
@@ -425,7 +425,7 @@ export const securityLoggingMiddleware = createMiddleware().server(
 
 // Usage in server functions
 // app/features/auth/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { securityLoggingMiddleware } from '~/lib/server/middleware/security-logger';
 
 export const login = createServerFn({ method: 'POST' })

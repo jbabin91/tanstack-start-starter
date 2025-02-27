@@ -72,8 +72,8 @@ export const auth = betterAuth({
 
 // ✅ Good - Auth middleware for server functions
 // app/lib/server/middleware/auth-guard.ts
-import { createMiddleware } from '@tanstack/start';
-import { getWebRequest, setResponseStatus } from '@tanstack/start/server';
+import { createMiddleware } from '@tanstack/react-start';
+import { getWebRequest, setResponseStatus } from '@tanstack/react-start/server';
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const { headers } = getWebRequest()!;
@@ -100,8 +100,8 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 ```typescript
 // ✅ Good - Role-based access control middleware
 // app/lib/server/middleware/role-guard.ts
-import { createMiddleware } from '@tanstack/start';
-import { setResponseStatus } from '@tanstack/start/server';
+import { createMiddleware } from '@tanstack/react-start';
+import { setResponseStatus } from '@tanstack/react-start/server';
 
 export const createRoleMiddleware = (requiredRole: string) => {
   return createMiddleware()
@@ -120,11 +120,11 @@ export const createRoleMiddleware = (requiredRole: string) => {
 
 // Usage in server functions
 // app/features/admin/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { adminRoleMiddleware } from '~/lib/server/middleware/role-guard';
 
 export const getAdminDashboard = createServerFn()
-  .middleware([createRoleMiddleware('admin')])
+  .middleware([adminRoleMiddleware('admin')])
   .handler(async () => {
     // Admin-only logic here
     return { stats: await getAdminStats() };
@@ -136,7 +136,7 @@ export const getAdminDashboard = createServerFn()
 ```typescript
 // ✅ Good - Secure data handling with TanStack Start
 // app/lib/server/middleware/data-sanitization.ts
-import { createMiddleware } from '@tanstack/start';
+import { createMiddleware } from '@tanstack/react-start';
 
 // Middleware for sanitizing sensitive data
 export const dataSanitizationMiddleware = createMiddleware().server(
@@ -309,9 +309,9 @@ export function useSessionManagement() {
 ```typescript
 // ✅ Good - Configure security headers with TanStack Start middleware
 // app/middleware.ts
-import { registerGlobalMiddleware } from '@tanstack/start';
-import { createMiddleware } from '@tanstack/start';
-import { setHeader } from '@tanstack/start/server';
+import { registerGlobalMiddleware } from '@tanstack/react-start';
+import { createMiddleware } from '@tanstack/react-start';
+import { setHeader } from '@tanstack/react-start/server';
 
 // Security headers middleware
 const securityHeadersMiddleware = createMiddleware().server(
@@ -374,7 +374,7 @@ registerGlobalMiddleware({
 ```typescript
 // ✅ Good - Secure API endpoints with TanStack Start
 // app/features/users/server.ts
-import { createServerFn } from '@tanstack/start';
+import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { authMiddleware } from '~/lib/server/middleware/auth-guard';
@@ -422,7 +422,7 @@ Implement comprehensive security testing and monitoring to detect and prevent se
 // ✅ Good - API security testing
 // app/features/auth/tests/security.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTestClient } from '@tanstack/start/test';
+import { createTestClient } from '@tanstack/react-start/test';
 import { login, getProtectedResource } from '../server';
 
 describe('API Security', () => {
@@ -482,8 +482,8 @@ describe('API Security', () => {
 
 // ✅ Good - Server-side logging & monitoring
 // app/lib/server/logger.ts
-import { createServerFn } from '@tanstack/start';
-import { getWebRequest } from '@tanstack/start/server';
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
 
 // Security event logging middleware
 export const securityLoggingMiddleware = createMiddleware().server(
