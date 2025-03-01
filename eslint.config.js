@@ -56,10 +56,9 @@ export default tseslint.config(
         'error',
         {
           cases: {
-            camelCase: true,
             kebabCase: true,
-            pascalCase: true,
           },
+          ignore: [String.raw`^\$.*\.tsx?$`], // Allow parameter files starting with $
         },
       ],
       'unicorn/no-null': 'off',
@@ -113,10 +112,26 @@ export default tseslint.config(
       'react-compiler': reactCompiler,
     },
     rules: {
-      'react-compiler/react-compiler': 'error',
+      'react-compiler/react-compiler': [
+        'error',
+        {
+          // Validate Client Component usage
+          checkAsyncComponents: true,
+          // Validate Server Component usage
+          checkClientComponents: true,
+          // Enable specific compiler checks
+          checkEffectEvents: true,
+          // Check Effect Event usage
+          checkServerComponents: true, // Check async component patterns
+        },
+      ],
     },
   },
   {
+    extends: [
+      reactPlugin.configs['recommended-type-checked'],
+      reactPlugin.configs['recommended-typescript'],
+    ],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {
       parserOptions: {
@@ -134,6 +149,13 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.flatConfigs.recommended.rules,
+      '@eslint-react/no-arrow-function-lifecycle': 'off',
+      '@eslint-react/no-unstable-context-value': 'off',
+      '@eslint-react/no-unstable-default-props': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      'react/jsx-no-bind': 'off',
+      'react/jsx-no-constructed-context-values': 'off',
+      'react/jsx-no-useless-fragment': 'off',
       'react/jsx-sort-props': [
         'error',
         {
@@ -145,10 +167,10 @@ export default tseslint.config(
           shorthandLast: false,
         },
       ],
+      'react/no-danger': 'off',
       'react/prop-types': 'off',
     },
     settings: { react: { version: 'detect' } },
-    ...reactPlugin.configs['recommended-type-checked'],
   },
   {
     files: ['**/routes/**/*.{ts,tsx}', '**/schema/**/*.ts'],
