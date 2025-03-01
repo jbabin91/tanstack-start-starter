@@ -11,30 +11,30 @@ This document outlines our approach to React 19 optimizations using the React Co
 
 ## ESLint Configuration
 
-### Disabled Rules
-
-We've disabled several ESLint rules that are now handled automatically by the React Compiler:
+We've configured ESLint to work with React 19 + React Compiler, including proper TypeScript support:
 
 ```typescript
-// Context Optimizations
-'@eslint-react/no-unstable-context-value': 'off'        // Compiler handles context stability
-'react/jsx-no-constructed-context-values': 'off'        // Same as above
-
-// Function & Props Optimizations
-'@eslint-react/no-arrow-function-lifecycle': 'off'      // Compiler handles method stability
-'@eslint-react/no-unstable-default-props': 'off'        // Compiler handles prop stability
-'react/jsx-no-bind': 'off'                             // Compiler optimizes inline functions
-'@eslint-react/no-inline-function-reference': 'off'     // Compiler handles function references
-
-// Hook Optimizations
-'react-hooks/exhaustive-deps': 'off'                    // Compiler tracks dependencies
-'react-hooks/rules-of-hooks': 'warn'                    // Downgraded as compiler catches most issues
-
-// Performance Optimizations
-'@eslint-react/no-unused-template-literals': 'off'      // Compiler optimizes template literals
-'react/jsx-no-useless-fragment': 'off'                  // Compiler optimizes fragments
-'@eslint-react/no-unused-class-component-members': 'off' // Compiler handles dead code
+{
+  extends: [
+    // Required for proper TypeScript support with @eslint-react
+    reactPlugin.configs['recommended-type-checked'],
+    reactPlugin.configs['recommended-typescript'],
+  ],
+  // ... other config ...
+  rules: {
+    // Disabled rules that are handled by React Compiler
+    '@eslint-react/no-unstable-context-value': 'off',        // Compiler handles context stability
+    '@eslint-react/no-unstable-default-props': 'off',        // Compiler handles prop stability
+    '@eslint-react/no-arrow-function-lifecycle': 'off',      // Compiler handles method stability
+    'react/jsx-no-bind': 'off',                             // Compiler optimizes inline functions
+    'react-hooks/exhaustive-deps': 'off',                    // Compiler tracks dependencies
+    'react/jsx-no-constructed-context-values': 'off',        // Compiler handles context values
+    'react/jsx-no-useless-fragment': 'off',                  // Compiler optimizes fragments
+  }
+}
 ```
+
+> **Important**: Both `recommended-type-checked` and `recommended-typescript` configurations are required for proper TypeScript support with the `@eslint-react` plugin.
 
 ### Compiler-Specific Rules
 
