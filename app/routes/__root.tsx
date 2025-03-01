@@ -12,7 +12,7 @@ import { Header } from '~/components/layout/header';
 import { Spinner } from '~/components/spinner';
 import { TanstackQueryDevtools } from '~/components/utils/tanstack-query-devtools';
 import { TanstackRouterDevtools } from '~/components/utils/tanstack-router-devtools';
-import { ensureUser } from '~/features/users/hooks/useUser';
+import { ensureUser } from '~/features/users/hooks/use-user';
 import { seo } from '~/lib/utils/seo';
 import { Providers } from '~/providers';
 import appCss from '~/styles/app.css?url';

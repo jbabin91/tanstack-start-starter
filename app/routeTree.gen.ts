@@ -18,6 +18,7 @@ import { Route as AuthSignupImport } from './routes/_auth/signup';
 import { Route as AuthSigninImport } from './routes/_auth/signin';
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard/route';
 import { Route as AppDashboardIndexImport } from './routes/_app/dashboard/index';
+import { Route as AppUserUserIdProfileImport } from './routes/_app/user/$userId.profile';
 
 // Create/Update Routes
 
@@ -60,6 +61,12 @@ const AppDashboardIndexRoute = AppDashboardIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppDashboardRouteRoute,
+} as any);
+
+const AppUserUserIdProfileRoute = AppUserUserIdProfileImport.update({
+  id: '/user/$userId/profile',
+  path: '/user/$userId/profile',
+  getParentRoute: () => AppRouteRoute,
 } as any);
 
 // Populate the FileRoutesByPath interface
@@ -115,6 +122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexImport;
       parentRoute: typeof AppDashboardRouteImport;
     };
+    '/_app/user/$userId/profile': {
+      id: '/_app/user/$userId/profile';
+      path: '/user/$userId/profile';
+      fullPath: '/user/$userId/profile';
+      preLoaderRoute: typeof AppUserUserIdProfileImport;
+      parentRoute: typeof AppRouteImport;
+    };
   }
 }
 
@@ -133,10 +147,12 @@ const AppDashboardRouteRouteWithChildren =
 
 interface AppRouteRouteChildren {
   AppDashboardRouteRoute: typeof AppDashboardRouteRouteWithChildren;
+  AppUserUserIdProfileRoute: typeof AppUserUserIdProfileRoute;
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppDashboardRouteRoute: AppDashboardRouteRouteWithChildren,
+  AppUserUserIdProfileRoute: AppUserUserIdProfileRoute,
 };
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -151,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
   '/dashboard/': typeof AppDashboardIndexRoute;
+  '/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
 export interface FileRoutesByTo {
@@ -160,6 +177,7 @@ export interface FileRoutesByTo {
   '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
   '/dashboard': typeof AppDashboardIndexRoute;
+  '/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
 export interface FileRoutesById {
@@ -171,6 +189,7 @@ export interface FileRoutesById {
   '/_auth/verify': typeof AuthVerifyRoute;
   '/_public/': typeof PublicIndexRoute;
   '/_app/dashboard/': typeof AppDashboardIndexRoute;
+  '/_app/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
 export interface FileRouteTypes {
@@ -182,9 +201,17 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify'
     | '/'
-    | '/dashboard/';
+    | '/dashboard/'
+    | '/user/$userId/profile';
   fileRoutesByTo: FileRoutesByTo;
-  to: '' | '/signin' | '/signup' | '/verify' | '/' | '/dashboard';
+  to:
+    | ''
+    | '/signin'
+    | '/signup'
+    | '/verify'
+    | '/'
+    | '/dashboard'
+    | '/user/$userId/profile';
   id:
     | '__root__'
     | '/_app'
@@ -193,7 +220,8 @@ export interface FileRouteTypes {
     | '/_auth/signup'
     | '/_auth/verify'
     | '/_public/'
-    | '/_app/dashboard/';
+    | '/_app/dashboard/'
+    | '/_app/user/$userId/profile';
   fileRoutesById: FileRoutesById;
 }
 
@@ -233,7 +261,8 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app/route.tsx",
       "children": [
-        "/_app/dashboard"
+        "/_app/dashboard",
+        "/_app/user/$userId/profile"
       ]
     },
     "/_app/dashboard": {
@@ -258,6 +287,10 @@ export const routeTree = rootRoute
     "/_app/dashboard/": {
       "filePath": "_app/dashboard/index.tsx",
       "parent": "/_app/dashboard"
+    },
+    "/_app/user/$userId/profile": {
+      "filePath": "_app/user/$userId.profile.tsx",
+      "parent": "/_app"
     }
   }
 }

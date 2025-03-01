@@ -38,11 +38,11 @@ export function VerificationEmail({
               {/* Logo */}
               <Section className="border-b border-gray-200 p-6 text-center">
                 <img
-                  src="https://raw.githubusercontent.com/TanStack/tanstack/main/assets/tanstack-banner.svg"
-                  width={150}
-                  height={40}
                   alt="TanStack"
                   className="mx-auto"
+                  height={40}
+                  src="https://raw.githubusercontent.com/TanStack/tanstack/main/assets/tanstack-banner.svg"
+                  width={150}
                 />
               </Section>
 
@@ -73,8 +73,8 @@ export function VerificationEmail({
                 <Text className="mb-6 text-sm text-gray-500">
                   Or copy and paste this URL into your browser:{' '}
                   <Link
-                    href={verificationUrl}
                     className="text-blue-600 underline"
+                    href={verificationUrl}
                   >
                     {verificationUrl}
                   </Link>
@@ -84,7 +84,7 @@ export function VerificationEmail({
 
                 {/* Footer */}
                 <Text className="text-center text-sm text-gray-500">
-                  If you didn't sign up for TanStack Start, you can safely
+                  If you didn&apos;t sign up for TanStack Start, you can safely
                   ignore this email.
                 </Text>
               </Section>

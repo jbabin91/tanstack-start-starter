@@ -17,15 +17,15 @@ export function SocialAuthButton({
 }: SocialAuthButtonProps) {
   return (
     <Button
+      className={cn('text-white hover:text-white', className)}
+      size="lg"
+      variant="outline"
       onClick={() =>
         authClient.signIn.social({
           callbackURL: '/dashboard',
           provider,
         })
       }
-      variant="outline"
-      size="lg"
-      className={cn('text-white hover:text-white', className)}
       {...props}
     >
       {mode === 'signin' ? 'Sign in' : 'Sign up'} with {label}

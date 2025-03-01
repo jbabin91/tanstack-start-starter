@@ -109,8 +109,8 @@ function RouteComponent() {
     <div className="flex min-h-svh flex-col items-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Link
-          to="/"
           className="flex items-center gap-2 self-center font-medium"
+          to="/"
         >
           <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <LuGalleryVerticalEnd className="size-4" />
@@ -129,8 +129,8 @@ function RouteComponent() {
               <div className="grid gap-6">
                 <Form {...form}>
                   <form
-                    onSubmit={form.handleSubmit(onSubmit)}
                     className="grid gap-4"
+                    onSubmit={form.handleSubmit(onSubmit)}
                   >
                     {error && (
                       <div className="text-destructive text-center text-sm">
@@ -146,8 +146,8 @@ function RouteComponent() {
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="John Doe"
                               disabled={isLoading}
+                              placeholder="John Doe"
                             />
                           </FormControl>
                           <FormMessage />
@@ -163,9 +163,9 @@ function RouteComponent() {
                           <FormControl>
                             <Input
                               {...field}
-                              type="email"
-                              placeholder="m@example.com"
                               disabled={isLoading}
+                              placeholder="m@example.com"
+                              type="email"
                             />
                           </FormControl>
                           <FormMessage />
@@ -182,17 +182,17 @@ function RouteComponent() {
                             <div className="relative">
                               <Input
                                 {...field}
-                                type={showPassword ? 'text' : 'password'}
-                                disabled={isLoading}
                                 autoComplete="new-password"
+                                disabled={isLoading}
+                                type={showPassword ? 'text' : 'password'}
                               />
                               <Button
+                                className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                                disabled={isLoading}
+                                size="sm"
                                 type="button"
                                 variant="ghost"
-                                size="sm"
-                                className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                                 onClick={() => setShowPassword(!showPassword)}
-                                disabled={isLoading}
                               >
                                 {showPassword ? (
                                   <LuEyeOff className="size-4" />
@@ -222,19 +222,19 @@ function RouteComponent() {
                             <div className="relative">
                               <Input
                                 {...field}
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                disabled={isLoading}
                                 autoComplete="new-password"
+                                disabled={isLoading}
+                                type={showConfirmPassword ? 'text' : 'password'}
                               />
                               <Button
+                                className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                                disabled={isLoading}
+                                size="sm"
                                 type="button"
                                 variant="ghost"
-                                size="sm"
-                                className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                                 onClick={() =>
                                   setShowConfirmPassword(!showConfirmPassword)
                                 }
-                                disabled={isLoading}
                               >
                                 {showConfirmPassword ? (
                                   <LuEyeOff className="size-4" />
@@ -254,9 +254,9 @@ function RouteComponent() {
                       )}
                     />
                     <Button
-                      type="submit"
                       className="w-full"
                       disabled={isLoading}
+                      type="submit"
                     >
                       {isLoading ? (
                         <>
@@ -281,29 +281,29 @@ function RouteComponent() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <SocialAuthButton
-                    provider="discord"
+                    className="bg-[#5865F2] hover:bg-[#5865F2]/80"
                     label="Discord"
                     mode="signup"
-                    className="bg-[#5865F2] hover:bg-[#5865F2]/80"
+                    provider="discord"
                   />
                   <SocialAuthButton
-                    provider="github"
+                    className="bg-neutral-700 hover:bg-neutral-700/80"
                     label="GitHub"
                     mode="signup"
-                    className="bg-neutral-700 hover:bg-neutral-700/80"
+                    provider="github"
                   />
                   <SocialAuthButton
-                    provider="google"
+                    className="bg-[#DB4437] hover:bg-[#DB4437]/80"
                     label="Google"
                     mode="signup"
-                    className="bg-[#DB4437] hover:bg-[#DB4437]/80"
+                    provider="google"
                   />
                 </div>
                 <div className="text-center text-sm">
                   Already have an account?{' '}
                   <Link
-                    to="/signin"
                     className="text-primary underline-offset-4 hover:underline"
+                    to="/signin"
                   >
                     Sign in
                   </Link>

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { Button } from '~/components/ui/button';
-import { useUser } from '~/features/users/hooks/useUser';
+import { useUser } from '~/features/users/hooks/use-user';
 
 export const Route = createFileRoute('/_public/')({
   component: Home,

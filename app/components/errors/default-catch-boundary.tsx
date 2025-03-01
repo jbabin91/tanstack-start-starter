@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 
 import { Button } from '~/components/ui/button';
+import { logger } from '~/lib/client/logger';
 
 export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
   const router = useRouter();
@@ -16,7 +17,11 @@ export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
     strict: false,
   });
 
-  console.error(error);
+  logger.error('Unhandled error in route', {
+    component: 'default-catch-boundary',
+    error: error instanceof Error ? error.message : 'Unknown error',
+    stack: error instanceof Error ? error.stack : undefined,
+  });
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4">
