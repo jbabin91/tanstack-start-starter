@@ -1,0 +1,405 @@
+---
+description: Documentation for React 19 Compiler optimizations and ESLint configurations
+globs: ['**/*.{ts,tsx}']
+---
+
+# 🚀 React 19 Compiler Optimizations
+
+## Overview
+
+This document outlines our approach to React 19 optimizations using the React Compiler (previously React Forget). The compiler automatically handles many optimizations that previously required manual intervention, allowing us to write more idiomatic React code.
+
+## ESLint Configuration
+
+### Disabled Rules
+
+We've disabled several ESLint rules that are now handled automatically by the React Compiler:
+
+```typescript
+// Context Optimizations
+'@eslint-react/no-unstable-context-value': 'off'        // Compiler handles context stability
+'react/jsx-no-constructed-context-values': 'off'        // Same as above
+
+// Function & Props Optimizations
+'@eslint-react/no-arrow-function-lifecycle': 'off'      // Compiler handles method stability
+'@eslint-react/no-unstable-default-props': 'off'        // Compiler handles prop stability
+'react/jsx-no-bind': 'off'                             // Compiler optimizes inline functions
+'@eslint-react/no-inline-function-reference': 'off'     // Compiler handles function references
+
+// Hook Optimizations
+'react-hooks/exhaustive-deps': 'off'                    // Compiler tracks dependencies
+'react-hooks/rules-of-hooks': 'warn'                    // Downgraded as compiler catches most issues
+
+// Performance Optimizations
+'@eslint-react/no-unused-template-literals': 'off'      // Compiler optimizes template literals
+'react/jsx-no-useless-fragment': 'off'                  // Compiler optimizes fragments
+'@eslint-react/no-unused-class-component-members': 'off' // Compiler handles dead code
+```
+
+### Compiler-Specific Rules
+
+We've enabled specific React Compiler checks:
+
+```typescript
+'react-compiler/react-compiler': ['error', {
+  checkEffectEvents: true,      // Validates Effect Event usage
+  checkServerComponents: true,   // Checks Server Component boundaries
+  checkClientComponents: true,   // Checks Client Component usage
+  checkAsyncComponents: true,    // Validates async component patterns
+}]
+```
+
+## Writing Modern React Code
+
+### Context Usage
+
+```typescript
+// ✅ Now fine with React 19 + Compiler
+function MyComponent() {
+  // Inline objects in context are automatically optimized
+  return (
+    <MyContext.Provider value={{ user, settings }}>
+      <Child />
+    </MyContext.Provider>
+  );
+}
+```
+
+### Event Handlers
+
+```typescript
+// ✅ Inline functions are automatically optimized
+function MyComponent() {
+  return (
+    <button onClick={() => handleClick(id)}>
+      Click Me
+    </button>
+  );
+}
+```
+
+### Hooks
+
+```typescript
+// ✅ Dependencies are automatically tracked
+function MyComponent({ id, data }) {
+  useEffect(() => {
+    // Compiler automatically tracks id and data dependencies
+    processData(id, data);
+  }); // No dependency array needed!
+}
+```
+
+### Template Literals
+
+```typescript
+// ✅ Template literals are automatically optimized
+function MyComponent({ name }) {
+  return <div>{`Hello ${name}`}</div>;
+}
+```
+
+### Fragments
+
+```typescript
+// ✅ Fragments are automatically optimized
+function MyComponent({ children }) {
+  return <>{children}</>;
+}
+```
+
+## Compiler Benefits
+
+1. **Automatic Memoization**
+
+   - Components are memoized when beneficial
+   - Props are compared efficiently
+   - State updates are batched automatically
+
+2. **Dead Code Elimination**
+
+   - Unused code is removed
+   - Empty fragments are optimized
+   - Unnecessary re-renders are prevented
+
+3. **Performance Optimizations**
+
+   - Function reference stability
+   - Object and array stability
+   - Context value optimization
+   - Template literal optimization
+
+4. **Development Experience**
+   - Write more natural React code
+   - Fewer manual optimizations
+   - Better error detection
+   - Improved type inference
+
+## Best Practices
+
+1. **Trust the Compiler**
+
+   - Avoid manual memoization (`useMemo`, `useCallback`)
+   - Let the compiler handle optimization
+   - Write idiomatic React code
+
+2. **Component Design**
+
+   - Focus on component logic
+   - Don't worry about function recreation
+   - Use natural patterns
+
+3. **Performance**
+   - Profile before optimizing
+   - Let the compiler work
+   - Focus on business logic
+
+## Advanced Examples
+
+### State Management
+
+```typescript
+// ✅ Complex state updates are optimized
+function UserDashboard() {
+  const [users, setUsers] = useState<User[]>([]);
+
+  // Compiler optimizes this complex state update
+  const addUser = (newUser: User) => {
+    setUsers((current) => [...current, newUser]);
+  };
+
+  // Multiple state updates are automatically batched
+  const updateUserStatus = (userId: string, status: Status) => {
+    setUsers((current) =>
+      current.map((user) => (user.id === userId ? { ...user, status } : user)),
+    );
+    setLastUpdated(new Date());
+    setUpdateCount((c) => c + 1);
+  };
+}
+```
+
+### Custom Hooks
+
+```typescript
+// ✅ Custom hooks with complex dependencies
+function useUserData(userId: string) {
+  const [data, setData] = useState<UserData | null>(null);
+
+  // Compiler tracks all dependencies automatically
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchData() {
+      const result = await fetchUser(userId);
+      if (mounted) setData(result);
+    }
+
+    fetchData();
+    return () => {
+      mounted = false;
+    };
+  }); // No dependency array needed!
+}
+```
+
+### Context Composition
+
+```typescript
+// ✅ Complex context providers are optimized
+function AppProviders({ children }: { children: React.ReactNode }) {
+  // All these context values are automatically optimized
+  return (
+    <ThemeProvider value={{ mode: 'dark', toggleTheme }}>
+      <UserProvider value={{ user, updateUser }}>
+        <SettingsProvider value={{ settings, updateSettings }}>
+          <NavigationProvider value={{ currentRoute, navigate }}>
+            {children}
+          </NavigationProvider>
+        </SettingsProvider>
+      </UserProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+## Troubleshooting Guide
+
+### Common Issues
+
+1. **Unexpected Re-renders**
+
+   ```typescript
+   // ❌ Problem: Component re-renders unexpectedly
+   function UserCard({ user }) {
+     console.log('UserCard render', user.id);
+     return <div>{user.name}</div>;
+   }
+
+   // ✅ Solution: Check parent component updates
+   function UserList({ users }) {
+     // Are users changing unexpectedly?
+     console.log('UserList users:', users.map(u => u.id));
+     return users.map(user => <UserCard key={user.id} user={user} />);
+   }
+   ```
+
+2. **State Updates Not Reflecting**
+
+   ```typescript
+   // ❌ Problem: State updates seem delayed
+   function Counter() {
+     const [count, setCount] = useState(0);
+
+     // Multiple updates in one event handler
+     const handleClick = () => {
+       setCount(count + 1);
+       setCount(count + 1); // Won't work as expected
+     };
+
+     // ✅ Solution: Use functional updates
+     const handleClickFixed = () => {
+       setCount((c) => c + 1);
+       setCount((c) => c + 1); // Works correctly
+     };
+   }
+   ```
+
+3. **Effect Cleanup Issues**
+
+   ```typescript
+   // ❌ Problem: Effect cleanup not running
+   useEffect(() => {
+     const subscription = subscribe();
+     // Missing cleanup
+   });
+
+   // ✅ Solution: Always return cleanup function
+   useEffect(() => {
+     const subscription = subscribe();
+     return () => subscription.unsubscribe();
+   });
+   ```
+
+### When to Override Compiler
+
+There are rare cases where you might need to override the compiler's optimizations:
+
+```typescript
+// Case 1: When you need explicit control over memoization
+const MemoizedComponent = React.memo(MyComponent, (prev, next) => {
+  // Custom comparison logic
+  return prev.complexProp.id === next.complexProp.id;
+});
+
+// Case 2: When you need to force a specific dependency array
+useEffect(
+  () => {
+    // Critical timing-sensitive code
+  },
+  [
+    /* explicit dependencies */
+  ],
+);
+```
+
+## Debugging Compiler Optimizations
+
+### Development Tools
+
+1. **React DevTools Profiler**
+
+   - Enable "Record why each component rendered"
+   - Look for unexpected render cascades
+   - Check component props changes
+
+2. **Browser Performance Tools**
+
+   ```typescript
+   // Add performance marks to debug render timing
+   function MyComponent() {
+     performance.mark('MyComponent-render-start');
+
+     const result = (
+       // ... component JSX
+     );
+
+     performance.mark('MyComponent-render-end');
+     performance.measure(
+       'MyComponent render',
+       'MyComponent-render-start',
+       'MyComponent-render-end'
+     );
+
+     return result;
+   }
+   ```
+
+3. **Compiler Debug Mode**
+
+   ```typescript
+   // Enable compiler debug logs
+   {
+     plugins: {
+       'react-compiler': reactCompiler,
+     },
+     rules: {
+       'react-compiler/react-compiler': ['error', {
+         debug: true,
+         verboseDebug: true,
+       }],
+     },
+   }
+   ```
+
+### Performance Monitoring
+
+1. **Metrics to Watch**
+
+   - Time to First Render
+   - Component Render Duration
+   - Number of Re-renders
+   - Memory Usage
+
+2. **Adding Performance Marks**
+
+   ```typescript
+   function trackComponentPerformance<P>(
+     WrappedComponent: React.ComponentType<P>,
+     componentName: string
+   ) {
+     return function PerformanceTrackedComponent(props: P) {
+       const markName = `${componentName}-render`;
+       performance.mark(`${markName}-start`);
+
+       const result = <WrappedComponent {...props} />;
+
+       performance.mark(`${markName}-end`);
+       performance.measure(markName, `${markName}-start`, `${markName}-end`);
+
+       return result;
+     };
+   }
+   ```
+
+3. **Debug Logging**
+
+   ```typescript
+   const DEBUG = import.meta.env.DEV;
+
+   function useDebugRender(componentName: string) {
+     useEffect(() => {
+       if (DEBUG) {
+         console.log(`${componentName} rendered`);
+         return () => console.log(`${componentName} cleanup`);
+       }
+     });
+   }
+   ```
+
+## Related
+
+- [React Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc)
+- [TypeScript Guidelines](mdc:.cursor/rules/domains/frontend/typescript.mdc)
+- [Performance Guidelines](mdc:.cursor/rules/domains/frontend/performance.mdc)
+- [React DevTools Guide](mdc:.cursor/rules/domains/frontend/react/devtools.mdc)

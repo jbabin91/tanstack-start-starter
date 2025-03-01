@@ -44,6 +44,7 @@ processes/
 ### Frontend Development
 
 - [React Guidelines](mdc:.cursor/rules/domains/frontend/react/_index.mdc) - React development patterns and practices
+- [React Compiler Optimizations](mdc:.cursor/rules/domains/frontend/react/compiler-optimizations.mdc) - React 19 Compiler optimizations and configurations
 - [TypeScript Guidelines](mdc:.cursor/rules/domains/frontend/typescript.mdc) - TypeScript patterns and best practices
 - [Testing Guidelines](mdc:.cursor/rules/domains/frontend/testing.mdc) - Testing standards and practices
 
