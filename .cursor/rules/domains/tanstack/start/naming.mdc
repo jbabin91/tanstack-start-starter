@@ -1,0 +1,145 @@
+---
+description: Naming conventions for TanStack Start applications
+globs: ['**/*.{ts,tsx}']
+---
+
+# 📝 TanStack Start Naming Conventions
+
+## File Naming
+
+### Components
+
+```typescript
+// ✅ Good - Use kebab-case for component files
+// app/components/user-profile.tsx
+// app/features/auth/components/login-form.tsx
+// app/features/dashboard/components/stats-card.tsx
+
+// ❌ Bad - Don't use PascalCase for files
+// app/components/UserProfile.tsx
+// app/features/auth/components/LoginForm.tsx
+```
+
+### Server Functions
+
+```typescript
+// ✅ Good - Use kebab-case for server function files
+// app/features/users/server.ts
+// app/features/auth/api/server.ts
+
+// ❌ Bad - Don't use camelCase or PascalCase
+// app/features/users/Server.ts
+// app/features/auth/api/serverFunctions.ts
+```
+
+### Routes
+
+```typescript
+// ✅ Good - Use kebab-case for route files
+// app/routes/users/$user-id.tsx
+// app/routes/_auth/sign-in.tsx
+
+// ❌ Bad - Don't use camelCase or PascalCase
+// app/routes/users/$userId.tsx
+// app/routes/_auth/SignIn.tsx
+```
+
+## Function/Export Naming
+
+### Server Functions
+
+```typescript
+// ✅ Good - Prefix with $ and use camelCase
+export const $getUser = createServerFn()...
+export const $updateProfile = createServerFn()...
+
+// ❌ Bad - Missing $ prefix or wrong case
+export const getUser = createServerFn()...
+export const $GetUser = createServerFn()...
+```
+
+### Component Functions
+
+```typescript
+// ✅ Good - Use PascalCase for component functions
+export function UserProfile() {...}
+export function LoginForm() {...}
+
+// ❌ Bad - Using other cases
+export function userProfile() {...}
+export function login_form() {...}
+```
+
+### Helper Functions
+
+```typescript
+// ✅ Good - Use camelCase for helper functions
+function formatDate(date: Date) {...}
+async function handleSubmit() {...}
+
+// ❌ Bad - Using other cases
+function FormatDate(date: Date) {...}
+async function handle_submit() {...}
+```
+
+## Directory Structure
+
+```sh
+app/
+├── components/          # Shared components (kebab-case)
+│   ├── ui/             # UI components
+│   │   ├── button.tsx
+│   │   └── card.tsx
+│   └── layout/         # Layout components
+│       ├── nav-bar.tsx
+│       └── side-bar.tsx
+├── features/           # Feature modules (kebab-case)
+│   ├── users/
+│   │   ├── components/ # Feature-specific components
+│   │   │   └── user-card.tsx
+│   │   └── server.ts  # Server functions
+│   └── auth/
+│       ├── components/
+│       │   └── login-form.tsx
+│       └── server.ts
+└── routes/            # Routes (kebab-case)
+    ├── _app/
+    │   └── settings.tsx
+    └── users/
+        └── $user-id.tsx
+```
+
+## Logging References
+
+```typescript
+// ✅ Good - Use kebab-case for component names in logs
+logger.info('Component mounted', {
+  component: 'user-profile',
+  action: 'mount',
+});
+
+// ❌ Bad - Using other cases in logs
+logger.info('Component mounted', {
+  component: 'UserProfile',
+  action: 'mount',
+});
+```
+
+## Common Patterns
+
+1. **Components**:
+
+   - File names: kebab-case
+   - Function names: PascalCase
+   - Directory names: kebab-case
+
+2. **Server Functions**:
+
+   - File names: kebab-case
+   - Function names: $prefixCamelCase
+   - Directory names: kebab-case
+
+3. **Routes**:
+   - File names: kebab-case
+   - Parameters: kebab-case (e.g., $user-id)
+   - Layouts: kebab-case with underscore prefix (e.g., \_auth)

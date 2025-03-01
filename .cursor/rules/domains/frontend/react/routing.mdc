@@ -1,0 +1,158 @@
+---
+description: Guidelines for organizing routes and pages in TanStack Start applications
+globs: ['**/routes/**/*.{ts,tsx}', '**/features/**/components/*.{ts,tsx}']
+---
+
+# 📍 Routing and Page Organization Guidelines
+
+## Overview
+
+These guidelines establish the patterns for organizing routes and pages in our TanStack Start application, focusing on component co-location and code splitting strategies.
+
+## Guidelines
+
+### File Naming Conventions
+
+1. **Route Files**:
+
+   - Use kebab-case for all route files
+   - Dynamic parameters use camelCase with `$` prefix
+   - Examples:
+     - `profile.tsx` - Standard route
+     - `$userId.tsx` - Dynamic parameter
+     - `$postId/edit.tsx` - Nested dynamic route
+
+2. **Component Files**:
+   - Use kebab-case for file names
+   - Use PascalCase for component names
+   - Examples:
+     - `profile.tsx` contains `RouteComponent` for routes
+     - `profile-content.tsx` contains `ProfileContent` for components
+
+### Route Organization
+
+1. **Route File Structure**:
+
+```typescript
+// app/routes/_app/user/profile.tsx
+import { createFileRoute } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/_app/user/profile')({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  // Start with minimal implementation
+  return (
+    <div className="container py-8">
+      <h1 className="text-2xl font-bold mb-6">User Profile</h1>
+      <ProfileContent />
+    </div>
+  );
+}
+```
+
+### Component Organization Strategy
+
+1. **Initial Development**:
+
+   - Start with minimal route component implementation
+   - Add complexity gradually as needed
+   - Keep components co-located until complexity grows
+
+2. **When to Split**:
+
+   - Component exceeds 100 lines
+   - Component has multiple subcomponents
+   - Component is reused across routes
+   - Logic becomes complex enough to warrant separation
+
+3. **Splitting Process**:
+
+```typescript
+// BEFORE (in routes file):
+// app/routes/_app/user/profile.tsx
+function RouteComponent() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-2xl font-bold mb-6">User Profile</h1>
+      <div className="grid gap-6">
+        <UserHeader />
+        <UserStats />
+        <UserActivity />
+      </div>
+    </div>
+  );
+}
+
+// AFTER:
+// app/routes/_app/user/profile.tsx
+import { ProfileContent } from '~/features/user/components/profile-content';
+
+function RouteComponent() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-2xl font-bold mb-6">User Profile</h1>
+      <ProfileContent />
+    </div>
+  );
+}
+
+// app/features/user/components/profile-content/index.tsx
+export function ProfileContent() {
+  return (
+    <div className="grid gap-6">
+      <UserHeader />
+      <UserStats />
+      <UserActivity />
+    </div>
+  );
+}
+```
+
+### Directory Structure
+
+```sh
+app/
+├── routes/
+│   └── _app/
+│       └── user/
+│           └── profile.tsx         # Main route file with page component
+└── features/
+    └── user/
+        └── components/             # Extracted components when needed
+            └── profile-content/    # Note: kebab-case directory names
+                ├── index.tsx
+                ├── user-header.tsx
+                ├── user-stats.tsx
+                └── user-activity.tsx
+```
+
+### Best Practices
+
+1. **Route File Focus**:
+
+   - Keep route components simple and focused
+   - Start with minimal implementation
+   - Extract components when complexity grows
+
+2. **Component Extraction Triggers**:
+
+   - Component complexity
+   - Reusability needs
+   - File size
+   - Testing requirements
+
+3. **Code Organization**:
+   - Use kebab-case for all file and directory names
+   - Use PascalCase for component names in code
+   - Name route components `RouteComponent`
+   - Keep related code together
+   - Follow the feature-based structure
+   - Use index.tsx for main exports
+
+## Related Guidelines
+
+- [Components](mdc:.cursor/rules/domains/frontend/react/components.mdc) - Component design patterns
+- [Performance](mdc:.cursor/rules/domains/frontend/react/performance.mdc) - Performance optimization
+- [Core React](mdc:.cursor/rules/domains/frontend/react/core.mdc) - Core React patterns
