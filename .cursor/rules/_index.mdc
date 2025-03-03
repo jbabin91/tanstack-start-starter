@@ -146,15 +146,19 @@ For detailed contribution guidelines, see [Contributing Guidelines](mdc:.cursor/
 
 ### TanStack Start
 
-- [Naming Conventions](mdc:domains/tanstack/start/naming.mdc): File, function, and component naming conventions
-- [Security](mdc:domains/tanstack/start/security.mdc): Security guidelines and best practices
-- [Architecture](mdc:domains/tanstack/start/architecture.mdc): Application architecture and structure
+- [Naming Conventions](domains/tanstack/start/naming.mdc) - Standards for naming files, functions, and components
+- [Server Functions](domains/tanstack/start/server-functions.mdc) - Input validation and error handling for server functions
+- [Security Guidelines](domains/tanstack/start/security.mdc) - Security best practices and requirements
+- [Architectural Principles](domains/tanstack/start/architecture.mdc) - Core architectural decisions and patterns
 
 ### Core
 
-- [Security](mdc:domains/core/security.mdc): Core security principles and practices
-- [Architecture](mdc:domains/core/architecture.mdc): Core architectural principles
+- [Code Style](domains/core/code-style.mdc) - General code formatting and style guidelines
+- [Testing Standards](domains/core/testing.mdc) - Testing requirements and patterns
+- [Error Handling](domains/core/error-handling.mdc) - Error handling and logging standards
 
 ### Frontend
 
-- [React](mdc:domains/frontend/react/security.mdc): React-specific guidelines and practices
+- [Component Design](domains/frontend/components.mdc) - Component architecture and best practices
+- [State Management](domains/frontend/state.mdc) - State management patterns and guidelines
+- [Performance](domains/frontend/performance.mdc) - Performance optimization requirements

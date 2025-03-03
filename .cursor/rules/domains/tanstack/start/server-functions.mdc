@@ -1,0 +1,194 @@
+---
+description: Standards for TanStack Start server function input validation
+globs: ['**/*.{ts,tsx}']
+---
+
+# Server Function Input Validation
+
+## Overview
+
+This document outlines the standard patterns for validating inputs in TanStack Start server functions.
+
+## Core Principles
+
+1. All server functions that accept input should have validation
+2. Use Zod for schema validation
+3. Type safety through schema inference
+4. Clear error messages for invalid input
+
+## Implementation Pattern
+
+### 1. Schema Definition
+
+```typescript
+const inputSchema = z.object({
+  // Define schema with descriptive error messages
+  field: z.string().min(1, 'Field is required'),
+});
+
+// Infer type from schema
+type InputType = z.infer<typeof inputSchema>;
+```
+
+### 2. Server Function Structure
+
+```typescript
+export const $serverFunction = createServerFn()
+  .validator((data: unknown): InputType => inputSchema.parse(data))
+  .handler(async ({ data }) => {
+    // Type-safe access to validated data
+    return someOperation(data.field);
+  });
+```
+
+### 3. Client Usage
+
+```typescript
+// In hooks/components
+const result = await $serverFunction({
+  data: { field: value },
+});
+```
+
+## Best Practices
+
+1. **Schema Naming**
+
+   - Use descriptive names: `userQuerySchema`, `createPostSchema`
+   - Suffix with `Schema` for clarity
+
+2. **Type Safety**
+
+   - Always type the validator input as `unknown`
+   - Use Zod's inference for type definitions
+   - Export types if needed by other parts of the application
+
+3. **Validation Rules**
+
+   - Add meaningful error messages
+   - Use appropriate Zod validators
+   - Consider adding custom refinements for complex validations
+
+4. **Error Handling**
+   - Let Zod handle validation errors
+   - Return `null` or throw specific errors for business logic failures
+
+## Examples
+
+### Query Parameter Validation
+
+```typescript
+const userQuerySchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
+});
+
+type UserQuery = z.infer<typeof userQuerySchema>;
+
+export const $getUserById = createServerFn()
+  .validator((data: unknown): UserQuery => userQuerySchema.parse(data))
+  .handler(async ({ data }) => {
+    // Implementation
+  });
+```
+
+### Form Data Validation
+
+```typescript
+const userUpdateSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email format'),
+  age: z.number().min(13, 'Must be at least 13 years old'),
+});
+
+type UserUpdate = z.infer<typeof userUpdateSchema>;
+
+export const $updateUser = createServerFn()
+  .validator((data: unknown): UserUpdate => userUpdateSchema.parse(data))
+  .handler(async ({ data }) => {
+    // Implementation
+  });
+```
+
+### Complex Validation
+
+```typescript
+const postSchema = z
+  .object({
+    title: z.string().min(1, 'Title is required'),
+    content: z.string().min(10, 'Content must be at least 10 characters'),
+    tags: z.array(z.string()).min(1, 'At least one tag is required'),
+    publishDate: z.date().optional(),
+  })
+  .refine(
+    (data) => !data.publishDate || data.publishDate > new Date(),
+    'Publish date must be in the future',
+  );
+```
+
+## Common Patterns
+
+### Optional Fields
+
+```typescript
+const schema = z.object({
+  required: z.string(),
+  optional: z.string().optional(),
+  nullish: z.string().nullish(),
+});
+```
+
+### Nested Objects
+
+```typescript
+const schema = z.object({
+  user: z.object({
+    name: z.string(),
+    settings: z.object({
+      theme: z.enum(['light', 'dark']),
+    }),
+  }),
+});
+```
+
+### Arrays
+
+```typescript
+const schema = z.object({
+  items: z.array(z.string()).min(1, 'At least one item required'),
+});
+```
+
+## Integration with React Query
+
+When using server functions with React Query, pass the validated data in the correct format:
+
+```typescript
+export const useQueryHook = (input: InputType) =>
+  useQuery({
+    queryKey: ['key', input],
+    queryFn: () => $serverFunction({ data: input }),
+  });
+```
+
+## Error Messages
+
+Standardize error messages for common validations:
+
+- Required fields: `"[Field name] is required"`
+- Min length: `"[Field name] must be at least [n] characters"`
+- Invalid format: `"Invalid [field name] format"`
+- Not found: `"[Resource] not found"`
+
+## Testing
+
+Include validation tests in your server function tests:
+
+```typescript
+describe('$serverFunction', () => {
+  it('should validate input correctly', async () => {
+    await expect($serverFunction({ data: {} })).rejects.toThrow(
+      'Field is required',
+    );
+  });
+});
+```
