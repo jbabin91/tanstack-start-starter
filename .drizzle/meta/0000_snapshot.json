@@ -1,5 +1,5 @@
 {
-  "id": "2ce35be2-5606-4f12-9d16-5470967bedbd",
+  "id": "df3fe2c9-8e65-412e-8d16-c75d08a65942",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -222,6 +222,12 @@
         },
         "image": {
           "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
           "type": "text",
           "primaryKey": false,
           "notNull": false

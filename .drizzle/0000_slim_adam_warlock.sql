@@ -32,6 +32,7 @@ CREATE TABLE "users" (
 	"email" text NOT NULL,
 	"email_verified" boolean NOT NULL,
 	"image" text,
+	"bio" text,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
