@@ -3,16 +3,34 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { Resend } from 'resend';
 
 import { renderVerificationEmail } from '~/features/email/components/verification';
-import { db } from '~/lib/server/db';
+
+import { nanoId } from '../utils/nanoid';
+import { db } from './db';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Define supported social providers
+type SocialProvider = 'github' | 'discord' | 'google';
+// Add more providers here as we support them
+// | 'twitter'
+// | 'twitch'
+// | 'apple'
+// | 'facebook'
+// | 'linkedin';
 
 export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ['discord', 'github', 'google'],
+      trustedProviders: [
+        'discord',
+        'github',
+        'google',
+      ] satisfies SocialProvider[],
     },
+  },
+  advanced: {
+    generateId: () => nanoId(),
   },
   baseURL: process.env.VITE_BASE_URL,
   database: drizzleAdapter(db, {
@@ -64,6 +82,15 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+  // Add additional user fields
+  user: {
+    additionalFields: {
+      bio: {
+        required: false,
+        type: 'string',
+      },
     },
   },
 });

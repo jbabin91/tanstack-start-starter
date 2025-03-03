@@ -1,4 +1,6 @@
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { createSelectSchema } from 'drizzle-zod';
+import { type z } from 'zod';
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -6,9 +8,13 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
+  bio: text('bio'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 });
+
+export const userSchema = createSelectSchema(users);
+export type User = z.infer<typeof userSchema>;
 
 export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),

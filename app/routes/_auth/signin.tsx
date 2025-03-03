@@ -215,19 +215,16 @@ function RouteComponent() {
                 <div className="flex flex-col gap-4">
                   <SocialAuthButton
                     className="bg-[#5865F2] hover:bg-[#5865F2]/80"
-                    label="Discord"
                     mode="signin"
                     provider="discord"
                   />
                   <SocialAuthButton
                     className="bg-neutral-700 hover:bg-neutral-700/80"
-                    label="GitHub"
                     mode="signin"
                     provider="github"
                   />
                   <SocialAuthButton
                     className="bg-[#DB4437] hover:bg-[#DB4437]/80"
-                    label="Google"
                     mode="signin"
                     provider="google"
                   />
