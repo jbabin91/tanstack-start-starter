@@ -11,32 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root';
-import { Route as DashboardRouteImport } from './routes/dashboard/route';
 import { Route as AppRouteImport } from './routes/_app/route';
-import { Route as DashboardIndexImport } from './routes/dashboard/index';
 import { Route as PublicIndexImport } from './routes/_public/index';
 import { Route as AuthVerifyImport } from './routes/_auth/verify';
 import { Route as AuthSignupImport } from './routes/_auth/signup';
 import { Route as AuthSigninImport } from './routes/_auth/signin';
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard/route';
+import { Route as AppDashboardIndexImport } from './routes/_app/dashboard/index';
 import { Route as AppUserUserIdProfileImport } from './routes/_app/user/$userId.profile';
 
 // Create/Update Routes
 
-const DashboardRouteRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any);
-
 const AppRouteRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRoute,
-} as any);
-
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardRouteRoute,
 } as any);
 
 const PublicIndexRoute = PublicIndexImport.update({
@@ -63,6 +51,18 @@ const AuthSigninRoute = AuthSigninImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
+const AppDashboardRouteRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRouteRoute,
+} as any);
+
+const AppDashboardIndexRoute = AppDashboardIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDashboardRouteRoute,
+} as any);
+
 const AppUserUserIdProfileRoute = AppUserUserIdProfileImport.update({
   id: '/user/$userId/profile',
   path: '/user/$userId/profile',
@@ -80,12 +80,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport;
       parentRoute: typeof rootRoute;
     };
-    '/dashboard': {
-      id: '/dashboard';
+    '/_app/dashboard': {
+      id: '/_app/dashboard';
       path: '/dashboard';
       fullPath: '/dashboard';
-      preLoaderRoute: typeof DashboardRouteImport;
-      parentRoute: typeof rootRoute;
+      preLoaderRoute: typeof AppDashboardRouteImport;
+      parentRoute: typeof AppRouteImport;
     };
     '/_auth/signin': {
       id: '/_auth/signin';
@@ -115,12 +115,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexImport;
       parentRoute: typeof rootRoute;
     };
-    '/dashboard/': {
-      id: '/dashboard/';
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/';
       path: '/';
       fullPath: '/dashboard/';
-      preLoaderRoute: typeof DashboardIndexImport;
-      parentRoute: typeof DashboardRouteImport;
+      preLoaderRoute: typeof AppDashboardIndexImport;
+      parentRoute: typeof AppDashboardRouteImport;
     };
     '/_app/user/$userId/profile': {
       id: '/_app/user/$userId/profile';
@@ -134,11 +134,24 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AppDashboardRouteRouteChildren {
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
+}
+
+const AppDashboardRouteRouteChildren: AppDashboardRouteRouteChildren = {
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
+};
+
+const AppDashboardRouteRouteWithChildren =
+  AppDashboardRouteRoute._addFileChildren(AppDashboardRouteRouteChildren);
+
 interface AppRouteRouteChildren {
+  AppDashboardRouteRoute: typeof AppDashboardRouteRouteWithChildren;
   AppUserUserIdProfileRoute: typeof AppUserUserIdProfileRoute;
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppDashboardRouteRoute: AppDashboardRouteRouteWithChildren,
   AppUserUserIdProfileRoute: AppUserUserIdProfileRoute,
 };
 
@@ -146,26 +159,14 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 );
 
-interface DashboardRouteRouteChildren {
-  DashboardIndexRoute: typeof DashboardIndexRoute;
-}
-
-const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardIndexRoute: DashboardIndexRoute,
-};
-
-const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
-  DashboardRouteRouteChildren,
-);
-
 export interface FileRoutesByFullPath {
   '': typeof AppRouteRouteWithChildren;
-  '/dashboard': typeof DashboardRouteRouteWithChildren;
+  '/dashboard': typeof AppDashboardRouteRouteWithChildren;
   '/signin': typeof AuthSigninRoute;
   '/signup': typeof AuthSignupRoute;
   '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
-  '/dashboard/': typeof DashboardIndexRoute;
+  '/dashboard/': typeof AppDashboardIndexRoute;
   '/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
@@ -175,19 +176,19 @@ export interface FileRoutesByTo {
   '/signup': typeof AuthSignupRoute;
   '/verify': typeof AuthVerifyRoute;
   '/': typeof PublicIndexRoute;
-  '/dashboard': typeof DashboardIndexRoute;
+  '/dashboard': typeof AppDashboardIndexRoute;
   '/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute;
   '/_app': typeof AppRouteRouteWithChildren;
-  '/dashboard': typeof DashboardRouteRouteWithChildren;
+  '/_app/dashboard': typeof AppDashboardRouteRouteWithChildren;
   '/_auth/signin': typeof AuthSigninRoute;
   '/_auth/signup': typeof AuthSignupRoute;
   '/_auth/verify': typeof AuthVerifyRoute;
   '/_public/': typeof PublicIndexRoute;
-  '/dashboard/': typeof DashboardIndexRoute;
+  '/_app/dashboard/': typeof AppDashboardIndexRoute;
   '/_app/user/$userId/profile': typeof AppUserUserIdProfileRoute;
 }
 
@@ -214,19 +215,18 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
-    | '/dashboard'
+    | '/_app/dashboard'
     | '/_auth/signin'
     | '/_auth/signup'
     | '/_auth/verify'
     | '/_public/'
-    | '/dashboard/'
+    | '/_app/dashboard/'
     | '/_app/user/$userId/profile';
   fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren;
-  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren;
   AuthSigninRoute: typeof AuthSigninRoute;
   AuthSignupRoute: typeof AuthSignupRoute;
   AuthVerifyRoute: typeof AuthVerifyRoute;
@@ -235,7 +235,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
-  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthVerifyRoute: AuthVerifyRoute,
@@ -253,7 +252,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_app",
-        "/dashboard",
         "/_auth/signin",
         "/_auth/signup",
         "/_auth/verify",
@@ -263,13 +261,15 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app/route.tsx",
       "children": [
+        "/_app/dashboard",
         "/_app/user/$userId/profile"
       ]
     },
-    "/dashboard": {
-      "filePath": "dashboard/route.tsx",
+    "/_app/dashboard": {
+      "filePath": "_app/dashboard/route.tsx",
+      "parent": "/_app",
       "children": [
-        "/dashboard/"
+        "/_app/dashboard/"
       ]
     },
     "/_auth/signin": {
@@ -284,9 +284,9 @@ export const routeTree = rootRoute
     "/_public/": {
       "filePath": "_public/index.tsx"
     },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx",
-      "parent": "/dashboard"
+    "/_app/dashboard/": {
+      "filePath": "_app/dashboard/index.tsx",
+      "parent": "/_app/dashboard"
     },
     "/_app/user/$userId/profile": {
       "filePath": "_app/user/$userId.profile.tsx",
