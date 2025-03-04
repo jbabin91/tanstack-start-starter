@@ -15,48 +15,9 @@ import { userQuery, useUser } from '~/features/users/hooks/use-user';
 import { authClient } from '~/lib/client/auth-client';
 import { cn } from '~/lib/utils';
 
-// Predefined accessible color pairs (background: text) for both themes
-const colorPairs = {
-  dark: [
-    { bg: 'bg-blue-800', text: 'text-blue-200' },
-    { bg: 'bg-green-800', text: 'text-green-200' },
-    { bg: 'bg-purple-800', text: 'text-purple-200' },
-    { bg: 'bg-yellow-800', text: 'text-yellow-200' },
-    { bg: 'bg-pink-800', text: 'text-pink-200' },
-    { bg: 'bg-indigo-800', text: 'text-indigo-200' },
-    { bg: 'bg-red-800', text: 'text-red-200' },
-    { bg: 'bg-teal-800', text: 'text-teal-200' },
-  ],
-  light: [
-    { bg: 'bg-blue-200', text: 'text-blue-800' },
-    { bg: 'bg-green-200', text: 'text-green-800' },
-    { bg: 'bg-purple-200', text: 'text-purple-800' },
-    { bg: 'bg-yellow-200', text: 'text-yellow-800' },
-    { bg: 'bg-pink-200', text: 'text-pink-800' },
-    { bg: 'bg-indigo-200', text: 'text-indigo-800' },
-    { bg: 'bg-red-200', text: 'text-red-800' },
-    { bg: 'bg-teal-200', text: 'text-teal-800' },
-  ],
-} as const;
+function getUserInitials(name: string | undefined) {
+  if (!name) return '';
 
-function hashString(str: string) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.codePointAt(i) ?? 0;
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-}
-
-function getColorFromName(name: string, theme: 'light' | 'dark' = 'light') {
-  const hash = hashString(name);
-  const colors = colorPairs[theme];
-  const index = hash % colors.length;
-  return colors[index];
-}
-
-function getUserInitials(name: string) {
   const nameParts = name.trim().split(' ');
   if (nameParts.length === 1) {
     return nameParts[0][0]?.toUpperCase() ?? '';
@@ -69,8 +30,20 @@ function getUserInitials(name: string) {
 export function UserAvatar() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useUser();
+  const { data: user, isLoading } = useUser();
   const { setTheme, theme, resolvedTheme } = useTheme();
+  const currentTheme = (resolvedTheme ?? theme ?? 'light') as 'light' | 'dark';
+
+  // Show loading state while user data is being fetched
+  if (isLoading) {
+    return (
+      <Button disabled className="relative size-8 rounded-full" variant="ghost">
+        <Avatar className="size-8">
+          <AvatarFallback>...</AvatarFallback>
+        </Avatar>
+      </Button>
+    );
+  }
 
   if (!user) {
     return (
@@ -95,17 +68,19 @@ export function UserAvatar() {
     );
   }
 
-  // Use resolvedTheme to get the actual theme (light/dark) even when set to 'system'
-  const currentTheme = (resolvedTheme ?? theme ?? 'light') as 'light' | 'dark';
-  const { bg, text } = getColorFromName(user.name, currentTheme);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="relative size-8 rounded-full" variant="ghost">
           <Avatar className="size-8">
             <AvatarImage alt={user.name} src={user.image ?? undefined} />
-            <AvatarFallback className={cn(bg, text)}>
+            <AvatarFallback
+              className={cn(
+                currentTheme === 'dark'
+                  ? 'bg-blue-800 text-blue-200'
+                  : 'bg-blue-200 text-blue-800',
+              )}
+            >
               {getUserInitials(user.name)}
             </AvatarFallback>
           </Avatar>

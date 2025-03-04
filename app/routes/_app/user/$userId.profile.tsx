@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { FiEdit2 } from 'react-icons/fi';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -12,20 +12,21 @@ export const Route = createFileRoute('/_app/user/$userId/profile')({
     try {
       const user = await ensureUserProfile(queryClient, userId);
       return { user };
-    } catch {
-      throw notFound({
-        data: {
-          title: 'User Not Found',
-          description: "We couldn't find the user you're looking for.",
-        },
-      });
+    } catch (error) {
+      console.error('User not found', { userId, error });
+      // throw notFound({
+      //   data: {
+      //     title: 'User Not Found',
+      //     description: "We couldn't find the user you're looking for.",
+      //   },
+      // });
     }
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { user } = Route.useLoaderData();
+  const { user } = Route.useLoaderData()!;
   const { data: currentUser } = useUser();
   const isOwnProfile = currentUser?.id === user.id;
 

@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { Button } from '~/components/ui/button';
 
-export const Route = createFileRoute('/_app/dashboard')({
+export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
 });
 
