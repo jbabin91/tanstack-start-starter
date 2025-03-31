@@ -298,8 +298,8 @@ importers:
         specifier: ^3.18.0
         version: 3.18.0(tailwindcss@4.0.12)
       eslint-plugin-unicorn:
-        specifier: ^57.0.0
-        version: 57.0.0(eslint@9.22.0(jiti@2.4.2))
+        specifier: ^58.0.0
+        version: 58.0.0(eslint@9.22.0(jiti@2.4.2))
       globals:
         specifier: ^16.0.0
         version: 16.0.0
@@ -1301,8 +1301,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@eslint-community/eslint-utils@4.4.1':
-    resolution: {integrity: sha512-s3O3waFUrMV8P/XaF/+ZTp1X9XBZW1a4B97ZnjQF2KYWaFD2A8KyFBsrsfSjEmjn3RGWAIuvlneuZm3CUK3jbA==}
+  '@eslint-community/eslint-utils@4.5.1':
+    resolution: {integrity: sha512-soEIOALTfTK6EjmKMMoLugwaP0rzkad90iIWd1hMO9ARkSAyjfMfkRRhLvD5qH7vvM0Cg72pieUfR6yh6XxC4w==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
@@ -3265,8 +3265,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  builtin-modules@4.0.0:
-    resolution: {integrity: sha512-p1n8zyCkt1BVrKNFymOHjcDSAl7oq/gUvfgULv2EblgpPVQlQr9yHnWjg9IJ2MhfwPqiYqMMrr01OY7yQoK2yA==}
+  builtin-modules@5.0.0:
+    resolution: {integrity: sha512-bkXY9WsVpY7CvMhKSR6pZilZu9Ln5WDrKVBUXf2S443etkmEO4V58heTecXcUIsNsi4Rx8JUO4NfX1IcQl4deg==}
     engines: {node: '>=18.20'}
 
   c12@2.0.1:
@@ -3327,8 +3327,8 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  ci-info@4.1.0:
-    resolution: {integrity: sha512-HutrvTNsF48wnxkzERIXOe5/mlcfFcbfCmwcg6CJnizbSue78AbDt+1cgl26zwn61WFxhcPykPfZrbqjGmBb4A==}
+  ci-info@4.2.0:
+    resolution: {integrity: sha512-cYY9mypksY8NRqgDB1XD1RiJL338v/551niynFTGkZOO2LHuB2OmOYxDIe/ttN9AHwrqdum1360G3ald0W9kCg==}
     engines: {node: '>=8'}
 
   citty@0.1.6:
@@ -4118,11 +4118,11 @@ packages:
     peerDependencies:
       tailwindcss: ^3.4.0
 
-  eslint-plugin-unicorn@57.0.0:
-    resolution: {integrity: sha512-zUYYa6zfNdTeG9BISWDlcLmz16c+2Ck2o5ZDHh0UzXJz3DEP7xjmlVDTzbyV0W+XksgZ0q37WEWzN2D2Ze+g9Q==}
-    engines: {node: '>=18.18'}
+  eslint-plugin-unicorn@58.0.0:
+    resolution: {integrity: sha512-fc3iaxCm9chBWOHPVjn+Czb/wHS0D2Mko7wkOdobqo9R2bbFObc4LyZaLTNy0mhZOP84nKkLhTUQxlLOZ7EjKw==}
+    engines: {node: ^18.20.0 || ^20.10.0 || >=21.0.0}
     peerDependencies:
-      eslint: '>=9.20.0'
+      eslint: '>=9.22.0'
 
   eslint-scope@8.3.0:
     resolution: {integrity: sha512-pUNxi75F8MJ/GdeKtVLSbYg4ZI34J6C0C7sbL4YOp2exGwen7ZsuBqKzUhXd0qMQ362yET3z+uPwKeg/0C2XCQ==}
@@ -4432,10 +4432,6 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@15.15.0:
-    resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
-    engines: {node: '>=18'}
-
   globals@16.0.0:
     resolution: {integrity: sha512-iInW14XItCXET01CQFqudPOWP2jYMl7T+QRQT+UNcR/iQncN/F0UNpgd76iFkBPgNQb4+X3LV9tLJYzwh+Gl3A==}
     engines: {node: '>=18'}
@@ -4646,8 +4642,8 @@ packages:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
     engines: {node: '>= 0.4'}
 
-  is-builtin-module@4.0.0:
-    resolution: {integrity: sha512-rWP3AMAalQSesXO8gleROyL2iKU73SX5Er66losQn9rWOWL4Gef0a/xOEOVqjWGMuR2vHG3FJ8UUmT700O8oFg==}
+  is-builtin-module@5.0.0:
+    resolution: {integrity: sha512-f4RqJKBUe5rQkJ2eJEJBXSticB3hGbN9j0yxxMQFqIW89Jp9WYFtzfTcRlstDKVUTRzSOTLKRfO9vIztenwtxA==}
     engines: {node: '>=18.20'}
 
   is-callable@1.2.7:
@@ -7491,7 +7487,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.0':
     optional: true
 
-  '@eslint-community/eslint-utils@4.4.1(eslint@9.22.0(jiti@2.4.2))':
+  '@eslint-community/eslint-utils@4.5.1(eslint@9.22.0(jiti@2.4.2))':
     dependencies:
       eslint: 9.22.0(jiti@2.4.2)
       eslint-visitor-keys: 3.4.3
@@ -9655,7 +9651,7 @@ snapshots:
 
   '@typescript-eslint/utils@8.26.1(eslint@9.22.0(jiti@2.4.2))(typescript@5.8.2)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.1(eslint@9.22.0(jiti@2.4.2))
+      '@eslint-community/eslint-utils': 4.5.1(eslint@9.22.0(jiti@2.4.2))
       '@typescript-eslint/scope-manager': 8.26.1
       '@typescript-eslint/types': 8.26.1
       '@typescript-eslint/typescript-estree': 8.26.1(typescript@5.8.2)
@@ -10012,7 +10008,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  builtin-modules@4.0.0: {}
+  builtin-modules@5.0.0: {}
 
   c12@2.0.1(magicast@0.3.5):
     dependencies:
@@ -10083,7 +10079,7 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  ci-info@4.1.0: {}
+  ci-info@4.2.0: {}
 
   citty@0.1.6:
     dependencies:
@@ -11000,18 +10996,19 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 4.0.12
 
-  eslint-plugin-unicorn@57.0.0(eslint@9.22.0(jiti@2.4.2)):
+  eslint-plugin-unicorn@58.0.0(eslint@9.22.0(jiti@2.4.2)):
     dependencies:
       '@babel/helper-validator-identifier': 7.25.9
-      '@eslint-community/eslint-utils': 4.4.1(eslint@9.22.0(jiti@2.4.2))
-      ci-info: 4.1.0
+      '@eslint-community/eslint-utils': 4.5.1(eslint@9.22.0(jiti@2.4.2))
+      '@eslint/plugin-kit': 0.2.7
+      ci-info: 4.2.0
       clean-regexp: 1.0.0
       core-js-compat: 3.41.0
       eslint: 9.22.0(jiti@2.4.2)
       esquery: 1.6.0
-      globals: 15.15.0
+      globals: 16.0.0
       indent-string: 5.0.0
-      is-builtin-module: 4.0.0
+      is-builtin-module: 5.0.0
       jsesc: 3.1.0
       pluralize: 8.0.0
       read-package-up: 11.0.0
@@ -11033,7 +11030,7 @@ snapshots:
 
   eslint@9.22.0(jiti@2.4.2):
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.1(eslint@9.22.0(jiti@2.4.2))
+      '@eslint-community/eslint-utils': 4.5.1(eslint@9.22.0(jiti@2.4.2))
       '@eslint-community/regexpp': 4.12.1
       '@eslint/config-array': 0.19.2
       '@eslint/config-helpers': 0.1.0
@@ -11358,8 +11355,6 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@15.15.0: {}
-
   globals@16.0.0: {}
 
   globalthis@1.0.4:
@@ -11589,9 +11584,9 @@ snapshots:
       call-bound: 1.0.4
       has-tostringtag: 1.0.2
 
-  is-builtin-module@4.0.0:
+  is-builtin-module@5.0.0:
     dependencies:
-      builtin-modules: 4.0.0
+      builtin-modules: 5.0.0
 
   is-callable@1.2.7: {}
 
