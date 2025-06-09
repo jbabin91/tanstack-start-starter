@@ -1,12 +1,15 @@
-import '@/index.css';
+import '@/styles/app.css';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import App from '@/app.tsx';
+import { App } from '@/app';
+import { Providers } from '@/providers';
 
 createRoot(document.querySelector('#root')!).render(
   <StrictMode>
-    <App />
+    <Providers>
+      <App />
+    </Providers>
   </StrictMode>,
 );
