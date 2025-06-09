@@ -11,7 +11,15 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  {
+    ignores: [
+      'node_modules',
+      '.nitro',
+      '.output',
+      '.tanstack-start',
+      '**/*.gen.ts',
+    ],
+  },
   {
     languageOptions: {
       ecmaVersion: 'latest',

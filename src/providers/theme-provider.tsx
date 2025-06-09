@@ -10,8 +10,6 @@ export function ThemeProvider({
       enableSystem
       attribute="class"
       defaultTheme="system"
-      enableColorScheme={false}
-      storageKey="theme"
       {...props}
     >
       {children}

@@ -1,1 +1,6 @@
 pnpm-lock.yaml
+
+.nitro/
+.output/
+.tanstack-start/
+*.gen.ts

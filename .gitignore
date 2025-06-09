@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+.nitro
+.output
+.tanstack-start
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
