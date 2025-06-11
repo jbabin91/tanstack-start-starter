@@ -1,3 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import viteLogo from '/vite.svg';
@@ -5,7 +6,7 @@ import reactLogo from '@/assets/react.svg';
 import { CenteredLayout } from '@/components/layouts/centered-layout';
 import { Button } from '@/components/ui/button';
 
-export const Route = createFileRoute({
+export const Route = createFileRoute('/')({
   component: RouteComponent,
 });
 

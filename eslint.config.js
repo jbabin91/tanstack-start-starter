@@ -12,13 +12,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      'node_modules',
-      '.nitro',
-      '.output',
-      '.tanstack-start',
-      '**/*.gen.ts',
-    ],
+    ignores: ['node_modules', '.nitro', '.output', '.tanstack', '**/*.gen.ts'],
   },
   {
     languageOptions: {
