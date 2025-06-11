@@ -12,6 +12,7 @@ import * as React from 'react';
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
 import { NotFound } from '@/components/errors/not-found';
 import { NavBar } from '@/components/layouts/nav-bar';
+import { Toaster } from '@/components/ui/sonner';
 import { Providers } from '@/providers';
 import appCss from '@/styles/app.css?url';
 
@@ -57,6 +58,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Providers>
           <NavBar />
           <main>{children}</main>
+          <Toaster />
         </Providers>
         <TanStackRouterDevtools />
         <ReactQueryDevtools />
