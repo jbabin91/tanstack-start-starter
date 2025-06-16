@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
+!.env.example
+
 .nitro
 .output
 .tanstack-start
