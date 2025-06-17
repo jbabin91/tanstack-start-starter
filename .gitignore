@@ -10,6 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.nitro
+.output
+.tanstack
+.tanstack-start
 *.local
 
 # Environment variables
@@ -18,10 +22,6 @@ dist-ssr
 !.env.project
 !.env.vault
 !.env.example
-
-.nitro
-.output
-.tanstack-start
 
 # Editor directories and files
 .vscode/*
