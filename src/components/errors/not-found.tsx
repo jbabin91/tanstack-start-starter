@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { CenteredLayout } from '@/components/layouts/centered-layout';
 import { Button } from '@/components/ui/button';
 
-export function NotFound({ children }: { children?: any }) {
+export function NotFound({ children }: { children?: React.ReactNode }) {
   return (
     <CenteredLayout>
       <div className="flex min-w-0 flex-1 flex-col items-center gap-6 p-4">
