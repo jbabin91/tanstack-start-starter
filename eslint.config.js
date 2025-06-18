@@ -1,4 +1,6 @@
 import js from '@eslint/js';
+import pluginQuery from '@tanstack/eslint-plugin-query';
+import pluginRouter from '@tanstack/eslint-plugin-router';
 import configPrettier from 'eslint-config-prettier';
 import importX from 'eslint-plugin-import-x';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
@@ -20,6 +22,8 @@ export default tseslint.config(
       globals: globals.browser,
     },
   },
+  ...pluginRouter.configs['flat/recommended'],
+  ...pluginQuery.configs['flat/recommended'],
   {
     extends: [js.configs.recommended, unicorn.configs.recommended],
     plugins: {
@@ -132,6 +136,12 @@ export default tseslint.config(
         },
       },
       react: { version: 'detect' },
+    },
+  },
+  {
+    files: ['**/routes/**/*.{ts,tsx}'],
+    rules: {
+      'sort-keys-fix/sort-keys-fix': 'off',
     },
   },
   configPrettier,
