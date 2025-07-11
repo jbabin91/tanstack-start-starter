@@ -1,39 +1,39 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
-import { postsQueryOptions } from '@/modules/posts/api';
+import { usersQueryOptions } from '@/modules/users/api';
 
-export const Route = createFileRoute('/posts')({
+export const Route = createFileRoute('/users')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(postsQueryOptions());
+    await context.queryClient.ensureQueryData(usersQueryOptions());
   },
   head: () => ({
-    meta: [{ title: 'Posts' }],
+    meta: [{ title: 'Users' }],
   }),
 });
 
 function RouteComponent() {
-  const postsQuery = useSuspenseQuery(postsQueryOptions());
+  const usersQuery = useSuspenseQuery(usersQueryOptions());
 
   return (
     <div className="flex gap-2 p-2">
       <ul className="w-64 flex-shrink-0 pl-4">
         {[
-          ...postsQuery.data,
-          { id: 'i-do-not-exist', title: 'Non-existent Post' },
-        ].map((post) => {
+          ...usersQuery.data,
+          { id: 'i-do-not-exist', name: 'Non-existent User' },
+        ].map((user) => {
           return (
-            <li key={post.id} className="whitespace-nowrap">
+            <li key={user.id} className="whitespace-nowrap">
               <Link
                 activeProps={{ className: 'text-black font-bold' }}
                 className="block py-1 text-blue-800 hover:text-blue-600"
                 params={{
-                  postId: post.id,
+                  userId: user.id,
                 }}
-                to="/posts/$postId"
+                to="/users/$userId"
               >
-                <div>{post.title.slice(0, 20)}</div>
+                <div>{user.name.slice(0, 20)}</div>
               </Link>
             </li>
           );

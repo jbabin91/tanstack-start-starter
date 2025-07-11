@@ -18,6 +18,9 @@ export function NavBar() {
         <Link activeProps={{ className: 'font-bold' }} to="/posts">
           Posts
         </Link>
+        <Link activeProps={{ className: 'font-bold' }} to="/users">
+          Users
+        </Link>
         <Link
           activeProps={{
             className: 'font-bold',
