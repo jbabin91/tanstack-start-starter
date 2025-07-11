@@ -1,20 +1,15 @@
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
+import { eq } from 'drizzle-orm';
 
-import { jsonPlaceholderApiClient } from '@/lib/axios';
-
-export type Post = {
-  id: string;
-  title: string;
-  body: string;
-};
+import { db } from '@/lib/db';
+import { postsTable } from '@/lib/db/schemas/posts';
 
 export const fetchPosts = createServerFn().handler(async () => {
   console.info('Fetching posts...');
 
-  // The axios interceptor will handle errors automatically
-  const response = await jsonPlaceholderApiClient.get<Post[]>('/posts');
-  return response.data.slice(0, 10);
+  const posts = await db.select().from(postsTable).limit(10);
+  return posts;
 });
 
 export const postsQueryOptions = () =>
@@ -24,16 +19,23 @@ export const postsQueryOptions = () =>
   });
 
 export const fetchPost = createServerFn()
-  .validator((d: string) => d)
+  .validator((d: number) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching post with id ${data}...`);
 
-    // The axios interceptor will handle 404s and other errors automatically
-    const response = await jsonPlaceholderApiClient.get<Post>(`/posts/${data}`);
-    return response.data;
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(eq(postsTable.id, data));
+
+    if (posts.length === 0) {
+      throw new Error(`Post with id ${data} not found`);
+    }
+
+    return posts[0];
   });
 
-export const postQueryOptions = (postId: string) =>
+export const postQueryOptions = (postId: number) =>
   queryOptions({
     queryFn: () => fetchPost({ data: postId }),
     queryKey: ['post', postId],

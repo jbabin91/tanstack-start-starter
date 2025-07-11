@@ -1,30 +1,15 @@
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
+import { eq } from 'drizzle-orm';
 
-import { jsonPlaceholderApiClient } from '@/lib/axios';
-
-export type User = {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  website: string;
-  company: {
-    name: string;
-  };
-  address: {
-    street: string;
-    city: string;
-  };
-};
+import { db } from '@/lib/db';
+import { usersTable } from '@/lib/db/schemas/users';
 
 export const fetchUsers = createServerFn().handler(async () => {
   console.info('Fetching users...');
 
-  // The axios interceptor will handle errors automatically
-  const response = await jsonPlaceholderApiClient.get<User[]>('/users');
-  return response.data;
+  const users = await db.select().from(usersTable);
+  return users;
 });
 
 export const usersQueryOptions = () =>
@@ -34,16 +19,23 @@ export const usersQueryOptions = () =>
   });
 
 export const fetchUser = createServerFn()
-  .validator((d: string) => d)
+  .validator((d: number) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching user with id ${data}...`);
 
-    // The axios interceptor will handle 404s and other errors automatically
-    const response = await jsonPlaceholderApiClient.get<User>(`/users/${data}`);
-    return response.data;
+    const users = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, data));
+
+    if (users.length === 0) {
+      throw new Error(`User with id ${data} not found`);
+    }
+
+    return users[0];
   });
 
-export const userQueryOptions = (userId: string) =>
+export const userQueryOptions = (userId: number) =>
   queryOptions({
     queryFn: () => fetchUser({ data: userId }),
     queryKey: ['user', userId],

@@ -9,7 +9,7 @@ export const Route = createFileRoute('/users/$userId/')({
   component: RouteComponent,
   loader: async ({ params: { userId }, context }) => {
     const data = await context.queryClient.ensureQueryData(
-      userQueryOptions(userId),
+      userQueryOptions(Number(userId)),
     );
 
     return {
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/users/$userId/')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const userQuery = useSuspenseQuery(userQueryOptions(userId));
+  const userQuery = useSuspenseQuery(userQueryOptions(Number(userId)));
 
   return (
     <div className="space-y-2">
@@ -44,11 +44,13 @@ function RouteComponent() {
           <strong>Website:</strong> {userQuery.data.website}
         </div>
         <div>
-          <strong>Company:</strong> {userQuery.data.company.name}
+          <strong>Company:</strong> {userQuery.data.company?.name ?? 'N/A'}
         </div>
         <div>
-          <strong>Address:</strong> {userQuery.data.address.street},{' '}
-          {userQuery.data.address.city}
+          <strong>Address:</strong>{' '}
+          {userQuery.data.address
+            ? `${userQuery.data.address.street}, ${userQuery.data.address.city}`
+            : 'N/A'}
         </div>
       </div>
     </div>

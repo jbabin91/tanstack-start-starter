@@ -9,7 +9,7 @@ export const Route = createFileRoute('/posts/$postId/')({
   component: RouteComponent,
   loader: async ({ params: { postId }, context }) => {
     const data = await context.queryClient.ensureQueryData(
-      postQueryOptions(postId),
+      postQueryOptions(Number(postId)),
     );
 
     return {
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/posts/$postId/')({
 
 function RouteComponent() {
   const { postId } = Route.useParams();
-  const postQuery = useSuspenseQuery(postQueryOptions(postId));
+  const postQuery = useSuspenseQuery(postQueryOptions(Number(postId)));
 
   return (
     <div className="space-y-2">
@@ -35,7 +35,7 @@ function RouteComponent() {
         activeProps={{ className: 'text-black font-bold' }}
         className="inline-block py-1 text-blue-800 hover:text-blue-600"
         params={{
-          postId: postQuery.data.id,
+          postId: postQuery.data.id.toString(),
         }}
         to="/posts/$postId/deep"
       >

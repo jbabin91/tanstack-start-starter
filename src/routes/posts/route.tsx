@@ -29,7 +29,7 @@ function RouteComponent() {
                 activeProps={{ className: 'text-black font-bold' }}
                 className="block py-1 text-blue-800 hover:text-blue-600"
                 params={{
-                  postId: post.id,
+                  postId: post.id.toString(),
                 }}
                 to="/posts/$postId"
               >
