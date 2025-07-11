@@ -37,7 +37,7 @@ function createEnv<
     server,
     client,
     skipValidation = false,
-    isServer = globalThis.window === undefined,
+    isServer = typeof globalThis === 'undefined' || !('window' in globalThis),
   } = config;
 
   // Skip validation if explicitly requested (useful for build time)
