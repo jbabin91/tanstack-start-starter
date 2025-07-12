@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
 import { ModeToggle } from '@/components/mode-toggle';
+import { env } from '@/configs/env';
 
 export function NavBar() {
   return (
@@ -15,21 +16,17 @@ export function NavBar() {
         >
           Home
         </Link>
-        <Link activeProps={{ className: 'font-bold' }} to="/posts">
-          Posts
-        </Link>
         <Link activeProps={{ className: 'font-bold' }} to="/users">
           Users
         </Link>
-        <Link
-          activeProps={{
-            className: 'font-bold',
-          }}
-          // @ts-expect-error - This route does not exist
-          to="/this-route-does-not-exist"
-        >
-          This Route Does Not Exist
+        <Link activeProps={{ className: 'font-bold' }} to="/feed">
+          Feed
         </Link>
+        {env.VITE_NODE_ENV === 'development' && (
+          <Link activeProps={{ className: 'font-bold' }} to="/colors">
+            Colors
+          </Link>
+        )}
       </nav>
       <div>
         <ModeToggle />

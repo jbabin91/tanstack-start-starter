@@ -25,16 +25,18 @@ function RouteComponent() {
         ].map((user) => {
           return (
             <li key={user.id} className="whitespace-nowrap">
-              <Link
-                activeProps={{ className: 'text-black font-bold' }}
-                className="block py-1 text-blue-800 hover:text-blue-600"
-                params={{
-                  userId: user.id.toString(),
-                }}
-                to="/users/$userId"
-              >
-                <div>{user.name.slice(0, 20)}</div>
-              </Link>
+              <div className="flex flex-col gap-1">
+                <Link
+                  activeProps={{ className: 'text-foreground font-bold' }}
+                  className="text-primary hover:text-primary/80 block py-1"
+                  params={{
+                    userId: user.id.toString(),
+                  }}
+                  to="/users/$userId"
+                >
+                  <div>{user.name.slice(0, 20)}</div>
+                </Link>
+              </div>
             </li>
           );
         })}

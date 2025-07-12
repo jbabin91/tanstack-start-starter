@@ -9,23 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root';
+import { Route as FeedRouteImport } from './routes/feed';
+import { Route as ColorsRouteImport } from './routes/colors';
 import { Route as UsersRouteRouteImport } from './routes/users/route';
-import { Route as PostsRouteRouteImport } from './routes/posts/route';
 import { Route as IndexRouteImport } from './routes/index';
 import { Route as UsersIndexRouteImport } from './routes/users/index';
-import { Route as PostsIndexRouteImport } from './routes/posts/index';
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId/index';
-import { Route as PostsPostIdIndexRouteImport } from './routes/posts/$postId/index';
-import { Route as PostsPostIdDeepRouteImport } from './routes/posts/$postId/deep';
+import { Route as UsersUserIdPostsRouteRouteImport } from './routes/users/$userId/posts/route';
+import { Route as UsersUserIdPostsPostIdRouteImport } from './routes/users/$userId/posts/$postId';
 
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ColorsRoute = ColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
+  getParentRoute: () => rootRouteImport,
+} as any);
 const UsersRouteRoute = UsersRouteRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const PostsRouteRoute = PostsRouteRouteImport.update({
-  id: '/posts',
-  path: '/posts',
   getParentRoute: () => rootRouteImport,
 } as any);
 const IndexRoute = IndexRouteImport.update({
@@ -38,107 +43,112 @@ const UsersIndexRoute = UsersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => UsersRouteRoute,
 } as any);
-const PostsIndexRoute = PostsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PostsRouteRoute,
-} as any);
 const UsersUserIdIndexRoute = UsersUserIdIndexRouteImport.update({
   id: '/$userId/',
   path: '/$userId/',
   getParentRoute: () => UsersRouteRoute,
 } as any);
-const PostsPostIdIndexRoute = PostsPostIdIndexRouteImport.update({
-  id: '/$postId/',
-  path: '/$postId/',
-  getParentRoute: () => PostsRouteRoute,
+const UsersUserIdPostsRouteRoute = UsersUserIdPostsRouteRouteImport.update({
+  id: '/$userId/posts',
+  path: '/$userId/posts',
+  getParentRoute: () => UsersRouteRoute,
 } as any);
-const PostsPostIdDeepRoute = PostsPostIdDeepRouteImport.update({
-  id: '/$postId/deep',
-  path: '/$postId/deep',
-  getParentRoute: () => PostsRouteRoute,
+const UsersUserIdPostsPostIdRoute = UsersUserIdPostsPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => UsersUserIdPostsRouteRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
-  '/posts': typeof PostsRouteRouteWithChildren;
   '/users': typeof UsersRouteRouteWithChildren;
-  '/posts/': typeof PostsIndexRoute;
+  '/colors': typeof ColorsRoute;
+  '/feed': typeof FeedRoute;
   '/users/': typeof UsersIndexRoute;
-  '/posts/$postId/deep': typeof PostsPostIdDeepRoute;
-  '/posts/$postId': typeof PostsPostIdIndexRoute;
+  '/users/$userId/posts': typeof UsersUserIdPostsRouteRouteWithChildren;
   '/users/$userId': typeof UsersUserIdIndexRoute;
+  '/users/$userId/posts/$postId': typeof UsersUserIdPostsPostIdRoute;
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute;
-  '/posts': typeof PostsIndexRoute;
+  '/colors': typeof ColorsRoute;
+  '/feed': typeof FeedRoute;
   '/users': typeof UsersIndexRoute;
-  '/posts/$postId/deep': typeof PostsPostIdDeepRoute;
-  '/posts/$postId': typeof PostsPostIdIndexRoute;
+  '/users/$userId/posts': typeof UsersUserIdPostsRouteRouteWithChildren;
   '/users/$userId': typeof UsersUserIdIndexRoute;
+  '/users/$userId/posts/$postId': typeof UsersUserIdPostsPostIdRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/': typeof IndexRoute;
-  '/posts': typeof PostsRouteRouteWithChildren;
   '/users': typeof UsersRouteRouteWithChildren;
-  '/posts/': typeof PostsIndexRoute;
+  '/colors': typeof ColorsRoute;
+  '/feed': typeof FeedRoute;
   '/users/': typeof UsersIndexRoute;
-  '/posts/$postId/deep': typeof PostsPostIdDeepRoute;
-  '/posts/$postId/': typeof PostsPostIdIndexRoute;
+  '/users/$userId/posts': typeof UsersUserIdPostsRouteRouteWithChildren;
   '/users/$userId/': typeof UsersUserIdIndexRoute;
+  '/users/$userId/posts/$postId': typeof UsersUserIdPostsPostIdRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
     | '/'
-    | '/posts'
     | '/users'
-    | '/posts/'
+    | '/colors'
+    | '/feed'
     | '/users/'
-    | '/posts/$postId/deep'
-    | '/posts/$postId'
-    | '/users/$userId';
+    | '/users/$userId/posts'
+    | '/users/$userId'
+    | '/users/$userId/posts/$postId';
   fileRoutesByTo: FileRoutesByTo;
   to:
     | '/'
-    | '/posts'
+    | '/colors'
+    | '/feed'
     | '/users'
-    | '/posts/$postId/deep'
-    | '/posts/$postId'
-    | '/users/$userId';
+    | '/users/$userId/posts'
+    | '/users/$userId'
+    | '/users/$userId/posts/$postId';
   id:
     | '__root__'
     | '/'
-    | '/posts'
     | '/users'
-    | '/posts/'
+    | '/colors'
+    | '/feed'
     | '/users/'
-    | '/posts/$postId/deep'
-    | '/posts/$postId/'
-    | '/users/$userId/';
+    | '/users/$userId/posts'
+    | '/users/$userId/'
+    | '/users/$userId/posts/$postId';
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
-  PostsRouteRoute: typeof PostsRouteRouteWithChildren;
   UsersRouteRoute: typeof UsersRouteRouteWithChildren;
+  ColorsRoute: typeof ColorsRoute;
+  FeedRoute: typeof FeedRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/feed': {
+      id: '/feed';
+      path: '/feed';
+      fullPath: '/feed';
+      preLoaderRoute: typeof FeedRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/colors': {
+      id: '/colors';
+      path: '/colors';
+      fullPath: '/colors';
+      preLoaderRoute: typeof ColorsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/users': {
       id: '/users';
       path: '/users';
       fullPath: '/users';
       preLoaderRoute: typeof UsersRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/posts': {
-      id: '/posts';
-      path: '/posts';
-      fullPath: '/posts';
-      preLoaderRoute: typeof PostsRouteRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/': {
@@ -155,13 +165,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIndexRouteImport;
       parentRoute: typeof UsersRouteRoute;
     };
-    '/posts/': {
-      id: '/posts/';
-      path: '/';
-      fullPath: '/posts/';
-      preLoaderRoute: typeof PostsIndexRouteImport;
-      parentRoute: typeof PostsRouteRoute;
-    };
     '/users/$userId/': {
       id: '/users/$userId/';
       path: '/$userId';
@@ -169,46 +172,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersUserIdIndexRouteImport;
       parentRoute: typeof UsersRouteRoute;
     };
-    '/posts/$postId/': {
-      id: '/posts/$postId/';
-      path: '/$postId';
-      fullPath: '/posts/$postId';
-      preLoaderRoute: typeof PostsPostIdIndexRouteImport;
-      parentRoute: typeof PostsRouteRoute;
+    '/users/$userId/posts': {
+      id: '/users/$userId/posts';
+      path: '/$userId/posts';
+      fullPath: '/users/$userId/posts';
+      preLoaderRoute: typeof UsersUserIdPostsRouteRouteImport;
+      parentRoute: typeof UsersRouteRoute;
     };
-    '/posts/$postId/deep': {
-      id: '/posts/$postId/deep';
-      path: '/$postId/deep';
-      fullPath: '/posts/$postId/deep';
-      preLoaderRoute: typeof PostsPostIdDeepRouteImport;
-      parentRoute: typeof PostsRouteRoute;
+    '/users/$userId/posts/$postId': {
+      id: '/users/$userId/posts/$postId';
+      path: '/$postId';
+      fullPath: '/users/$userId/posts/$postId';
+      preLoaderRoute: typeof UsersUserIdPostsPostIdRouteImport;
+      parentRoute: typeof UsersUserIdPostsRouteRoute;
     };
   }
 }
 
-interface PostsRouteRouteChildren {
-  PostsIndexRoute: typeof PostsIndexRoute;
-  PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute;
-  PostsPostIdIndexRoute: typeof PostsPostIdIndexRoute;
+interface UsersUserIdPostsRouteRouteChildren {
+  UsersUserIdPostsPostIdRoute: typeof UsersUserIdPostsPostIdRoute;
 }
 
-const PostsRouteRouteChildren: PostsRouteRouteChildren = {
-  PostsIndexRoute: PostsIndexRoute,
-  PostsPostIdDeepRoute: PostsPostIdDeepRoute,
-  PostsPostIdIndexRoute: PostsPostIdIndexRoute,
+const UsersUserIdPostsRouteRouteChildren: UsersUserIdPostsRouteRouteChildren = {
+  UsersUserIdPostsPostIdRoute: UsersUserIdPostsPostIdRoute,
 };
 
-const PostsRouteRouteWithChildren = PostsRouteRoute._addFileChildren(
-  PostsRouteRouteChildren,
-);
+const UsersUserIdPostsRouteRouteWithChildren =
+  UsersUserIdPostsRouteRoute._addFileChildren(
+    UsersUserIdPostsRouteRouteChildren,
+  );
 
 interface UsersRouteRouteChildren {
   UsersIndexRoute: typeof UsersIndexRoute;
+  UsersUserIdPostsRouteRoute: typeof UsersUserIdPostsRouteRouteWithChildren;
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute;
 }
 
 const UsersRouteRouteChildren: UsersRouteRouteChildren = {
   UsersIndexRoute: UsersIndexRoute,
+  UsersUserIdPostsRouteRoute: UsersUserIdPostsRouteRouteWithChildren,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
 };
 
@@ -218,8 +220,9 @@ const UsersRouteRouteWithChildren = UsersRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PostsRouteRoute: PostsRouteRouteWithChildren,
   UsersRouteRoute: UsersRouteRouteWithChildren,
+  ColorsRoute: ColorsRoute,
+  FeedRoute: FeedRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

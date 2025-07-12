@@ -40,3 +40,22 @@ export const postQueryOptions = (postId: number) =>
     queryFn: () => fetchPost({ data: postId }),
     queryKey: ['post', postId],
   });
+
+export const fetchPostsByUserId = createServerFn()
+  .validator((d: number) => d)
+  .handler(async ({ data }) => {
+    console.info(`Fetching posts for user with id ${data}...`);
+
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(eq(postsTable.userId, data));
+
+    return posts;
+  });
+
+export const postsByUserIdQueryOptions = (userId: number) =>
+  queryOptions({
+    queryFn: () => fetchPostsByUserId({ data: userId }),
+    queryKey: ['posts', 'user', userId],
+  });
