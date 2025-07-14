@@ -175,6 +175,7 @@ function Sidebar({
           className,
         )}
         data-slot="sidebar"
+        role="navigation"
         {...props}
       >
         {children}
@@ -190,6 +191,7 @@ function Sidebar({
           data-mobile="true"
           data-sidebar="sidebar"
           data-slot="sidebar"
+          role="navigation"
           side={side}
           style={
             {
@@ -215,6 +217,7 @@ function Sidebar({
       data-slot="sidebar"
       data-state={state}
       data-variant={variant}
+      role="navigation"
     >
       {/* This is what handles the sidebar gap on desktop */}
       <div

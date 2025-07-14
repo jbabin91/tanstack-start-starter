@@ -6,7 +6,7 @@ import { env } from '@/configs/env';
 export function NavBar() {
   return (
     <header className="flex items-center justify-between border-b p-2">
-      <nav className="flex items-center gap-2">
+      <nav aria-label="Main navigation" className="flex items-center gap-2">
         <Link
           activeOptions={{ exact: true }}
           activeProps={{

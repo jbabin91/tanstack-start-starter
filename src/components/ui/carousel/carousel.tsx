@@ -49,8 +49,9 @@ function Carousel({
   plugins,
   className,
   children,
+  'aria-label': ariaLabel = 'Carousel',
   ...props
-}: React.ComponentProps<'div'> & CarouselProps) {
+}: React.ComponentProps<'div'> & CarouselProps & { 'aria-label'?: string }) {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -119,6 +120,7 @@ function Carousel({
       }}
     >
       <div
+        aria-label={ariaLabel}
         aria-roledescription="carousel"
         className={cn('relative', className)}
         data-slot="carousel"
@@ -153,11 +155,16 @@ function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
+function CarouselItem({
+  className,
+  'aria-label': ariaLabel = 'Slide',
+  ...props
+}: React.ComponentProps<'div'> & { 'aria-label'?: string }) {
   const { orientation } = useCarousel();
 
   return (
     <div
+      aria-label={ariaLabel}
       aria-roledescription="slide"
       className={cn(
         'min-w-0 shrink-0 grow-0 basis-full',

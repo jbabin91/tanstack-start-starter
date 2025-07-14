@@ -21,7 +21,11 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 
   return (
     <CenteredLayout>
-      <div className="flex min-w-0 flex-1 flex-col items-center gap-6 p-4">
+      <div
+        className="flex min-w-0 flex-1 flex-col items-center gap-6 p-4"
+        role="alert"
+        tabIndex={-1}
+      >
         <ErrorComponent error={error} />
         <div className="flex flex-wrap items-center gap-2">
           <Button

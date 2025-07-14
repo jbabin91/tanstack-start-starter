@@ -42,7 +42,11 @@ export function Spinner({
   className,
 }: SpinnerContentProps) {
   return (
-    <span className={spinnerVariants({ show })}>
+    <span
+      aria-live="polite"
+      className={spinnerVariants({ show })}
+      role="status"
+    >
       <Loader2Icon className={cn(loaderVariants({ size }), className)} />
       {children}
     </span>
