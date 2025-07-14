@@ -13,6 +13,7 @@ import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary
 import { NotFound } from '@/components/errors/not-found';
 import { NavBar } from '@/components/layouts/nav-bar';
 import { Toaster } from '@/components/ui/sonner';
+import { Spinner } from '@/components/ui/spinner';
 import { Providers } from '@/providers';
 import appCss from '@/styles/app.css?url';
 
@@ -27,6 +28,14 @@ export const Route = createRootRouteWithContext<{
       </RootDocument>
     );
   },
+  pendingComponent: () => (
+    <div
+      className="flex w-full items-center justify-center"
+      style={{ minHeight: '60vh' }}
+    >
+      <Spinner size="large" />
+    </div>
+  ),
   head: () => ({
     links: [
       { href: appCss, rel: 'stylesheet' },

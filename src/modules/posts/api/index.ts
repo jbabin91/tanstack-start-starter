@@ -1,16 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
-import { eq } from 'drizzle-orm';
+import { and, desc, eq, lt } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
 import { postsTable } from '@/lib/db/schemas/posts';
 
 export const postQueries = {
-  all: () =>
-    queryOptions({
-      queryFn: () => fetchPosts(),
-      queryKey: ['posts'],
-    }),
   byId: (id: number) =>
     queryOptions({
       queryFn: () => fetchPost({ data: id }),
@@ -21,14 +16,47 @@ export const postQueries = {
       queryFn: () => fetchPostsByUserId({ data: userId }),
       queryKey: ['posts', 'user', userId],
     }),
+  infinite: () => ({
+    getNextPageParam: (lastPage: { nextCursor: number | null }) =>
+      lastPage.nextCursor,
+    initialPageParam: undefined,
+    queryFn: (context: { pageParam?: number | null }) =>
+      fetchPosts({ data: { cursor: context.pageParam ?? null, limit: 10 } }),
+    queryKey: ['posts', 'infinite'],
+  }),
 };
 
-export const fetchPosts = createServerFn().handler(async () => {
-  console.info('Fetching posts...');
+export const fetchPosts = createServerFn()
+  .validator(
+    (input: {
+      limit?: number;
+      cursor?: number | null;
+      userId?: number | null;
+    }) => input,
+  )
+  .handler(async ({ data }) => {
+    const { limit = 10, cursor = null, userId = null } = data || {};
+    console.info('Fetching posts...', { cursor, limit, userId });
 
-  const posts = await db.select().from(postsTable).limit(10);
-  return posts;
-});
+    const whereClauses = [
+      userId === null ? undefined : eq(postsTable.userId, userId),
+      cursor === null ? undefined : lt(postsTable.id, cursor),
+    ].filter(Boolean);
+
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(whereClauses.length > 0 ? and(...whereClauses) : undefined)
+      .orderBy(desc(postsTable.id))
+      .limit(limit + 1);
+
+    let nextCursor: number | null = null;
+    if (posts.length > limit) {
+      nextCursor = posts[limit].id;
+      posts.length = limit;
+    }
+    return { nextCursor, posts };
+  });
 
 export const fetchPost = createServerFn()
   .validator((d: number) => d)
