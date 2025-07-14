@@ -5,18 +5,25 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { usersTable } from '@/lib/db/schemas/users';
 
+export const userQueries = {
+  all: () =>
+    queryOptions({
+      queryFn: () => fetchUsers(),
+      queryKey: ['users'],
+    }),
+  byId: (id: number) =>
+    queryOptions({
+      queryFn: () => fetchUser({ data: id }),
+      queryKey: ['users', id],
+    }),
+};
+
 export const fetchUsers = createServerFn().handler(async () => {
   console.info('Fetching users...');
 
   const users = await db.select().from(usersTable);
   return users;
 });
-
-export const usersQueryOptions = () =>
-  queryOptions({
-    queryFn: () => fetchUsers(),
-    queryKey: ['users'],
-  });
 
 export const fetchUser = createServerFn()
   .validator((d: number) => d)
@@ -33,10 +40,4 @@ export const fetchUser = createServerFn()
     }
 
     return users[0];
-  });
-
-export const userQueryOptions = (userId: number) =>
-  queryOptions({
-    queryFn: () => fetchUser({ data: userId }),
-    queryKey: ['user', userId],
   });

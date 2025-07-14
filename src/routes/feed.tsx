@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { postsQueryOptions } from '@/modules/posts/api';
+import { postQueries } from '@/modules/posts/api';
 
 export const Route = createFileRoute('/feed')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(postsQueryOptions());
+    await context.queryClient.ensureQueryData(postQueries.all());
   },
   head: () => ({
     meta: [{ title: 'Posts Feed' }],
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/feed')({
 });
 
 function RouteComponent() {
-  const postsQuery = useSuspenseQuery(postsQueryOptions());
+  const postsQuery = useSuspenseQuery(postQueries.all());
 
   return (
     <div className="mx-auto max-w-4xl p-6">

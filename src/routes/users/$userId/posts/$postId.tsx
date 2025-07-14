@@ -1,17 +1,17 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { postQueryOptions } from '@/modules/posts/api';
+import { postQueries } from '@/modules/posts/api';
 import { PostErrorComponent } from '@/modules/posts/components/post-error';
 import { PostNotFoundComponent } from '@/modules/posts/components/post-not-found';
-import { userQueryOptions } from '@/modules/users/api';
+import { userQueries } from '@/modules/users/api';
 
 export const Route = createFileRoute('/users/$userId/posts/$postId')({
   component: RouteComponent,
   loader: async ({ params: { postId, userId }, context }) => {
     const [postData, userData] = await Promise.all([
-      context.queryClient.ensureQueryData(postQueryOptions(Number(postId))),
-      context.queryClient.ensureQueryData(userQueryOptions(Number(userId))),
+      context.queryClient.ensureQueryData(postQueries.byId(Number(postId))),
+      context.queryClient.ensureQueryData(userQueries.byId(Number(userId))),
     ]);
 
     return {
@@ -28,8 +28,8 @@ export const Route = createFileRoute('/users/$userId/posts/$postId')({
 
 function RouteComponent() {
   const { postId, userId } = Route.useParams();
-  const postQuery = useSuspenseQuery(postQueryOptions(Number(postId)));
-  const userQuery = useSuspenseQuery(userQueryOptions(Number(userId)));
+  const postQuery = useSuspenseQuery(postQueries.byId(Number(postId)));
+  const userQuery = useSuspenseQuery(userQueries.byId(Number(userId)));
 
   return (
     <div className="space-y-4">

@@ -5,18 +5,30 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { postsTable } from '@/lib/db/schemas/posts';
 
+export const postQueries = {
+  all: () =>
+    queryOptions({
+      queryFn: () => fetchPosts(),
+      queryKey: ['posts'],
+    }),
+  byId: (id: number) =>
+    queryOptions({
+      queryFn: () => fetchPost({ data: id }),
+      queryKey: ['posts', id],
+    }),
+  byUserId: (userId: number) =>
+    queryOptions({
+      queryFn: () => fetchPostsByUserId({ data: userId }),
+      queryKey: ['posts', 'user', userId],
+    }),
+};
+
 export const fetchPosts = createServerFn().handler(async () => {
   console.info('Fetching posts...');
 
   const posts = await db.select().from(postsTable).limit(10);
   return posts;
 });
-
-export const postsQueryOptions = () =>
-  queryOptions({
-    queryFn: () => fetchPosts(),
-    queryKey: ['posts'],
-  });
 
 export const fetchPost = createServerFn()
   .validator((d: number) => d)
@@ -35,12 +47,6 @@ export const fetchPost = createServerFn()
     return posts[0];
   });
 
-export const postQueryOptions = (postId: number) =>
-  queryOptions({
-    queryFn: () => fetchPost({ data: postId }),
-    queryKey: ['post', postId],
-  });
-
 export const fetchPostsByUserId = createServerFn()
   .validator((d: number) => d)
   .handler(async ({ data }) => {
@@ -52,10 +58,4 @@ export const fetchPostsByUserId = createServerFn()
       .where(eq(postsTable.userId, data));
 
     return posts;
-  });
-
-export const postsByUserIdQueryOptions = (userId: number) =>
-  queryOptions({
-    queryFn: () => fetchPostsByUserId({ data: userId }),
-    queryKey: ['posts', 'user', userId],
   });
