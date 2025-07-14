@@ -44,6 +44,7 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: 'utf8' },
       { content: 'width=device-width, initial-scale=1', name: 'viewport' },
+      { title: 'Tanstack Start Starter', name: 'title' },
     ],
   }),
   notFoundComponent: () => <NotFound />,
