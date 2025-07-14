@@ -2,6 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
 import * as React from 'react';
 
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/utils/cn';
 
 const buttonVariants = cva(
@@ -44,25 +45,60 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Button component with support for loading state.
+ *
+ * Props:
+ * - loading?: boolean — If true, shows a spinner and disables the button.
+ * - loadingText?: string — Optional text to show instead of children when loading.
+ * - All regular button props, plus variant, size, color, asChild.
+ */
 function Button({
   className,
   variant,
   size,
   color,
   asChild = false,
+  loading = false,
+  loadingText,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    loading?: boolean;
+    loadingText?: string;
   }) {
   const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp
+      aria-busy={loading ?? undefined}
+      aria-disabled={loading ?? disabled ?? undefined}
       className={cn(buttonVariants({ className, color, size, variant }))}
       data-slot="button"
+      disabled={loading || disabled}
       {...props}
-    />
+    >
+      {loading && (
+        <>
+          <Spinner className="text-primary-foreground mr-2" size="small" />
+          {loadingText ? (
+            <>
+              {loadingText}
+              <span className="sr-only">Loading…</span>
+            </>
+          ) : (
+            <>
+              {children}
+              <span className="sr-only">Loading…</span>
+            </>
+          )}
+        </>
+      )}
+      {!loading && children}
+    </Comp>
   );
 }
 
