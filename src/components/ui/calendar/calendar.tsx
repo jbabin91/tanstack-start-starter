@@ -3,7 +3,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
-import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import {
   type DayButton,
   DayPicker,
@@ -178,11 +178,13 @@ function CalendarDayButton({
   ...props
 }: React.ComponentProps<typeof DayButton>) {
   const defaultClassNames = getDefaultClassNames();
-
-  const ref = React.useRef<HTMLButtonElement>(null);
-  React.useEffect(() => {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
     if (modifiers.focused) ref.current?.focus();
   }, [modifiers.focused]);
+
+  // Remove color from props if it exists to avoid type errors
+  const { color: _color, ...rest } = props;
 
   return (
     <Button
@@ -204,7 +206,7 @@ function CalendarDayButton({
       }
       size="icon"
       variant="ghost"
-      {...props}
+      {...rest}
     />
   );
 }
