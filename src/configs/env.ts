@@ -6,7 +6,6 @@ import { type } from 'arktype';
  */
 const serverSchema = type({
   DATABASE_URL: 'string',
-  'NODE_ENV?': "'development' | 'production' | 'test'",
 });
 
 /**
@@ -16,7 +15,6 @@ const serverSchema = type({
 const clientSchema = type({
   // Add client env vars here with VITE_ prefix
   // VITE_API_URL?: 'string',
-  'VITE_NODE_ENV?': "'development' | 'production' | 'test'",
 });
 
 type ServerEnv = typeof serverSchema.infer;
@@ -100,16 +98,9 @@ export const env = createEnv({
   client: {
     // Add your client-side environment variables here
     // They must be prefixed with VITE_ to be exposed to the client
-    VITE_NODE_ENV:
-      (process.env.VITE_NODE_ENV as 'development' | 'production' | 'test') ??
-      (process.env.NODE_ENV as 'development' | 'production' | 'test') ??
-      'development',
   },
   server: {
     DATABASE_URL: process.env.DATABASE_URL!,
-    NODE_ENV:
-      (process.env.NODE_ENV as 'development' | 'production' | 'test') ??
-      'development',
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === 'true',
 });

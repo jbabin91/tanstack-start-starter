@@ -1,12 +1,13 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { postQueries } from '@/modules/posts/api';
+import { usePostsByUserId } from '@/modules/posts/hooks/use-queries';
 import { userQueries } from '@/modules/users/api';
 import { UserErrorComponent } from '@/modules/users/components/user-error';
 import { UserNotFoundComponent } from '@/modules/users/components/user-not-found';
+import { useUser } from '@/modules/users/hooks/use-queries';
 
-export const Route = createFileRoute('/users/$userId/')({
+export const Route = createFileRoute('/_app/users/$userId/')({
   component: RouteComponent,
   loader: async ({ params: { userId }, context }) => {
     const data = await context.queryClient.ensureQueryData(
@@ -31,33 +32,33 @@ export const Route = createFileRoute('/users/$userId/')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const userQuery = useSuspenseQuery(userQueries.byId(Number(userId)));
-  const postsQuery = useSuspenseQuery(postQueries.byUserId(Number(userId)));
+  const { data: user } = useUser(Number(userId));
+  const { data: posts } = usePostsByUserId(Number(userId));
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h4 className="text-xl font-bold underline">{userQuery.data.name}</h4>
+        <h4 className="text-xl font-bold underline">{user.name}</h4>
         <div className="text-sm">
           <div>
-            <strong>Username:</strong> {userQuery.data.username}
+            <strong>Username:</strong> {user.username}
           </div>
           <div>
-            <strong>Email:</strong> {userQuery.data.email}
+            <strong>Email:</strong> {user.email}
           </div>
           <div>
-            <strong>Phone:</strong> {userQuery.data.phone}
+            <strong>Phone:</strong> {user.phone}
           </div>
           <div>
-            <strong>Website:</strong> {userQuery.data.website}
+            <strong>Website:</strong> {user.website}
           </div>
           <div>
-            <strong>Company:</strong> {userQuery.data.company?.name ?? 'N/A'}
+            <strong>Company:</strong> {user.company?.name ?? 'N/A'}
           </div>
           <div>
             <strong>Address:</strong>{' '}
-            {userQuery.data.address
-              ? `${userQuery.data.address.street}, ${userQuery.data.address.city}`
+            {user.address
+              ? `${user.address.street}, ${user.address.city}`
               : 'N/A'}
           </div>
         </div>
@@ -65,11 +66,11 @@ function RouteComponent() {
 
       <div className="space-y-2">
         <h5 className="text-lg font-semibold">Posts</h5>
-        {postsQuery.data.length === 0 ? (
+        {posts.length === 0 ? (
           <p className="text-muted-foreground text-sm">No posts found.</p>
         ) : (
           <div className="space-y-2">
-            {postsQuery.data.map((post) => (
+            {posts.map((post) => (
               <div key={post.id} className="rounded-lg border p-3">
                 <h6 className="font-medium">{post.title}</h6>
                 <p className="text-muted-foreground mt-1 text-sm">

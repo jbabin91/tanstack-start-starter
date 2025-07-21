@@ -1,12 +1,13 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { postQueries } from '@/modules/posts/api';
 import { PostErrorComponent } from '@/modules/posts/components/post-error';
 import { PostNotFoundComponent } from '@/modules/posts/components/post-not-found';
+import { usePost } from '@/modules/posts/hooks/use-queries';
 import { userQueries } from '@/modules/users/api';
+import { useUser } from '@/modules/users/hooks/use-queries';
 
-export const Route = createFileRoute('/users/$userId/posts/$postId')({
+export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
   component: RouteComponent,
   loader: async ({ params: { postId, userId }, context }) => {
     const [postData, userData] = await Promise.all([
@@ -28,8 +29,8 @@ export const Route = createFileRoute('/users/$userId/posts/$postId')({
 
 function RouteComponent() {
   const { postId, userId } = Route.useParams();
-  const postQuery = useSuspenseQuery(postQueries.byId(Number(postId)));
-  const userQuery = useSuspenseQuery(userQueries.byId(Number(userId)));
+  const { data: post } = usePost(Number(postId));
+  const { data: user } = useUser(Number(userId));
 
   return (
     <div className="space-y-4">
@@ -39,13 +40,13 @@ function RouteComponent() {
           params={{ userId }}
           to="/users/$userId"
         >
-          ← Back to {userQuery.data.name}
+          ← Back to {user.name}
         </Link>
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-xl font-bold underline">{postQuery.data.title}</h4>
-        <div className="text-sm">{postQuery.data.body}</div>
+        <h4 className="text-xl font-bold underline">{post.title}</h4>
+        <div className="text-sm">{post.body}</div>
       </div>
     </div>
   );

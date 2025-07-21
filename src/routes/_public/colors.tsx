@@ -2,13 +2,12 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { env } from '@/configs/env';
 
-export const Route = createFileRoute('/colors')({
+export const Route = createFileRoute('/_public/colors')({
   component: RouteComponent,
   beforeLoad: () => {
     // Redirect to home in production
-    if (env.VITE_NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       throw redirect({ to: '/' });
     }
   },

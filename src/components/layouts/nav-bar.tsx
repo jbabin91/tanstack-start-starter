@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
 import { ModeToggle } from '@/components/mode-toggle';
-import { env } from '@/configs/env';
 
 export function NavBar() {
   return (
@@ -19,10 +18,7 @@ export function NavBar() {
         <Link activeProps={{ className: 'font-bold' }} to="/users">
           Users
         </Link>
-        <Link activeProps={{ className: 'font-bold' }} to="/feed">
-          Feed
-        </Link>
-        {env.VITE_NODE_ENV === 'development' && (
+        {import.meta.env.DEV && (
           <Link activeProps={{ className: 'font-bold' }} to="/colors">
             Colors
           </Link>
