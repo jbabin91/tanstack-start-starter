@@ -19,13 +19,8 @@ export function NavBar() {
           Users
         </Link>
         {import.meta.env.DEV && (
-          <Link activeProps={{ className: 'font-bold' }} to="/colors">
-            Colors
-          </Link>
-        )}
-        {import.meta.env.DEV && (
-          <Link activeProps={{ className: 'font-bold' }} to="/email">
-            Email
+          <Link activeProps={{ className: 'font-bold' }} to="/demo">
+            Demo
           </Link>
         )}
       </nav>

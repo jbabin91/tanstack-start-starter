@@ -1,16 +1,10 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
-export const Route = createFileRoute('/_public/colors')({
+export const Route = createFileRoute('/_public/demo/colors')({
   component: RouteComponent,
-  beforeLoad: () => {
-    // Redirect to home in production
-    if (import.meta.env.PROD) {
-      throw redirect({ to: '/' });
-    }
-  },
   head: () => ({
     meta: [{ title: 'Color System Demo - Dev Only' }],
   }),

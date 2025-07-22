@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as PublicIndexRouteImport } from './routes/_public/index';
-import { Route as PublicEmailRouteImport } from './routes/_public/email';
-import { Route as PublicColorsRouteImport } from './routes/_public/colors';
+import { Route as PublicDemoRouteRouteImport } from './routes/_public/demo/route';
 import { Route as AppUsersRouteRouteImport } from './routes/_app/users/route';
+import { Route as PublicDemoIndexRouteImport } from './routes/_public/demo/index';
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index';
+import { Route as PublicDemoEmailRouteImport } from './routes/_public/demo/email';
+import { Route as PublicDemoColorsRouteImport } from './routes/_public/demo/colors';
 import { Route as AppUsersUserIdIndexRouteImport } from './routes/_app/users/$userId/index';
 import { Route as AppUsersUserIdPostsRouteRouteImport } from './routes/_app/users/$userId/posts/route';
 import { Route as AppUsersUserIdPostsPostIdRouteImport } from './routes/_app/users/$userId/posts/$postId';
@@ -23,14 +25,9 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any);
-const PublicEmailRoute = PublicEmailRouteImport.update({
-  id: '/_public/email',
-  path: '/email',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const PublicColorsRoute = PublicColorsRouteImport.update({
-  id: '/_public/colors',
-  path: '/colors',
+const PublicDemoRouteRoute = PublicDemoRouteRouteImport.update({
+  id: '/_public/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any);
 const AppUsersRouteRoute = AppUsersRouteRouteImport.update({
@@ -38,10 +35,25 @@ const AppUsersRouteRoute = AppUsersRouteRouteImport.update({
   path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any);
+const PublicDemoIndexRoute = PublicDemoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicDemoRouteRoute,
+} as any);
 const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppUsersRouteRoute,
+} as any);
+const PublicDemoEmailRoute = PublicDemoEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => PublicDemoRouteRoute,
+} as any);
+const PublicDemoColorsRoute = PublicDemoColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
+  getParentRoute: () => PublicDemoRouteRoute,
 } as any);
 const AppUsersUserIdIndexRoute = AppUsersUserIdIndexRouteImport.update({
   id: '/$userId/',
@@ -63,19 +75,22 @@ const AppUsersUserIdPostsPostIdRoute =
 
 export interface FileRoutesByFullPath {
   '/users': typeof AppUsersRouteRouteWithChildren;
-  '/colors': typeof PublicColorsRoute;
-  '/email': typeof PublicEmailRoute;
+  '/demo': typeof PublicDemoRouteRouteWithChildren;
   '/': typeof PublicIndexRoute;
+  '/demo/colors': typeof PublicDemoColorsRoute;
+  '/demo/email': typeof PublicDemoEmailRoute;
   '/users/': typeof AppUsersIndexRoute;
+  '/demo/': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
   '/users/$userId': typeof AppUsersUserIdIndexRoute;
   '/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
 }
 export interface FileRoutesByTo {
-  '/colors': typeof PublicColorsRoute;
-  '/email': typeof PublicEmailRoute;
   '/': typeof PublicIndexRoute;
+  '/demo/colors': typeof PublicDemoColorsRoute;
+  '/demo/email': typeof PublicDemoEmailRoute;
   '/users': typeof AppUsersIndexRoute;
+  '/demo': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
   '/users/$userId': typeof AppUsersUserIdIndexRoute;
   '/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
@@ -83,10 +98,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/_app/users': typeof AppUsersRouteRouteWithChildren;
-  '/_public/colors': typeof PublicColorsRoute;
-  '/_public/email': typeof PublicEmailRoute;
+  '/_public/demo': typeof PublicDemoRouteRouteWithChildren;
   '/_public/': typeof PublicIndexRoute;
+  '/_public/demo/colors': typeof PublicDemoColorsRoute;
+  '/_public/demo/email': typeof PublicDemoEmailRoute;
   '/_app/users/': typeof AppUsersIndexRoute;
+  '/_public/demo/': typeof PublicDemoIndexRoute;
   '/_app/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
   '/_app/users/$userId/': typeof AppUsersUserIdIndexRoute;
   '/_app/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
@@ -95,29 +112,34 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
     | '/users'
-    | '/colors'
-    | '/email'
+    | '/demo'
     | '/'
+    | '/demo/colors'
+    | '/demo/email'
     | '/users/'
+    | '/demo/'
     | '/users/$userId/posts'
     | '/users/$userId'
     | '/users/$userId/posts/$postId';
   fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/colors'
-    | '/email'
     | '/'
+    | '/demo/colors'
+    | '/demo/email'
     | '/users'
+    | '/demo'
     | '/users/$userId/posts'
     | '/users/$userId'
     | '/users/$userId/posts/$postId';
   id:
     | '__root__'
     | '/_app/users'
-    | '/_public/colors'
-    | '/_public/email'
+    | '/_public/demo'
     | '/_public/'
+    | '/_public/demo/colors'
+    | '/_public/demo/email'
     | '/_app/users/'
+    | '/_public/demo/'
     | '/_app/users/$userId/posts'
     | '/_app/users/$userId/'
     | '/_app/users/$userId/posts/$postId';
@@ -125,8 +147,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
-  PublicColorsRoute: typeof PublicColorsRoute;
-  PublicEmailRoute: typeof PublicEmailRoute;
+  PublicDemoRouteRoute: typeof PublicDemoRouteRouteWithChildren;
   PublicIndexRoute: typeof PublicIndexRoute;
 }
 
@@ -139,18 +160,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    '/_public/email': {
-      id: '/_public/email';
-      path: '/email';
-      fullPath: '/email';
-      preLoaderRoute: typeof PublicEmailRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/_public/colors': {
-      id: '/_public/colors';
-      path: '/colors';
-      fullPath: '/colors';
-      preLoaderRoute: typeof PublicColorsRouteImport;
+    '/_public/demo': {
+      id: '/_public/demo';
+      path: '/demo';
+      fullPath: '/demo';
+      preLoaderRoute: typeof PublicDemoRouteRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/_app/users': {
@@ -160,12 +174,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUsersRouteRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    '/_public/demo/': {
+      id: '/_public/demo/';
+      path: '/';
+      fullPath: '/demo/';
+      preLoaderRoute: typeof PublicDemoIndexRouteImport;
+      parentRoute: typeof PublicDemoRouteRoute;
+    };
     '/_app/users/': {
       id: '/_app/users/';
       path: '/';
       fullPath: '/users/';
       preLoaderRoute: typeof AppUsersIndexRouteImport;
       parentRoute: typeof AppUsersRouteRoute;
+    };
+    '/_public/demo/email': {
+      id: '/_public/demo/email';
+      path: '/email';
+      fullPath: '/demo/email';
+      preLoaderRoute: typeof PublicDemoEmailRouteImport;
+      parentRoute: typeof PublicDemoRouteRoute;
+    };
+    '/_public/demo/colors': {
+      id: '/_public/demo/colors';
+      path: '/colors';
+      fullPath: '/demo/colors';
+      preLoaderRoute: typeof PublicDemoColorsRouteImport;
+      parentRoute: typeof PublicDemoRouteRoute;
     };
     '/_app/users/$userId/': {
       id: '/_app/users/$userId/';
@@ -221,10 +256,25 @@ const AppUsersRouteRouteWithChildren = AppUsersRouteRoute._addFileChildren(
   AppUsersRouteRouteChildren,
 );
 
+interface PublicDemoRouteRouteChildren {
+  PublicDemoColorsRoute: typeof PublicDemoColorsRoute;
+  PublicDemoEmailRoute: typeof PublicDemoEmailRoute;
+  PublicDemoIndexRoute: typeof PublicDemoIndexRoute;
+}
+
+const PublicDemoRouteRouteChildren: PublicDemoRouteRouteChildren = {
+  PublicDemoColorsRoute: PublicDemoColorsRoute,
+  PublicDemoEmailRoute: PublicDemoEmailRoute,
+  PublicDemoIndexRoute: PublicDemoIndexRoute,
+};
+
+const PublicDemoRouteRouteWithChildren = PublicDemoRouteRoute._addFileChildren(
+  PublicDemoRouteRouteChildren,
+);
+
 const rootRouteChildren: RootRouteChildren = {
   AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
-  PublicColorsRoute: PublicColorsRoute,
-  PublicEmailRoute: PublicEmailRoute,
+  PublicDemoRouteRoute: PublicDemoRouteRouteWithChildren,
   PublicIndexRoute: PublicIndexRoute,
 };
 export const routeTree = rootRouteImport
