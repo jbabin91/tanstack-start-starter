@@ -6,29 +6,30 @@
     }
   ],
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true,
     "**/.tanstack/**/*": true,
-    "pnpm-lock.yaml": true,
-    "bun.lock": true
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
   },
   "files.watcherExclude": {
-    "**/routeTree.gen.ts": true,
     "**/.tanstack/**/*": true,
-    "pnpm-lock.yaml": true,
-    "bun.lock": true
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
   },
   "search.exclude": {
-    "**/routeTree.gen.ts": true,
     "**/.tanstack/**/*": true,
-    "pnpm-lock.yaml": true,
-    "bun.lock": true
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
   },
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.autoImportFileExcludePatterns": [
-    "recharts",
-    "react-day-picker",
+    "^lucide-react/dist/lucide-react.suffixed$",
     "radix-ui",
-    "^lucide-react/dist/lucide-react.suffixed$"
+    "react-day-picker",
+    "recharts",
+    "sonner"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.tsdk": "node_modules/typescript/lib"

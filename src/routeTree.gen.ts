@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as PublicIndexRouteImport } from './routes/_public/index';
+import { Route as PublicFormDemoRouteImport } from './routes/_public/form-demo';
 import { Route as PublicColorsRouteImport } from './routes/_public/colors';
 import { Route as AppUsersRouteRouteImport } from './routes/_app/users/route';
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index';
@@ -20,6 +21,11 @@ import { Route as AppUsersUserIdPostsPostIdRouteImport } from './routes/_app/use
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/_public/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const PublicFormDemoRoute = PublicFormDemoRouteImport.update({
+  id: '/_public/form-demo',
+  path: '/form-demo',
   getParentRoute: () => rootRouteImport,
 } as any);
 const PublicColorsRoute = PublicColorsRouteImport.update({
@@ -58,6 +64,7 @@ const AppUsersUserIdPostsPostIdRoute =
 export interface FileRoutesByFullPath {
   '/users': typeof AppUsersRouteRouteWithChildren;
   '/colors': typeof PublicColorsRoute;
+  '/form-demo': typeof PublicFormDemoRoute;
   '/': typeof PublicIndexRoute;
   '/users/': typeof AppUsersIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/colors': typeof PublicColorsRoute;
+  '/form-demo': typeof PublicFormDemoRoute;
   '/': typeof PublicIndexRoute;
   '/users': typeof AppUsersIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/_app/users': typeof AppUsersRouteRouteWithChildren;
   '/_public/colors': typeof PublicColorsRoute;
+  '/_public/form-demo': typeof PublicFormDemoRoute;
   '/_public/': typeof PublicIndexRoute;
   '/_app/users/': typeof AppUsersIndexRoute;
   '/_app/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/users'
     | '/colors'
+    | '/form-demo'
     | '/'
     | '/users/'
     | '/users/$userId/posts'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo;
   to:
     | '/colors'
+    | '/form-demo'
     | '/'
     | '/users'
     | '/users/$userId/posts'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app/users'
     | '/_public/colors'
+    | '/_public/form-demo'
     | '/_public/'
     | '/_app/users/'
     | '/_app/users/$userId/posts'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
   PublicColorsRoute: typeof PublicColorsRoute;
+  PublicFormDemoRoute: typeof PublicFormDemoRoute;
   PublicIndexRoute: typeof PublicIndexRoute;
 }
 
@@ -124,6 +137,13 @@ declare module '@tanstack/react-router' {
       path: '/';
       fullPath: '/';
       preLoaderRoute: typeof PublicIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_public/form-demo': {
+      id: '/_public/form-demo';
+      path: '/form-demo';
+      fullPath: '/form-demo';
+      preLoaderRoute: typeof PublicFormDemoRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/_public/colors': {
@@ -204,6 +224,7 @@ const AppUsersRouteRouteWithChildren = AppUsersRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
   PublicColorsRoute: PublicColorsRoute,
+  PublicFormDemoRoute: PublicFormDemoRoute,
   PublicIndexRoute: PublicIndexRoute,
 };
 export const routeTree = rootRouteImport

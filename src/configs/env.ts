@@ -5,7 +5,9 @@ import { type } from 'arktype';
  * These are only available on the server
  */
 const serverSchema = type({
-  DATABASE_URL: 'string',
+  DATABASE_URL: 'string.url',
+  RESEND_API_KEY: 'string',
+  SENDER_EMAIL_ADDRESS: 'string',
 });
 
 /**
@@ -24,8 +26,8 @@ type ClientEnv = typeof clientSchema.infer;
  * Validates and creates a type-safe environment object
  */
 function createEnv<
-  TServer extends Record<string, unknown>,
-  TClient extends Record<string, unknown>,
+  TServer extends ServerEnv,
+  TClient extends ClientEnv,
 >(config: {
   server: TServer;
   client: TClient;
@@ -101,6 +103,9 @@ export const env = createEnv({
   },
   server: {
     DATABASE_URL: process.env.DATABASE_URL!,
+    RESEND_API_KEY: process.env.RESEND_API_KEY!,
+    SENDER_EMAIL_ADDRESS:
+      process.env.SENDER_EMAIL_ADDRESS ?? 'support@example.com',
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === 'true',
 });
