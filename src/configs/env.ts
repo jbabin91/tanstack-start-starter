@@ -98,8 +98,29 @@ function createEnv<
   );
 
   if (missingServerVars.length > 0) {
+    // Only show available vars that are required by server schema
+    const availableVars = serverKeys.filter(
+      (key) => (envVars as any)[key] !== undefined,
+    );
+    const requiredVars = serverKeys;
     throw new Error(
-      `Missing required server environment variables: ${missingServerVars.join(', ')}`,
+      [
+        '\n❌ Environment Validation Error',
+        '',
+        'Missing required server environment variables:',
+        ...missingServerVars.map((v) => `  - ${v}`),
+        '',
+        'How to fix:',
+        '  1. Set these variables in your .env file or deployment platform.',
+        '  2. See README for details.',
+        '',
+        'Available env vars:',
+        ...availableVars.map((v) => `  - ${v}`),
+        '',
+        'Required server vars:',
+        ...requiredVars.map((v) => `  - ${v}`),
+        '',
+      ].join('\n'),
     );
   }
 
@@ -115,9 +136,12 @@ function createEnv<
       serverSchema.assert(envVars);
     } catch (error) {
       console.error('❌ Invalid server environment variables:');
+      console.error('Available env vars:', Object.keys(envVars));
+      console.error('Required server vars:', Object.keys(server));
       console.error(
         'Make sure all required server environment variables are set.',
       );
+      console.error('Full error:', error);
       throw error;
     }
   }
