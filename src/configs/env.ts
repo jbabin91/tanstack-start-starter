@@ -5,9 +5,9 @@ import { type } from 'arktype';
  * These are only available on the server
  */
 const serverSchema = type({
-  DATABASE_URL: 'string.url',
-  RESEND_API_KEY: 'string',
-  SENDER_EMAIL_ADDRESS: 'string',
+  DATABASE_URL: 'string.url>=1',
+  RESEND_API_KEY: 'string>=1',
+  SENDER_EMAIL_ADDRESS: 'string?',
 });
 
 /**
@@ -16,7 +16,7 @@ const serverSchema = type({
  */
 const clientSchema = type({
   // Add client env vars here with VITE_ prefix
-  // VITE_API_URL?: 'string',
+  // VITE_API_URL: 'string',
 });
 
 type ServerEnv = typeof serverSchema.infer;
@@ -31,14 +31,20 @@ function createEnv<
 >(config: {
   server: TServer;
   client: TClient;
+  clientPrefix?: string;
   skipValidation?: boolean;
   isServer?: boolean;
+  runtimeEnv?: Record<string, string | undefined>;
+  emptyStringAsUndefined?: boolean;
 }): TServer & TClient {
   const {
     server,
     client,
+    clientPrefix = 'VITE_',
     skipValidation = false,
-    isServer = typeof globalThis === 'undefined' || !('window' in globalThis),
+    isServer = globalThis.window === undefined,
+    runtimeEnv = process.env,
+    emptyStringAsUndefined = false,
   } = config;
 
   // Skip validation if explicitly requested (useful for build time)
@@ -46,33 +52,85 @@ function createEnv<
     return { ...server, ...client };
   }
 
-  // Get environment variables from process.env with defaults applied
+  // Validate client variable names have proper prefix
+  const clientVarKeys = Object.keys(client);
+  const invalidClientKeys = clientVarKeys.filter(
+    (key) => !key.startsWith(clientPrefix),
+  );
+  if (invalidClientKeys.length > 0) {
+    throw new Error(
+      `Invalid client environment variable names. Client variables must be prefixed with "${clientPrefix}". Invalid keys: ${invalidClientKeys.join(', ')}`,
+    );
+  }
+
+  // Process runtime environment variables
+  let processedEnv = { ...runtimeEnv };
+
+  // Convert empty strings to undefined if requested
+  if (emptyStringAsUndefined) {
+    processedEnv = Object.fromEntries(
+      Object.entries(processedEnv).map(([key, value]) => [
+        key,
+        value === '' ? undefined : value,
+      ]),
+    );
+  }
+
+  // Get environment variables from runtime environment with defaults applied
   const envVars = {
-    ...process.env,
+    ...processedEnv,
     // Apply default for NODE_ENV if not set
-    NODE_ENV: process.env.NODE_ENV ?? 'development',
+    NODE_ENV: processedEnv.NODE_ENV ?? 'development',
   };
+
+  // Check for missing required environment variables
+  const serverKeys = Object.keys(server);
+  const clientKeys = Object.keys(client);
+
+  const missingServerVars = isServer
+    ? serverKeys.filter(
+        (key) => !(key in envVars) || (envVars as any)[key] === undefined,
+      )
+    : [];
+
+  const missingClientVars = clientKeys.filter(
+    (key) => !(key in envVars) || (envVars as any)[key] === undefined,
+  );
+
+  if (missingServerVars.length > 0) {
+    throw new Error(
+      `Missing required server environment variables: ${missingServerVars.join(', ')}`,
+    );
+  }
+
+  if (missingClientVars.length > 0) {
+    throw new Error(
+      `Missing required client environment variables: ${missingClientVars.join(', ')}`,
+    );
+  }
 
   // Validate server variables only on server
   if (isServer) {
-    const serverValidation = serverSchema(envVars);
-    if (serverValidation instanceof type.errors) {
+    try {
+      serverSchema.assert(envVars);
+    } catch (error) {
       console.error('❌ Invalid server environment variables:');
-      for (const error of serverValidation) {
-        console.error(`  ${error.path}: ${error.message}`);
-      }
-      throw new Error('Invalid server environment variables');
+      console.error(
+        'Make sure all required server environment variables are set.',
+      );
+      throw error;
     }
   }
 
   // Validate client variables (available on both server and client)
-  const clientValidation = clientSchema(envVars);
-  if (clientValidation instanceof type.errors) {
+  try {
+    clientSchema.assert(envVars);
+  } catch (error) {
     console.error('❌ Invalid client environment variables:');
-    for (const error of clientValidation) {
-      console.error(`  ${error.path}: ${error.message}`);
-    }
-    throw new Error('Invalid client environment variables');
+    console.error(
+      `Make sure all required client environment variables are set and prefixed with "${clientPrefix}".`,
+    );
+    throw error;
   }
 
   // Filter environment variables based on context
