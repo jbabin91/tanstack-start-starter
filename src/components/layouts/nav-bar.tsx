@@ -23,6 +23,11 @@ export function NavBar() {
             Colors
           </Link>
         )}
+        {import.meta.env.DEV && (
+          <Link activeProps={{ className: 'font-bold' }} to="/email">
+            Email
+          </Link>
+        )}
       </nav>
       <div>
         <ModeToggle />
