@@ -5,5 +5,9 @@ export const Route = createFileRoute('/_app/users/$userId/posts')({
 });
 
 function RouteComponent() {
-  return <Outlet />;
+  return (
+    <div className="flex w-full max-w-5xl items-center justify-center p-4">
+      <Outlet />
+    </div>
+  );
 }

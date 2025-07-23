@@ -4,5 +4,9 @@ import {
 } from '@tanstack/react-router';
 
 export function UserErrorComponent({ error }: ErrorComponentProps) {
-  return <ErrorComponent error={error} />;
+  return (
+    <div className="p-4">
+      <ErrorComponent error={error} />
+    </div>
+  );
 }
