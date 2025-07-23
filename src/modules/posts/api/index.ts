@@ -6,7 +6,7 @@ import { db } from '@/lib/db';
 import { posts as postsTable } from '@/lib/db/schemas/posts';
 
 export const postQueries = {
-  byId: (id: number) =>
+  byId: (id: string) =>
     queryOptions({
       queryFn: () => fetchPostById({ data: id }),
       queryKey: ['posts', id],
@@ -19,7 +19,7 @@ export const postQueries = {
 };
 
 export const fetchPostById = createServerFn()
-  .validator((d: number) => d)
+  .validator((d: string) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching post with id ${data}...`);
 

@@ -11,6 +11,11 @@ import { reactStartCookies } from 'better-auth/react-start';
 import { db } from '@/lib/db';
 
 export const auth = betterAuth({
+  advanced: {
+    database: {
+      generateId: false,
+    },
+  },
   database: drizzleAdapter(db, {
     provider: 'pg',
     usePlural: true,

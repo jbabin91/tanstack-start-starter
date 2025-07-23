@@ -10,15 +10,13 @@ import { useUser } from '@/modules/users/hooks/use-queries';
 export const Route = createFileRoute('/_app/users/$userId/')({
   component: RouteComponent,
   loader: async ({ params: { userId }, context }) => {
-    const data = await context.queryClient.ensureQueryData(
-      userQueries.byId(userId),
-    );
-
-    // Also load the user's posts
-    await context.queryClient.ensureQueryData(postQueries.byUserId(userId));
+    const [userData] = await Promise.all([
+      context.queryClient.ensureQueryData(userQueries.byId(userId)),
+      context.queryClient.ensureQueryData(postQueries.byUserId(userId)),
+    ]);
 
     return {
-      title: data.name,
+      title: userData.name,
     };
   },
   head: ({ loaderData }) => ({
@@ -56,7 +54,7 @@ function RouteComponent() {
               ? (() => {
                   try {
                     const addr = JSON.parse(user.address);
-                    return `${addr.street}, ${addr.city}`;
+                    return `${addr.street}, ${addr.city}, ${addr.state} ${addr.postalCode}, ${addr.country}`;
                   } catch {
                     return 'N/A';
                   }

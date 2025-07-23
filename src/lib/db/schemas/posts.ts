@@ -3,18 +3,15 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from 'drizzle-arktype';
-import {
-  integer,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 import { users } from '@/lib/db/schemas/auth';
+import { nanoid } from '@/lib/nanoid';
 
 export const posts = pgTable('posts', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
   title: varchar({ length: 255 }).notNull(),
   body: text().notNull(),
   userId: text().references(() => users.id),

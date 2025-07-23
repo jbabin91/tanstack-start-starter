@@ -23,25 +23,21 @@ async function main() {
     const cleanName = fullName.toLowerCase().replaceAll(/[^a-z0-9]/g, '');
 
     return {
-      address: JSON.stringify({
-        city: faker.location.city(),
-        street: faker.location.streetAddress(),
-      }),
-      displayUsername: faker.internet.username({ firstName, lastName }),
+      name: fullName,
       email: faker.internet.email({ firstName, lastName }),
       emailVerified: false,
-      id: faker.string.uuid(),
       image: faker.image.avatar(),
-      name: fullName,
-      phone: faker.phone.number(),
       role: 'user',
-      username: faker.helpers.arrayElement([
-        cleanName,
-        `${cleanName}${faker.number.int({ max: 999, min: 100 })}`,
-        cleanName.replace(' ', '.'),
-        cleanName.replace(' ', '_'),
-        faker.internet.username({ firstName, lastName }),
-      ]),
+      username: faker.internet.username({ firstName, lastName }),
+      displayUsername: `${firstName} ${lastName}`,
+      address: JSON.stringify({
+        city: faker.location.city(),
+        country: faker.location.country(),
+        postalCode: faker.location.zipCode(),
+        state: faker.location.state(),
+        street: faker.location.streetAddress(),
+      }),
+      phone: faker.phone.number(),
       website: faker.datatype.boolean({ probability: 0.3 })
         ? faker.internet.url()
         : `https://${cleanName}${faker.helpers.arrayElement(['.com', '.net', '.org', '.dev', '.io'])}`,
@@ -77,8 +73,8 @@ async function main() {
       const titleGenerator = faker.helpers.arrayElement(titleTypes);
 
       posts.push({
-        body: faker.lorem.paragraphs(3, '\n\n'),
         title: titleGenerator(),
+        body: faker.lorem.paragraphs(3, '\n\n'),
         userId: user.id,
       });
     }
