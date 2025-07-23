@@ -29,7 +29,7 @@ function RouteComponent() {
 
   return (
     <SidebarProvider>
-      <Sidebar className="mt-14" variant="floating">
+      <Sidebar className="mt-12" variant="floating">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
