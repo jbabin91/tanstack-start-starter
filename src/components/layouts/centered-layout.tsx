@@ -15,9 +15,7 @@ type CenteredLayoutProps = {
  */
 export function CenteredLayout({ children, className }: CenteredLayoutProps) {
   return (
-    <div
-      className={cn('flex min-h-screen flex-col items-center p-4', className)}
-    >
+    <div className={cn('flex flex-col items-center p-4', className)}>
       {children}
     </div>
   );
