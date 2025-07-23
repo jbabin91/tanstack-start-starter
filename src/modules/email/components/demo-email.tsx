@@ -5,8 +5,7 @@ import {
   Tailwind,
 } from '@react-email/components';
 
-import { env } from '@/configs/env';
-import { resend } from '@/modules/email/lib/resend';
+import { sendEmail } from '@/modules/email/lib/resend';
 
 export function DemoEmail() {
   return (
@@ -42,8 +41,7 @@ export async function sendDemoEmail({ to }: { to: string }) {
   const emailComponent = <DemoEmail />;
   const text = await render(emailComponent, { plainText: true });
 
-  await resend.emails.send({
-    from: env.SENDER_EMAIL_ADDRESS,
+  await sendEmail({
     react: emailComponent,
     subject: 'hello world',
     text,

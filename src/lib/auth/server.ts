@@ -9,6 +9,7 @@ import {
 import { reactStartCookies } from 'better-auth/react-start';
 
 import { db } from '@/lib/db';
+import { sendEmail } from '@/modules/email/lib/resend';
 
 export const auth = betterAuth({
   advanced: {
@@ -22,6 +23,28 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        subject: 'Reset your password',
+        text: `Click the link to reset your password: ${url}`,
+        to: user.email,
+      });
+    },
+  },
+  emailVerification: {
+    async afterEmailVerification() {
+      // Custom logic after verification
+    },
+    autoSignInAfterVerification: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmail({
+        subject: 'Verify your email address',
+        text: `Click the link to verify your email: ${url}`,
+        to: user.email,
+      });
+    },
   },
   plugins: [
     admin(),
