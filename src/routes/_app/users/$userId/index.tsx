@@ -11,13 +11,11 @@ export const Route = createFileRoute('/_app/users/$userId/')({
   component: RouteComponent,
   loader: async ({ params: { userId }, context }) => {
     const data = await context.queryClient.ensureQueryData(
-      userQueries.byId(Number(userId)),
+      userQueries.byId(userId),
     );
 
     // Also load the user's posts
-    await context.queryClient.ensureQueryData(
-      postQueries.byUserId(Number(userId)),
-    );
+    await context.queryClient.ensureQueryData(postQueries.byUserId(userId));
 
     return {
       title: data.name,
@@ -32,8 +30,8 @@ export const Route = createFileRoute('/_app/users/$userId/')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const { data: user } = useUser(Number(userId));
-  const { data: posts } = usePostsByUserId(Number(userId));
+  const { data: user } = useUser(userId);
+  const { data: posts } = usePostsByUserId(userId);
 
   return (
     <div className="m-4 space-y-6">
@@ -53,12 +51,16 @@ function RouteComponent() {
             <strong>Website:</strong> {user.website}
           </div>
           <div>
-            <strong>Company:</strong> {user.company?.name ?? 'N/A'}
-          </div>
-          <div>
             <strong>Address:</strong>{' '}
             {user.address
-              ? `${user.address.street}, ${user.address.city}`
+              ? (() => {
+                  try {
+                    const addr = JSON.parse(user.address);
+                    return `${addr.street}, ${addr.city}`;
+                  } catch {
+                    return 'N/A';
+                  }
+                })()
               : 'N/A'}
           </div>
         </div>

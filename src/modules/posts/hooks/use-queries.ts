@@ -8,6 +8,6 @@ export function usePost(id: number) {
 }
 
 // Fetch posts by user ID
-export function usePostsByUserId(userId: number) {
+export function usePostsByUserId(userId: string) {
   return useSuspenseQuery(postQueries.byUserId(userId));
 }

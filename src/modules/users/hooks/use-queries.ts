@@ -8,6 +8,6 @@ export function useUsers() {
 }
 
 // Fetch a user by ID
-export function useUser(id: number) {
+export function useUser(id: string) {
   return useSuspenseQuery(userQueries.byId(id));
 }

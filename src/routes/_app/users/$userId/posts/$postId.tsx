@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
   loader: async ({ params: { postId, userId }, context }) => {
     const [postData, userData] = await Promise.all([
       context.queryClient.ensureQueryData(postQueries.byId(Number(postId))),
-      context.queryClient.ensureQueryData(userQueries.byId(Number(userId))),
+      context.queryClient.ensureQueryData(userQueries.byId(userId)),
     ]);
 
     return {
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
 function RouteComponent() {
   const { postId, userId } = Route.useParams();
   const { data: post } = usePost(Number(postId));
-  const { data: user } = useUser(Number(userId));
+  const { data: user } = useUser(userId);
 
   return (
     <div className="space-y-4">

@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
-import { postsTable } from '@/lib/db/schemas/posts';
+import { posts as postsTable } from '@/lib/db/schemas/posts';
 
 export const postQueries = {
   byId: (id: number) =>
@@ -11,7 +11,7 @@ export const postQueries = {
       queryFn: () => fetchPostById({ data: id }),
       queryKey: ['posts', id],
     }),
-  byUserId: (userId: number) =>
+  byUserId: (userId: string) =>
     queryOptions({
       queryFn: () => fetchPostsByUserId({ data: userId }),
       queryKey: ['posts', 'user', userId],
@@ -36,7 +36,7 @@ export const fetchPostById = createServerFn()
   });
 
 export const fetchPostsByUserId = createServerFn()
-  .validator((d: number) => d)
+  .validator((d: string) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching posts for user with id ${data}...`);
 

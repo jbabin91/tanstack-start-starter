@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
-import { usersTable } from '@/lib/db/schemas/users';
+import { users as usersTable } from '@/lib/db/schemas/auth';
 
 export const userQueries = {
   all: () =>
@@ -11,7 +11,7 @@ export const userQueries = {
       queryFn: () => fetchUsers(),
       queryKey: ['users'],
     }),
-  byId: (id: number) =>
+  byId: (id: string) =>
     queryOptions({
       queryFn: () => fetchUser({ data: id }),
       queryKey: ['users', id],
@@ -26,7 +26,7 @@ export const fetchUsers = createServerFn().handler(async () => {
 });
 
 export const fetchUser = createServerFn()
-  .validator((d: number) => d)
+  .validator((d: string) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching user with id ${data}...`);
 
