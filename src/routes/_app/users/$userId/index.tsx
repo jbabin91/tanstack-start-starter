@@ -36,7 +36,7 @@ function RouteComponent() {
   const { data: posts } = usePostsByUserId(Number(userId));
 
   return (
-    <div className="space-y-6">
+    <div className="m-4 space-y-6">
       <div className="space-y-2">
         <h4 className="text-xl font-bold underline">{user.name}</h4>
         <div className="text-sm">

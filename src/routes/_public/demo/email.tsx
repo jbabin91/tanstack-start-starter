@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_public/demo/email')({
 
 function RouteComponent() {
   return (
-    <div className="mt-4 flex w-full items-center justify-center">
+    <div className="mx-auto flex w-full max-w-xl items-center justify-center p-8">
       <DemoEmailForm />
     </div>
   );

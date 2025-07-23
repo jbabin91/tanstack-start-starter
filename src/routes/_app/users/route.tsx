@@ -1,5 +1,16 @@
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
 import { userQueries } from '@/modules/users/api';
 import { useUsers } from '@/modules/users/hooks/use-queries';
 
@@ -17,31 +28,37 @@ function RouteComponent() {
   const { data: users } = useUsers();
 
   return (
-    <div className="flex gap-2 p-2">
-      <ul className="w-64 flex-shrink-0 pl-4">
-        {[...users, { id: 'i-do-not-exist', name: 'Non-existent User' }].map(
-          (user) => {
-            return (
-              <li key={user.id} className="whitespace-nowrap">
-                <div className="flex flex-col gap-1">
-                  <Link
-                    activeProps={{ className: 'text-foreground font-bold' }}
-                    className="text-primary hover:text-primary/80 block py-1"
-                    params={{
-                      userId: user.id.toString(),
-                    }}
-                    to="/users/$userId"
-                  >
-                    <div>{user.name.slice(0, 20)}</div>
-                  </Link>
-                </div>
-              </li>
-            );
-          },
-        )}
-      </ul>
-      <hr />
-      <Outlet />
-    </div>
+    <SidebarProvider>
+      <Sidebar className="mt-14" variant="floating">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {[
+                  ...users,
+                  { id: 'i-do-not-exist', name: 'Non-existent User' },
+                ].map((link) => (
+                  <SidebarMenuItem key={link.id}>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        activeProps={{ className: 'font-bold' }}
+                        className="flex items-center"
+                        params={{ userId: link.id.toString() }}
+                        to="/users/$userId"
+                      >
+                        {link.name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

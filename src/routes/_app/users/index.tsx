@@ -5,5 +5,9 @@ export const Route = createFileRoute('/_app/users/')({
 });
 
 function RouteComponent() {
-  return <div>Select a user.</div>;
+  return (
+    <div className="m-4">
+      <h3 className="text-2xl font-semibold">Select a user</h3>
+    </div>
+  );
 }
