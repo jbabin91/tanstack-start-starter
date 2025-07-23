@@ -3,6 +3,8 @@ import { reset } from 'drizzle-seed';
 
 import { db } from '@/lib/db';
 import * as schema from '@/lib/db/schemas';
+import { users as usersTable } from '@/lib/db/schemas/auth';
+import { posts as postsTable } from '@/lib/db/schemas/posts';
 
 // Set a consistent seed for reproducible results
 faker.seed(1234);
@@ -21,16 +23,18 @@ async function main() {
     const cleanName = fullName.toLowerCase().replaceAll(/[^a-z0-9]/g, '');
 
     return {
-      address: {
+      address: JSON.stringify({
         city: faker.location.city(),
         street: faker.location.streetAddress(),
-      },
-      company: {
-        name: faker.company.name(),
-      },
+      }),
+      displayUsername: faker.internet.username({ firstName, lastName }),
       email: faker.internet.email({ firstName, lastName }),
+      emailVerified: false,
+      id: faker.string.uuid(),
+      image: faker.image.avatar(),
       name: fullName,
       phone: faker.phone.number(),
+      role: 'user',
       username: faker.helpers.arrayElement([
         cleanName,
         `${cleanName}${faker.number.int({ max: 999, min: 100 })}`,
@@ -46,9 +50,9 @@ async function main() {
 
   // Insert users and get their IDs
   const insertedUsers = await db
-    .insert(schema.usersTable)
+    .insert(usersTable)
     .values(users)
-    .returning({ id: schema.usersTable.id });
+    .returning({ id: usersTable.id });
 
   // Generate 5 posts per user (125 total)
   const posts = [];
@@ -81,7 +85,7 @@ async function main() {
   }
 
   // Insert posts
-  await db.insert(schema.postsTable).values(posts);
+  await db.insert(postsTable).values(posts);
 
   console.log(
     '✅ Database seeded successfully with 25 users and 125 posts (5 per user)!',

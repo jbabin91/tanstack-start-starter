@@ -11,13 +11,13 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { usersTable } from '@/lib/db/schemas/users';
+import { users } from '@/lib/db/schemas/auth';
 
-export const postsTable = pgTable('posts', {
+export const posts = pgTable('posts', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar({ length: 255 }).notNull(),
   body: text().notNull(),
-  userId: integer().references(() => usersTable.id),
+  userId: text().references(() => users.id),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()
@@ -25,10 +25,9 @@ export const postsTable = pgTable('posts', {
     .$onUpdate(() => new Date()),
 });
 
-// Auto-generated ArkType schemas from Drizzle table
-export const insertPostSchema = createInsertSchema(postsTable);
-export const selectPostSchema = createSelectSchema(postsTable);
-export const updatePostSchema = createUpdateSchema(postsTable);
+export const insertPostSchema = createInsertSchema(posts);
+export const selectPostSchema = createSelectSchema(posts);
+export const updatePostSchema = createUpdateSchema(posts);
 
 export type InsertPost = typeof insertPostSchema.infer;
 export type Post = typeof selectPostSchema.infer;

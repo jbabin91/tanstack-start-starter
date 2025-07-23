@@ -5,6 +5,8 @@ import { type } from 'arktype';
  * These are only available on the server
  */
 const serverSchema = type({
+  BETTER_AUTH_SECRET: 'string>=1',
+  BETTER_AUTH_URL: 'string.url>=1',
   DATABASE_URL: 'string.url>=1',
   RESEND_API_KEY: 'string>=1',
   SENDER_EMAIL_ADDRESS: 'string?',
@@ -184,6 +186,8 @@ export const env = createEnv({
     // They must be prefixed with VITE_ to be exposed to the client
   },
   server: {
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET!,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL!,
     DATABASE_URL: process.env.DATABASE_URL!,
     RESEND_API_KEY: process.env.RESEND_API_KEY!,
     SENDER_EMAIL_ADDRESS:
