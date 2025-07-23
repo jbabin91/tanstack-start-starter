@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
 import { users as usersTable } from '@/lib/db/schemas/auth';
+import { logger } from '@/lib/logger';
 
 export const userQueries = {
   all: () =>
@@ -19,7 +20,7 @@ export const userQueries = {
 };
 
 export const fetchUsers = createServerFn().handler(async () => {
-  console.info('Fetching users...');
+  logger.info('Fetching users...');
 
   const users = await db.select().from(usersTable);
   return users;
@@ -28,7 +29,7 @@ export const fetchUsers = createServerFn().handler(async () => {
 export const fetchUser = createServerFn()
   .validator((d: string) => d)
   .handler(async ({ data }) => {
-    console.info(`Fetching user with id ${data}...`);
+    logger.info(`Fetching user with id ${data}...`);
 
     const users = await db
       .select()

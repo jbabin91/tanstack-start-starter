@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
 import { posts as postsTable } from '@/lib/db/schemas/posts';
+import { logger } from '@/lib/logger';
 
 export const postQueries = {
   byId: (id: string) =>
@@ -21,7 +22,7 @@ export const postQueries = {
 export const fetchPostById = createServerFn()
   .validator((d: string) => d)
   .handler(async ({ data }) => {
-    console.info(`Fetching post with id ${data}...`);
+    logger.info(`Fetching post with id ${data}...`);
 
     const posts = await db
       .select()
@@ -38,7 +39,7 @@ export const fetchPostById = createServerFn()
 export const fetchPostsByUserId = createServerFn()
   .validator((d: string) => d)
   .handler(async ({ data }) => {
-    console.info(`Fetching posts for user with id ${data}...`);
+    logger.info(`Fetching posts for user with id ${data}...`);
 
     const posts = await db
       .select()
