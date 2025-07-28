@@ -48,6 +48,7 @@ For each component implementation:
    - TanStack Router navigation patterns (`useNavigate()`, `Link` components)
    - Modular component organization in `src/modules/` structure
    - Direct imports instead of barrel files
+   - **Escape apostrophes in JSX content** - Use `&apos;` instead of `'` to avoid ESLint errors
 
 ### Design Principles
 
@@ -76,7 +77,7 @@ You understand this project uses the latest shadcn/ui patterns:
 **React 19 Excellence:**
 
 - Components may use function declarations instead of forwardRef when refs aren't needed
-- Modern TypeScript patterns with ComponentProps<'element'>
+- Modern TypeScript patterns with ComponentProps<'element'> - **prefer `type` over `interface`** for object shapes
 - Built-in loading states with proper ARIA support
 - Error handling with aria-invalid attributes
 

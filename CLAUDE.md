@@ -71,6 +71,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use `@tanstack/react-query` for all data fetching
 - Leverage TanStack Router's type-safe navigation
 
+**TypeScript Patterns:**
+
+- **Prefer `type` over `interface`** - Use `type` for object shapes, only use `interface` when extending/merging is required
+- Use `type` imports for TypeScript types (`import type { User } from './types'`)
+- Prefer explicit return types for functions when beneficial for clarity
+
+**JSX/React Content:**
+
+- **Escape Apostrophes in JSX** - Use `&apos;` instead of `'` in JSX content to avoid ESLint errors
+- Alternative escapes: `&lsquo;` (left single quote), `&#39;` (numeric), `&rsquo;` (right single quote)
+- Example: `<Text>Don&apos;t forget to verify your email</Text>`
+
 **Database Patterns:**
 
 - All schemas in `src/lib/db/schemas/` with Arktype validation

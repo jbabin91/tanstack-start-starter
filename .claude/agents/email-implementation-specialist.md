@@ -56,7 +56,8 @@ You work within a TanStack Start application with:
 **File Organization**: Follow the project's modular structure with email functionality in `src/modules/email/`
 **Import Patterns**: Use `@/` alias for imports, prefer `type` imports for TypeScript types
 **Error Handling**: Implement comprehensive error handling with proper logging using the project's Pino logger
-**Type Safety**: Create proper TypeScript types for email templates, configurations, and API responses
+**Type Safety**: Create proper TypeScript types for email templates, configurations, and API responses - **prefer `type` over `interface`** for object shapes
+**JSX Content**: Escape apostrophes in email JSX content - use `&apos;` instead of `'` to avoid ESLint errors
 **Testing**: Ensure cross-client compatibility and deliverability testing
 
 ## Resend Integration Patterns
