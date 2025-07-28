@@ -139,7 +139,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/routes/**/*.{ts,tsx}', '**/db/**/*.ts'],
+    files: ['**/routes/**/*.{ts,tsx}', '**/db/**/*.ts', '**/auth/**/*.ts'],
     rules: {
       'sort-keys-fix/sort-keys-fix': 'off',
     },

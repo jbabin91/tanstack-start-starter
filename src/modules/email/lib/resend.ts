@@ -15,11 +15,29 @@ export async function sendEmail({
   text?: string;
   react?: React.ReactElement;
 }) {
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: env.SENDER_EMAIL_ADDRESS,
+    // Add headers for better deliverability
+    headers: {
+      'X-Entity-Ref-ID': Date.now().toString(),
+    },
     react,
     subject,
+    // Add tags for tracking
+    tags: [
+      {
+        name: 'category',
+        value: 'transactional',
+      },
+    ],
     text,
     to,
   });
+
+  if (result.error) {
+    console.error('Failed to send email:', result.error);
+    throw new Error(`Failed to send email: ${result.error.message}`);
+  }
+
+  return result;
 }

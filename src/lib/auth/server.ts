@@ -7,9 +7,13 @@ import {
   username,
 } from 'better-auth/plugins';
 import { reactStartCookies } from 'better-auth/react-start';
+import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
-import { sendEmail } from '@/modules/email/lib/resend';
+import { members, organizations } from '@/lib/db/schemas/auth';
+import { nanoid } from '@/lib/nanoid';
+import { sendEmailVerification } from '@/modules/email/components/email-verification';
+import { sendPasswordReset } from '@/modules/email/components/password-reset';
 
 export const auth = betterAuth({
   advanced: {
@@ -21,14 +25,67 @@ export const auth = betterAuth({
     provider: 'pg',
     usePlural: true,
   }),
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Auto-create a personal organization for new users
+          const orgId = nanoid();
+          const orgSlug = `${(user as any).username ?? user.name.toLowerCase().replaceAll(/\s+/g, '-')}-${orgId.slice(-6)}`;
+
+          // Create the organization
+          await db.insert(organizations).values({
+            id: orgId,
+            name: `${user.name}'s Organization`,
+            slug: orgSlug,
+            createdAt: new Date(),
+          });
+
+          // Add user as owner of their personal organization
+          await db.insert(members).values({
+            id: nanoid(),
+            organizationId: orgId,
+            userId: user.id,
+            role: 'owner',
+            createdAt: new Date(),
+          });
+        },
+      },
+    },
+    session: {
+      create: {
+        before: async (session) => {
+          // Set the user's personal organization as active on first login
+          if (!(session as any).activeOrganizationId) {
+            const userMembership = await db
+              .select()
+              .from(members)
+              .where(eq(members.userId, session.userId))
+              .limit(1);
+
+            if (userMembership.length > 0) {
+              return {
+                data: {
+                  ...session,
+                  activeOrganizationId: userMembership[0].organizationId,
+                },
+              };
+            }
+          }
+
+          return { data: session };
+        },
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      await sendEmail({
-        subject: 'Reset your password',
-        text: `Click the link to reset your password: ${url}`,
+      await sendPasswordReset({
         to: user.email,
+        url,
+        userName: user.name,
       });
     },
   },
@@ -39,10 +96,10 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      await sendEmail({
-        subject: 'Verify your email address',
-        text: `Click the link to verify your email: ${url}`,
+      await sendEmailVerification({
         to: user.email,
+        url,
+        userName: user.name,
       });
     },
   },

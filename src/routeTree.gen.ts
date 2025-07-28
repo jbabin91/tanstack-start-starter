@@ -11,11 +11,17 @@
 import { createServerRootRoute } from '@tanstack/react-start/server';
 
 import { Route as rootRouteImport } from './routes/__root';
+import { Route as AuthRouteRouteImport } from './routes/_auth/route';
 import { Route as PublicIndexRouteImport } from './routes/_public/index';
+import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email';
+import { Route as AuthRegisterRouteImport } from './routes/_auth/register';
+import { Route as AuthLoginRouteImport } from './routes/_auth/login';
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password';
 import { Route as PublicDemoRouteRouteImport } from './routes/_public/demo/route';
 import { Route as AppUsersRouteRouteImport } from './routes/_app/users/route';
 import { Route as PublicDemoIndexRouteImport } from './routes/_public/demo/index';
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index';
+import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index';
 import { Route as PublicDemoEmailRouteImport } from './routes/_public/demo/email';
 import { Route as PublicDemoColorsRouteImport } from './routes/_public/demo/colors';
 import { Route as AppUsersUserIdIndexRouteImport } from './routes/_app/users/$userId/index';
@@ -25,10 +31,34 @@ import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth.
 
 const rootServerRouteImport = createServerRootRoute();
 
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any);
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/_public/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any);
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRouteRoute,
 } as any);
 const PublicDemoRouteRoute = PublicDemoRouteRouteImport.update({
   id: '/_public/demo',
@@ -49,6 +79,11 @@ const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppUsersRouteRoute,
+} as any);
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+  id: '/_app/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
 } as any);
 const PublicDemoEmailRoute = PublicDemoEmailRouteImport.update({
   id: '/email',
@@ -86,9 +121,14 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/users': typeof AppUsersRouteRouteWithChildren;
   '/demo': typeof PublicDemoRouteRouteWithChildren;
+  '/forgot-password': typeof AuthForgotPasswordRoute;
+  '/login': typeof AuthLoginRoute;
+  '/register': typeof AuthRegisterRoute;
+  '/verify-email': typeof AuthVerifyEmailRoute;
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
   '/demo/email': typeof PublicDemoEmailRoute;
+  '/dashboard': typeof AppDashboardIndexRoute;
   '/users/': typeof AppUsersIndexRoute;
   '/demo/': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -96,9 +136,14 @@ export interface FileRoutesByFullPath {
   '/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
 }
 export interface FileRoutesByTo {
+  '/forgot-password': typeof AuthForgotPasswordRoute;
+  '/login': typeof AuthLoginRoute;
+  '/register': typeof AuthRegisterRoute;
+  '/verify-email': typeof AuthVerifyEmailRoute;
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
   '/demo/email': typeof PublicDemoEmailRoute;
+  '/dashboard': typeof AppDashboardIndexRoute;
   '/users': typeof AppUsersIndexRoute;
   '/demo': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -107,11 +152,17 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
+  '/_auth': typeof AuthRouteRouteWithChildren;
   '/_app/users': typeof AppUsersRouteRouteWithChildren;
   '/_public/demo': typeof PublicDemoRouteRouteWithChildren;
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute;
+  '/_auth/login': typeof AuthLoginRoute;
+  '/_auth/register': typeof AuthRegisterRoute;
+  '/_auth/verify-email': typeof AuthVerifyEmailRoute;
   '/_public/': typeof PublicIndexRoute;
   '/_public/demo/colors': typeof PublicDemoColorsRoute;
   '/_public/demo/email': typeof PublicDemoEmailRoute;
+  '/_app/dashboard/': typeof AppDashboardIndexRoute;
   '/_app/users/': typeof AppUsersIndexRoute;
   '/_public/demo/': typeof PublicDemoIndexRoute;
   '/_app/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
@@ -123,9 +174,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/users'
     | '/demo'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/verify-email'
     | '/'
     | '/demo/colors'
     | '/demo/email'
+    | '/dashboard'
     | '/users/'
     | '/demo/'
     | '/users/$userId/posts'
@@ -133,9 +189,14 @@ export interface FileRouteTypes {
     | '/users/$userId/posts/$postId';
   fileRoutesByTo: FileRoutesByTo;
   to:
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/verify-email'
     | '/'
     | '/demo/colors'
     | '/demo/email'
+    | '/dashboard'
     | '/users'
     | '/demo'
     | '/users/$userId/posts'
@@ -143,11 +204,17 @@ export interface FileRouteTypes {
     | '/users/$userId/posts/$postId';
   id:
     | '__root__'
+    | '/_auth'
     | '/_app/users'
     | '/_public/demo'
+    | '/_auth/forgot-password'
+    | '/_auth/login'
+    | '/_auth/register'
+    | '/_auth/verify-email'
     | '/_public/'
     | '/_public/demo/colors'
     | '/_public/demo/email'
+    | '/_app/dashboard/'
     | '/_app/users/'
     | '/_public/demo/'
     | '/_app/users/$userId/posts'
@@ -156,9 +223,11 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
   AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
   PublicDemoRouteRoute: typeof PublicDemoRouteRouteWithChildren;
   PublicIndexRoute: typeof PublicIndexRoute;
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute;
@@ -184,12 +253,47 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_auth': {
+      id: '/_auth';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AuthRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_public/': {
       id: '/_public/';
       path: '/';
       fullPath: '/';
       preLoaderRoute: typeof PublicIndexRouteImport;
       parentRoute: typeof rootRouteImport;
+    };
+    '/_auth/verify-email': {
+      id: '/_auth/verify-email';
+      path: '/verify-email';
+      fullPath: '/verify-email';
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    '/_auth/register': {
+      id: '/_auth/register';
+      path: '/register';
+      fullPath: '/register';
+      preLoaderRoute: typeof AuthRegisterRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    '/_auth/login': {
+      id: '/_auth/login';
+      path: '/login';
+      fullPath: '/login';
+      preLoaderRoute: typeof AuthLoginRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password';
+      path: '/forgot-password';
+      fullPath: '/forgot-password';
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport;
+      parentRoute: typeof AuthRouteRoute;
     };
     '/_public/demo': {
       id: '/_public/demo';
@@ -218,6 +322,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/';
       preLoaderRoute: typeof AppUsersIndexRouteImport;
       parentRoute: typeof AppUsersRouteRoute;
+    };
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/';
+      path: '/dashboard';
+      fullPath: '/dashboard';
+      preLoaderRoute: typeof AppDashboardIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
     };
     '/_public/demo/email': {
       id: '/_public/demo/email';
@@ -268,6 +379,24 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface AuthRouteRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute;
+  AuthLoginRoute: typeof AuthLoginRoute;
+  AuthRegisterRoute: typeof AuthRegisterRoute;
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute;
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
+};
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+);
+
 interface AppUsersUserIdPostsRouteRouteChildren {
   AppUsersUserIdPostsPostIdRoute: typeof AppUsersUserIdPostsPostIdRoute;
 }
@@ -315,9 +444,11 @@ const PublicDemoRouteRouteWithChildren = PublicDemoRouteRoute._addFileChildren(
 );
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthRouteRoute: AuthRouteRouteWithChildren,
   AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
   PublicDemoRouteRoute: PublicDemoRouteRouteWithChildren,
   PublicIndexRoute: PublicIndexRoute,
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
