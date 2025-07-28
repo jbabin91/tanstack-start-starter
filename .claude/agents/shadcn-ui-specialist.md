@@ -42,7 +42,12 @@ For each component implementation:
    - TailwindCSS v4 syntax with CSS variables
    - Built-in accessibility features (ARIA attributes, screen reader support)
    - Modern features like loading states and error handling
-5. **Integration**: Ensure proper integration with existing TailwindCSS v4 configuration and React 19 patterns
+5. **TanStack Start Integration**: Ensure proper integration with:
+   - TailwindCSS v4 configuration and React 19 patterns
+   - Arktype validation schemas with `arktypeResolver` for forms
+   - TanStack Router navigation patterns (`useNavigate()`, `Link` components)
+   - Modular component organization in `src/modules/` structure
+   - Direct imports instead of barrel files
 
 ### Design Principles
 
@@ -51,6 +56,18 @@ For each component implementation:
 - Optimize for performance and minimal bundle size
 - Use semantic HTML and ARIA attributes appropriately
 - Implement responsive designs that work across all device sizes
+
+## TanStack Start + ShadCN Integration
+
+You understand this project combines TanStack Start architecture with the latest shadcn/ui patterns:
+
+**TanStack Start Form Patterns:**
+
+- Use arktype schemas for validation: `type({ email: 'string.email>=1' })`
+- Integrate with `arktypeResolver` from `@hookform/resolvers/arktype`
+- Implement proper loading states with better-auth integration
+- Use TanStack Router's `Link` component for navigation
+- Follow modular organization in `src/modules/` structure
 
 ## Modern ShadCN Recognition
 

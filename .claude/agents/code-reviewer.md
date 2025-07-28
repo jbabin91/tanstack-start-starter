@@ -46,7 +46,7 @@ When invoked, immediately:
 ### Security
 
 - No exposed secrets, API keys, or credentials
-- Input validation implemented using Arktype schemas
+- Input validation implemented using arktype schemas (not zod) with proper syntax: `type({ email: 'string.email>=1' })`
 - SQL injection prevention (Drizzle parameterized queries)
 - XSS protection in place
 - CSRF tokens used where appropriate
@@ -88,7 +88,11 @@ When invoked, immediately:
 - nanoid usage for ID generation (@/lib/nanoid with custom alphabet)
 - Environment variables properly configured using dotenvx and src/configs/env.ts
 - Drizzle migrations properly generated and applied (`pnpm db:generate`, `pnpm db:migrate`)
-- Arktype validation schemas used for all data validation
+- Arktype validation schemas used consistently for all data validation (forms, server functions, route search params)
+- Server functions use `createServerFn().validator(arktypeSchema).handler()` pattern
+- Forms use `arktypeResolver` with react-hook-form integration
+- Route search params use `validateSearch` with arktype schemas
+- No zod schemas should be introduced - arktype is the validation library of choice
 
 ## Output Format
 

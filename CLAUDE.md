@@ -63,6 +63,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Auto-sorted imports with simple-import-sort
 - Prefer `type` imports for TypeScript types
 - Import shadcn/ui components from `@/components/ui/<component>`
+- **No Barrel Files:** Import components directly, avoid `index.ts` re-exports
 
 **React Patterns:**
 
