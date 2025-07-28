@@ -21,8 +21,8 @@ export const Route = createFileRoute('/_auth/verify-email')({
   head: () => ({
     meta: [
       {
-        title: 'Verify Email - TanStack Start Starter',
         name: 'title',
+        title: 'Verify Email - TanStack Start Starter',
       },
       {
         name: 'description',

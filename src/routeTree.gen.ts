@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root';
 import { Route as AuthRouteRouteImport } from './routes/_auth/route';
 import { Route as PublicIndexRouteImport } from './routes/_public/index';
 import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email';
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password';
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register';
 import { Route as AuthLoginRouteImport } from './routes/_auth/login';
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password';
@@ -43,6 +44,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
+  getParentRoute: () => AuthRouteRoute,
+} as any);
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => AuthRouteRoute,
 } as any);
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof AuthForgotPasswordRoute;
   '/login': typeof AuthLoginRoute;
   '/register': typeof AuthRegisterRoute;
+  '/reset-password': typeof AuthResetPasswordRoute;
   '/verify-email': typeof AuthVerifyEmailRoute;
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof AuthForgotPasswordRoute;
   '/login': typeof AuthLoginRoute;
   '/register': typeof AuthRegisterRoute;
+  '/reset-password': typeof AuthResetPasswordRoute;
   '/verify-email': typeof AuthVerifyEmailRoute;
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute;
   '/_auth/login': typeof AuthLoginRoute;
   '/_auth/register': typeof AuthRegisterRoute;
+  '/_auth/reset-password': typeof AuthResetPasswordRoute;
   '/_auth/verify-email': typeof AuthVerifyEmailRoute;
   '/_public/': typeof PublicIndexRoute;
   '/_public/demo/colors': typeof PublicDemoColorsRoute;
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/verify-email'
     | '/'
     | '/demo/colors'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/verify-email'
     | '/'
     | '/demo/colors'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
+    | '/_auth/reset-password'
     | '/_auth/verify-email'
     | '/_public/'
     | '/_public/demo/colors'
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/verify-email';
       fullPath: '/verify-email';
       preLoaderRoute: typeof AuthVerifyEmailRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password';
+      path: '/reset-password';
+      fullPath: '/reset-password';
+      preLoaderRoute: typeof AuthResetPasswordRouteImport;
       parentRoute: typeof AuthRouteRoute;
     };
     '/_auth/register': {
@@ -383,6 +402,7 @@ interface AuthRouteRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute;
   AuthLoginRoute: typeof AuthLoginRoute;
   AuthRegisterRoute: typeof AuthRegisterRoute;
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute;
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute;
 }
 
@@ -390,6 +410,7 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
 };
 

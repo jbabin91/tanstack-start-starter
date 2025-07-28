@@ -7,8 +7,8 @@ export const Route = createFileRoute('/_auth/forgot-password')({
   head: () => ({
     meta: [
       {
-        title: 'Reset Password - TanStack Start Starter',
         name: 'title',
+        title: 'Reset Password - TanStack Start Starter',
       },
       {
         name: 'description',
