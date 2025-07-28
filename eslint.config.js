@@ -7,7 +7,6 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import sortKeysFix from 'eslint-plugin-sort-keys-fix';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -29,7 +28,6 @@ export default tseslint.config(
     plugins: {
       'import-x': importX,
       'simple-import-sort': simpleImportSort,
-      'sort-keys-fix': sortKeysFix,
     },
     rules: {
       'import-x/first': 'error',
@@ -37,7 +35,6 @@ export default tseslint.config(
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
-      'sort-keys-fix/sort-keys-fix': 'error',
       'unicorn/filename-case': [
         'error',
         {
@@ -136,12 +133,6 @@ export default tseslint.config(
         },
       },
       react: { version: 'detect' },
-    },
-  },
-  {
-    files: ['**/routes/**/*.{ts,tsx}', '**/db/**/*.ts', '**/auth/**/*.ts'],
-    rules: {
-      'sort-keys-fix/sort-keys-fix': 'off',
     },
   },
   configPrettier,
