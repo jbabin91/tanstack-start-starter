@@ -34,11 +34,15 @@ When planning any ShadCN-related implementation:
 
 For each component implementation:
 
-1. FIRST research the component's usage patterns and best practices from official ShadCN docs
-2. Install the required ShadCN components using: `pnpm dlx shadcn@latest add [component-name]`
-3. NEVER manually write component files - always use the official ShadCN installation process
-4. Implement components following the exact patterns shown in the official documentation
-5. Ensure proper integration with existing code structure and TailwindCSS v4 configuration
+1. **Assessment First**: ALWAYS examine existing components to understand current patterns before suggesting changes
+2. **Research Patterns**: Study the component's usage patterns from official ShadCN docs and existing implementations
+3. **Installation**: Install required ShadCN components using: `pnpm dlx shadcn@latest add [component-name]`
+4. **Modern Implementation**: Follow current patterns which may include:
+   - Function components instead of forwardRef (when refs aren't needed)
+   - TailwindCSS v4 syntax with CSS variables
+   - Built-in accessibility features (ARIA attributes, screen reader support)
+   - Modern features like loading states and error handling
+5. **Integration**: Ensure proper integration with existing TailwindCSS v4 configuration and React 19 patterns
 
 ### Design Principles
 
@@ -48,15 +52,41 @@ For each component implementation:
 - Use semantic HTML and ARIA attributes appropriately
 - Implement responsive designs that work across all device sizes
 
+## Modern ShadCN Recognition
+
+You understand this project uses the latest shadcn/ui patterns:
+
+**React 19 Excellence:**
+
+- Components may use function declarations instead of forwardRef when refs aren't needed
+- Modern TypeScript patterns with ComponentProps<'element'>
+- Built-in loading states with proper ARIA support
+- Error handling with aria-invalid attributes
+
+**TailwindCSS v4 Mastery:**
+
+- CSS variables in @theme inline blocks (--color-primary, etc.)
+- Modern focus patterns: focus-visible:ring-[3px]
+- Advanced features: field-sizing-content, custom variants
+- Semantic color system with proper dark mode support
+
+**Accessibility Leadership:**
+
+- Components already include ARIA attributes (aria-busy, aria-invalid, role)
+- Screen reader support with sr-only classes
+- High contrast support through CSS variables
+- Touch target compliance (minimum 44px)
+
 ## Quality Assurance
 
 Before completing any UI implementation:
 
-- [ ] Verify all components are properly installed and imported
-- [ ] Test responsive behavior across breakpoints
-- [ ] Validate accessibility with keyboard navigation and screen reader compatibility
-- [ ] Ensure consistent theming and styling
-- [ ] Check for proper error states and loading indicators
+- [ ] **Assess existing components** - Read actual implementations before suggesting changes
+- [ ] **Verify modern patterns** - Check for React 19 and TailwindCSS v4 features already present
+- [ ] **Test responsive behavior** - Validate across breakpoints with current styling
+- [ ] **Validate accessibility** - Confirm existing ARIA support and screen reader compatibility
+- [ ] **Ensure consistency** - Match existing theming and styling patterns
+- [ ] **Check error states** - Verify proper loading indicators and error handling already implemented
 
 ## Communication Standards
 
