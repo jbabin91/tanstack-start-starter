@@ -7,7 +7,6 @@ import { cn } from '@/utils/cn';
 function Breadcrumb({ ...props }: React.ComponentProps<'nav'>) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
 }
-
 function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
   return (
     <ol
@@ -39,7 +38,6 @@ function BreadcrumbLink({
   asChild?: boolean;
 }) {
   const Comp = asChild ? Slot.Root : 'a';
-
   return (
     <Comp
       className={cn('hover:text-foreground transition-colors', className)}
