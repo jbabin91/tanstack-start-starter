@@ -1,6 +1,7 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useSearch } from '@tanstack/react-router';
 
 import { LoginForm } from '@/modules/auth/components/login-form';
+import { useAuth } from '@/modules/auth/hooks/use-auth';
 
 export const Route = createFileRoute('/_auth/login')({
   component: RouteComponent,
@@ -20,15 +21,16 @@ export const Route = createFileRoute('/_auth/login')({
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
+  const search = useSearch({ from: '/_auth' });
+  const { handleLoginSuccess } = useAuth();
 
-  const handleLoginSuccess = () => {
-    navigate({ to: '/dashboard' });
+  const onLoginSuccess = () => {
+    handleLoginSuccess(search.redirectUrl);
   };
 
   return (
     <div className="space-y-6">
-      <LoginForm onSuccess={handleLoginSuccess} />
+      <LoginForm onSuccess={onLoginSuccess} />
 
       <div className="space-y-4 text-center text-sm">
         <div className="text-muted-foreground flex items-center justify-center space-x-1">

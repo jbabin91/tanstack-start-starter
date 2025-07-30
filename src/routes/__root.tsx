@@ -14,12 +14,22 @@ import { NotFound } from '@/components/errors/not-found';
 import { NavBar } from '@/components/layouts/nav-bar';
 import { Toaster } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
+import { getUser } from '@/modules/auth/api/get-user';
 import { Providers } from '@/providers';
 import appCss from '@/styles/app.css?url';
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  user: Awaited<ReturnType<typeof getUser>>;
 }>()({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient.fetchQuery({
+      queryKey: ['user'],
+      queryFn: ({ signal }) => getUser({ signal }),
+    }); // we're using react-query for caching, see router.tsx
+    return { user };
+  },
+
   component: RootComponent,
   errorComponent: (props) => {
     return (

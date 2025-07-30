@@ -12,6 +12,7 @@ import { createServerRootRoute } from '@tanstack/react-start/server';
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as AuthRouteRouteImport } from './routes/_auth/route';
+import { Route as AppRouteRouteImport } from './routes/_app/route';
 import { Route as PublicIndexRouteImport } from './routes/_public/index';
 import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email';
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password';
@@ -28,12 +29,16 @@ import { Route as PublicDemoColorsRouteImport } from './routes/_public/demo/colo
 import { Route as AppUsersUserIdIndexRouteImport } from './routes/_app/users/$userId/index';
 import { Route as AppUsersUserIdPostsRouteRouteImport } from './routes/_app/users/$userId/posts/route';
 import { Route as AppUsersUserIdPostsPostIdRouteImport } from './routes/_app/users/$userId/posts/$postId';
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth.$';
+import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$';
 
 const rootServerRouteImport = createServerRootRoute();
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any);
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -72,9 +77,9 @@ const PublicDemoRouteRoute = PublicDemoRouteRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any);
 const AppUsersRouteRoute = AppUsersRouteRouteImport.update({
-  id: '/_app/users',
+  id: '/users',
   path: '/users',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any);
 const PublicDemoIndexRoute = PublicDemoIndexRouteImport.update({
   id: '/',
@@ -87,9 +92,9 @@ const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   getParentRoute: () => AppUsersRouteRoute,
 } as any);
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
-  id: '/_app/dashboard/',
+  id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any);
 const PublicDemoEmailRoute = PublicDemoEmailRouteImport.update({
   id: '/email',
@@ -160,6 +165,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
+  '/_app': typeof AppRouteRouteWithChildren;
   '/_auth': typeof AuthRouteRouteWithChildren;
   '/_app/users': typeof AppUsersRouteRouteWithChildren;
   '/_public/demo': typeof PublicDemoRouteRouteWithChildren;
@@ -215,6 +221,7 @@ export interface FileRouteTypes {
     | '/users/$userId/posts/$postId';
   id:
     | '__root__'
+    | '/_app'
     | '/_auth'
     | '/_app/users'
     | '/_public/demo'
@@ -235,11 +242,10 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
+  AppRouteRoute: typeof AppRouteRouteWithChildren;
   AuthRouteRoute: typeof AuthRouteRouteWithChildren;
-  AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
   PublicDemoRouteRoute: typeof PublicDemoRouteRouteWithChildren;
   PublicIndexRoute: typeof PublicIndexRoute;
-  AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute;
@@ -270,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '';
       fullPath: '';
       preLoaderRoute: typeof AuthRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_app': {
+      id: '/_app';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AppRouteRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/_public/': {
@@ -326,7 +339,7 @@ declare module '@tanstack/react-router' {
       path: '/users';
       fullPath: '/users';
       preLoaderRoute: typeof AppUsersRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof AppRouteRoute;
     };
     '/_public/demo/': {
       id: '/_public/demo/';
@@ -347,7 +360,7 @@ declare module '@tanstack/react-router' {
       path: '/dashboard';
       fullPath: '/dashboard';
       preLoaderRoute: typeof AppDashboardIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof AppRouteRoute;
     };
     '/_public/demo/email': {
       id: '/_public/demo/email';
@@ -398,26 +411,6 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface AuthRouteRouteChildren {
-  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute;
-  AuthLoginRoute: typeof AuthLoginRoute;
-  AuthRegisterRoute: typeof AuthRegisterRoute;
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute;
-  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute;
-}
-
-const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
-  AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
-  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
-};
-
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-);
-
 interface AppUsersUserIdPostsRouteRouteChildren {
   AppUsersUserIdPostsPostIdRoute: typeof AppUsersUserIdPostsPostIdRoute;
 }
@@ -448,6 +441,40 @@ const AppUsersRouteRouteWithChildren = AppUsersRouteRoute._addFileChildren(
   AppUsersRouteRouteChildren,
 );
 
+interface AppRouteRouteChildren {
+  AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
+};
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+);
+
+interface AuthRouteRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute;
+  AuthLoginRoute: typeof AuthLoginRoute;
+  AuthRegisterRoute: typeof AuthRegisterRoute;
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute;
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute;
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
+};
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+);
+
 interface PublicDemoRouteRouteChildren {
   PublicDemoColorsRoute: typeof PublicDemoColorsRoute;
   PublicDemoEmailRoute: typeof PublicDemoEmailRoute;
@@ -465,11 +492,10 @@ const PublicDemoRouteRouteWithChildren = PublicDemoRouteRoute._addFileChildren(
 );
 
 const rootRouteChildren: RootRouteChildren = {
+  AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
   PublicDemoRouteRoute: PublicDemoRouteRouteWithChildren,
   PublicIndexRoute: PublicIndexRoute,
-  AppDashboardIndexRoute: AppDashboardIndexRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

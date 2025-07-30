@@ -1,3 +1,4 @@
+import { serverOnly } from '@tanstack/react-start';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
@@ -15,112 +16,116 @@ import { nanoid } from '@/lib/nanoid';
 import { sendEmailVerification } from '@/modules/email/components/email-verification';
 import { sendPasswordReset } from '@/modules/email/components/password-reset';
 
-export const auth = betterAuth({
-  advanced: {
-    database: {
-      generateId: false,
-    },
-  },
-  database: drizzleAdapter(db, {
-    provider: 'pg',
-    usePlural: true,
-  }),
-  databaseHooks: {
-    user: {
-      create: {
-        after: async (user) => {
-          // Auto-create a personal organization for new users
-          const orgId = nanoid();
-          const orgSlug = `${(user as any).username ?? user.name.toLowerCase().replaceAll(/\s+/g, '-')}-${orgId.slice(-6)}`;
-
-          // Create the organization
-          await db.insert(organizations).values({
-            id: orgId,
-            name: `${user.name}'s Organization`,
-            slug: orgSlug,
-            createdAt: new Date(),
-          });
-
-          // Add user as owner of their personal organization
-          await db.insert(members).values({
-            id: nanoid(),
-            organizationId: orgId,
-            userId: user.id,
-            role: 'owner',
-            createdAt: new Date(),
-          });
-        },
+const getAuthConfig = serverOnly(() =>
+  betterAuth({
+    advanced: {
+      database: {
+        generateId: false,
       },
     },
-    session: {
-      create: {
-        before: async (session) => {
-          // Set the user's personal organization as active on first login
-          if (!(session as any).activeOrganizationId) {
-            const userMembership = await db
-              .select()
-              .from(members)
-              .where(eq(members.userId, session.userId))
-              .limit(1);
+    database: drizzleAdapter(db, {
+      provider: 'pg',
+      usePlural: true,
+    }),
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            // Auto-create a personal organization for new users
+            const orgId = nanoid();
+            const orgSlug = `${(user as any).username ?? user.name.toLowerCase().replaceAll(/\s+/g, '-')}-${orgId.slice(-6)}`;
 
-            if (userMembership.length > 0) {
-              return {
-                data: {
-                  ...session,
-                  activeOrganizationId: userMembership[0].organizationId,
-                },
-              };
+            // Create the organization
+            await db.insert(organizations).values({
+              id: orgId,
+              name: `${user.name}'s Organization`,
+              slug: orgSlug,
+              createdAt: new Date(),
+            });
+
+            // Add user as owner of their personal organization
+            await db.insert(members).values({
+              id: nanoid(),
+              organizationId: orgId,
+              userId: user.id,
+              role: 'owner',
+              createdAt: new Date(),
+            });
+          },
+        },
+      },
+      session: {
+        create: {
+          before: async (session) => {
+            // Set the user's personal organization as active on first login
+            if (!(session as any).activeOrganizationId) {
+              const userMembership = await db
+                .select()
+                .from(members)
+                .where(eq(members.userId, session.userId))
+                .limit(1);
+
+              if (userMembership.length > 0) {
+                return {
+                  data: {
+                    ...session,
+                    activeOrganizationId: userMembership[0].organizationId,
+                  },
+                };
+              }
             }
-          }
 
-          return { data: session };
+            return { data: session };
+          },
         },
       },
     },
-  },
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
-      await sendPasswordReset({
-        to: user.email,
-        url,
-        userName: user.name,
-      });
-    },
-  },
-  emailVerification: {
-    async afterEmailVerification() {
-      // Custom logic after verification
-    },
-    autoSignInAfterVerification: true,
-    sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url }) => {
-      await sendEmailVerification({
-        to: user.email,
-        url,
-        userName: user.name,
-      });
-    },
-  },
-  plugins: [
-    admin(),
-    reactStartCookies(),
-    multiSession(),
-    organization(),
-    username(),
-  ],
-  user: {
-    additionalFields: {
-      address: {
-        type: 'string',
-      },
-      phone: {
-        type: 'string',
-      },
-      website: {
-        type: 'string',
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: true,
+      sendResetPassword: async ({ user, url }) => {
+        await sendPasswordReset({
+          to: user.email,
+          url,
+          userName: user.name,
+        });
       },
     },
-  },
-});
+    emailVerification: {
+      async afterEmailVerification() {
+        // Custom logic after verification
+      },
+      autoSignInAfterVerification: true,
+      sendOnSignUp: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendEmailVerification({
+          to: user.email,
+          url,
+          userName: user.name,
+        });
+      },
+    },
+    plugins: [
+      admin(),
+      reactStartCookies(),
+      multiSession(),
+      organization(),
+      username(),
+    ],
+    user: {
+      additionalFields: {
+        address: {
+          type: 'string',
+        },
+        phone: {
+          type: 'string',
+        },
+        website: {
+          type: 'string',
+        },
+      },
+    },
+  }),
+);
+
+export const auth = getAuthConfig();
