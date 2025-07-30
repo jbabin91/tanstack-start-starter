@@ -42,7 +42,7 @@ const demoLinks = linkOptions([
 function RouteComponent() {
   return (
     <SidebarProvider>
-      <Sidebar className="mt-12" collapsible="icon" variant="floating">
+      <Sidebar className="mt-14" collapsible="icon" variant="floating">
         <div className="p-2">
           <SidebarTrigger />
         </div>
