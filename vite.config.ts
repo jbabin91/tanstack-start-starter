@@ -9,6 +9,10 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    tsconfigPaths({
+      projects: ['./tsconfig.json'],
+    }),
+    tailwindcss(),
     tanstackStart({
       customViteReactPlugin: true,
       tsr: {
@@ -17,8 +21,6 @@ export default defineConfig({
       },
     }),
     react(),
-    tailwindcss(),
-    tsconfigPaths(),
   ],
   server: {
     port: 3000,
