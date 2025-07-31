@@ -1,5 +1,5 @@
 import { type Label as LabelPrimitive, Slot } from 'radix-ui';
-import { createContext, useContext, useId } from 'react';
+import { createContext, use, useId, useMemo } from 'react';
 import {
   Controller,
   type ControllerProps,
@@ -30,16 +30,17 @@ function FormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({ ...props }: ControllerProps<TFieldValues, TName>) {
+  const contextValue = useMemo(() => ({ name: props.name }), [props.name]);
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
+    <FormFieldContext.Provider value={contextValue}>
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
 }
 
 function useFormField() {
-  const fieldContext = useContext(FormFieldContext);
-  const itemContext = useContext(FormItemContext);
+  const fieldContext = use(FormFieldContext);
+  const itemContext = use(FormItemContext);
   const { getFieldState } = useFormContext();
   const formState = useFormState({ name: fieldContext.name });
   const fieldState = getFieldState(fieldContext.name, formState);
@@ -71,8 +72,10 @@ const FormItemContext = createContext<FormItemContextValue>(
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = useId();
 
+  const contextValue = useMemo(() => ({ id }), [id]);
+
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={contextValue}>
       <div
         className={cn('grid gap-2', className)}
         data-slot="form-item"

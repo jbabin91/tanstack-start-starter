@@ -1,4 +1,4 @@
-import { createContext, useContext, useId, useMemo } from 'react';
+import { createContext, use, useId, useMemo } from 'react';
 import * as RechartsPrimitive from 'recharts';
 
 import { cn } from '@/utils/cn';
@@ -24,7 +24,7 @@ type ChartContextProps = {
 const ChartContext = createContext<ChartContextProps | null>(null);
 
 function useChart() {
-  const context = useContext(ChartContext);
+  const context = use(ChartContext);
 
   if (!context) {
     throw new Error('useChart must be used within a <ChartContainer />');
@@ -47,9 +47,10 @@ function ChartContainer({
 }) {
   const uniqueId = useId();
   const chartId = `chart-${id ?? uniqueId.replaceAll(':', '')}`;
+  const contextValue = useMemo(() => ({ config }), [config]);
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={contextValue}>
       <div
         className={cn(
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='hsl(var(--border))']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='hsl(var(--border))']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='hsl(var(--border))']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='hsl(var(--background))']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='hsl(var(--background))']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
@@ -79,6 +80,7 @@ function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
 
   return (
     <style
+      // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
@@ -231,11 +233,11 @@ function ChartTooltipContent({
                         {itemConfig?.label ?? item.name}
                       </span>
                     </div>
-                    {item.value && (
+                    {item.value ? (
                       <span className="text-foreground font-mono font-medium tabular-nums">
                         {item.value.toLocaleString()}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </>
               )}

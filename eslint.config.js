@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import pluginReact from '@eslint-react/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 import configPrettier from 'eslint-config-prettier';
@@ -7,6 +8,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import sortKeysPlus from 'eslint-plugin-sort-keys-plus';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -90,6 +92,7 @@ export default tseslint.config(
     },
   },
   {
+    extends: [pluginReact.configs['recommended-type-checked']],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {
       parserOptions: {
@@ -106,6 +109,9 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.flatConfigs.recommended.rules,
+      '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
+      '@eslint-react/no-context-provider': 'off',
+      '@eslint-react/no-nested-component-definitions': 'off',
       'react-hooks/exhaustive-deps': 'off',
       'react/jsx-no-bind': 'off',
       'react/jsx-no-constructed-context-values': 'off',
@@ -133,6 +139,22 @@ export default tseslint.config(
         },
       },
       react: { version: 'detect' },
+    },
+  },
+  {
+    files: ['eslint.config.js', 'vite.config.ts'],
+    plugins: {
+      'sort-keys-plus': sortKeysPlus,
+    },
+    rules: {
+      'sort-keys-plus/sort-keys': [
+        'error',
+        'asc',
+        {
+          caseSensitive: false,
+          minKeys: 3,
+        },
+      ],
     },
   },
   configPrettier,

@@ -6,9 +6,10 @@ import useEmblaCarousel, {
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import {
   createContext,
+  use,
   useCallback,
-  useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
@@ -39,7 +40,7 @@ type CarouselContextProps = {
 const CarouselContext = createContext<CarouselContextProps | null>(null);
 
 function useCarousel() {
-  const context = useContext(CarouselContext);
+  const context = use(CarouselContext);
 
   if (!context) {
     throw new Error('useCarousel must be used within a <Carousel />');
@@ -111,20 +112,32 @@ function Carousel({
     };
   }, [api, onSelect]);
 
+  const carouselContextValue = useMemo(
+    () => ({
+      api: api,
+      scrollPrev,
+      scrollNext,
+      canScrollPrev,
+      canScrollNext,
+      carouselRef,
+      opts,
+      orientation:
+        orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
+    }),
+    [
+      api,
+      scrollPrev,
+      scrollNext,
+      canScrollPrev,
+      canScrollNext,
+      carouselRef,
+      opts,
+      orientation,
+    ],
+  );
+
   return (
-    <CarouselContext.Provider
-      value={{
-        api: api,
-        canScrollNext,
-        canScrollPrev,
-        carouselRef,
-        opts,
-        orientation:
-          orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
-        scrollNext,
-        scrollPrev,
-      }}
-    >
+    <CarouselContext.Provider value={carouselContextValue}>
       <div
         aria-label={ariaLabel}
         aria-roledescription="carousel"

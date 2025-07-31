@@ -70,9 +70,13 @@ function RouteComponent() {
           });
 
           // Small delay before redirect to show success message
-          setTimeout(() => {
+          const timeoutId = setTimeout(() => {
             navigate({ to: '/dashboard' });
           }, 2000);
+
+          return () => {
+            clearTimeout(timeoutId);
+          };
         }
       } catch (error) {
         console.error('Email verification error:', error);
