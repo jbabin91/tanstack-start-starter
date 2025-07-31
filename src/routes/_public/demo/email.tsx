@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { DemoEmailForm } from '@/modules/email/components/demo-email-form';
+import { EmailDemoForm } from '@/modules/email/components/email-demo-form';
 
 export const Route = createFileRoute('/_public/demo/email')({
   component: RouteComponent,
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_public/demo/email')({
 function RouteComponent() {
   return (
     <div className="mx-auto flex w-full max-w-xl items-center justify-center p-8">
-      <DemoEmailForm />
+      <EmailDemoForm />
     </div>
   );
 }

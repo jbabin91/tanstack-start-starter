@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import { type } from 'arktype';
 
-import { sendDemoEmail } from '@/modules/email/components/demo-email';
-import { formDemoSchema } from '@/modules/email/components/demo-email-form';
+import { formDemoSchema } from '@/modules/email/components/email-demo-form';
+import { sendDemoEmail } from '@/modules/email/templates/demo-email';
 
 export const sendDemoEmailFn = createServerFn()
   .validator((data: unknown) => {

@@ -20,7 +20,7 @@ export const formDemoSchema = type({
   email: 'string.email>=1',
 });
 
-export function DemoEmailForm() {
+export function EmailDemoForm() {
   const form = useForm<typeof formDemoSchema.infer>({
     defaultValues: {
       email: '',

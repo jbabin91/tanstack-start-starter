@@ -13,8 +13,8 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { members, organizations } from '@/lib/db/schemas/auth';
 import { nanoid } from '@/lib/nanoid';
-import { sendEmailVerification } from '@/modules/email/components/email-verification';
-import { sendPasswordReset } from '@/modules/email/components/password-reset';
+import { sendEmailVerification } from '@/modules/email/templates/email-verification';
+import { sendPasswordReset } from '@/modules/email/templates/password-reset';
 
 const getAuthConfig = serverOnly(() =>
   betterAuth({
