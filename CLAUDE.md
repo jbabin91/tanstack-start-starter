@@ -93,6 +93,8 @@ When writing or modifying code, you MUST run these commands:
 - React 19 function components with proper TypeScript props
 - Use `@tanstack/react-query` for all data fetching
 - Leverage TanStack Router's type-safe navigation
+- Use `Icons` component for all icons: `<Icons.activity />` instead of direct lucide imports
+- **Lucide icons:** Always import with `*Icon` suffix (e.g., `ActivityIcon`, not `Activity`) to avoid naming conflicts
 
 **TypeScript Patterns:**
 
