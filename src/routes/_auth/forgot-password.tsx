@@ -19,10 +19,10 @@ export const Route = createFileRoute('/_auth/forgot-password')({
   }),
 });
 
-const handleResetSuccess = () => {
+function handleResetSuccess() {
   // The form component will handle showing the email sent state
   // No navigation needed here as the form shows inline feedback
-};
+}
 
 function RouteComponent() {
   return (

@@ -124,7 +124,7 @@ function RouteComponent() {
     }
   };
 
-  const renderContent = () => {
+  function renderContent() {
     switch (verificationState) {
       case 'loading': {
         return (
@@ -247,7 +247,7 @@ function RouteComponent() {
         return null;
       }
     }
-  };
+  }
 
   return renderContent();
 }

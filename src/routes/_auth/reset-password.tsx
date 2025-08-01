@@ -26,21 +26,21 @@ export const Route = createFileRoute('/_auth/reset-password')({
   }),
 });
 
-const handleResetError = (error: string) => {
+function handleResetError(error: string) {
   // Handle error (could show toast, etc.)
   console.error('Password reset error:', error);
-};
+}
 
 function RouteComponent() {
   const { token } = Route.useSearch();
   const navigate = useNavigate();
 
-  const handleResetSuccess = () => {
+  function handleResetSuccess() {
     // Navigate to login page after successful password reset
     navigate({
       to: '/login',
     });
-  };
+  }
 
   if (!token) {
     return (
