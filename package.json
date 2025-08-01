@@ -9,7 +9,7 @@
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "db:migrate": "pnpm with-env drizzle-kit migrate --config drizzle.config.ts",
     "db:reset": "pnpm with-env tsx src/lib/db/reset.ts",
-    "db:seed": "pnpm with-env tsx src/lib/db/seed.ts",
+    "db:seed": "pnpm with-env tsx src/lib/db/seed/index.ts",
     "db:studio": "pnpm with-env drizzle-kit studio --config drizzle.config.ts",
     "dev": "pnpm with-env vite",
     "env:login": "pnpm dlx dotenv-vault@latest login --yes",
