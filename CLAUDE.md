@@ -82,11 +82,11 @@ When writing or modifying code, you MUST run these commands:
 
 **Import Style:**
 
-- Use `@/` alias for all src imports
+- **MANDATORY: Use `@/` alias for all src imports** - NO relative imports (`./` or `../`)
 - Auto-sorted imports with simple-import-sort
 - Prefer `type` imports for TypeScript types
 - Import shadcn/ui components from `@/components/ui/<component>`
-- **No Barrel Files:** Import components directly, avoid `index.ts` re-exports
+- **No Barrel Files:** Import components directly, avoid `index.ts` re-exports except UI components
 
 **React Patterns:**
 
@@ -111,6 +111,21 @@ When writing or modifying code, you MUST run these commands:
 - All schemas in `src/lib/db/schemas/` with Arktype validation
 - Use Drizzle's relational queries for complex data fetching
 - Seed realistic data using `@faker-js/faker` (see `src/lib/db/seed.ts`)
+
+**API Patterns:**
+
+- **Server Functions:** Use `createServerFn()` from TanStack Start (NOT traditional API routes)
+- **Location:** Place server functions in `src/modules/{feature}/api/{function-name}.ts`
+- **Query Integration:** Export `{feature}Queries` from `src/modules/{feature}/hooks/use-queries.ts`
+- **Query Pattern:** Simple `{feature}Queries.method()` returning `queryOptions` objects
+- **Exception:** Only `/api/auth/$` route exists for better-auth OAuth callbacks
+
+**TanStack Query Patterns:**
+
+- **Query Structure:** Simple `queryOptions` pattern with direct key access via `.queryKey`
+- **File Organization:** `use-queries.ts` for queries, `use-mutations.ts` for mutations (when needed)
+- **Query Keys:** Use `as const` for proper TypeScript inference
+- **Invalidation:** Access keys via `queryOptions().queryKey` for cache invalidation
 
 **Authentication Flow:**
 
