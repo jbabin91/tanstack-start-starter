@@ -95,6 +95,7 @@ When writing or modifying code, you MUST run these commands:
 - Leverage TanStack Router's type-safe navigation
 - Use `Icons` component for all icons: `<Icons.activity />` instead of direct lucide imports
 - **Lucide icons:** Always import with `*Icon` suffix (e.g., `ActivityIcon`, not `Activity`) to avoid naming conflicts
+- **Function declarations preferred:** Use `function name() {}` instead of `const name = () => {}` for utility functions
 
 **TypeScript Patterns:**
 
