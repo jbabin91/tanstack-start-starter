@@ -2,10 +2,10 @@
 
 import { arktypeResolver } from '@hookform/resolvers/arktype';
 import { type } from 'arktype';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -155,9 +155,9 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
-                          <EyeOffIcon className="text-muted-foreground h-4 w-4" />
+                          <Icons.eyeOff className="text-muted-foreground h-4 w-4" />
                         ) : (
-                          <EyeIcon className="text-muted-foreground h-4 w-4" />
+                          <Icons.eye className="text-muted-foreground h-4 w-4" />
                         )}
                       </Button>
                     </div>
