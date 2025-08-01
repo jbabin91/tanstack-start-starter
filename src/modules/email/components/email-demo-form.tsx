@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { sendDemoEmailFn } from '@/modules/email/api';
+import { sendDemoEmailFn } from '@/modules/email/api/send-demo-email';
 
 export const formDemoSchema = type({
   email: 'string.email>=1',

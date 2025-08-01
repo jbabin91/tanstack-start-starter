@@ -1,11 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { postQueries } from '@/modules/posts/api';
 import { PostErrorComponent } from '@/modules/posts/components/post-error';
 import { PostNotFoundComponent } from '@/modules/posts/components/post-not-found';
-import { usePost } from '@/modules/posts/hooks/use-queries';
-import { userQueries } from '@/modules/users/api';
-import { useUser } from '@/modules/users/hooks/use-queries';
+import { postQueries, usePost } from '@/modules/posts/hooks/use-queries';
+import { userQueries, useUser } from '@/modules/users/hooks/use-queries';
 
 export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
   component: RouteComponent,

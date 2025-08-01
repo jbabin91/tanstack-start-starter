@@ -11,8 +11,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { userQueries } from '@/modules/users/api';
-import { useUsers } from '@/modules/users/hooks/use-queries';
+import { userQueries, useUsers } from '@/modules/users/hooks/use-queries';
 
 export const Route = createFileRoute('/_app/users')({
   component: RouteComponent,
