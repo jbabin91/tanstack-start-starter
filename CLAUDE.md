@@ -86,7 +86,7 @@ When writing or modifying code, you MUST run these commands:
 - Auto-sorted imports with simple-import-sort
 - Prefer `type` imports for TypeScript types
 - Import shadcn/ui components from `@/components/ui/<component>`
-- **No Barrel Files:** Import components directly, avoid `index.ts` re-exports except UI components
+- **No Barrel Files:** Import components directly, avoid `index.ts` re-exports
 
 **React Patterns:**
 
@@ -110,22 +110,44 @@ When writing or modifying code, you MUST run these commands:
 
 - All schemas in `src/lib/db/schemas/` with Arktype validation
 - Use Drizzle's relational queries for complex data fetching
-- Seed realistic data using `@faker-js/faker` (see `src/lib/db/seed.ts`)
+- Seed realistic data using `@faker-js/faker`
+- **Schema Organization:**
+  - `index.ts` - Main schema exports and relations
+  - Individual schema files for each entity (e.g., `users.ts`, `posts.ts`)
+  - `auth.ts` - Auto-generated from better-auth config
+- **Seed Data:** Modularized in `src/lib/db/seed/` with separate files per entity
 
 **API Patterns:**
 
 - **Server Functions:** Use `createServerFn()` from TanStack Start (NOT traditional API routes)
-- **Location:** Place server functions in `src/modules/{feature}/api/{function-name}.ts`
+- **One Function Per File:** Each server function in its own file: `src/modules/{feature}/api/{action}-{resource}.ts`
+- **File Naming Examples:** `get-users.ts`, `get-user.ts`, `create-post.ts`, `revoke-session.ts`
 - **Query Integration:** Export `{feature}Queries` from `src/modules/{feature}/hooks/use-queries.ts`
 - **Query Pattern:** Simple `{feature}Queries.method()` returning `queryOptions` objects
 - **Exception:** Only `/api/auth/$` route exists for better-auth OAuth callbacks
 
 **TanStack Query Patterns:**
 
-- **Query Structure:** Simple `queryOptions` pattern with direct key access via `.queryKey`
+- **Query Structure:** Simple `queryOptions` pattern (NOT TkDodo's hierarchical approach)
 - **File Organization:** `use-queries.ts` for queries, `use-mutations.ts` for mutations (when needed)
 - **Query Keys:** Use `as const` for proper TypeScript inference
-- **Invalidation:** Access keys via `queryOptions().queryKey` for cache invalidation
+- **Direct Access:** Access keys via `{feature}Queries.method().queryKey` for cache invalidation
+- **Example Pattern:**
+
+  ```typescript
+  export const userQueries = {
+    all: () =>
+      queryOptions({
+        queryKey: ['users'] as const,
+        queryFn: () => fetchUsers(),
+      }),
+    byId: (id: string) =>
+      queryOptions({
+        queryKey: ['users', id] as const,
+        queryFn: () => fetchUser({ data: id }),
+      }),
+  };
+  ```
 
 **Authentication Flow:**
 
@@ -144,6 +166,7 @@ src/
 ├── modules/           # Feature modules
 │   ├── email/         # Email functionality
 │   ├── posts/         # Post management
+│   ├── sessions/      # Session management
 │   └── users/         # User management
 ├── lib/               # Core utilities
 │   ├── auth/          # Authentication config
@@ -155,6 +178,24 @@ src/
 │   ├── _public/       # Public routes
 │   └── api/           # API endpoints
 └── configs/           # Configuration files
+```
+
+**Module Structure Pattern:**
+
+Each feature module follows this structure:
+
+```sh
+modules/{feature}/
+├── api/              # Server functions (one per file)
+│   ├── get-{resource}.ts
+│   ├── create-{resource}.ts
+│   └── update-{resource}.ts
+├── hooks/            # React Query hooks
+│   ├── use-queries.ts
+│   └── use-mutations.ts (if needed)
+├── components/       # Feature-specific components
+├── types/           # TypeScript types
+└── utils/           # Feature utilities
 ```
 
 ## Important Configuration Notes
@@ -180,3 +221,16 @@ Follow conventional commits:
 - `refactor(scope): description` - Code changes without feature/bug changes
 
 Use imperative mood, keep first line under 72 characters, no trailing period.
+
+## Glossary
+
+**Barrel File:** A file that only re-exports code from other files without any implementation. Example:
+
+```typescript
+// This is a barrel file - AVOID THESE
+export { UserList } from './UserList';
+export { UserProfile } from './UserProfile';
+export type { User } from './types';
+```
+
+Instead, import directly from the source files.
