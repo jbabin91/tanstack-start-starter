@@ -95,7 +95,9 @@ When writing or modifying code, you MUST run these commands:
 - Leverage TanStack Router's type-safe navigation
 - Use `Icons` component for all icons: `<Icons.activity />` instead of direct lucide imports
 - **Lucide icons:** Always import with `*Icon` suffix (e.g., `ActivityIcon`, not `Activity`) to avoid naming conflicts
-- **Function declarations preferred:** Use `function name() {}` instead of `const name = () => {}` for utility functions
+- **Function declarations preferred:** Use `function name() {}` instead of `const name = () => {}` for standalone utility functions
+- **Arrow functions acceptable for:** Event handlers within components, object properties/methods, hook callbacks, and inline functions
+- **Define functions outside components:** Move utility functions outside component scope when they don't depend on props/state to prevent re-creation on renders
 
 **TypeScript Patterns:**
 
