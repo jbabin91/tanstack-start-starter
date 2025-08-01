@@ -53,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 ### ❌ Assuming Missing ARIA
 
-**WRONG**: "This component lacks accessibility"  
+**WRONG**: "This component lacks accessibility"
 **RIGHT**: Verify existing ARIA attributes (aria-busy, aria-invalid, role)
 
 ### ❌ Assuming Old TailwindCSS

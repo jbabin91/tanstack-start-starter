@@ -16,6 +16,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm format` / `pnpm format:check` - Prettier formatting
 - `pnpm typecheck` - TypeScript type checking
 
+**MANDATORY: Code Quality Workflow**
+When writing or modifying code, you MUST run these commands:
+
+1. `pnpm lint:fix` - Fix linting errors automatically
+2. `pnpm format` - Format code with Prettier
+3. `pnpm typecheck` - Verify TypeScript types
+
+**Zero-tolerance policy:** All linting errors and warnings must be resolved before code is considered complete.
+
 **Database:**
 
 - `pnpm db:generate` - Generate Drizzle migrations
@@ -54,6 +63,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 5. **Environment Management:** Uses `dotenvx` with `.env` files, configuration in `src/configs/env.ts`
 
 ## Development Patterns
+
+**Code Quality Enforcement:**
+
+- **ALWAYS** run `pnpm lint:fix && pnpm format && pnpm typecheck` after writing/modifying code
+- **NEVER** commit code with linting errors or warnings
+- Fix all ESLint issues immediately - zero-tolerance policy
+- Run formatter to ensure consistent code style
 
 **File Naming:** kebab-case for all files except TanStack Router $param routes
 
