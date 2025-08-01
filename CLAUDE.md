@@ -71,6 +71,13 @@ When writing or modifying code, you MUST run these commands:
 - Fix all ESLint issues immediately - zero-tolerance policy
 - Run formatter to ensure consistent code style
 
+**File Size Guidelines:**
+
+- **250+ lines:** Consider splitting into logical modules
+- **400+ lines:** Refactoring is strongly recommended
+- **Structure pattern:** `feature/index.ts` (main) + `feature/utils.ts` (helpers) + `feature/types.ts` (types)
+- **Split criteria:** Logical cohesion, reusability, testability over raw line count
+
 **File Naming:** kebab-case for all files except TanStack Router $param routes
 
 **Import Style:**
