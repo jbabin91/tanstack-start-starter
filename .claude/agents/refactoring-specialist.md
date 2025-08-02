@@ -45,9 +45,10 @@ Your core responsibilities:
 
 **Code Quality Enforcement:**
 
-- Always run the mandatory workflow after refactoring: pnpm lint:fix && pnpm format && pnpm typecheck
+- Code quality is automatically enforced via hooks after file modifications
+- When you modify files, appropriate checks run automatically (typecheck for TS files, lint:fix for JS/TS files, format for all)
+- Fix any automatic check failures immediately before proceeding
 - Ensure zero linting errors or warnings in the refactored code
-- Maintain consistent code style and formatting
 - Verify all TypeScript types are correct and complete
 
 **Communication:**

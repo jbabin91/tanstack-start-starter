@@ -16,14 +16,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm format` / `pnpm format:check` - Prettier formatting
 - `pnpm typecheck` - TypeScript type checking
 
-**MANDATORY: Code Quality Workflow**
-When writing or modifying code, you MUST run these commands:
+**Code Quality Standards**
+Code quality is automatically enforced via hooks after file modifications. The following commands run automatically:
 
-1. `pnpm lint:fix` - Fix linting errors automatically
-2. `pnpm format` - Format code with Prettier
-3. `pnpm typecheck` - Verify TypeScript types
+- `pnpm format` - Format code with Prettier
+- `pnpm lint` - Check for linting errors
+- `pnpm typecheck` - Verify TypeScript types
 
-**Zero-tolerance policy:** All linting errors and warnings must be resolved before code is considered complete.
+**Zero-tolerance policy:** All linting errors and warnings must be resolved before code is considered complete. If automatic checks fail, fix issues immediately.
 
 **Database:**
 
@@ -66,10 +66,10 @@ When writing or modifying code, you MUST run these commands:
 
 **Code Quality Enforcement:**
 
-- **ALWAYS** run `pnpm lint:fix && pnpm format && pnpm typecheck` after writing/modifying code
+- Code quality checks run automatically after file modifications via hooks
 - **NEVER** commit code with linting errors or warnings
 - Fix all ESLint issues immediately - zero-tolerance policy
-- Run formatter to ensure consistent code style
+- If automatic checks report errors, resolve them before proceeding
 
 **File Size Guidelines:**
 

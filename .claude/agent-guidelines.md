@@ -1,30 +1,32 @@
 # Agent Guidelines for Code Quality
 
-## Mandatory Code Quality Workflow
+## Automatic Code Quality Enforcement
 
-**ALL agents working on this codebase MUST follow this workflow:**
+**Code quality is automatically enforced via hooks after file modifications.**
 
-### After Writing/Modifying ANY Code:
+### What Happens Automatically:
 
-1. **`pnpm lint:fix`** - Fix all linting errors automatically
-2. **`pnpm format`** - Format code with Prettier
-3. **`pnpm typecheck`** - Verify TypeScript types
+When you modify files, the following checks run automatically based on file type:
+
+- **TypeScript files (.ts, .tsx)**: `pnpm typecheck`
+- **JavaScript/TypeScript files (.ts, .tsx, .js, .jsx, .cjs, .mjs)**: `pnpm lint:fix`
+- **All formattable files (.ts, .tsx, .js, .jsx, .cjs, .mjs, .json, .md, .mdx)**: `pnpm format`
 
 ### Zero-Tolerance Policy:
 
-- **NEVER** consider code complete until all linting errors/warnings are resolved
-- **ALWAYS** run the three commands above after any code changes
-- **IMMEDIATELY** fix any ESLint issues that arise
-- **CONSISTENTLY** format code to maintain project standards
+- **NEVER** consider code complete until all automatic checks pass
+- **IMMEDIATELY** fix any issues reported by the automatic checks
+- **ALWAYS** ensure zero linting errors or warnings before proceeding
+- **CONSISTENTLY** maintain code quality standards
 
-### Implementation Pattern:
+### When Automatic Checks Fail:
 
-```bash
-# After writing code changes
-pnpm lint:fix && pnpm format && pnpm typecheck
+If the automatic hooks report errors:
 
-# Only proceed if all commands succeed without errors
-```
+1. Read the error output carefully
+2. Fix the identified issues immediately
+3. Save the file again to re-trigger the checks
+4. Only proceed when all checks pass
 
 ### Why This Matters:
 
