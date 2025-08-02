@@ -22,6 +22,6 @@ export function useUsers() {
 }
 
 // Fetch a user by ID
-export function useUser(id: string) {
+export function useUser({ id }: { id: string }) {
   return useSuspenseQuery(userQueries.byId(id));
 }

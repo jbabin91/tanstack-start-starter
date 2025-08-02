@@ -46,12 +46,16 @@ export function useCurrentSession() {
 
 /**
  * Hook to get session activity for a specific session
- * @param sessionId - The session ID to get activity for
- * @param enabled - Whether the query should be enabled (defaults to true if sessionId exists)
  */
-export function useSessionActivity(sessionId?: string, enabled?: boolean) {
+export function useSessionActivity({
+  sessionId,
+  enabled = true,
+}: {
+  sessionId?: string;
+  enabled?: boolean;
+}) {
   return useQuery({
     ...sessionQueries.activity(sessionId ?? ''),
-    enabled: enabled ?? !!sessionId,
+    enabled: enabled && !!sessionId,
   });
 }

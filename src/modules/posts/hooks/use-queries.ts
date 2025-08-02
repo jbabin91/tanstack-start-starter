@@ -17,11 +17,11 @@ export const postQueries = {
 };
 
 // Fetch a post by ID
-export function usePost(id: string) {
+export function usePost({ id }: { id: string }) {
   return useSuspenseQuery(postQueries.byId(id));
 }
 
 // Fetch posts by user ID
-export function usePostsByUserId(userId: string) {
+export function usePostsByUserId({ userId }: { userId: string }) {
   return useSuspenseQuery(postQueries.byUserId(userId));
 }

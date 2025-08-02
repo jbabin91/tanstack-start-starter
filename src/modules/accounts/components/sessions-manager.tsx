@@ -28,7 +28,9 @@ export function SessionsManager() {
     null,
   );
   const { data: sessions } = useSessions();
-  const { data: activityData } = useSessionActivity(selectedSessionId ?? '');
+  const { data: activityData } = useSessionActivity({
+    sessionId: selectedSessionId ?? '',
+  });
 
   return (
     <div className="space-y-6">

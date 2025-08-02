@@ -27,8 +27,8 @@ export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
 
 function RouteComponent() {
   const { postId, userId } = Route.useParams();
-  const { data: post } = usePost(postId);
-  const { data: user } = useUser(userId);
+  const { data: post } = usePost({ id: postId });
+  const { data: user } = useUser({ id: userId });
 
   return (
     <div className="space-y-4">
