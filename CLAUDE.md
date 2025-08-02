@@ -204,13 +204,26 @@ export const userQueries = {
     }),
 };
 
-// Reusable hooks
+// Reusable hooks with object parameters (STANDARD PATTERN)
 export function useUsers() {
   return useSuspenseQuery(userQueries.all());
 }
 
-export function useUser(id: string) {
+export function useUser({ id }: { id: string }) {
   return useSuspenseQuery(userQueries.byId(id));
+}
+
+export function useSessionActivity({
+  sessionId,
+  enabled = true,
+}: {
+  sessionId?: string;
+  enabled?: boolean;
+}) {
+  return useQuery({
+    ...sessionQueries.activity(sessionId ?? ''),
+    enabled: enabled && !!sessionId,
+  });
 }
 ```
 
@@ -240,6 +253,14 @@ export function useUpdateUser() {
 - **Extract when:** Query configurations (enabled, refetchInterval) are duplicated
 - **Keep inline when:** Query is used only once in a single component
 - **Pattern:** Create hooks that encapsulate both query logic and common configurations
+
+**Object Parameter Standards:**
+
+- **MANDATORY:** All custom hooks MUST use object parameters for consistency
+- **Simple hooks:** Even single parameters use objects: `useUser({ id })`
+- **Complex hooks:** Multiple parameters with defaults: `useSessionActivity({ sessionId, enabled = true })`
+- **Type definitions:** Always provide explicit TypeScript types for parameter objects
+- **Default values:** Set defaults in parameter destructuring when appropriate
 
 **Authentication Flow:**
 
