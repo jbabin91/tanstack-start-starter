@@ -26,7 +26,7 @@ export const Route = createRootRouteWithContext<{
   beforeLoad: async ({ context }) => {
     const user = await context.queryClient.fetchQuery(
       authQueries.currentUser(),
-    ); // we're using react-query for caching, see router.tsx
+    );
     return { user };
   },
 
