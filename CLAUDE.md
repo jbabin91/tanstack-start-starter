@@ -122,6 +122,42 @@ When writing or modifying code, you MUST run these commands:
   - `auth.ts` - Auto-generated from better-auth config
 - **Seed Data:** Modularized in `src/lib/db/seed/` with separate files per entity
 
+**Modern Drizzle Schema Patterns:**
+
+- **MANDATORY: Modern pgTable API** - Use array format `(table) => []` NOT deprecated object format `(table) => ({})`
+- **Performance Indexes:** Add indexes on ALL foreign key columns and frequently queried fields
+- **Foreign Key Patterns:** Always specify cascade behavior: `onDelete: 'cascade'` or `onDelete: 'set null'`
+- **Timestamp Standards:** Use `timestamp({ withTimezone: true })` with `.defaultNow()` and `.$onUpdate(() => new Date())`
+- **ID Generation:** Consistent `$defaultFn(() => nanoid())` pattern for all primary keys
+
+**Database Schema Example:**
+
+```typescript
+export const posts = pgTable(
+  'posts',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    title: varchar({ length: 255 }).notNull(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    // Performance indexes for common queries
+    index('posts_user_id_idx').on(table.userId),
+    index('posts_created_at_idx').on(table.createdAt),
+    index('posts_user_created_at_idx').on(table.userId, table.createdAt),
+  ],
+);
+```
+
 **API Patterns:**
 
 - **Server Functions:** Use `createServerFn()` from TanStack Start (NOT traditional API routes)
@@ -137,22 +173,73 @@ When writing or modifying code, you MUST run these commands:
 - **File Organization:** `use-queries.ts` for queries, `use-mutations.ts` for mutations (when needed)
 - **Query Keys:** Use `as const` for proper TypeScript inference
 - **Direct Access:** Access keys via `{feature}Queries.method().queryKey` for cache invalidation
-- **Example Pattern:**
+- **Hook Extraction:** Extract repeated `useQuery`/`useMutation` calls into reusable hooks
 
-  ```typescript
-  export const userQueries = {
-    all: () =>
-      queryOptions({
-        queryKey: ['users'] as const,
-        queryFn: () => fetchUsers(),
-      }),
-    byId: (id: string) =>
-      queryOptions({
-        queryKey: ['users', id] as const,
-        queryFn: () => fetchUser({ data: id }),
-      }),
-  };
-  ```
+**Query Invalidation Pattern:**
+
+```typescript
+// GOOD: Use existing queryKey from queryOptions
+queryClient.invalidateQueries({
+  queryKey: userQueries.byId(userId).queryKey,
+});
+
+// BAD: Duplicate query key arrays
+queryClient.invalidateQueries({ queryKey: ['users', userId] });
+```
+
+**Custom Hook Patterns:**
+
+```typescript
+// src/modules/users/hooks/use-queries.ts
+export const userQueries = {
+  all: () =>
+    queryOptions({
+      queryKey: ['users'] as const,
+      queryFn: () => fetchUsers(),
+    }),
+  byId: (id: string) =>
+    queryOptions({
+      queryKey: ['users', id] as const,
+      queryFn: () => fetchUser({ data: id }),
+    }),
+};
+
+// Reusable hooks
+export function useUsers() {
+  return useSuspenseQuery(userQueries.all());
+}
+
+export function useUser(id: string) {
+  return useSuspenseQuery(userQueries.byId(id));
+}
+```
+
+**Mutation Hook Patterns:**
+
+```typescript
+// src/modules/users/hooks/use-mutations.ts
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateUser,
+    onSuccess: (data) => {
+      // Targeted invalidation using existing queryOptions
+      queryClient.invalidateQueries({
+        queryKey: userQueries.byId(data.id).queryKey,
+      });
+    },
+  });
+}
+```
+
+**Hook Extraction Guidelines:**
+
+- **Extract when:** Multiple components use the same `useQuery(featureQueries.method())` pattern
+- **Extract when:** Complex mutation logic with optimistic updates is repeated
+- **Extract when:** Query configurations (enabled, refetchInterval) are duplicated
+- **Keep inline when:** Query is used only once in a single component
+- **Pattern:** Create hooks that encapsulate both query logic and common configurations
 
 **Authentication Flow:**
 
@@ -196,8 +283,8 @@ modules/{feature}/
 │   ├── create-{resource}.ts
 │   └── update-{resource}.ts
 ├── hooks/            # React Query hooks
-│   ├── use-queries.ts
-│   └── use-mutations.ts (if needed)
+│   ├── use-queries.ts    # queryOptions + custom query hooks
+│   └── use-mutations.ts  # custom mutation hooks (when needed)
 ├── components/       # Feature-specific components
 ├── types/           # TypeScript types
 └── utils/           # Feature utilities
