@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getWebRequest } from '@tanstack/react-start/server';
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray } from 'drizzle-orm';
 
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db';
@@ -88,11 +88,16 @@ export const fetchSessions = createServerFn().handler(async () => {
   logger.info(`Fetching sessions for user ${session.user.id}...`);
 
   try {
-    // Get all sessions for the user
+    // Get all active (non-expired) sessions for the user
     const userSessions = await db
       .select()
       .from(sessions)
-      .where(eq(sessions.userId, session.user.id))
+      .where(
+        and(
+          eq(sessions.userId, session.user.id),
+          gt(sessions.expiresAt, new Date()), // Only include sessions that haven't expired
+        ),
+      )
       .orderBy(desc(sessions.updatedAt));
 
     // Get session metadata for all sessions

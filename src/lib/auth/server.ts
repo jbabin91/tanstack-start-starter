@@ -16,6 +16,9 @@ import { nanoid } from '@/lib/nanoid';
 import { sendEmailVerification } from '@/modules/email/templates/email-verification';
 import { sendPasswordReset } from '@/modules/email/templates/password-reset';
 
+import { extractIPAddress } from './utils/ip-extraction';
+import { createSessionMetadata } from './utils/session-metadata-creator';
+
 const getAuthConfig = serverOnly(() =>
   betterAuth({
     advanced: {
@@ -56,7 +59,13 @@ const getAuthConfig = serverOnly(() =>
       },
       session: {
         create: {
-          before: async (session) => {
+          before: async (session, context) => {
+            // Extract IP address using utility function
+            const { ipAddress } = extractIPAddress(
+              session.ipAddress,
+              context?.request,
+            );
+
             // Set the user's personal organization as active on first login
             if (!(session as any).activeOrganizationId) {
               const userMembership = await db
@@ -70,12 +79,26 @@ const getAuthConfig = serverOnly(() =>
                   data: {
                     ...session,
                     activeOrganizationId: userMembership[0].organizationId,
+                    ipAddress: ipAddress ?? session.ipAddress,
                   },
                 };
               }
             }
 
-            return { data: session };
+            return {
+              data: {
+                ...session,
+                ipAddress: ipAddress ?? session.ipAddress,
+              },
+            };
+          },
+          after: async (session, context) => {
+            // Create session metadata using utility function
+            await createSessionMetadata({
+              sessionId: session.id,
+              sessionIP: session.ipAddress,
+              request: context?.request,
+            });
           },
         },
       },

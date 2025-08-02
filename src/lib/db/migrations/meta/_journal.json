@@ -15,6 +15,13 @@
       "when": 1754080416782,
       "tag": "0001_living_meteorite",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754094869100,
+      "tag": "0002_glossy_marvel_zombies",
+      "breakpoints": true
     }
   ]
 }

@@ -21,12 +21,14 @@ import { Route as AuthLoginRouteImport } from './routes/_auth/login';
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password';
 import { Route as PublicDemoRouteRouteImport } from './routes/_public/demo/route';
 import { Route as AppUsersRouteRouteImport } from './routes/_app/users/route';
+import { Route as AppAccountRouteRouteImport } from './routes/_app/account/route';
 import { Route as PublicDemoIndexRouteImport } from './routes/_public/demo/index';
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index';
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index';
 import { Route as PublicDemoEmailRouteImport } from './routes/_public/demo/email';
 import { Route as PublicDemoColorsRouteImport } from './routes/_public/demo/colors';
 import { Route as AppUsersUserIdIndexRouteImport } from './routes/_app/users/$userId/index';
+import { Route as AppAccountSessionsIndexRouteImport } from './routes/_app/account/sessions/index';
 import { Route as AppUsersUserIdPostsRouteRouteImport } from './routes/_app/users/$userId/posts/route';
 import { Route as AppUsersUserIdPostsPostIdRouteImport } from './routes/_app/users/$userId/posts/$postId';
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$';
@@ -81,6 +83,11 @@ const AppUsersRouteRoute = AppUsersRouteRouteImport.update({
   path: '/users',
   getParentRoute: () => AppRouteRoute,
 } as any);
+const AppAccountRouteRoute = AppAccountRouteRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AppRouteRoute,
+} as any);
 const PublicDemoIndexRoute = PublicDemoIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -111,6 +118,11 @@ const AppUsersUserIdIndexRoute = AppUsersUserIdIndexRouteImport.update({
   path: '/$userId/',
   getParentRoute: () => AppUsersRouteRoute,
 } as any);
+const AppAccountSessionsIndexRoute = AppAccountSessionsIndexRouteImport.update({
+  id: '/sessions/',
+  path: '/sessions/',
+  getParentRoute: () => AppAccountRouteRoute,
+} as any);
 const AppUsersUserIdPostsRouteRoute =
   AppUsersUserIdPostsRouteRouteImport.update({
     id: '/$userId/posts',
@@ -130,6 +142,7 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 } as any);
 
 export interface FileRoutesByFullPath {
+  '/account': typeof AppAccountRouteRouteWithChildren;
   '/users': typeof AppUsersRouteRouteWithChildren;
   '/demo': typeof PublicDemoRouteRouteWithChildren;
   '/forgot-password': typeof AuthForgotPasswordRoute;
@@ -144,10 +157,12 @@ export interface FileRoutesByFullPath {
   '/users/': typeof AppUsersIndexRoute;
   '/demo/': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
+  '/account/sessions': typeof AppAccountSessionsIndexRoute;
   '/users/$userId': typeof AppUsersUserIdIndexRoute;
   '/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
 }
 export interface FileRoutesByTo {
+  '/account': typeof AppAccountRouteRouteWithChildren;
   '/forgot-password': typeof AuthForgotPasswordRoute;
   '/login': typeof AuthLoginRoute;
   '/register': typeof AuthRegisterRoute;
@@ -160,6 +175,7 @@ export interface FileRoutesByTo {
   '/users': typeof AppUsersIndexRoute;
   '/demo': typeof PublicDemoIndexRoute;
   '/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
+  '/account/sessions': typeof AppAccountSessionsIndexRoute;
   '/users/$userId': typeof AppUsersUserIdIndexRoute;
   '/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
 }
@@ -167,6 +183,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/_app': typeof AppRouteRouteWithChildren;
   '/_auth': typeof AuthRouteRouteWithChildren;
+  '/_app/account': typeof AppAccountRouteRouteWithChildren;
   '/_app/users': typeof AppUsersRouteRouteWithChildren;
   '/_public/demo': typeof PublicDemoRouteRouteWithChildren;
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute;
@@ -181,12 +198,14 @@ export interface FileRoutesById {
   '/_app/users/': typeof AppUsersIndexRoute;
   '/_public/demo/': typeof PublicDemoIndexRoute;
   '/_app/users/$userId/posts': typeof AppUsersUserIdPostsRouteRouteWithChildren;
+  '/_app/account/sessions/': typeof AppAccountSessionsIndexRoute;
   '/_app/users/$userId/': typeof AppUsersUserIdIndexRoute;
   '/_app/users/$userId/posts/$postId': typeof AppUsersUserIdPostsPostIdRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
+    | '/account'
     | '/users'
     | '/demo'
     | '/forgot-password'
@@ -201,10 +220,12 @@ export interface FileRouteTypes {
     | '/users/'
     | '/demo/'
     | '/users/$userId/posts'
+    | '/account/sessions'
     | '/users/$userId'
     | '/users/$userId/posts/$postId';
   fileRoutesByTo: FileRoutesByTo;
   to:
+    | '/account'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -217,12 +238,14 @@ export interface FileRouteTypes {
     | '/users'
     | '/demo'
     | '/users/$userId/posts'
+    | '/account/sessions'
     | '/users/$userId'
     | '/users/$userId/posts/$postId';
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
+    | '/_app/account'
     | '/_app/users'
     | '/_public/demo'
     | '/_auth/forgot-password'
@@ -237,6 +260,7 @@ export interface FileRouteTypes {
     | '/_app/users/'
     | '/_public/demo/'
     | '/_app/users/$userId/posts'
+    | '/_app/account/sessions/'
     | '/_app/users/$userId/'
     | '/_app/users/$userId/posts/$postId';
   fileRoutesById: FileRoutesById;
@@ -341,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUsersRouteRouteImport;
       parentRoute: typeof AppRouteRoute;
     };
+    '/_app/account': {
+      id: '/_app/account';
+      path: '/account';
+      fullPath: '/account';
+      preLoaderRoute: typeof AppAccountRouteRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
     '/_public/demo/': {
       id: '/_public/demo/';
       path: '/';
@@ -383,6 +414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUsersUserIdIndexRouteImport;
       parentRoute: typeof AppUsersRouteRoute;
     };
+    '/_app/account/sessions/': {
+      id: '/_app/account/sessions/';
+      path: '/sessions';
+      fullPath: '/account/sessions';
+      preLoaderRoute: typeof AppAccountSessionsIndexRouteImport;
+      parentRoute: typeof AppAccountRouteRoute;
+    };
     '/_app/users/$userId/posts': {
       id: '/_app/users/$userId/posts';
       path: '/$userId/posts';
@@ -410,6 +448,18 @@ declare module '@tanstack/react-start/server' {
     };
   }
 }
+
+interface AppAccountRouteRouteChildren {
+  AppAccountSessionsIndexRoute: typeof AppAccountSessionsIndexRoute;
+}
+
+const AppAccountRouteRouteChildren: AppAccountRouteRouteChildren = {
+  AppAccountSessionsIndexRoute: AppAccountSessionsIndexRoute,
+};
+
+const AppAccountRouteRouteWithChildren = AppAccountRouteRoute._addFileChildren(
+  AppAccountRouteRouteChildren,
+);
 
 interface AppUsersUserIdPostsRouteRouteChildren {
   AppUsersUserIdPostsPostIdRoute: typeof AppUsersUserIdPostsPostIdRoute;
@@ -442,11 +492,13 @@ const AppUsersRouteRouteWithChildren = AppUsersRouteRoute._addFileChildren(
 );
 
 interface AppRouteRouteChildren {
+  AppAccountRouteRoute: typeof AppAccountRouteRouteWithChildren;
   AppUsersRouteRoute: typeof AppUsersRouteRouteWithChildren;
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute;
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppAccountRouteRoute: AppAccountRouteRouteWithChildren,
   AppUsersRouteRoute: AppUsersRouteRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
 };

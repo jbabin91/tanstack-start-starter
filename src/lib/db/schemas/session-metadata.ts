@@ -96,25 +96,19 @@ export const sessionMetadata = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  (table) => [
     // Performance indexes
-    sessionIdIdx: index('session_metadata_session_id_idx').on(table.sessionId),
-    deviceFingerprintIdx: index('session_metadata_device_fingerprint_idx').on(
+    index('session_metadata_session_id_idx').on(table.sessionId),
+    index('session_metadata_device_fingerprint_idx').on(
       table.deviceFingerprint,
     ),
-    securityScoreIdx: index('session_metadata_security_score_idx').on(
-      table.securityScore,
-    ),
-    lastActivityIdx: index('session_metadata_last_activity_idx').on(
-      table.lastActivityAt,
-    ),
-    createdAtIdx: index('session_metadata_created_at_idx').on(table.createdAt),
+    index('session_metadata_security_score_idx').on(table.securityScore),
+    index('session_metadata_last_activity_idx').on(table.lastActivityAt),
+    index('session_metadata_created_at_idx').on(table.createdAt),
 
     // Unique constraint to prevent duplicate metadata per session
-    sessionIdUnique: unique('session_metadata_session_id_unique').on(
-      table.sessionId,
-    ),
-  }),
+    unique('session_metadata_session_id_unique').on(table.sessionId),
+  ],
 );
 
 // Trusted devices for persistent device management
@@ -149,26 +143,22 @@ export const trustedDevices = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  (table) => [
     // Performance indexes
-    userIdActiveIdx: index('trusted_devices_user_id_active_idx').on(
+    index('trusted_devices_user_id_active_idx').on(
       table.userId,
       table.isActive,
     ),
-    deviceFingerprintIdx: index('trusted_devices_device_fingerprint_idx').on(
-      table.deviceFingerprint,
-    ),
-    expiresAtIdx: index('trusted_devices_expires_at_idx').on(table.expiresAt),
-    lastSeenAtIdx: index('trusted_devices_last_seen_at_idx').on(
-      table.lastSeenAt,
-    ),
+    index('trusted_devices_device_fingerprint_idx').on(table.deviceFingerprint),
+    index('trusted_devices_expires_at_idx').on(table.expiresAt),
+    index('trusted_devices_last_seen_at_idx').on(table.lastSeenAt),
 
     // Prevent duplicate active devices per user
-    userDeviceUnique: unique('trusted_devices_user_device_unique').on(
+    unique('trusted_devices_user_device_unique').on(
       table.userId,
       table.deviceFingerprint,
     ),
-  }),
+  ],
 );
 
 // Session activity log for audit trail and analytics
@@ -198,37 +188,34 @@ export const sessionActivityLog = pgTable(
     // Timestamp
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Performance indexes for common queries
-    sessionIdCreatedAtIdx: index('session_activity_log_session_created_idx').on(
+    index('session_activity_log_session_created_idx').on(
       table.sessionId,
       table.createdAt,
     ),
-    userIdCreatedAtIdx: index('session_activity_log_user_created_idx').on(
+    index('session_activity_log_user_created_idx').on(
       table.userId,
       table.createdAt,
     ),
-    activityTypeCreatedAtIdx: index(
-      'session_activity_log_activity_created_idx',
-    ).on(table.activityType, table.createdAt),
-    createdAtIdx: index('session_activity_log_created_at_idx').on(
+    index('session_activity_log_activity_created_idx').on(
+      table.activityType,
       table.createdAt,
-    ), // For partitioning and cleanup
-    ipAddressIdx: index('session_activity_log_ip_address_idx').on(
-      table.ipAddress,
-    ), // Security analysis
+    ),
+    index('session_activity_log_created_at_idx').on(table.createdAt), // For partitioning and cleanup
+    index('session_activity_log_ip_address_idx').on(table.ipAddress), // Security analysis
 
     // Composite indexes for complex queries
-    userActivityTypeIdx: index('session_activity_log_user_activity_idx').on(
+    index('session_activity_log_user_activity_idx').on(
       table.userId,
       table.activityType,
       table.createdAt,
     ),
-    sessionActivityIdx: index('session_activity_log_session_activity_idx').on(
+    index('session_activity_log_session_activity_idx').on(
       table.sessionId,
       table.activityType,
     ),
-  }),
+  ],
 );
 
 // Relations for type-safe joins

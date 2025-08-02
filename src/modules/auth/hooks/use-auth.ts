@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 
 import { authClient } from '@/lib/auth/client';
+import { authQueries } from '@/modules/auth/hooks/use-current-user';
 
 /**
  * Hook for handling authentication actions with proper state management
@@ -19,7 +20,9 @@ export function useAuth() {
   const handleLoginSuccess = async (redirectUrl?: string) => {
     try {
       // Invalidate user query to refetch user data
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      await queryClient.invalidateQueries({
+        queryKey: authQueries.all().queryKey,
+      });
 
       // Invalidate router context to refresh user data
       router.invalidate();
@@ -42,7 +45,9 @@ export function useAuth() {
       await authClient.signOut();
 
       // Invalidate user query and router context
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      await queryClient.invalidateQueries({
+        queryKey: authQueries.all().queryKey,
+      });
       router.invalidate();
 
       // Navigate to home page
@@ -60,7 +65,9 @@ export function useAuth() {
       await authClient.signOut();
 
       // Invalidate user query and router context
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      await queryClient.invalidateQueries({
+        queryKey: authQueries.all().queryKey,
+      });
       router.invalidate();
 
       // Navigate to login page

@@ -11,7 +11,7 @@ import {
   trustedDevices,
 } from '@/lib/db/schemas';
 import { logger } from '@/lib/logger';
-import type { SessionWithDetails } from '@/modules/sessions/api/get-sessions';
+import type { SessionWithDetails } from '@/modules/accounts/api/get-sessions';
 
 export const fetchCurrentSession = createServerFn().handler(async () => {
   const { headers } = getWebRequest();
