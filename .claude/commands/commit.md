@@ -18,9 +18,19 @@ description: Create a conventional commit with auto-generated or custom message
 
 Use the provided message as the commit message. Validate it follows conventional commit format before proceeding.
 
+**IMPORTANT: Check the `includeCoAuthoredBy` setting from .claude/settings.json:**
+
+- If `"includeCoAuthoredBy": false`, use ONLY the provided message without any co-authored lines
+- If `"includeCoAuthoredBy": true` or the setting is missing, append the standard co-authored footer
+
 ### If no arguments provided:
 
 Analyze the staged changes and generate a conventional commit message.
+
+**IMPORTANT: Check the `includeCoAuthoredBy` setting from .claude/settings.json:**
+
+- If `"includeCoAuthoredBy": false`, do NOT include any co-authored lines in the commit message
+- If `"includeCoAuthoredBy": true` or the setting is missing, include the standard co-authored footer
 
 ## Conventional Commit Standards
 
