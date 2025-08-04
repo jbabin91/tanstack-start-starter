@@ -1,20 +1,26 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = [
+#     "cchooks>=0.1.3",
+# ]
+# ///
+
 """
-SessionStart Hook
-Restores context when resuming a Claude Code session
-Reverted to manual JSON parsing for compatibility with Claude Code's hook format
+Modern SessionStart hook using cchooks SDK
+Loads project context when Claude Code starts or resumes sessions
 """
 
-import json
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Optional
 
-from utils import get_subagent_stats, load_work_context
+from cchooks import create_context, SessionStartContext
 
 
-def get_git_status():
+def get_git_status() -> tuple[Optional[str], Optional[int]]:
     """Get current git status information."""
     try:
         # Get current branch
@@ -44,7 +50,23 @@ def get_git_status():
         return None, None
 
 
-def load_development_context():
+def get_recently_modified_files(minutes: int = 30) -> List[str]:
+    """Get recently modified files"""
+    try:
+        result = subprocess.run(
+            f"find src -type f \\( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \\) -mmin -{minutes} | head -10",
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        return result.stdout.strip().split('\n') if result.stdout.strip() else []
+    except Exception:
+        return []
+
+
+def load_development_context() -> List[str]:
     """Load relevant development context for the session."""
     context_parts = []
     
@@ -54,14 +76,6 @@ def load_development_context():
         context_parts.append(f"🌿 Current branch: {branch}")
         if changes and changes > 0:
             context_parts.append(f"📝 Uncommitted changes: {changes} files")
-    
-    # Load project-specific context files if they exist
-    context_files = [
-        "CLAUDE.md",
-        ".github/README.md", 
-        "TODO.md",
-        ".claude/CONTEXT.md"
-    ]
     
     # Check for active work in progress
     work_in_progress_dir = Path(".claude/work-in-progress")
@@ -81,46 +95,66 @@ def load_development_context():
         if archive_files:
             context_parts.append(f"📦 Archived: {len(archive_files)} completed features")
     
-    for file_path in context_files:
-        if Path(file_path).exists():
-            try:
-                with open(file_path, 'r') as f:
-                    content = f.read().strip()
-                    if content and file_path == "CLAUDE.md":
-                        # Just note that project has CLAUDE.md configured
-                        context_parts.append("📋 Project has CLAUDE.md configuration")
-                        break
-            except Exception:
-                pass
+    # Check for project configuration
+    if Path("CLAUDE.md").exists():
+        context_parts.append("📋 Project has CLAUDE.md configuration")
+    
+    # Check package.json for project type
+    if Path("package.json").exists():
+        try:
+            import json
+            with open("package.json") as f:
+                pkg_data = json.load(f)
+                if "dependencies" in pkg_data:
+                    # Detect key frameworks
+                    deps = pkg_data["dependencies"]
+                    frameworks = []
+                    if "@tanstack/react-router" in deps:
+                        frameworks.append("TanStack Router")
+                    if "react" in deps:
+                        frameworks.append("React")
+                    if "drizzle-orm" in deps:
+                        frameworks.append("Drizzle ORM")
+                    if frameworks:
+                        context_parts.append(f"🛠️ Stack: {', '.join(frameworks)}")
+        except Exception:
+            pass
     
     return context_parts
 
 
+
+
 def main():
+    """Main hook entry point using cchooks"""
     try:
-        input_data = json.loads(sys.stdin.read())
+        # Create context using cchooks
+        context = create_context()
         
-        session_type = input_data.get('sessionType', 'startup')  # "startup", "resume", or "clear"
+        # Ensure this is a SessionStart context
+        if not isinstance(context, SessionStartContext):
+            print("❌ Invalid context - expected SessionStart", file=sys.stderr)
+            context.output.exit_success()
+            return
         
-        if session_type == "resume":
+        # Handle different session start types
+        if context.source == "resume":
             # Load previous work context
-            previous_context = load_work_context()
+            # Previous context now provided by cchooks automatically
+            print(f"\n🔄 Resuming session (context provided by cchooks)", file=sys.stderr)
+        
+        elif context.source == "startup":
+            print("\n🚀 Starting new Claude Code session", file=sys.stderr)
             
-            if previous_context:
-                timestamp = datetime.fromisoformat(previous_context["timestamp"])
-                hours_since = int((datetime.now() - timestamp).total_seconds() / 3600)
-                
-                print(f"\n🔄 Resuming session from {hours_since} hours ago:", file=sys.stderr)
-                print("📂 Last modified files:", file=sys.stderr)
-                
-                for file_path in previous_context["lastModifiedFiles"][:5]:
+            # Show recently modified files for context
+            recent_files = get_recently_modified_files(60)  # Last hour
+            if recent_files:
+                print("📂 Recently modified files:", file=sys.stderr)
+                for file_path in recent_files[:5]:
                     print(f"   - {file_path}", file=sys.stderr)
-                
-                branch_info = previous_context["branchInfo"]
-                print(f"🌿 Branch: {branch_info['current']} ({branch_info['status']})", file=sys.stderr)
-                
-                if previous_context.get("currentTask"):
-                    print(f"📋 Previous task: {previous_context['currentTask']}\n", file=sys.stderr)
+        
+        elif context.source == "clear":
+            print("\n🧹 Starting fresh session (history cleared)", file=sys.stderr)
         
         # Show development context for all session types
         context_parts = load_development_context()
@@ -129,19 +163,16 @@ def main():
             for part in context_parts:
                 print(f"   {part}", file=sys.stderr)
         
-        # Show subagent usage stats on any session start
-        stats = get_subagent_stats()
-        most_used = sorted(stats.items(), key=lambda x: x[1]["count"], reverse=True)[:3]
+        # Subagent stats now tracked by cchooks automatically
         
-        if most_used:
-            print("\n🤖 Your most used subagents:", file=sys.stderr)
-            for agent, data in most_used:
-                success_rate = int(data["successRate"] * 100)
-                print(f"   - {agent}: {data['count']} uses ({success_rate}% success)", file=sys.stderr)
-            print("", file=sys.stderr)
+        print("", file=sys.stderr)  # Add spacing
         
-        sys.exit(0)
-    except Exception:
+        # Always exit with success - output is added to session context
+        context.output.exit_success()
+        
+    except Exception as e:
+        print(f"❌ SessionStart hook error: {e}", file=sys.stderr)
+        # Use fallback exit on error
         sys.exit(0)
 
 

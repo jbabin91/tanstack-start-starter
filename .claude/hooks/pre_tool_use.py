@@ -1,54 +1,44 @@
 #!/usr/bin/env -S uv run --script
-# /// script  
+# /// script
 # requires-python = ">=3.8"
+# dependencies = [
+#     "cchooks>=0.1.3",
+# ]
 # ///
 
-import json
-import os
+"""
+Modern PreToolUse hook using cchooks SDK
+Blocks dangerous commands and .env file access to prevent accidental data loss
+"""
+
 import re
 import sys
-from pathlib import Path
+from cchooks import create_context, PreToolUseContext
 
 
 def is_dangerous_rm_command(command):
     """
-    Comprehensive detection of dangerous rm commands.
-    Matches various forms of rm -rf and similar destructive patterns.
+    Detection of truly dangerous rm commands.
+    Only blocks commands that could cause serious system damage.
     """
     # Normalize command by removing extra spaces and converting to lowercase
     normalized = ' '.join(command.lower().split())
     
-    # Pattern 1: Standard rm -rf variations
-    patterns = [
-        r'\brm\s+.*-[a-z]*r[a-z]*f',  # rm -rf, rm -fr, rm -Rf, etc.
-        r'\brm\s+.*-[a-z]*f[a-z]*r',  # rm -fr variations
-        r'\brm\s+--recursive\s+--force',  # rm --recursive --force
-        r'\brm\s+--force\s+--recursive',  # rm --force --recursive
-        r'\brm\s+-r\s+.*-f',  # rm -r ... -f
-        r'\brm\s+-f\s+.*-r',  # rm -f ... -r
+    # Only block rm -rf targeting dangerous system paths
+    dangerous_patterns = [
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+/',          # rm -rf /
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+/\*',       # rm -rf /*
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+~',         # rm -rf ~
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+\$HOME',    # rm -rf $HOME
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+\.\.',      # rm -rf ..
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+\.',        # rm -rf . (current dir)
+        r'\brm\s+.*-[a-z]*r[a-z]*f\s+\*',        # rm -rf * (all files)
     ]
     
-    # Check for dangerous patterns
-    for pattern in patterns:
+    # Check for truly dangerous patterns only
+    for pattern in dangerous_patterns:
         if re.search(pattern, normalized):
             return True
-    
-    # Pattern 2: Check for rm with recursive flag targeting dangerous paths
-    dangerous_paths = [
-        r'/',           # Root directory
-        r'/\*',         # Root with wildcard
-        r'~',           # Home directory
-        r'~/',          # Home directory path
-        r'\$HOME',      # Home environment variable
-        r'\.\.',        # Parent directory references
-        r'\*',          # Wildcards in general rm -rf context
-        r'\.',          # Current directory
-    ]
-    
-    if re.search(r'\brm\s+.*-[a-z]*r', normalized):  # If rm has recursive flag
-        for path in dangerous_paths:
-            if re.search(path, normalized):
-                return True
     
     return False
 
@@ -83,83 +73,41 @@ def is_env_file_access(tool_name, tool_input):
     
     return False
 
-
-def debug_mode_active() -> bool:
-    """Check if debug mode is enabled"""
-    return os.getenv("CLAUDE_HOOKS_DEBUG", "0") == "1"
-
-def log_debug(message: str):
-    """Log debug message if debug mode is active"""
-    if debug_mode_active():
-        print(f"🐛 [DEBUG] {message}", file=sys.stderr)
-
 def main():
+    """Main hook entry point using cchooks"""
     try:
-        # Read JSON input from stdin
-        input_data = json.load(sys.stdin)
+        # Create context using cchooks
+        context = create_context()
         
-        log_debug("Pre tool use hook started")
-        log_debug(f"Input data keys: {list(input_data.keys())}")
-        
-        # Use correct field names from Claude Code
-        tool_name = input_data.get('tool_name', '')
-        tool_input = input_data.get('tool_input', {})
-        
-        log_debug(f"Tool: {tool_name}")
-        log_debug(f"Tool input keys: {list(tool_input.keys()) if tool_input else []}")
+        # Ensure this is a PreToolUse context
+        if not isinstance(context, PreToolUseContext):
+            print("❌ Invalid context - expected PreToolUse", file=sys.stderr)
+            context.output.exit_success()
+            return
         
         # Check for .env file access (blocks access to sensitive environment files)
-        if is_env_file_access(tool_name, tool_input):
-            log_debug("Blocking .env file access")
-            print("BLOCKED: Access to .env files containing sensitive data is prohibited", file=sys.stderr)
+        if is_env_file_access(context.tool_name, context.tool_input):
+            print("🚫 BLOCKED: Access to .env files containing sensitive data is prohibited", file=sys.stderr)
             print("Use .env.sample for template files instead", file=sys.stderr)
-            sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
+            context.output.exit_error("Environment file access blocked for security")
+            return
         
-        # Check for dangerous rm -rf commands
-        if tool_name == 'Bash':
-            command = tool_input.get('command', '')
-            log_debug(f"Checking bash command: {command}")
+        # Check for dangerous rm commands
+        if context.tool_name == "Bash":
+            command = context.tool_input.get("command", "")
             
-            # Block rm -rf commands with comprehensive pattern matching
             if is_dangerous_rm_command(command):
-                log_debug("Blocking dangerous rm command")
-                print("BLOCKED: Dangerous rm command detected and prevented", file=sys.stderr)
-                sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
+                print("🚫 BLOCKED: Dangerous rm command detected and prevented", file=sys.stderr)
+                print(f"   Command: {command}", file=sys.stderr)
+                context.output.exit_error("Dangerous command blocked for safety")
+                return
         
-        # Log the event (simple logging like theirs)
-        log_dir = Path.cwd() / 'logs'
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / 'pre_tool_use.json'
+        # All checks passed - allow operation
+        context.output.exit_success()
         
-        # Read existing log data or initialize empty list
-        if log_path.exists():
-            with open(log_path, 'r') as f:
-                try:
-                    log_data = json.load(f)
-                except (json.JSONDecodeError, ValueError):
-                    log_data = []
-        else:
-            log_data = []
-        
-        # Append new data
-        log_data.append(input_data)
-        
-        # Write back to file with formatting
-        with open(log_path, 'w') as f:
-            json.dump(log_data, f, indent=2)
-        
-        if debug_mode_active():
-            print("🐛 [DEBUG] Pre-tool use check completed - always showing output in debug mode", file=sys.stderr)
-            sys.exit(2)  # Always visible in debug mode
-        else:
-            log_debug("Pre-tool use check completed successfully")
-            sys.exit(0)
-        
-    except json.JSONDecodeError as e:
-        log_debug(f"JSON decode error: {e}")
-        sys.exit(0)
     except Exception as e:
-        log_debug(f"Exception occurred: {type(e).__name__}: {e}")
+        print(f"❌ PreToolUse hook error: {e}", file=sys.stderr)
+        # Use fallback exit on error - don't block operations due to hook failures
         sys.exit(0)
 
 

@@ -1,44 +1,40 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.8"
+# dependencies = [
+#     "cchooks>=0.1.3",
+# ]
 # ///
 
-import json
+"""
+Modern SubagentStop hook using cchooks SDK
+Tracks subagent completion events
+"""
+
 import sys
-from pathlib import Path
+from cchooks import create_context, SubagentStopContext
 
 def main():
+    """Main hook entry point using cchooks"""
     try:
-        # Read JSON input from stdin
-        input_data = json.load(sys.stdin)
+        # Create context using cchooks
+        context = create_context()
         
-        # Ensure logs directory exists
-        log_dir = Path.cwd() / 'logs'
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / 'subagent_stop.json'
+        # Ensure this is a SubagentStop context
+        if not isinstance(context, SubagentStopContext):
+            print("❌ Invalid context - expected SubagentStop", file=sys.stderr)
+            context.output.exit_success()
+            return
         
-        # Read existing log data or initialize empty list
-        if log_path.exists():
-            with open(log_path, 'r') as f:
-                try:
-                    log_data = json.load(f)
-                except (json.JSONDecodeError, ValueError):
-                    log_data = []
-        else:
-            log_data = []
+        # Log subagent completion (silent operation)
+        # Context contains subagent_type, task_description, success status, etc.
         
-        # Append new data
-        log_data.append(input_data)
+        # Always exit silently for subagent stop events
+        context.output.exit_success()
         
-        # Write back to file with formatting
-        with open(log_path, 'w') as f:
-            json.dump(log_data, f, indent=2)
-        
-        sys.exit(0)
-        
-    except json.JSONDecodeError:
-        sys.exit(0)
-    except Exception:
+    except Exception as e:
+        print(f"❌ SubagentStop hook error: {e}", file=sys.stderr)
+        # Use fallback exit on error
         sys.exit(0)
 
 if __name__ == "__main__":

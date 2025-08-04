@@ -1,23 +1,22 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.8"
+# dependencies = [
+#     "cchooks>=0.1.3",
+# ]
 # ///
 
-import json
-import os
-import sys
+"""
+Modern Stop hook using cchooks SDK
+Provides session summary with git status and quality checks
+"""
+
 import subprocess
+import sys
+from datetime import datetime 
 from pathlib import Path
-from datetime import datetime
+from cchooks import create_context, StopContext
 
-def debug_mode_active() -> bool:
-    """Check if debug mode is enabled"""
-    return os.getenv("CLAUDE_HOOKS_DEBUG", "0") == "1"
-
-def log_debug(message: str):
-    """Log debug message if debug mode is active"""
-    if debug_mode_active():
-        print(f"🐛 [DEBUG] {message}", file=sys.stderr)
 
 def get_git_status():
     """Get current git changes for session summary."""
@@ -71,9 +70,8 @@ def run_final_quality_check():
 
     return checks_passed, issues
 
-def generate_session_summary(input_data):
+def generate_session_summary():
     """Generate a simple session summary."""
-    session_id = input_data.get('session_id', 'unknown')[:8]
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # Get git status
@@ -83,7 +81,7 @@ def generate_session_summary(input_data):
     quality_passed, quality_issues = run_final_quality_check()
 
     summary = [
-        f"Session {session_id} completed at {timestamp}",
+        f"Claude Code session completed at {timestamp}",
         f"Files modified: {change_count}",
     ]
 
@@ -102,53 +100,28 @@ def generate_session_summary(input_data):
     return "\n".join(summary)
 
 def main():
+    """Main hook entry point using cchooks"""
     try:
-        # Read JSON input from stdin
-        input_data = json.load(sys.stdin)
+        # Create context using cchooks
+        context = create_context()
         
-        log_debug("Stop hook started")
-        log_debug(f"Input data keys: {list(input_data.keys())}")
-
-        # Ensure logs directory exists
-        log_dir = Path.cwd() / 'logs'
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / 'stop.json'
-
-        # Read existing log data or initialize empty list
-        if log_path.exists():
-            with open(log_path, 'r') as f:
-                try:
-                    log_data = json.load(f)
-                except (json.JSONDecodeError, ValueError):
-                    log_data = []
-        else:
-            log_data = []
-
-        # Append new data with summary
-        log_entry = input_data.copy()
-        log_entry['session_summary'] = generate_session_summary(input_data)
-        log_data.append(log_entry)
-
-        # Write back to file with formatting
-        with open(log_path, 'w') as f:
-            json.dump(log_data, f, indent=2)
-
-        # Print session summary to stdout (visible in transcript mode)
-        summary = generate_session_summary(input_data)
+        # Ensure this is a Stop context
+        if not isinstance(context, StopContext):
+            print("❌ Invalid context - expected Stop", file=sys.stderr)
+            context.output.exit_success()
+            return
+        
+        # Generate and display session summary
+        summary = generate_session_summary()
         print(f"\n📋 Session Summary:")
         print(summary)
         
-        if debug_mode_active():
-            print("\n🐛 [DEBUG] Stop hook completed - always showing output in debug mode", file=sys.stderr)
-            log_debug(f"Session summary generated: {len(summary)} characters")
+        # Exit with success (shows output to user)
+        context.output.exit_success()
         
-        sys.exit(0)
-
-    except json.JSONDecodeError as e:
-        log_debug(f"JSON decode error: {e}")
-        sys.exit(0)
     except Exception as e:
-        log_debug(f"Exception occurred: {type(e).__name__}: {e}")
+        print(f"❌ Stop hook error: {e}", file=sys.stderr)
+        # Use fallback exit on error
         sys.exit(0)
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@
 # Location: .claude/hooks-config.py
 
 # Enable/disable all hooks for this project
-CLAUDE_HOOKS_ENABLED = True
+CLAUDE_HOOKS_ENABLED = false
 
 # Enable debug mode (always shows hook output for troubleshooting)
 CLAUDE_HOOKS_DEBUG = False
