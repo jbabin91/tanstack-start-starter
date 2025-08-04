@@ -2,68 +2,116 @@
 
 ## Context
 
-- Current working directory: Analyze the provided GitHub repository using GitIngest service
-- Available tools: WebFetch for API calls, file operations for local storage
+- Use GitIngest CLI tool to convert GitHub repositories into AI-friendly text format
+- Available tools: Bash for CLI commands, file operations for saving analysis
 
 ## Your task
 
-Ingest and analyze a GitHub repository using the GitIngest service based on the provided URL.
+Ingest and analyze a GitHub repository using the GitIngest CLI tool, then provide comprehensive analysis.
 
 ### Usage Examples
 
 - `/ingest https://github.com/user/repo` - Analyze the main branch
-- `/ingest https://github.com/user/repo/tree/branch-name` - Analyze specific branch
+- `/ingest https://github.com/user/repo --branch feature-branch` - Analyze specific branch
 - `/ingest https://github.com/user/repo --save analysis.md` - Save analysis to file
+- `/ingest https://github.com/user/repo --filter "*.py,*.js"` - Focus on specific file types
 
 ### Process Flow
 
-1. **Validate URL**: Ensure it's a valid GitHub repository URL
-2. **Fetch Repository**: Use GitIngest API to convert repo to AI-friendly format
-3. **Process Content**: Parse the structured output (summary, structure, files)
-4. **Analysis**: Provide insights on:
-   - Repository structure and organization
-   - Technology stack and dependencies
-   - Code patterns and architecture
-   - Key files and components
-   - Potential integration points or learnings
+1. **Install GitIngest** (if not already installed): `pipx install gitingest`
+2. **Validate URL**: Ensure it's a valid GitHub repository URL
+3. **Run GitIngest CLI**: Use `gitingest <url> -o -` to stream output
+4. **Parse Structured Output**: Process the three sections:
+   - Repository Summary (metadata, file count, token estimate)
+   - Directory Structure (hierarchical tree view)
+   - File Contents (delimited code blocks)
+5. **Provide Analysis**: Generate insights and recommendations
 
-### GitIngest Integration
+### GitIngest CLI Integration
 
-Use the GitIngest service API:
+**Basic Command**:
 
-- **Base URL**: `https://gitingest.com/api/ingest`
-- **Method**: POST with JSON payload `{"url": "github-repo-url"}`
-- **Response**: Structured text with repo summary, directory tree, and file contents
+```bash
+gitingest https://github.com/user/repo -o -
+```
 
-### Output Format
+**Advanced Options**:
 
-Provide a comprehensive analysis including:
+- `-i "*.py"` - Include only Python files
+- `-e "node_modules/*"` - Exclude directories/patterns
+- `-s 51200` - Max file size (50KB)
+- `-b main` - Specific branch
+- `-t $GITHUB_TOKEN` - Private repos
+- `-o filename.txt` - Save to file
+
+### Output Format Structure
+
+GitIngest returns structured plain-text with three sections:
+
+1. **Repository Summary**
+
+```
+Repository: owner/repo-name
+Files analyzed: 42
+Estimated tokens: 15.2k
+```
+
+2. **Directory Structure**
+
+```
+Directory structure:
+└── project-name/
+    ├── src/
+    │   ├── main.py
+    │   └── utils.py
+    └── README.md
+```
+
+3. **File Contents**
+
+```
+================================================
+FILE: src/main.py
+================================================
+[file content here]
+```
+
+### Analysis Framework
+
+Provide comprehensive analysis covering:
 
 1. **Repository Overview**
-   - Name, description, primary language
-   - Repository statistics (files, size, etc.)
+   - Extract metadata from summary section
+   - Repository size, complexity, primary language
 2. **Architecture Analysis**
-   - Project structure breakdown
-   - Key directories and their purposes
+   - Parse directory structure for patterns
+   - Identify key components and organization
    - Configuration files and build setup
 3. **Technology Stack**
-   - Languages, frameworks, and libraries used
+   - Languages, frameworks, and libraries detected
    - Dependencies and package managers
-4. **Key Insights**
+   - Development tools and workflows
+4. **Code Quality & Patterns**
    - Notable patterns or approaches
+   - Code organization principles
+   - Testing strategies and documentation
+5. **Integration Insights**
    - Potential learnings for current project
-   - Integration opportunities
+   - Reusable patterns or components
+   - Best practices to adopt
 
 ### Error Handling
 
-- Handle private repositories (may require authentication)
-- Manage rate limits and API errors
-- Provide fallback for unsupported repositories
+- Check if GitIngest is installed, install if needed
+- Handle private repositories with token requirements
+- Manage network errors and timeouts
 - Validate GitHub URLs before processing
 
-### Optional Features
+### Command Arguments
 
-- `--save <filename>` - Save analysis to markdown file
-- `--filter <extensions>` - Focus on specific file types
+- `--save <filename>` - Save raw output and analysis to markdown file
+- `--filter <patterns>` - Comma-separated include patterns (e.g., "_.py,_.js,\*.md")
+- `--exclude <patterns>` - Comma-separated exclude patterns
 - `--branch <name>` - Analyze specific branch
+- `--max-size <bytes>` - Maximum file size to process
 - `--summary` - Provide condensed analysis only
