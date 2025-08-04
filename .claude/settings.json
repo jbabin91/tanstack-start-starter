@@ -68,6 +68,9 @@
       }
     ]
   },
+  "gitCommit": {
+    "includeCoauthoredBy": false
+  },
   "permissions": {
     "allow": [
       "Bash(bun run:*)",
