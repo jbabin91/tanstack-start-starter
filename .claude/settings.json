@@ -1,52 +1,92 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(mkdir:*)",
-      "mcp__serena__list_dir",
-      "Bash(mv:*)",
-      "Bash(rm:*)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:github.com)",
-      "mcp__sequential-thinking__sequentialthinking",
-      "mcp__serena__list_memories",
-      "mcp__serena__read_memory"
-    ],
-    "deny": []
-  },
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit",
-        "filter": "\\.(ts|tsx)$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "pnpm typecheck"
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "filter": "\\.(ts|tsx|js|jsx|cjs|mjs)$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "pnpm lint:fix"
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit",
         "filter": "\\.(ts|tsx|js|jsx|cjs|mjs|json|md|mdx)$",
         "hooks": [
           {
-            "type": "command",
-            "command": "pnpm format"
+            "command": "uv run .claude/hooks/post_tool_use.py",
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "uv run .claude/hooks/pre_compact.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "uv run .claude/hooks/pre_tool_use.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "uv run .claude/hooks/session_start.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "command": "uv run .claude/hooks/subagent_stop.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "uv run .claude/hooks/user_prompt_submit.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bun run:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(echo $?)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__serena__find_file",
+      "mcp__serena__list_dir",
+      "mcp__serena__list_memories",
+      "mcp__serena__read_memory",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "defaultMode": "acceptEdits",
+    "deny": []
   }
 }
