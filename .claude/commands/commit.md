@@ -14,6 +14,8 @@ description: Create a conventional commit with auto-generated or custom message
 
 **IMPORTANT: Only commit if the user has explicitly told you to commit.**
 
+**NOTE: All commits are automatically validated by commitlint. If validation fails, suggest using `pnpm commit` for interactive commit creation.**
+
 ### If arguments provided: `$ARGUMENTS`
 
 Use the provided message as the commit message. Validate it follows conventional commit format before proceeding.

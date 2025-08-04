@@ -17,6 +17,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm format` / `pnpm format:check` - Prettier formatting
 - `pnpm typecheck` - TypeScript type checking
 
+**Commit Quality:**
+
+- `pnpm commit` - Interactive commit creation with cz-git (enforces conventional commits)
+- `pnpm commit:lint` - Validate commit messages against conventional commit standards
+- **Automatic validation:** All commits are validated by commitlint via git hooks
+
 **Code Quality Standards**
 Code quality is automatically enforced via hooks after file modifications. The following commands run automatically:
 

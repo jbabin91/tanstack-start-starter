@@ -6,6 +6,8 @@
   "scripts": {
     "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/auth/server.ts --output ./src/lib/db/schemas/auth.ts",
     "build": "pnpm with-env vite build",
+    "commit": "cz",
+    "commit:lint": "commitlint --edit",
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "db:migrate": "pnpm with-env drizzle-kit migrate --config drizzle.config.ts",
     "db:reset": "pnpm with-env tsx src/lib/db/reset.ts",
@@ -26,6 +28,11 @@
     "start": "pnpm with-env node .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenvx run --"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.48.4",
@@ -67,6 +74,8 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint-react/eslint-plugin": "^1.52.3",
     "@eslint/js": "^9.32.0",
     "@faker-js/faker": "^9.9.0",
@@ -82,6 +91,8 @@
     "@types/react-dom": "^19.1.7",
     "@types/ua-parser-js": "^0.7.39",
     "@vitejs/plugin-react": "^4.7.0",
+    "commitizen": "^4.3.1",
+    "cz-git": "^1.12.0",
     "drizzle-kit": "^0.31.4",
     "drizzle-seed": "^0.3.1",
     "eslint": "^9.32.0",
