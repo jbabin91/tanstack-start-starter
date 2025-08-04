@@ -55,6 +55,115 @@ def run_format(file_path: str) -> dict:
     return {"success": format_success, "changed": format_success}
 
 
+def check_new_files() -> list:
+    """Check for new untracked files that need quality checks"""
+    success, stdout, stderr = run_command("git status --porcelain")
+    if not success:
+        return []
+    
+    new_files = []
+    for line in stdout.split('\n'):
+        if line.startswith('??'):  # Untracked files
+            file_path = line[3:].strip()
+            if file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx')):
+                new_files.append(file_path)
+    
+    return new_files
+
+
+def process_file_quality_checks(file_path: str, session_id: str):
+    """Process quality checks for a single file"""
+    if not Path(file_path).exists():
+        log_event("post_tool_use", {
+            "early_exit": True,
+            "reason": "File doesn't exist",
+            "file_path": file_path
+        }, session_id)
+        return
+    
+    is_typescript_file = file_path.endswith(('.ts', '.tsx'))
+    is_code_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'))
+    is_formattable_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx'))
+    
+    file_name = Path(file_path).name
+    print(f"\n🔧 Running quality checks on {file_name}...", file=sys.stderr)
+    
+    has_issues = False
+    activity_occurred = False
+    
+    # Format first
+    if is_formattable_file:
+        format_result = run_format(file_path)
+        if format_result["changed"]:
+            print("📝 Code formatted", file=sys.stderr)
+            activity_occurred = True
+    
+    # Then lint and fix
+    if is_code_file:
+        lint_result = run_lint_fix(file_path)
+        
+        if lint_result["fixedCount"] > 0:
+            print(f"✨ Fixed {lint_result['fixedCount']} linting issues", file=sys.stderr)
+            activity_occurred = True
+        
+        if lint_result["errorCount"] > 0:
+            print(f"❌ {lint_result['errorCount']} linting errors need manual attention", file=sys.stderr)
+            has_issues = True
+            activity_occurred = True
+        
+        if lint_result["warningCount"] > 0:
+            print(f"⚠️  {lint_result['warningCount']} linting warnings", file=sys.stderr)
+            activity_occurred = True
+    
+    # Finally type check
+    if is_typescript_file:
+        type_result = run_type_check()
+        if not type_result["success"]:
+            print("💥 TypeScript errors detected", file=sys.stderr)
+            # Show first few lines of type errors
+            lines = type_result["output"].split('\n')[:5]
+            for line in lines:
+                if line.strip():
+                    print(f"   {line}", file=sys.stderr)
+            has_issues = True
+            activity_occurred = True
+        else:
+            print("✅ Types are valid", file=sys.stderr)
+            activity_occurred = True
+    
+    # Log quality check results
+    quality_results = {
+        "quality_check_completed": True,
+        "file_path": file_path,
+        "file_type": {
+            "typescript": is_typescript_file,
+            "code": is_code_file,
+            "formattable": is_formattable_file
+        },
+        "activity_occurred": activity_occurred,
+        "has_issues": has_issues,
+        "checks_performed": {
+            "formatting": is_formattable_file,
+            "linting": is_code_file,
+            "type_checking": is_typescript_file
+        }
+    }
+    log_event("post_tool_use", quality_results, session_id)
+    
+    # Choose exit code based on activity and issues
+    if has_issues:
+        print("\n⚠️  Please fix the issues above before continuing\n", file=sys.stderr)
+        log_event("post_tool_use", {"visible_output": True, "reason": "Issues found"}, session_id)
+        sys.exit(2)  # Issues found - make output visible to user
+    elif activity_occurred:
+        print("✨ All quality checks passed!\n", file=sys.stderr)
+        log_event("post_tool_use", {"visible_output": True, "reason": "Activity occurred"}, session_id)
+        sys.exit(2)  # Activity occurred - make output visible to show what happened
+    else:
+        # No activity, no issues - silent success
+        log_event("post_tool_use", {"visible_output": False, "reason": "No activity needed"}, session_id)
+
+
 def main():
     try:
         # Read JSON input from stdin
@@ -70,6 +179,15 @@ def main():
         }, session_id)
         
         tool = input_data.get("tool", {})
+        
+        # Check for new files that need quality checks regardless of tool used
+        new_files = check_new_files()
+        if new_files:
+            print(f"\n🆕 Found {len(new_files)} untracked files that need quality checks...", file=sys.stderr)
+            for file_path in new_files:
+                process_file_quality_checks(file_path, session_id)
+            return
+        
         if not tool or tool.get("name") not in ["Write", "Edit", "MultiEdit"]:
             # Log early exit
             log_event("post_tool_use", {
@@ -89,90 +207,8 @@ def main():
             }, session_id)
             sys.exit(0)
         
-        is_typescript_file = file_path.endswith(('.ts', '.tsx'))
-        is_code_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'))
-        is_formattable_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx'))
-        
-        file_name = Path(file_path).name
-        print(f"\n🔧 Running quality checks on {file_name}...", file=sys.stderr)
-        
-        has_issues = False
-        
-        # Track activity for output decision
-        activity_occurred = False
-        
-        # Format first
-        if is_formattable_file:
-            format_result = run_format(file_path)
-            if format_result["changed"]:
-                print("📝 Code formatted", file=sys.stderr)
-                activity_occurred = True
-        
-        # Then lint and fix
-        if is_code_file:
-            lint_result = run_lint_fix(file_path)
-            
-            if lint_result["fixedCount"] > 0:
-                print(f"✨ Fixed {lint_result['fixedCount']} linting issues", file=sys.stderr)
-                activity_occurred = True
-            
-            if lint_result["errorCount"] > 0:
-                print(f"❌ {lint_result['errorCount']} linting errors need manual attention", file=sys.stderr)
-                has_issues = True
-                activity_occurred = True
-            
-            if lint_result["warningCount"] > 0:
-                print(f"⚠️  {lint_result['warningCount']} linting warnings", file=sys.stderr)
-                activity_occurred = True
-        
-        # Finally type check
-        if is_typescript_file:
-            type_result = run_type_check()
-            if not type_result["success"]:
-                print("💥 TypeScript errors detected", file=sys.stderr)
-                # Show first few lines of type errors
-                lines = type_result["output"].split('\n')[:5]
-                for line in lines:
-                    if line.strip():
-                        print(f"   {line}", file=sys.stderr)
-                has_issues = True
-                activity_occurred = True
-            else:
-                print("✅ Types are valid", file=sys.stderr)
-                activity_occurred = True
-        
-        # Log quality check results
-        quality_results = {
-            "quality_check_completed": True,
-            "file_path": file_path,
-            "file_type": {
-                "typescript": is_typescript_file,
-                "code": is_code_file,
-                "formattable": is_formattable_file
-            },
-            "activity_occurred": activity_occurred,
-            "has_issues": has_issues,
-            "checks_performed": {
-                "formatting": is_formattable_file,
-                "linting": is_code_file,
-                "type_checking": is_typescript_file
-            }
-        }
-        log_event("post_tool_use", quality_results, session_id)
-        
-        # Choose exit code based on activity and issues
-        if has_issues:
-            print("\n⚠️  Please fix the issues above before continuing\n", file=sys.stderr)
-            log_event("post_tool_use", {"visible_output": True, "reason": "Issues found"}, session_id)
-            sys.exit(2)  # Issues found - make output visible to user
-        elif activity_occurred:
-            print("✨ All quality checks passed!\n", file=sys.stderr)
-            log_event("post_tool_use", {"visible_output": True, "reason": "Activity occurred"}, session_id)
-            sys.exit(2)  # Activity occurred - make output visible to show what happened
-        else:
-            # No activity, no issues - silent success
-            log_event("post_tool_use", {"visible_output": False, "reason": "No activity needed"}, session_id)
-            sys.exit(0)
+        # Process the file that was just modified
+        process_file_quality_checks(file_path, session_id)
         
     except Exception as e:
         # Log error with detailed information
