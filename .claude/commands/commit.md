@@ -42,23 +42,24 @@ Analyze the staged changes and generate a conventional commit message.
 
 ### Type Prefixes
 
-- `feat`: New feature
-- `fix`: Bug fix
+- `feat`: New features
+- `fix`: Bug fixes
 - `docs`: Documentation changes
-- `style`: Code style changes (formatting, missing semi-colons, etc.)
+- `style`: Code style changes (formatting, etc.)
 - `refactor`: Code changes that neither fix bugs nor add features
 - `perf`: Performance improvements
 - `test`: Adding or correcting tests
-- `chore`: Changes to build process, dependencies, or tooling
-- `ci`: Changes to CI configuration files and scripts
+- `chore`: Dependencies, tooling, etc.
+- `ci`: CI configuration changes
 - `revert`: Revert a previous commit
 
 ### Writing Guidelines
 
 - Start commit message on the first line without any leading blank lines
-- Keep the first line under 72 characters
+- Keep the first line under 72 characters (enforced by commitlint)
 - Use imperative mood ("add" not "added" or "adds")
 - Don't end the subject line with a period
+- Use lowercase for subject (no sentence-case, start-case, pascal-case, or upper-case)
 - For complex changes, include a body with detailed explanation after the subject line, separated by a blank line
 
 ### Breaking Changes
@@ -68,9 +69,10 @@ Analyze the staged changes and generate a conventional commit message.
 
 ### Scope Guidelines
 
+- Use lowercase for scope names (enforced by commitlint)
+- Common project scopes: `auth`, `db`, `ui`, `api`, `hooks`, `commands`, `lint`, `deps`, `docs`, `types`, `config`, `build`, `test`
 - Extract scope from file paths (src/modules/auth → auth, src/lib/db → db)
-- Use lowercase for scope names
-- Keep scope names consistent across the project
+- Custom scopes are allowed but should be meaningful and consistent
 
 ### Examples
 

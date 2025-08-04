@@ -607,6 +607,10 @@ def process_file_quality_checks(file_path: str, input_data: dict):
     else:
         log_data = []
     
+    # Determine if any activity occurred or issues were found
+    activity_occurred = len(tracker.fixes) > 0 or len(tracker.warnings) > 0 or len(tracker.errors) > 0
+    has_issues = len(tracker.errors) > 0
+    
     # Append new quality check results
     quality_results = input_data.copy()
     quality_results.update({
