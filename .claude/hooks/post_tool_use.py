@@ -117,7 +117,25 @@ def has_make_target(target: str, makefile_path: Path) -> bool:
 def find_lint_command(file_path: str) -> list[str]:
     """Find project-specific lint command with fallback"""
     project_root = find_project_root()
+    path = Path(file_path)
     
+    # Handle markdown files specifically
+    if path.suffix == '.md':
+        # Check for make lint-md, scripts/lint-md, then pnpm
+        makefile = project_root / "Makefile"
+        if makefile.exists() and has_make_target("lint-md", makefile):
+            log_debug("Using make lint-md command")
+            return ["make", "lint-md", f"FILE={file_path}"]
+        
+        scripts_lint_md = project_root / "scripts" / "lint-md"
+        if scripts_lint_md.exists() and scripts_lint_md.is_file():
+            log_debug("Using scripts/lint-md command")
+            return [str(scripts_lint_md), file_path]
+        
+        log_debug("Using fallback pnpm lint:md:fix command")
+        return ["pnpm", "lint:md:fix", file_path]
+    
+    # Handle regular code files
     # 1. Check for make lint target
     makefile = project_root / "Makefile"
     if makefile.exists() and has_make_target("lint", makefile):
@@ -505,12 +523,13 @@ def process_file_quality_checks(file_path: str, input_data: dict):
     
     is_typescript_file = file_path.endswith(('.ts', '.tsx'))
     is_code_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'))
+    is_markdown_file = file_path.endswith(('.md', '.mdx'))
     is_formattable_file = file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx'))
     
     file_name = Path(file_path).name
     if debug_mode_active():
         print(f"\n🔧 [DEBUG MODE] Running quality checks on {file_name}...", file=sys.stderr)
-        print(f"🐛 File type detection: TS={is_typescript_file}, Code={is_code_file}, Formattable={is_formattable_file}", file=sys.stderr)
+        print(f"🐛 File type detection: TS={is_typescript_file}, Code={is_code_file}, MD={is_markdown_file}, Formattable={is_formattable_file}", file=sys.stderr)
     else:
         print(f"\n🔧 Running quality checks on {file_name}...", file=sys.stderr)
     
@@ -540,6 +559,21 @@ def process_file_quality_checks(file_path: str, input_data: dict):
         
         if lint_result["warningCount"] > 0:
             tracker.add_warning(f"{lint_result['warningCount']} linting warnings")
+    
+    # Then lint markdown files
+    if is_markdown_file:
+        with time_operation("Markdown linting"):
+            lint_result = run_lint_fix(file_path)
+        log_debug(f"Markdown lint result: {lint_result}")
+        
+        if lint_result["fixedCount"] > 0:
+            tracker.add_fix(f"Fixed {lint_result['fixedCount']} markdown issues")
+        
+        if lint_result["errorCount"] > 0:
+            tracker.add_error(f"{lint_result['errorCount']} markdown errors need manual attention")
+        
+        if lint_result["warningCount"] > 0:
+            tracker.add_warning(f"{lint_result['warningCount']} markdown warnings")
     
     # Finally type check
     if is_typescript_file:
@@ -581,6 +615,7 @@ def process_file_quality_checks(file_path: str, input_data: dict):
         "file_type": {
             "typescript": is_typescript_file,
             "code": is_code_file,
+            "markdown": is_markdown_file,
             "formattable": is_formattable_file
         },
         "activity_occurred": activity_occurred,
@@ -588,6 +623,7 @@ def process_file_quality_checks(file_path: str, input_data: dict):
         "checks_performed": {
             "formatting": is_formattable_file,
             "linting": is_code_file,
+            "markdown_linting": is_markdown_file,
             "type_checking": is_typescript_file
         }
     })

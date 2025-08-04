@@ -8,7 +8,7 @@
 - **Auth:** Integrated with `better-auth` (see `src/lib/auth/server.ts` and generated schema in `src/lib/db/schemas/auth.ts`)
 - **ORM:** Uses Drizzle ORM with Arktype validation (see `src/lib/db/seed.ts`, `src/lib/db/schemas/`)
 - **Email:** Transactional emails via Resend (`src/modules/email/lib/resend.ts`)
-- **UI:** shadcn/ui components (local in `src/components/ui/`), always fetch latest usage from https://ui.shadcn.com/docs/components
+- **UI:** shadcn/ui components (local in `src/components/ui/`), always fetch latest usage from <https://ui.shadcn.com/docs/components>
 
 ## Developer Workflows
 
@@ -47,9 +47,9 @@
 ## External Docs
 
 - **shadcn/ui:** Always fetch latest docs for component usage
-- **TanStack Router:** https://tanstack.com/router/v1/docs
-- **Drizzle ORM:** https://orm.drizzle.team/docs
-- **Better-auth:** https://github.com/better-auth/better-auth
+- **TanStack Router:** <https://tanstack.com/router/v1/docs>
+- **Drizzle ORM:** <https://orm.drizzle.team/docs>
+- **Better-auth:** <https://github.com/better-auth/better-auth>
 
 ## Commit Message Rules
 

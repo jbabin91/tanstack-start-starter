@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Code Quality:**
 
 - `pnpm lint` / `pnpm lint:fix` - ESLint with auto-fix
+- `pnpm lint:md` / `pnpm lint:md:fix` - Markdown linting with markdownlint-cli2
 - `pnpm format` / `pnpm format:check` - Prettier formatting
 - `pnpm typecheck` - TypeScript type checking
 
