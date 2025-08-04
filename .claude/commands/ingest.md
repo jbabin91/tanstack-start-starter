@@ -50,7 +50,7 @@ GitIngest returns structured plain-text with three sections:
 
 1. **Repository Summary**
 
-```
+```sh
 Repository: owner/repo-name
 Files analyzed: 42
 Estimated tokens: 15.2k
@@ -58,7 +58,7 @@ Estimated tokens: 15.2k
 
 2. **Directory Structure**
 
-```
+```sh
 Directory structure:
 └── project-name/
     ├── src/
@@ -69,7 +69,7 @@ Directory structure:
 
 3. **File Contents**
 
-```
+```sh
 ================================================
 FILE: src/main.py
 ================================================
