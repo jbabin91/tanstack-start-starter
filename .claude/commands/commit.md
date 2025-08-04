@@ -1,0 +1,74 @@
+---
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git commit:*), Bash(git log:*)
+description: Create a conventional commit with auto-generated or custom message
+---
+
+## Context
+
+- Current git status: !`git status`
+- Staged changes: !`git diff --cached --name-status`
+- Staged diff: !`git diff --cached`
+- Recent commits: !`git log --oneline -5`
+
+## Your task
+
+**IMPORTANT: Only commit if the user has explicitly told you to commit.**
+
+### If arguments provided: `$ARGUMENTS`
+
+Use the provided message as the commit message. Validate it follows conventional commit format before proceeding.
+
+### If no arguments provided:
+
+Analyze the staged changes and generate a conventional commit message.
+
+## Conventional Commit Standards
+
+### Format
+
+`<type>[optional scope]: <description>`
+
+### Type Prefixes
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, missing semi-colons, etc.)
+- `refactor`: Code changes that neither fix bugs nor add features
+- `perf`: Performance improvements
+- `test`: Adding or correcting tests
+- `chore`: Changes to build process, dependencies, or tooling
+- `ci`: Changes to CI configuration files and scripts
+- `revert`: Revert a previous commit
+
+### Writing Guidelines
+
+- Start commit message on the first line without any leading blank lines
+- Keep the first line under 72 characters
+- Use imperative mood ("add" not "added" or "adds")
+- Don't end the subject line with a period
+- For complex changes, include a body with detailed explanation after the subject line, separated by a blank line
+
+### Breaking Changes
+
+- Use exclamation mark before the colon: `feat!: remove deprecated API endpoints`
+- Or include `BREAKING CHANGE:` in the commit body
+
+### Scope Guidelines
+
+- Extract scope from file paths (src/modules/auth → auth, src/lib/db → db)
+- Use lowercase for scope names
+- Keep scope names consistent across the project
+
+### Examples
+
+- ✅ `feat(auth): implement passwordless login flow`
+- ✅ `fix: resolve data fetching race condition`
+- ✅ `feat!: remove deprecated API endpoints`
+- ❌ `feat(auth): add OAuth integration.` (period at end)
+- ❌ `feat(auth): added OAuth integration` (wrong mood)
+
+## Usage
+
+- `/commit` - Auto-generate message from staged changes
+- `/commit feat(auth): add OAuth integration` - Use custom message
