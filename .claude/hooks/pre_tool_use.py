@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
-"""
-PreToolUse Hook
-Enhanced security validation and logging before tool execution
-Reverted to manual JSON parsing for compatibility with Claude Code's hook format
-"""
+#!/usr/bin/env -S uv run --script
+# /// script  
+# requires-python = ">=3.8"
+# ///
 
 import json
 import re
 import sys
+from pathlib import Path
 
 
 def is_dangerous_rm_command(command):
@@ -86,19 +85,18 @@ def is_env_file_access(tool_name, tool_input):
 
 def main():
     try:
-        input_data = json.loads(sys.stdin.read())
+        # Read JSON input from stdin
+        input_data = json.load(sys.stdin)
         
-        tool_name = input_data.get('toolName', '')
-        tool_input = input_data.get('toolInput', {})
+        # Use correct field names from Claude Code
+        tool_name = input_data.get('tool_name', '')
+        tool_input = input_data.get('tool_input', {})
         
         # Check for .env file access (blocks access to sensitive environment files)
         if is_env_file_access(tool_name, tool_input):
-            print(json.dumps({
-                "allow": False,
-                "reason": "BLOCKED: Access to .env files containing sensitive data is prohibited. "
-                         "Use .env.sample for template files instead."
-            }))
-            sys.exit(0)
+            print("BLOCKED: Access to .env files containing sensitive data is prohibited", file=sys.stderr)
+            print("Use .env.sample for template files instead", file=sys.stderr)
+            sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
         
         # Check for dangerous rm -rf commands
         if tool_name == 'Bash':
@@ -106,21 +104,38 @@ def main():
             
             # Block rm -rf commands with comprehensive pattern matching
             if is_dangerous_rm_command(command):
-                print(json.dumps({
-                    "allow": False,
-                    "reason": "BLOCKED: Dangerous rm command detected and prevented"
-                }))
-                sys.exit(0)
+                print("BLOCKED: Dangerous rm command detected and prevented", file=sys.stderr)
+                sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
         
-        # Allow the tool execution if no security issues detected
-        print(json.dumps({
-            "allow": True,
-            "reason": "Security check passed"
-        }))
+        # Log the event (simple logging like theirs)
+        log_dir = Path.cwd() / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / 'pre_tool_use.json'
+        
+        # Read existing log data or initialize empty list
+        if log_path.exists():
+            with open(log_path, 'r') as f:
+                try:
+                    log_data = json.load(f)
+                except (json.JSONDecodeError, ValueError):
+                    log_data = []
+        else:
+            log_data = []
+        
+        # Append new data
+        log_data.append(input_data)
+        
+        # Write back to file with formatting
+        with open(log_path, 'w') as f:
+            json.dump(log_data, f, indent=2)
+        
+        sys.exit(0)
+        
+    except json.JSONDecodeError:
+        # Gracefully handle JSON decode errors
         sys.exit(0)
     except Exception:
-        # On any error, default to allowing the tool
-        print(json.dumps({"allow": True}))
+        # Handle any other errors gracefully
         sys.exit(0)
 
 

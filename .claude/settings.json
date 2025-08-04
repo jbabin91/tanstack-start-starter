@@ -2,75 +2,67 @@
   "hooks": {
     "PostToolUse": [
       {
-        "filter": "\\.(ts|tsx|js|jsx|cjs|mjs|json|md|mdx)$",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
-            "command": "uv run .claude/hooks/post_tool_use.py",
-            "type": "command"
+            "type": "command",
+            "command": "uv run .claude/hooks/post_tool_use.py"
           }
-        ],
-        "matcher": "Write|Edit|MultiEdit"
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "command": "uv run .claude/hooks/pre_compact.py",
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
+        ]
       }
     ],
     "PreToolUse": [
       {
         "hooks": [
           {
-            "command": "uv run .claude/hooks/pre_tool_use.py",
-            "type": "command"
+            "type": "command",
+            "command": "uv run .claude/hooks/pre_tool_use.py"
           }
-        ],
-        "matcher": "*"
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "uv run .claude/hooks/session_start.py",
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "command": "uv run .claude/hooks/subagent_stop.py",
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
+        ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
           {
-            "command": "uv run .claude/hooks/user_prompt_submit.py",
-            "type": "command"
+            "type": "command",
+            "command": "uv run .claude/hooks/user_prompt_submit.py"
           }
-        ],
-        "matcher": "*"
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/stop.py"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/subagent_stop.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/pre_compact.py"
+          }
+        ]
       }
     ]
   },
-  "gitCommit": {
-    "includeCoauthoredBy": false
-  },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(bun run:*)",

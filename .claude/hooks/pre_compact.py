@@ -1,62 +1,45 @@
-#!/usr/bin/env python3
-"""
-PreCompact Hook
-Saves work context before Claude Code compacts the conversation using centralized logging
-"""
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# ///
 
 import json
 import sys
-from datetime import datetime
-
-from common_functions import log_event, extract_session_id
-from utils import get_git_branch_info, get_recently_modified_files
-
-
-def extract_current_task(input_data: dict) -> str:
-    """Extract current task from input data"""
-    # In a real implementation, you might analyze recent messages
-    # For now, we'll just note that a compact is happening
-    last_message = input_data.get('lastUserMessage', "Unknown task")
-    return f"Working on: {last_message}"
-
+from pathlib import Path
 
 def main():
     try:
-        input_data = json.loads(sys.stdin.read())
+        # Read JSON input from stdin
+        input_data = json.load(sys.stdin)
         
-        # Extract session ID for logging
-        session_id = extract_session_id(input_data)
+        # Ensure logs directory exists
+        log_dir = Path.cwd() / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / 'pre_compact.json'
         
-        # Extract current work context
-        work_context = {
-            "type": "work_context",
-            "compact_type": input_data.get("type", "unknown"),
-            "timestamp": datetime.now().isoformat(),
-            "lastModifiedFiles": get_recently_modified_files(60),  # Last hour
-            "currentTask": extract_current_task(input_data),
-            "branchInfo": get_git_branch_info(),
-            "session_info": {
-                "message_count": input_data.get("message_count", 0),
-                "context_size": input_data.get("context_size", 0)
-            }
-        }
+        # Read existing log data or initialize empty list
+        if log_path.exists():
+            with open(log_path, 'r') as f:
+                try:
+                    log_data = json.load(f)
+                except (json.JSONDecodeError, ValueError):
+                    log_data = []
+        else:
+            log_data = []
         
-        # Log to centralized system instead of separate file
-        log_event("work_context", work_context, session_id)
+        # Append new data
+        log_data.append(input_data)
         
-        # Log what we're preserving
-        print(f"📦 Preserving context before compact:", file=sys.stderr)
-        print(f"- Files modified: {len(work_context['lastModifiedFiles'])}", file=sys.stderr)
-        print(f"- Branch: {work_context['branchInfo']['current']} ({work_context['branchInfo']['status']})", file=sys.stderr)
-        print(f"- Task: {work_context['currentTask']}", file=sys.stderr)
+        # Write back to file with formatting
+        with open(log_path, 'w') as f:
+            json.dump(log_data, f, indent=2)
         
         sys.exit(0)
-    except Exception as e:
-        # Log error
-        log_event("pre_compact", {"error": True, "exception": str(e)}, session_id)
-        # Exit with 0 to allow compact to continue
+        
+    except json.JSONDecodeError:
         sys.exit(0)
-
+    except Exception:
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()

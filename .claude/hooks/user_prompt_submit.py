@@ -1,47 +1,48 @@
-#!/usr/bin/env python3
-"""
-UserPromptSubmit Hook
-Enhances prompts with project context and suggests relevant subagents
-Reverted to manual JSON parsing for compatibility with Claude Code's hook format
-"""
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# ///
 
 import json
 import sys
-
-from utils import get_available_subagents, load_claude_md_summary, suggest_subagent
-
+from pathlib import Path
+from datetime import datetime
 
 def main():
     try:
-        input_data = json.loads(sys.stdin.read())
+        # Read JSON input from stdin
+        input_data = json.load(sys.stdin)
         
-        prompt = input_data.get('prompt', '')
+        # Ensure logs directory exists
+        log_dir = Path.cwd() / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / 'user_prompt_submit.json'
         
-        # Load project context
-        claude_md_context = load_claude_md_summary()
+        # Read existing log data or initialize empty list
+        if log_path.exists():
+            with open(log_path, 'r') as f:
+                try:
+                    log_data = json.load(f)
+                except (json.JSONDecodeError, ValueError):
+                    log_data = []
+        else:
+            log_data = []
         
-        # Check for subagent suggestions
-        suggested_agent = suggest_subagent(prompt)
-        available_agents = get_available_subagents()
+        # Add timestamp and append new data
+        log_entry = input_data.copy()
+        log_entry['timestamp'] = datetime.now().isoformat()
+        log_data.append(log_entry)
         
-        # Build enhanced prompt
-        enhanced_prompt = prompt
+        # Write back to file with formatting
+        with open(log_path, 'w') as f:
+            json.dump(log_data, f, indent=2)
         
-        # Add subagent suggestion if relevant
-        if suggested_agent and suggested_agent in available_agents:
-            enhanced_prompt += f"\n\n💡 Consider using the {suggested_agent} subagent for this task."
+        sys.exit(0)
         
-        # Add context from CLAUDE.md
-        if claude_md_context:
-            enhanced_prompt += claude_md_context
-        
-        # Output enhanced prompt
-        print(json.dumps({"prompt": enhanced_prompt}))
+    except json.JSONDecodeError:
         sys.exit(0)
     except Exception:
-        # On any error, pass through the original prompt
         sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

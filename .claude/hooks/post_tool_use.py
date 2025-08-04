@@ -1,84 +1,112 @@
-#!/usr/bin/env python3
-"""
-PostToolUse Hook
-Smart code quality checks with detailed feedback and comprehensive logging
-"""
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# ///
 
 import json
 import re
 import sys
+import subprocess
 from pathlib import Path
-
-from common_functions import log_event, extract_session_id
-from utils import run_command
 
 
 def run_lint_fix(file_path: str) -> dict:
     """Run lint fix and parse results"""
-    success, stdout, stderr = run_command(f'pnpm lint:fix "{file_path}"')
-    
-    output = stdout + stderr
-    
-    # Parse ESLint output for errors/warnings
-    error_match = re.search(r'(\d+) error', output)
-    warning_match = re.search(r'(\d+) warning', output)
-    fixed_match = re.search(r'(\d+) problem.*fixed', output)
-    
-    return {
-        "success": success,
-        "fixedCount": int(fixed_match.group(1)) if fixed_match else 0,
-        "errorCount": int(error_match.group(1)) if error_match else 0,
-        "warningCount": int(warning_match.group(1)) if warning_match else 0,
-        "output": output
-    }
+    try:
+        result = subprocess.run(
+            ['pnpm', 'lint:fix', file_path],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        output = result.stdout + result.stderr
+        
+        # Parse ESLint output for errors/warnings
+        error_match = re.search(r'(\d+) error', output)
+        warning_match = re.search(r'(\d+) warning', output)
+        fixed_match = re.search(r'(\d+) problem.*fixed', output)
+        
+        return {
+            "success": result.returncode == 0,
+            "fixedCount": int(fixed_match.group(1)) if fixed_match else 0,
+            "errorCount": int(error_match.group(1)) if error_match else 0,
+            "warningCount": int(warning_match.group(1)) if warning_match else 0,
+            "output": output
+        }
+    except Exception:
+        return {"success": False, "fixedCount": 0, "errorCount": 0, "warningCount": 0, "output": ""}
 
 
 def run_type_check() -> dict:
     """Run TypeScript type checking"""
-    success, stdout, stderr = run_command("pnpm typecheck")
-    return {
-        "success": success,
-        "output": stdout + stderr
-    }
+    try:
+        result = subprocess.run(
+            ['pnpm', 'typecheck'],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        return {
+            "success": result.returncode == 0,
+            "output": result.stdout + result.stderr
+        }
+    except Exception:
+        return {"success": False, "output": ""}
 
 
 def run_format(file_path: str) -> dict:
     """Run formatting and check if changes were made"""
-    # First check if file needs formatting
-    check_success, _, _ = run_command(f'pnpm prettier -c "{file_path}"')
-    
-    if check_success:
-        return {"success": True, "changed": False}
-    
-    # File needs formatting, apply it
-    format_success, _, _ = run_command(f'pnpm prettier -w "{file_path}"')
-    return {"success": format_success, "changed": format_success}
+    try:
+        # First check if file needs formatting
+        check_result = subprocess.run(
+            ['pnpm', 'prettier', '-c', file_path],
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+        
+        if check_result.returncode == 0:
+            return {"success": True, "changed": False}
+        
+        # File needs formatting, apply it
+        format_result = subprocess.run(
+            ['pnpm', 'prettier', '-w', file_path],
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+        return {"success": format_result.returncode == 0, "changed": format_result.returncode == 0}
+    except Exception:
+        return {"success": False, "changed": False}
 
 
 def check_new_files() -> list:
     """Check for new untracked files that need quality checks"""
-    success, stdout, stderr = run_command("git status --porcelain")
-    if not success:
+    try:
+        result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if result.returncode != 0:
+            return []
+        
+        new_files = []
+        for line in result.stdout.split('\n'):
+            if line.startswith('??'):  # Untracked files
+                file_path = line[3:].strip()
+                if file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx')):
+                    new_files.append(file_path)
+        
+        return new_files
+    except Exception:
         return []
-    
-    new_files = []
-    for line in stdout.split('\n'):
-        if line.startswith('??'):  # Untracked files
-            file_path = line[3:].strip()
-            if file_path.endswith(('.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs', '.json', '.md', '.mdx')):
-                new_files.append(file_path)
-    
-    return new_files
 
 
-def process_file_quality_checks(file_path: str, session_id: str):
+def process_file_quality_checks(file_path: str, input_data: dict):
     """Process quality checks for a single file"""
     if not Path(file_path).exists():
-        log_event("post_tool_use", {
-            "early_exit": True,
-            "reason": "File doesn't exist",
-            "file_path": file_path
-        }, session_id)
         return
     
     is_typescript_file = file_path.endswith(('.ts', '.tsx'))
@@ -131,8 +159,24 @@ def process_file_quality_checks(file_path: str, session_id: str):
             print("✅ Types are valid", file=sys.stderr)
             activity_occurred = True
     
-    # Log quality check results
-    quality_results = {
+    # Log quality check results to JSON file
+    log_dir = Path.cwd() / 'logs'
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / 'post_tool_use.json'
+    
+    # Read existing log data or initialize empty list
+    if log_path.exists():
+        with open(log_path, 'r') as f:
+            try:
+                log_data = json.load(f)
+            except (json.JSONDecodeError, ValueError):
+                log_data = []
+    else:
+        log_data = []
+    
+    # Append new quality check results
+    quality_results = input_data.copy()
+    quality_results.update({
         "quality_check_completed": True,
         "file_path": file_path,
         "file_type": {
@@ -147,21 +191,23 @@ def process_file_quality_checks(file_path: str, session_id: str):
             "linting": is_code_file,
             "type_checking": is_typescript_file
         }
-    }
-    log_event("post_tool_use", quality_results, session_id)
+    })
+    log_data.append(quality_results)
+    
+    # Write back to file with formatting
+    with open(log_path, 'w') as f:
+        json.dump(log_data, f, indent=2)
     
     # Choose exit code based on activity and issues
     if has_issues:
         print("\n⚠️  Please fix the issues above before continuing\n", file=sys.stderr)
-        log_event("post_tool_use", {"visible_output": True, "reason": "Issues found"}, session_id)
         sys.exit(2)  # Issues found - make output visible to user
     elif activity_occurred:
         print("✨ All quality checks passed!\n", file=sys.stderr)
-        log_event("post_tool_use", {"visible_output": True, "reason": "Activity occurred"}, session_id)
         sys.exit(2)  # Activity occurred - make output visible to show what happened
     else:
         # No activity, no issues - silent success
-        log_event("post_tool_use", {"visible_output": False, "reason": "No activity needed"}, session_id)
+        pass
 
 
 def main():
@@ -169,14 +215,32 @@ def main():
         # Read JSON input from stdin
         input_data = json.loads(sys.stdin.read())
         
-        # Extract session ID for logging
-        session_id = extract_session_id(input_data)
+        # Ensure logs directory exists
+        log_dir = Path.cwd() / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / 'post_tool_use.json'
         
-        # Log the event with structured data
-        log_event("post_tool_use", {
+        # Read existing log data or initialize empty list
+        if log_path.exists():
+            with open(log_path, 'r') as f:
+                try:
+                    log_data = json.load(f)
+                except (json.JSONDecodeError, ValueError):
+                    log_data = []
+        else:
+            log_data = []
+        
+        # Append initial event data
+        log_entry = input_data.copy()
+        log_entry.update({
             "tool_invoked": input_data.get("tool", {}),
             "session_context": input_data.get("session", {})
-        }, session_id)
+        })
+        log_data.append(log_entry)
+        
+        # Write back to file with formatting
+        with open(log_path, 'w') as f:
+            json.dump(log_data, f, indent=2)
         
         tool = input_data.get("tool", {})
         
@@ -185,38 +249,20 @@ def main():
         if new_files:
             print(f"\n🆕 Found {len(new_files)} untracked files that need quality checks...", file=sys.stderr)
             for file_path in new_files:
-                process_file_quality_checks(file_path, session_id)
+                process_file_quality_checks(file_path, input_data)
             return
         
         if not tool or tool.get("name") not in ["Write", "Edit", "MultiEdit"]:
-            # Log early exit
-            log_event("post_tool_use", {
-                "early_exit": True,
-                "reason": "Tool not relevant for quality checks",
-                "tool_name": tool.get("name", "unknown")
-            }, session_id)
             sys.exit(0)
         
         file_path = tool.get("parameters", {}).get("file_path")
         if not file_path or not Path(file_path).exists():
-            # Log early exit
-            log_event("post_tool_use", {
-                "early_exit": True,
-                "reason": "File path invalid or doesn't exist",
-                "file_path": file_path
-            }, session_id)
             sys.exit(0)
         
         # Process the file that was just modified
-        process_file_quality_checks(file_path, session_id)
+        process_file_quality_checks(file_path, input_data)
         
     except Exception as e:
-        # Log error with detailed information
-        log_event("post_tool_use", {
-            "error": True,
-            "exception": str(e),
-            "type": "post_tool_use_error"
-        }, session_id)
         print(f"Hook error: {e}", file=sys.stderr)
         sys.exit(0)
 
