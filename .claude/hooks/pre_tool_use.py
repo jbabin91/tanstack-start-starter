@@ -4,6 +4,7 @@
 # ///
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -83,17 +84,33 @@ def is_env_file_access(tool_name, tool_input):
     return False
 
 
+def debug_mode_active() -> bool:
+    """Check if debug mode is enabled"""
+    return os.getenv("CLAUDE_HOOKS_DEBUG", "0") == "1"
+
+def log_debug(message: str):
+    """Log debug message if debug mode is active"""
+    if debug_mode_active():
+        print(f"🐛 [DEBUG] {message}", file=sys.stderr)
+
 def main():
     try:
         # Read JSON input from stdin
         input_data = json.load(sys.stdin)
         
+        log_debug("Pre tool use hook started")
+        log_debug(f"Input data keys: {list(input_data.keys())}")
+        
         # Use correct field names from Claude Code
         tool_name = input_data.get('tool_name', '')
         tool_input = input_data.get('tool_input', {})
         
+        log_debug(f"Tool: {tool_name}")
+        log_debug(f"Tool input keys: {list(tool_input.keys()) if tool_input else []}")
+        
         # Check for .env file access (blocks access to sensitive environment files)
         if is_env_file_access(tool_name, tool_input):
+            log_debug("Blocking .env file access")
             print("BLOCKED: Access to .env files containing sensitive data is prohibited", file=sys.stderr)
             print("Use .env.sample for template files instead", file=sys.stderr)
             sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
@@ -101,9 +118,11 @@ def main():
         # Check for dangerous rm -rf commands
         if tool_name == 'Bash':
             command = tool_input.get('command', '')
+            log_debug(f"Checking bash command: {command}")
             
             # Block rm -rf commands with comprehensive pattern matching
             if is_dangerous_rm_command(command):
+                log_debug("Blocking dangerous rm command")
                 print("BLOCKED: Dangerous rm command detected and prevented", file=sys.stderr)
                 sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
         
@@ -129,13 +148,18 @@ def main():
         with open(log_path, 'w') as f:
             json.dump(log_data, f, indent=2)
         
-        sys.exit(0)
+        if debug_mode_active():
+            print("🐛 [DEBUG] Pre-tool use check completed - always showing output in debug mode", file=sys.stderr)
+            sys.exit(2)  # Always visible in debug mode
+        else:
+            log_debug("Pre-tool use check completed successfully")
+            sys.exit(0)
         
-    except json.JSONDecodeError:
-        # Gracefully handle JSON decode errors
+    except json.JSONDecodeError as e:
+        log_debug(f"JSON decode error: {e}")
         sys.exit(0)
-    except Exception:
-        # Handle any other errors gracefully
+    except Exception as e:
+        log_debug(f"Exception occurred: {type(e).__name__}: {e}")
         sys.exit(0)
 
 

@@ -4,14 +4,26 @@
 # ///
 
 import json
+import os
 import sys
 from pathlib import Path
 from datetime import datetime
+
+def debug_mode_active() -> bool:
+    """Check if debug mode is enabled"""
+    return os.getenv("CLAUDE_HOOKS_DEBUG", "0") == "1"
+
+def log_debug(message: str):
+    """Log debug message if debug mode is active"""
+    if debug_mode_active():
+        print(f"🐛 [DEBUG] {message}", file=sys.stderr)
 
 def main():
     try:
         # Read JSON input from stdin
         input_data = json.load(sys.stdin)
+        
+        log_debug("User prompt submit hook started")
         
         # Ensure logs directory exists
         log_dir = Path.cwd() / 'logs'
@@ -37,11 +49,17 @@ def main():
         with open(log_path, 'w') as f:
             json.dump(log_data, f, indent=2)
         
-        sys.exit(0)
+        if debug_mode_active():
+            print("🐛 [DEBUG] User prompt logged - always showing output in debug mode", file=sys.stderr)
+            sys.exit(2)  # Always visible in debug mode
+        else:
+            sys.exit(0)
         
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        log_debug(f"JSON decode error: {e}")
         sys.exit(0)
-    except Exception:
+    except Exception as e:
+        log_debug(f"Exception occurred: {type(e).__name__}: {e}")
         sys.exit(0)
 
 if __name__ == "__main__":

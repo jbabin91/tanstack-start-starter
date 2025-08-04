@@ -10,6 +10,15 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 
+def debug_mode_active() -> bool:
+    """Check if debug mode is enabled"""
+    return os.getenv("CLAUDE_HOOKS_DEBUG", "0") == "1"
+
+def log_debug(message: str):
+    """Log debug message if debug mode is active"""
+    if debug_mode_active():
+        print(f"🐛 [DEBUG] {message}", file=sys.stderr)
+
 def get_git_status():
     """Get current git changes for session summary."""
     try:
@@ -29,6 +38,7 @@ def get_git_status():
 
 def run_final_quality_check():
     """Run final project-wide quality checks."""
+    log_debug("Running final quality checks")
     checks_passed = True
     issues = []
 
@@ -95,6 +105,9 @@ def main():
     try:
         # Read JSON input from stdin
         input_data = json.load(sys.stdin)
+        
+        log_debug("Stop hook started")
+        log_debug(f"Input data keys: {list(input_data.keys())}")
 
         # Ensure logs directory exists
         log_dir = Path.cwd() / 'logs'
@@ -121,14 +134,21 @@ def main():
             json.dump(log_data, f, indent=2)
 
         # Print session summary to stdout (visible in transcript mode)
+        summary = generate_session_summary(input_data)
         print(f"\n📋 Session Summary:")
-        print(generate_session_summary(input_data))
-
+        print(summary)
+        
+        if debug_mode_active():
+            print("\n🐛 [DEBUG] Stop hook completed - always showing output in debug mode", file=sys.stderr)
+            log_debug(f"Session summary generated: {len(summary)} characters")
+        
         sys.exit(0)
 
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        log_debug(f"JSON decode error: {e}")
         sys.exit(0)
-    except Exception:
+    except Exception as e:
+        log_debug(f"Exception occurred: {type(e).__name__}: {e}")
         sys.exit(0)
 
 if __name__ == "__main__":
