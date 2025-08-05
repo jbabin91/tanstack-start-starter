@@ -48,7 +48,7 @@ Code quality is automatically enforced via hooks after file modifications. The f
 
 **Core Stack:**
 
-- **Framework:** TanStack Start (React 19 + TypeScript + Vite)
+- **Framework:** TanStack Start v1.87+ (React 19 + TypeScript + Vite) - NO vinxi imports
 - **Routing:** File-based routing with `@tanstack/react-router` (routes in `src/routes/`)
 - **Data Fetching:** `@tanstack/react-query` with router integration
 - **Database:** PostgreSQL with Drizzle ORM, Arktype validation
@@ -71,6 +71,27 @@ Code quality is automatically enforced via hooks after file modifications. The f
 
 ## Development Patterns
 
+**KISS & DRY Principles:**
+
+- **KISS (Keep It Simple, Stupid)**: Favor simple, readable solutions over complex ones
+  - Use declarative configurations over imperative logic when possible
+  - Extract complex logic into well-named helper functions
+  - Prefer composition over inheritance
+  - Choose clarity over cleverness
+
+- **DRY (Don't Repeat Yourself)**: Eliminate code duplication through abstraction
+  - Extract common patterns into reusable utilities
+  - Use shared types and constants as single source of truth
+  - Create helper functions for repeated database queries or API calls
+  - Leverage existing utilities before creating new ones
+
+- **Check Before Creating**: Before implementing new functionality:
+  - Search existing codebase for similar patterns or utilities
+  - Check if shadcn/ui has the component you need
+  - Look for existing helper functions in `/src/lib/` or `/src/utils/`
+  - Review similar features for established patterns
+  - Use `@/` imports to leverage existing abstractions
+
 **Code Quality Enforcement:**
 
 - Code quality checks run automatically after file modifications via hooks
@@ -89,6 +110,8 @@ Code quality is automatically enforced via hooks after file modifications. The f
 
 **Import Style:**
 
+- **Check for existing utilities first**: Always search codebase for similar functions before creating new ones
+- Use `rg "function.*pattern"` or `grep -r "pattern" src/` to find existing implementations
 - **MANDATORY: Use `@/` alias for all src imports** - NO relative imports (`./` or `../`)
 - Auto-sorted imports with simple-import-sort
 - Prefer `type` imports for TypeScript types
@@ -329,6 +352,83 @@ modules/{feature}/
 **Authentication:** Multi-session enabled with organization and username plugins. Email verification required for new accounts.
 
 **UI Components:** Always reference latest shadcn/ui documentation when adding new components - local copies may need updates.
+
+## TanStack Start v1.87+ Patterns (CRITICAL)
+
+**IMPORTANT: TanStack Start no longer uses vinxi - it uses Vite directly**
+
+### ✅ Correct Imports:
+
+```typescript
+// CORRECT - TanStack Start v1.87+
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
+
+// WRONG - Old/Invalid
+import { getWebRequest } from 'vinxi/http'; // DON'T USE
+import { createServerFn } from '@tanstack/start'; // WRONG MODULE
+```
+
+### Authentication & Permissions Pattern
+
+**Use Route Context for Permissions:**
+
+```typescript
+// src/routes/__root.tsx - Fetch user with permissions ONCE
+export const Route = createRootRouteWithContext<{
+  user: (User & { permissions?: string[] }) | null;
+}>()({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient.fetchQuery(
+      authQueries.currentUserWithPermissions(),
+    );
+    return { user };
+  },
+});
+
+// Protected routes use beforeLoad
+export const Route = createFileRoute('/_app/admin')({
+  beforeLoad: ({ context }) => {
+    if (!context.user?.permissions?.includes('admin:access')) {
+      throw redirect({ to: '/dashboard' });
+    }
+  },
+});
+```
+
+**DON'T create separate permission hooks - use route context:**
+
+```typescript
+// WRONG - Don't create these
+const useHasPermission = () => { /* ... */ };
+const useIsAdmin = () => { /* ... */ };
+
+// CORRECT - Use route context
+function Component() {
+  const { user } = Route.useRouteContext();
+  if (!user?.permissions?.includes('admin:access')) {
+    return <AccessDenied />;
+  }
+}
+```
+
+### Server Function Protection Pattern
+
+```typescript
+// CORRECT - Check permissions in server function
+export const deleteUser = createServerFn({ method: 'DELETE' }).handler(
+  async (userId: string) => {
+    const { headers } = getWebRequest();
+    const session = await auth.api.getSession({ headers });
+
+    if (session?.user?.role !== 'admin') {
+      throw new Error('Unauthorized');
+    }
+
+    // Proceed with deletion
+  },
+);
+```
 
 ## Commit Message Format
 

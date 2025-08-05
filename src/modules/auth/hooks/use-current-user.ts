@@ -12,7 +12,8 @@ export const authQueries = {
   all: () => ({ queryKey: ['auth'] as const }),
 
   /**
-   * Get current authenticated user
+   * Get current authenticated user with permissions and organization context
+   * Permissions are computed automatically by better-auth user callback
    */
   currentUser: () =>
     queryOptions({

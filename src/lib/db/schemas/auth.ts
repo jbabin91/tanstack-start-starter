@@ -3,9 +3,22 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from 'drizzle-arktype';
-import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { boolean, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { nanoid } from '@/lib/nanoid';
+
+// Define role enums for type safety and database constraints
+export const systemRoleEnum = pgEnum('system_role', [
+  'user',
+  'admin',
+  'super_admin',
+]);
+export const organizationRoleEnum = pgEnum('organization_role', [
+  'member',
+  'admin',
+  'owner',
+]);
 
 export const users = pgTable('users', {
   id: text()
@@ -23,7 +36,7 @@ export const users = pgTable('users', {
   updatedAt: timestamp()
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
-  role: text(),
+  role: systemRoleEnum().default('user'),
   banned: boolean(),
   banReason: text(),
   banExpires: timestamp(),
@@ -143,7 +156,7 @@ export const members = pgTable('members', {
   userId: text()
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  role: text().default('member').notNull(),
+  role: organizationRoleEnum().default('member').notNull(),
   createdAt: timestamp().notNull(),
 });
 
@@ -163,7 +176,7 @@ export const invitations = pgTable('invitations', {
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
   email: text().notNull(),
-  role: text(),
+  role: organizationRoleEnum().default('member'),
   status: text().default('pending').notNull(),
   expiresAt: timestamp().notNull(),
   inviterId: text()
@@ -178,3 +191,54 @@ export const updateInvitationSchema = createUpdateSchema(invitations);
 export type InsertInvitation = typeof insertInvitationSchema.infer;
 export type Invitation = typeof selectInvitationSchema.infer;
 export type UpdateInvitation = typeof updateInvitationSchema.infer;
+
+// ============================================================================
+// Relations for type-safe joins with Drizzle ORM
+// ============================================================================
+
+export const membersRelations = relations(members, ({ one }) => ({
+  user: one(users, {
+    fields: [members.userId],
+    references: [users.id],
+  }),
+  organization: one(organizations, {
+    fields: [members.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  members: many(members),
+  invitations: many(invitations),
+}));
+
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
+  memberships: many(members),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const invitationsRelations = relations(invitations, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [invitations.organizationId],
+    references: [organizations.id],
+  }),
+  inviter: one(users, {
+    fields: [invitations.inviterId],
+    references: [users.id],
+  }),
+}));
