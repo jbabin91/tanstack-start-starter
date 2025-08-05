@@ -37,7 +37,7 @@ def should_skip_file(file_path: str) -> bool:
         # Logs and temp files
         "*.log",
         ".tmp/",
-        "logs/",
+        ".claude/logs/",
     ]
     
     for pattern in skip_patterns:

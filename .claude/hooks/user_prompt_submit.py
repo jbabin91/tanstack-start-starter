@@ -132,7 +132,7 @@ def inject_project_context() -> str:
     context_parts = []
 
     # Add recent activity context
-    logs_dir = Path("logs")
+    logs_dir = Path(".claude/logs")
     if logs_dir.exists():
         post_tool_log = logs_dir / "post_tool_use.json"
         if post_tool_log.exists():
@@ -189,7 +189,7 @@ def main():
         prompt = context.prompt
 
         # Log the prompt for debugging/analytics
-        log_dir = Path("logs")
+        log_dir = Path(".claude/logs")
         log_dir.mkdir(exist_ok=True)
         log_path = log_dir / "user_prompt_submit.json"
 
