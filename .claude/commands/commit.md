@@ -14,7 +14,15 @@ description: Create a conventional commit with auto-generated or custom message
 
 **IMPORTANT: Only commit if the user has explicitly told you to commit.**
 
+**CRITICAL: Only commit staged changes. NEVER automatically stage unstaged files with `git add`. Respect the user's intentional staging decisions.**
+
 **NOTE: All commits are automatically validated by commitlint. If validation fails, suggest using `pnpm commit` for interactive commit creation.**
+
+### Pre-commit Checks
+
+1. **Check for staged changes**: If no files are staged, inform the user and do not proceed
+2. **Respect staging**: Only commit what the user has explicitly staged
+3. **Never auto-stage**: Do not run `git add` commands to stage unstaged files
 
 ### If arguments provided: `$ARGUMENTS`
 
@@ -27,7 +35,7 @@ Use the provided message as the commit message. Validate it follows conventional
 
 ### If no arguments provided:
 
-Analyze the staged changes and generate a conventional commit message.
+Analyze ONLY the staged changes and generate a conventional commit message.
 
 **IMPORTANT: Check the `includeCoAuthoredBy` setting from .claude/settings.json:**
 
