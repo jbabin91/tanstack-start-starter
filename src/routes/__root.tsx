@@ -29,7 +29,6 @@ export const Route = createRootRouteWithContext<{
     );
     return { user };
   },
-
   component: RootComponent,
   errorComponent: (props) => {
     return (
