@@ -9,11 +9,7 @@ import {
 } from 'better-auth/plugins';
 import { reactStartCookies } from 'better-auth/react-start';
 
-import { computePermissions } from '@/lib/auth/types';
-import {
-  getUserFirstMembership,
-  getUserMembership,
-} from '@/lib/auth/utils/membership-queries';
+import { getUserFirstMembership } from '@/lib/auth/utils/membership-queries';
 import { db } from '@/lib/db';
 import { members, organizations } from '@/lib/db/schemas/auth';
 import { nanoid } from '@/lib/nanoid';
@@ -58,40 +54,6 @@ const getAuthConfig = serverOnly(() =>
               role: 'owner',
               createdAt: new Date(),
             });
-          },
-        },
-        read: {
-          after: async (user: any, context: any) => {
-            if (!user) return { data: user };
-
-            // Get user's current session to determine active organization
-            const activeOrgId = context?.session?.activeOrganizationId;
-
-            // Get user's organization membership and role using helper
-            const membership = await getUserMembership({
-              userId: user.id,
-              organizationId: activeOrgId,
-            });
-
-            const orgRole =
-              membership.length > 0 ? membership[0].organizationRole : null;
-            const orgName =
-              membership.length > 0 ? membership[0].organizationName : null;
-            const orgId =
-              membership.length > 0 ? membership[0].organizationId : null;
-
-            // Compute permissions based on system role and organization role
-            const permissions = computePermissions(user.role, orgRole);
-
-            return {
-              data: {
-                ...user,
-                permissions,
-                organizationRole: orgRole,
-                activeOrganizationId: orgId,
-                activeOrganizationName: orgName,
-              },
-            };
           },
         },
       },
