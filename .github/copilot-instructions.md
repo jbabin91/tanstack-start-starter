@@ -79,7 +79,7 @@
 #### Writing Guidelines
 
 - Start commit message on the first line without any leading blank lines
-- Keep the first line under 72 characters
+- Keep the first line under 100 characters
 - Use imperative mood ("add" not "added" or "adds")
 - Don't end the subject line with a period
 - For complex changes, include a body with more detailed explanation after the subject line, separated by a blank line

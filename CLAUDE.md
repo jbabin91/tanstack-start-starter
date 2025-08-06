@@ -440,7 +440,7 @@ Follow conventional commits:
 - `docs(scope): description` - Documentation
 - `refactor(scope): description` - Code changes without feature/bug changes
 
-Use imperative mood, keep first line under 72 characters, no trailing period.
+Use imperative mood, keep first line under 100 characters, no trailing period.
 
 ## Glossary
 

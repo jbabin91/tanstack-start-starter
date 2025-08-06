@@ -64,7 +64,7 @@ Analyze ONLY the staged changes and generate a conventional commit message.
 ### Writing Guidelines
 
 - Start commit message on the first line without any leading blank lines
-- Keep the first line under 72 characters (enforced by commitlint)
+- Keep the first line under 100 characters (enforced by commitlint)
 - Use imperative mood ("add" not "added" or "adds")
 - Don't end the subject line with a period
 - Use lowercase for subject (no sentence-case, start-case, pascal-case, or upper-case)

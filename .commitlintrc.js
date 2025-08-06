@@ -33,7 +33,7 @@ export default defineConfig({
     'subject-full-stop': [2, 'never', '.'],
     'subject-empty': [2, 'never'],
     // Header length limit
-    'header-max-length': [2, 'always', 72],
+    'header-max-length': [2, 'always', 100],
   },
 
   // cz-git configuration
