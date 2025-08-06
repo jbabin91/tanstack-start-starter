@@ -4,6 +4,18 @@
 
 Detailed implementation roadmap for building the GitHub-style markdown editor with organization workflows, co-authoring, and publishing system. This roadmap builds on the existing navigation and dashboard foundation.
 
+**Related Strategic Documents:**
+
+- **[Content Creation System Design](./content_creation_writing_interface_design.md)** - Detailed UX and technical specifications
+- **[Search & Discovery System](./search_discovery_system_design.md)** - Integration with content discovery features
+- **[Navigation Architecture](./ux_architecture_navigation_design.md)** - Organization-aware navigation patterns
+
+**Technical Implementation:**
+
+- **[Development Guide](../../docs/development/index.md)** - Implementation patterns and coding standards
+- **[Database Architecture](../../docs/architecture/database.md)** - Schema design for content management
+- **[API Documentation](../../docs/api/index.md)** - Server function implementations
+
 ## Current State Assessment
 
 ### ✅ Foundation in Place

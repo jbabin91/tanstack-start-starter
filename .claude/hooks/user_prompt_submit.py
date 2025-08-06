@@ -127,9 +127,33 @@ def check_prompt_quality(prompt: str) -> List[str]:
     return issues
 
 
-def inject_project_context() -> str:
-    """Inject relevant project context"""
+def inject_project_context(prompt: str) -> str:
+    """Inject relevant project context based on prompt analysis"""
     context_parts = []
+
+    # Analyze what context is needed
+    prompt_lower = prompt.lower()
+    needs_status = any(keyword in prompt_lower for keyword in ['status', 'progress', 'where are we', 'current state', 'phase'])
+    needs_planning = any(keyword in prompt_lower for keyword in ['plan', 'design', 'architecture', 'strategy', 'roadmap', 'next steps'])
+
+    # Add project status for status/planning questions
+    if needs_status or needs_planning:
+        status_path = Path('.serena/memories/project_status.md')
+        if status_path.exists():
+            try:
+                with open(status_path, 'r') as f:
+                    content = f.read()
+                    # Extract current phase info
+                    lines = content.split('\n')
+                    for line in lines:
+                        if line.startswith('## Current Phase:'):
+                            context_parts.append(line.replace('## Current Phase:', 'Current phase:'))
+                        elif line.startswith('**Next Phase:**'):
+                            context_parts.append(line.replace('**', ''))
+                        elif line.startswith('**Active Todos:**'):
+                            context_parts.append(line.replace('**', ''))
+            except Exception:
+                pass
 
     # Add recent activity context
     logs_dir = Path(".claude/logs")
@@ -234,7 +258,7 @@ def main():
 
         # Inject project context if it would be helpful
         if len(prompt.split()) > 5:  # Only for substantial prompts
-            project_context = inject_project_context()
+            project_context = inject_project_context(prompt)
             if project_context:
                 # Add context to the prompt
                 enhanced_prompt = prompt + project_context

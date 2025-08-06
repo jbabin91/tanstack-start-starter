@@ -2,6 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentation Structure
+
+This project uses a **tiered documentation system** designed for both AI agents and human developers:
+
+### 📋 Strategic Planning (`.serena/memories/`)
+
+High-level architectural decisions, system designs, and project planning:
+
+- **[Content Creation System Design](./.serena/memories/content_creation_writing_interface_design.md)** - GitHub-style editor and publishing workflows
+- **[Search & Discovery System](./.serena/memories/search_discovery_system_design.md)** - PostgreSQL full-text search and content discovery
+- **[Navigation Architecture](./.serena/memories/ux_architecture_navigation_design.md)** - Organization-aware navigation patterns
+- **[Implementation Roadmaps](./.serena/memories/implementation_roadmap_content_creation.md)** - Phase-by-phase development planning
+
+### 📚 Technical Documentation (`/docs/`)
+
+Implementation details, API references, and developer guides:
+
+- **[Documentation Index](./docs/index.md)** - Complete documentation navigation
+- **[Architecture Overview](./docs/architecture/index.md)** - System architecture and technical design
+- **[Database Design](./docs/architecture/database.md)** - PostgreSQL schema and optimization
+- **[Development Guide](./docs/development/index.md)** - Coding patterns and best practices
+- **[API Reference](./docs/api/index.md)** - Server function documentation
+
+**When to use which:**
+
+- Reference `.serena/memories/` for architectural context and design rationale
+- Reference `/docs/` for implementation details and coding standards
+- Both tiers cross-reference each other for complete context
+
 ## Essential Commands
 
 **Development:**

@@ -8,6 +8,19 @@
 
 This document outlines the comprehensive design for a Search & Discovery system for our TanStack Start-based blogging platform. The system focuses on PostgreSQL optimization, advanced filtering capabilities, and exceptional user experience while maintaining performance at scale.
 
+**Related Strategic Documents:**
+
+- **[Content Creation System Design](./content_creation_writing_interface_design.md)** - Content authoring and publishing workflows that feed into search
+- **[Navigation Architecture](./ux_architecture_navigation_design.md)** - Organization-aware navigation and discovery patterns
+- **[Implementation Roadmap](./implementation_roadmap_content_creation.md)** - Development planning for content and search features
+
+**Technical Implementation:**
+
+- **[Project Overview](../../docs/overview/introduction.md)** - Technical architecture and current project status
+- **[Database Design](../../docs/architecture/database.md)** - PostgreSQL schema and full-text search optimization
+- **[Development Guide](../../docs/development/index.md)** - Performance patterns and query optimization
+- **[Search API Reference](../../docs/api/search.md)** - Implementation details for search endpoints
+
 ### Key Design Principles
 
 - **PostgreSQL-First**: Optimized full-text search without external dependencies

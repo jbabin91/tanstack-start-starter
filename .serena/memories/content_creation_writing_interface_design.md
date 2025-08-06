@@ -4,6 +4,12 @@
 
 This document defines the content creation and writing interface for our Medium-like blogging platform, featuring a GitHub-style markdown editor with organization review workflows, co-authoring capabilities, and context-aware publishing.
 
+**Related Documentation:**
+
+- [Project Overview](../../../docs/overview/introduction.md) - Technical stack and project status
+- [API Documentation](../../../docs/api/index.md) - Server function implementations
+- [Development Guide](../../../docs/development/index.md) - Implementation patterns and standards
+
 ## Core Design Principles
 
 ### 1. GitHub-Style Simplicity
