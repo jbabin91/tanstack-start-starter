@@ -102,14 +102,13 @@ export const fetchSessions = createServerFn().handler(async () => {
 
     // Get session metadata for all sessions
     const sessionIds = userSessions.map((s) => s.id);
-    const metadata = await db
-      .select()
-      .from(sessionMetadata)
-      .where(
-        sessionIds.length > 0
-          ? inArray(sessionMetadata.sessionId, sessionIds)
-          : undefined,
-      );
+    const metadata =
+      sessionIds.length > 0
+        ? await db
+            .select()
+            .from(sessionMetadata)
+            .where(inArray(sessionMetadata.sessionId, sessionIds))
+        : [];
 
     // Get trusted devices for the user
     const devices = await db
@@ -159,7 +158,7 @@ export const fetchSessions = createServerFn().handler(async () => {
     );
     return sessionsWithDetails;
   } catch (error) {
-    logger.error('Error fetching sessions:', error);
+    logger.error(error, 'Error fetching sessions');
     throw new Error('Failed to fetch sessions');
   }
 });

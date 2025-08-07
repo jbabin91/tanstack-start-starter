@@ -83,6 +83,7 @@ export default defineConfig({
       },
     },
     projects: [
+      // Unit tests - Fast testing with jsdom
       {
         test: {
           environment: 'jsdom',
@@ -93,6 +94,7 @@ export default defineConfig({
             '.vercel',
             'src/stories/**',
             '**/*.stories.@(js|jsx|ts|tsx)',
+            'e2e/**',
           ],
           globals: true,
           include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
@@ -100,6 +102,7 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts'],
         },
       },
+      // Storybook tests - Component testing with Playwright
       {
         extends: true,
         plugins: [
@@ -116,9 +119,25 @@ export default defineConfig({
             instances: [
               {
                 browser: 'chromium',
+                context: {
+                  // Consistent locale and timezone
+                  locale: 'en-US',
+                  timezoneId: 'America/New_York',
+                },
+                launch: {
+                  // Stability args for CI/CD
+                  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                },
               },
             ],
             provider: 'playwright',
+            // Capture screenshots on failure
+            screenshotFailures: false,
+            // Add viewport for consistent testing
+            viewport: {
+              width: 1280,
+              height: 720,
+            },
           },
           name: 'storybook',
           setupFiles: ['.storybook/vitest.setup.ts'],

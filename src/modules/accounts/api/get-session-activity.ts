@@ -79,7 +79,7 @@ export const fetchSessionActivity = createServerFn()
         hasMore: activities.length === limit, // Simple indication if there might be more
       };
     } catch (error) {
-      logger.error(`Error fetching activity for session ${sessionId}:`, error);
+      logger.error(error, `Error fetching activity for session ${sessionId}`);
 
       if (error instanceof Error) {
         throw error;

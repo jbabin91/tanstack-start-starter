@@ -39,7 +39,7 @@ export const getUser = createServerFn({ method: 'GET' }).handler(async () => {
   } catch (error) {
     // Handle database connection errors gracefully
     // Return null so public routes can still function
-    logger.warn('Failed to get user session:', error);
+    logger.warn(error, 'Failed to get user session');
     return null;
   }
 });

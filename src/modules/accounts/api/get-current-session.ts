@@ -76,7 +76,7 @@ export const fetchCurrentSession = createServerFn().handler(async () => {
     logger.info(`Successfully fetched current session ${session.session.id}`);
     return sessionWithDetails;
   } catch (error) {
-    logger.error('Error fetching current session:', error);
+    logger.error(error, 'Error fetching current session');
     throw new Error('Failed to fetch current session');
   }
 });

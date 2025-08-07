@@ -86,7 +86,7 @@ export const revokeSession = createServerFn()
         revokedSessionId: sessionId,
       };
     } catch (error) {
-      logger.error(`Error revoking session ${sessionId}:`, error);
+      logger.error(error, `Error revoking session ${sessionId}`);
 
       if (error instanceof Error) {
         throw error;
