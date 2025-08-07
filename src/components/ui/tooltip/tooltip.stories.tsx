@@ -155,7 +155,7 @@ export const TooltipWithIcons: Story = {
     <div className="flex gap-4 p-8">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <Button size="icon" variant="outlined">
+          <Button aria-label="Add new item" size="icon" variant="outlined">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -179,7 +179,7 @@ export const TooltipWithIcons: Story = {
 
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <Button size="icon" variant="outlined">
+          <Button aria-label="Delete item" size="icon" variant="outlined">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -203,7 +203,7 @@ export const TooltipWithIcons: Story = {
 
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <Button size="icon" variant="outlined">
+          <Button aria-label="Edit item" size="icon" variant="outlined">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -245,6 +245,7 @@ export const FormFieldTooltips: Story = {
           <Tooltip {...args}>
             <TooltipTrigger asChild>
               <button
+                aria-label="Email help"
                 className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border"
                 type="button"
               >
@@ -278,6 +279,7 @@ export const FormFieldTooltips: Story = {
           <Tooltip {...args}>
             <TooltipTrigger asChild>
               <button
+                aria-label="Password requirements help"
                 className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border"
                 type="button"
               >

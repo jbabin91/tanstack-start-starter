@@ -95,11 +95,11 @@ export function PasswordReset({ url, userName }: PasswordResetProps) {
                 </Text>
 
                 {/* Security Warning */}
-                <Section className="mt-6 rounded-md border border-yellow-200 bg-yellow-50 p-4">
-                  <Text className="mb-2 text-sm font-semibold text-yellow-800">
+                <Section className="border-warning/20 bg-warning/10 mt-6 rounded-md border p-4">
+                  <Text className="text-warning-foreground mb-2 text-sm font-semibold">
                     🔒 Security Notice
                   </Text>
-                  <Text className="m-0 text-sm leading-5 text-yellow-800">
+                  <Text className="text-warning-foreground m-0 text-sm leading-5">
                     If you didn&apos;t request a password reset, someone else
                     might be trying to access your account. Please check your
                     account security and consider changing your password.

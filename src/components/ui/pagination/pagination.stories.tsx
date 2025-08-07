@@ -569,7 +569,7 @@ export const EdgeCases: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Empty State:
         </h3>
-        <Pagination>
+        <Pagination aria-label="Empty state pagination example">
           <PaginationContent>
             <PaginationItem>
               <span className="text-muted-foreground px-3 py-2 text-sm">
@@ -585,7 +585,7 @@ export const EdgeCases: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Two Pages:
         </h3>
-        <Pagination>
+        <Pagination aria-label="Two pages pagination example">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
@@ -613,7 +613,7 @@ export const EdgeCases: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Large Page Numbers:
         </h3>
-        <Pagination>
+        <Pagination aria-label="Large page numbers pagination example">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious href="#" />
@@ -647,7 +647,7 @@ export const EdgeCases: Story = {
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
           Disabled State:
         </h3>
-        <Pagination>
+        <Pagination aria-label="Disabled state pagination example">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious

@@ -68,7 +68,7 @@ export const WithAction: Story = {
         <CardTitle>Notification Settings</CardTitle>
         <CardDescription>Manage your notification preferences.</CardDescription>
         <CardAction>
-          <Button size="icon" variant="text">
+          <Button aria-label="More options" size="icon" variant="text">
             <Icons.moreHorizontal />
           </Button>
         </CardAction>

@@ -9,12 +9,12 @@ const alertVariants = cva(
       variant: {
         default: 'bg-card text-card-foreground',
         error:
-          'text-error bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-error/90',
-        info: 'border-info/50 text-info dark:border-info [&>svg]:text-info',
+          'border-error-text/30 text-error-text bg-error-bg [&>svg]:text-error-text/90 *:data-[slot=alert-description]:text-error-text',
+        info: 'border-info-text/30 text-info-text bg-info-bg [&>svg]:text-info-text/90 *:data-[slot=alert-description]:text-info-text',
         success:
-          'border-success/50 text-success dark:border-success [&>svg]:text-success',
+          'border-success-text/30 text-success-text bg-success-bg [&>svg]:text-success-text/90 *:data-[slot=alert-description]:text-success-text',
         warning:
-          'border-warning/50 text-warning dark:border-warning [&>svg]:text-warning',
+          'border-warning-text/30 text-warning-text bg-warning-bg [&>svg]:text-warning-text/90 *:data-[slot=alert-description]:text-warning-text',
       },
     },
     defaultVariants: {

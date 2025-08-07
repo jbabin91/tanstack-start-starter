@@ -32,6 +32,23 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  --color-error-text: var(--error-text);
+  --color-success-text: var(--success-text);
+  --color-warning-text: var(--warning-text);
+  --color-info-text: var(--info-text);
+  --color-error-bg: var(--error-bg);
+  --color-success-bg: var(--success-bg);
+  --color-warning-bg: var(--warning-bg);
+  --color-info-bg: var(--info-bg);
+  --color-error-emphasis: var(--error-emphasis);
+  --color-error-emphasis-foreground: var(--error-emphasis-foreground);
+  --color-success-emphasis: var(--success-emphasis);
+  --color-success-emphasis-foreground: var(--success-emphasis-foreground);
+  --color-warning-emphasis: var(--warning-emphasis);
+  --color-warning-emphasis-foreground: var(--warning-emphasis-foreground);
+  --color-info-emphasis: var(--info-emphasis);
+  --color-info-emphasis-foreground: var(--info-emphasis-foreground);
+  --color-pagination-disabled: var(--pagination-disabled);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -58,7 +75,7 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.15 0.042 265.755);
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
@@ -66,16 +83,44 @@
   --muted-foreground: oklch(0.554 0.046 257.417);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
-  --error: oklch(0.577 0.245 27.325);
-  --error-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --success: oklch(0.642 0.158 163.391);
-  --success-foreground: oklch(0.984 0.003 247.858);
-  --warning: oklch(0.832 0.172 85.71);
-  --warning-foreground: oklch(0.129 0.042 264.695);
-  --info: oklch(0.646 0.167 252.338);
-  --info-foreground: oklch(0.984 0.003 247.858);
+  /* Base semantic colors - lighter, modern feel for buttons/badges */
+  --error: oklch(0.58 0.18 25);
+  --error-foreground: oklch(0.98 0.01 25);
+  --success: oklch(0.62 0.14 165);
+  --success-foreground: oklch(0.98 0.01 165);
+  --warning: oklch(0.68 0.13 85);
+  --warning-foreground: oklch(0.98 0.01 85);
+  --info: oklch(0.6 0.13 255);
+  --info-foreground: oklch(0.98 0.01 255);
+
+  /* Emphasis variants - darker, for critical actions and high-contrast alerts */
+  --error-emphasis: oklch(0.42 0.2 25);
+  --error-emphasis-foreground: oklch(0.98 0.01 25);
+  --success-emphasis: oklch(0.45 0.16 165);
+  --success-emphasis-foreground: oklch(0.98 0.01 165);
+  --warning-emphasis: oklch(0.48 0.14 85);
+  --warning-emphasis-foreground: oklch(0.98 0.01 85);
+  --info-emphasis: oklch(0.45 0.15 255);
+  --info-emphasis-foreground: oklch(0.98 0.01 255);
+
+  /* Keep destructive for shadcn compatibility */
+  --destructive: oklch(0.58 0.18 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  /* Text variants - for colored text on light backgrounds */
+  --error-text: oklch(0.25 0.18 25);
+  --success-text: oklch(0.25 0.13 165);
+  --warning-text: oklch(0.22 0.12 85);
+  --info-text: oklch(0.25 0.12 255);
+
+  /* Pagination disabled text - dark enough to work with opacity */
+  --pagination-disabled: oklch(0.05 0.042 265.755);
+
+  /* Background variants - for alert containers */
+  --error-bg: oklch(0.96 0.03 25);
+  --success-bg: oklch(0.96 0.03 165);
+  --warning-bg: oklch(0.96 0.03 85);
+  --info-bg: oklch(0.96 0.03 255);
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.929 0.013 255.508);
   --ring: oklch(0.704 0.04 256.788);
@@ -109,16 +154,44 @@
   --muted-foreground: oklch(0.704 0.04 256.788);
   --accent: oklch(0.279 0.041 260.031);
   --accent-foreground: oklch(0.984 0.003 247.858);
-  --error: oklch(0.704 0.191 22.216);
-  --error-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --success: oklch(0.548 0.132 163.391);
-  --success-foreground: oklch(0.984 0.003 247.858);
-  --warning: oklch(0.748 0.156 85.71);
-  --warning-foreground: oklch(0.129 0.042 264.695);
-  --info: oklch(0.584 0.151 252.338);
-  --info-foreground: oklch(0.984 0.003 247.858);
+  /* Base semantic colors - lighter, modern feel for buttons/badges */
+  --error: oklch(0.62 0.19 25);
+  --error-foreground: oklch(0.98 0.01 25);
+  --success: oklch(0.65 0.15 165);
+  --success-foreground: oklch(0.98 0.01 165);
+  --warning: oklch(0.72 0.14 85);
+  --warning-foreground: oklch(0.98 0.01 85);
+  --info: oklch(0.63 0.14 255);
+  --info-foreground: oklch(0.98 0.01 255);
+
+  /* Emphasis variants - darker, for critical actions and high-contrast alerts */
+  --error-emphasis: oklch(0.45 0.21 25);
+  --error-emphasis-foreground: oklch(0.98 0.01 25);
+  --success-emphasis: oklch(0.48 0.17 165);
+  --success-emphasis-foreground: oklch(0.98 0.01 165);
+  --warning-emphasis: oklch(0.52 0.15 85);
+  --warning-emphasis-foreground: oklch(0.98 0.01 85);
+  --info-emphasis: oklch(0.48 0.16 255);
+  --info-emphasis-foreground: oklch(0.98 0.01 255);
+
+  /* Keep destructive for shadcn compatibility */
+  --destructive: oklch(0.62 0.19 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  /* Text variants - for colored text on dark backgrounds */
+  --error-text: oklch(0.65 0.19 25);
+  --success-text: oklch(0.65 0.14 165);
+  --warning-text: oklch(0.7 0.13 85);
+  --info-text: oklch(0.65 0.13 255);
+
+  /* Pagination disabled text - works with opacity on dark backgrounds */
+  --pagination-disabled: oklch(0.85 0.042 265.755);
+
+  /* Background variants - for alert containers */
+  --error-bg: oklch(0.96 0.03 25);
+  --success-bg: oklch(0.96 0.03 165);
+  --warning-bg: oklch(0.96 0.03 85);
+  --info-bg: oklch(0.96 0.03 255);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);

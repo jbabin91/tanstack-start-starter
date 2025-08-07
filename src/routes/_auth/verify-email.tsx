@@ -149,7 +149,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <CheckCircleIcon className="h-6 w-6 text-green-600" />
+                <CheckCircleIcon className="text-success h-6 w-6" />
                 Email verified successfully!
               </CardTitle>
             </CardHeader>
@@ -171,7 +171,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <XCircleIcon className="h-6 w-6 text-red-600" />
+                <XCircleIcon className="text-error h-6 w-6" />
                 Verification failed
               </CardTitle>
             </CardHeader>

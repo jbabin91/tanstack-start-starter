@@ -29,7 +29,7 @@ const preview: Preview = {
       parentSelector: 'body',
     }),
     (Story) => (
-      <div className="bg-background text-foreground min-h-screen p-4">
+      <div className="bg-background text-foreground p-4">
         <Story />
       </div>
     ),

@@ -11,12 +11,15 @@ const buttonVariants = cva(
     variants: {
       color: {
         primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        error: 'bg-error text-error-foreground hover:bg-error/90',
-        info: 'bg-info text-info-foreground hover:bg-info/90',
+        error:
+          'border-error/20 bg-error/10 text-error-text hover:bg-error/15 focus-visible:ring-error/20 dark:focus-visible:ring-error/40 dark:bg-error/10 dark:text-error-text',
+        info: 'border-info/20 bg-info/10 text-info-text hover:bg-info/15 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 dark:bg-info/10 dark:text-info-text',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        success: 'bg-success text-success-foreground hover:bg-success/90',
-        warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
+        success:
+          'border-success/20 bg-success/10 text-success-text hover:bg-success/15 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 dark:bg-success/10 dark:text-success-text',
+        warning:
+          'border-warning/20 bg-warning/10 text-warning-text hover:bg-warning/15 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 dark:bg-warning/10 dark:text-warning-text',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
@@ -25,11 +28,11 @@ const buttonVariants = cva(
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
       },
       variant: {
-        contained: 'shadow-xs',
-        text: 'bg-transparent shadow-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        contained: 'border shadow-xs',
+        text: 'bg-transparent shadow-none text-primary hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         outlined:
           'border bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        link: 'bg-transparent shadow-none underline-offset-4 hover:underline',
+        link: 'bg-transparent shadow-none text-foreground underline-offset-4 hover:underline',
       },
     },
     defaultVariants: {

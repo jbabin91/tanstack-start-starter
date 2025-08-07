@@ -21,6 +21,10 @@ const meta = {
         'error',
         'success',
         'warning',
+        'info',
+        'success-solid',
+        'warning-solid',
+        'error-solid',
         'outline',
       ],
     },
@@ -61,6 +65,13 @@ export const Warning: Story = {
   args: {
     variant: 'warning',
     children: 'Warning',
+  },
+};
+
+export const Info: Story = {
+  args: {
+    variant: 'info',
+    children: 'Info',
   },
 };
 
@@ -191,22 +202,87 @@ export const WithDots: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Filled Variants</h3>
+    <div className="grid grid-cols-3 gap-6">
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Light Semantic (New Default)</h3>
+        <div className="flex flex-col gap-2">
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="error">Error</Badge>
+          <Badge variant="info">Info</Badge>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Solid (High Attention)</h3>
+        <div className="flex flex-col gap-2">
+          <Badge variant="success-solid">Success</Badge>
+          <Badge variant="warning-solid">Warning</Badge>
+          <Badge variant="error-solid">Error</Badge>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Other Variants</h3>
         <div className="flex flex-col gap-2">
           <Badge>Default</Badge>
           <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="error">Error</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-        </div>
-      </div>
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Outline</h3>
-        <div className="flex flex-col gap-2">
           <Badge variant="outline">Outline</Badge>
         </div>
+      </div>
+    </div>
+  ),
+};
+
+export const DesignComparison: Story = {
+  render: () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="mb-3 text-base font-medium">
+          New Light Design (Recommended)
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="success">
+            <Icons.check />
+            Active
+          </Badge>
+          <Badge variant="warning">
+            <Icons.clock />
+            Pending
+          </Badge>
+          <Badge variant="error">
+            <Icons.x />
+            Failed
+          </Badge>
+          <Badge variant="info">
+            <Icons.info />
+            Info
+          </Badge>
+        </div>
+        <p className="text-muted-foreground mt-2 text-xs">
+          Light backgrounds with colored text - feels modern and lightweight
+        </p>
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-base font-medium">
+          Solid Design (High Attention)
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="success-solid">
+            <Icons.check />
+            Active
+          </Badge>
+          <Badge variant="warning-solid">
+            <Icons.clock />
+            Pending
+          </Badge>
+          <Badge variant="error-solid">
+            <Icons.x />
+            Failed
+          </Badge>
+        </div>
+        <p className="text-muted-foreground mt-2 text-xs">
+          Use solid variants sparingly for high-priority notifications
+        </p>
       </div>
     </div>
   ),
