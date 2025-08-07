@@ -44,10 +44,10 @@ function getActivityBadge(activityType: string) {
       return <Badge variant="secondary">Sign Out</Badge>;
     }
     case 'session_revoked': {
-      return <Badge variant="destructive">Revoked</Badge>;
+      return <Badge variant="error">Revoked</Badge>;
     }
     case 'security_event': {
-      return <Badge variant="destructive">Security</Badge>;
+      return <Badge variant="error">Security</Badge>;
     }
     default: {
       return <Badge variant="outline">{activityType}</Badge>;

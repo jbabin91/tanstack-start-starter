@@ -18,7 +18,7 @@ function Calendar({
   classNames,
   showOutsideDays = true,
   captionLayout = 'label',
-  buttonVariant = 'ghost',
+  buttonVariant = 'text',
   formatters,
   components,
   ...props
@@ -205,7 +205,7 @@ function CalendarDayButton({
         !modifiers.range_middle
       }
       size="icon"
-      variant="ghost"
+      variant="text"
       {...rest}
     />
   );

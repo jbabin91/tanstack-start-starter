@@ -182,7 +182,7 @@ function RouteComponent() {
                   disabled={isResending}
                   loading={isResending}
                   loadingText="Sending..."
-                  variant="outline"
+                  variant="outlined"
                   onClick={handleResendVerification}
                 >
                   Resend verification email
@@ -224,7 +224,7 @@ function RouteComponent() {
                   disabled={isResending}
                   loading={isResending}
                   loadingText="Sending..."
-                  variant="outline"
+                  variant="outlined"
                   onClick={handleResendVerification}
                 >
                   Resend verification email

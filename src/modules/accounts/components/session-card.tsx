@@ -85,7 +85,7 @@ function getSecurityBadge(score?: number) {
   }
 
   return (
-    <Badge className="flex items-center gap-1" variant="destructive">
+    <Badge className="flex items-center gap-1" variant="error">
       <Icons.alertCircle className="h-3 w-3" />
       Low Security
     </Badge>
@@ -165,7 +165,7 @@ export function SessionCard({
         {!isCurrentSession && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="w-full" size="sm" variant="destructive">
+              <Button className="w-full" color="error" size="sm">
                 Revoke Session
               </Button>
             </AlertDialogTrigger>
@@ -180,7 +180,7 @@ export function SessionCard({
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  className="bg-error text-error-foreground hover:bg-error/90"
                   onClick={() => onRevoke(session.id)}
                 >
                   Revoke Session

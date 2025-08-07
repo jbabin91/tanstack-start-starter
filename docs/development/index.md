@@ -175,7 +175,7 @@ function MyComponent({ className }: { className?: string }) {
         <CardTitle>Title</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button variant="outline">Click me</Button>
+        <Button variant="outlined">Click me</Button>
       </CardContent>
     </Card>
   );

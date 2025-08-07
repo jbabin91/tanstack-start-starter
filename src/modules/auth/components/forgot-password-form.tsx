@@ -122,7 +122,7 @@ export function ForgotPasswordForm({
               disabled={isLoading}
               loading={isLoading}
               loadingText="Sending..."
-              variant="outline"
+              variant="outlined"
               onClick={handleResendEmail}
             >
               Resend email
@@ -130,7 +130,7 @@ export function ForgotPasswordForm({
             <Button
               className="w-full"
               disabled={isLoading}
-              variant="ghost"
+              variant="text"
               onClick={handleBackToForm}
             >
               Back to form

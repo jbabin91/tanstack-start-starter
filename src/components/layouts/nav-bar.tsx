@@ -57,14 +57,14 @@ export function NavBar() {
             <span className="text-muted-foreground hidden text-sm sm:inline">
               Welcome, {session.user.name}
             </span>
-            <Button size="sm" variant="outline" onClick={handleSignOut}>
+            <Button size="sm" variant="outlined" onClick={handleSignOut}>
               Sign Out
             </Button>
           </>
         ) : (
           <>
             <Link to="/login">
-              <Button size="sm" variant="ghost">
+              <Button size="sm" variant="text">
                 Sign In
               </Button>
             </Link>

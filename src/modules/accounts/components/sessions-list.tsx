@@ -22,7 +22,7 @@ export function SessionsList() {
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="error">
         <AlertDescription>
           Failed to load sessions. Please try again later.
         </AlertDescription>

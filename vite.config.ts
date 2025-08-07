@@ -22,6 +22,9 @@ const dirname =
 
 // https://vite.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    include: ['@hookform/resolvers/arktype', 'arktype'],
+  },
   plugins: [
     tsconfigPaths({
       projects: ['./tsconfig.json'],

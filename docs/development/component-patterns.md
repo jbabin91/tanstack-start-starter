@@ -139,8 +139,8 @@ import { Button } from '@/components/ui/button';
 
 // Variants
 <Button variant="default">Default</Button>
-<Button variant="destructive">Delete</Button>
-<Button variant="outline">Outline</Button>
+<Button color="error">Delete</Button>
+<Button variant="outlined">Outlined</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>

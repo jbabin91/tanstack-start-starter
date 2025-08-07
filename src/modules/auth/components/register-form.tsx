@@ -232,7 +232,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         size="icon"
                         tabIndex={-1}
                         type="button"
-                        variant="ghost"
+                        variant="text"
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
@@ -279,7 +279,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         size="icon"
                         tabIndex={-1}
                         type="button"
-                        variant="ghost"
+                        variant="text"
                         onClick={toggleConfirmPasswordVisibility}
                       >
                         {showConfirmPassword ? (

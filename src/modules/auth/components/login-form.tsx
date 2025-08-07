@@ -151,7 +151,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                         size="icon"
                         tabIndex={-1}
                         type="button"
-                        variant="ghost"
+                        variant="text"
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (

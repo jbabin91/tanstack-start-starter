@@ -4,7 +4,7 @@ import { expect, userEvent, within } from '@storybook/test';
 import { Button } from './button';
 
 const meta = {
-  title: 'UI/Button',
+  title: 'UI/Inputs/Button',
   component: Button,
   parameters: {
     layout: 'centered',
@@ -12,25 +12,19 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     color: {
+      description: 'Color theme and semantic meaning of the button',
       control: { type: 'select' },
-      options: [
-        'default',
-        'destructive',
-        'info',
-        'secondary',
-        'success',
-        'warning',
-        'ghost',
-        'link',
-      ],
-    },
-    size: {
-      control: { type: 'select' },
-      options: ['default', 'sm', 'lg', 'icon'],
+      options: ['primary', 'secondary', 'error', 'warning', 'info', 'success'],
     },
     variant: {
+      description: 'Visual style variant (filled, outlined, text, link)',
       control: { type: 'select' },
-      options: ['default', 'outline'],
+      options: ['contained', 'outlined', 'text', 'link'],
+    },
+    size: {
+      description: 'Size affecting height, padding and font size',
+      control: { type: 'select' },
+      options: ['default', 'sm', 'lg', 'icon'],
     },
   },
 } satisfies Meta<typeof Button>;
@@ -47,14 +41,14 @@ export const Default: Story = {
 export const Primary: Story = {
   args: {
     children: 'Primary Button',
-    color: 'default',
+    color: 'primary',
   },
 };
 
-export const Destructive: Story = {
+export const Error: Story = {
   args: {
     children: 'Delete Account',
-    color: 'destructive',
+    color: 'error',
   },
 };
 
@@ -72,10 +66,10 @@ export const Secondary: Story = {
   },
 };
 
-export const Ghost: Story = {
+export const Text: Story = {
   args: {
-    children: 'Ghost',
-    variant: 'ghost',
+    children: 'Text Button',
+    variant: 'text',
   },
 };
 
@@ -107,10 +101,10 @@ export const Icon: Story = {
   },
 };
 
-export const Outline: Story = {
+export const Outlined: Story = {
   args: {
-    children: 'Outline Button',
-    variant: 'outline',
+    children: 'Outlined Button',
+    variant: 'outlined',
   },
 };
 

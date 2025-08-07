@@ -281,7 +281,7 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       size="icon"
-      variant="ghost"
+      variant="text"
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();

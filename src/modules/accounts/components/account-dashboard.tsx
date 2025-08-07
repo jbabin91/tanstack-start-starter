@@ -158,7 +158,7 @@ export function AccountDashboard() {
             {(!user.phone || !user.website || !user.address) && (
               <div className="space-y-3">
                 <Separator />
-                <Button className="w-full" size="sm" variant="outline">
+                <Button className="w-full" size="sm" variant="outlined">
                   <Link className="flex items-center" to="/dashboard">
                     <Icons.edit className="mr-2 h-4 w-4" />
                     Complete Profile
@@ -178,28 +178,28 @@ export function AccountDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/dashboard">
                 <Icons.edit className="mr-2 h-4 w-4" />
                 Edit Profile
               </Link>
             </Button>
 
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/account/sessions">
                 <Icons.shield className="mr-2 h-4 w-4" />
                 Security Settings
               </Link>
             </Button>
 
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/users">
                 <Icons.users className="mr-2 h-4 w-4" />
                 Browse Users
               </Link>
             </Button>
 
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="outlined">
               <Link
                 className="flex items-center"
                 params={{ userId: user.id }}
@@ -215,29 +215,29 @@ export function AccountDashboard() {
 
       {/* Account Status */}
       {(Boolean(user.banned) || !user.emailVerified) && (
-        <Card className="border-destructive bg-destructive/5">
+        <Card className="border-error bg-error/5">
           <CardHeader>
-            <CardTitle className="text-destructive flex items-center gap-2">
+            <CardTitle className="text-error flex items-center gap-2">
               <Icons.alertTriangle className="h-5 w-5" />
               Account Status
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {user.banned && (
-              <div className="border-destructive/20 bg-destructive/10 rounded-md border p-3">
+              <div className="border-error/20 bg-error/10 rounded-md border p-3">
                 <div className="flex items-center gap-2">
-                  <Icons.ban className="text-destructive h-4 w-4" />
-                  <span className="text-destructive font-medium">
+                  <Icons.ban className="text-error h-4 w-4" />
+                  <span className="text-error font-medium">
                     Account Suspended
                   </span>
                 </div>
                 {user.banReason && (
-                  <p className="text-destructive/80 mt-1 text-sm">
+                  <p className="text-error/80 mt-1 text-sm">
                     Reason: {user.banReason}
                   </p>
                 )}
                 {user.banExpires && (
-                  <p className="text-destructive/80 mt-1 text-sm">
+                  <p className="text-error/80 mt-1 text-sm">
                     Expires: {new Date(user.banExpires).toLocaleDateString()}
                   </p>
                 )}

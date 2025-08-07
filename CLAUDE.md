@@ -98,7 +98,7 @@ Code quality is automatically enforced via hooks after file modifications. The f
 
 5. **Environment Management:** Uses `dotenvx` with `.env` files, configuration in `src/configs/env.ts`
 
-## Development Patterns
+## MANDATORY DEVELOPMENT PROCESSES
 
 **KISS & DRY Principles:**
 
@@ -188,6 +188,14 @@ Code quality is automatically enforced via hooks after file modifications. The f
 - **Foreign Key Patterns:** Always specify cascade behavior: `onDelete: 'cascade'` or `onDelete: 'set null'`
 - **Timestamp Standards:** Use `timestamp({ withTimezone: true })` with `.defaultNow()` and `.$onUpdate(() => new Date())`
 - **ID Generation:** Consistent `$defaultFn(() => nanoid())` pattern for all primary keys
+
+**Component API Standards:**
+
+- **Button API** - Colors: `primary`, `secondary`, `error`, `warning`, `info`, `success`. Variants: `contained`, `outlined`, `text`, `link`
+- **Semantic Consistency:** ALL components use `error` instead of `destructive` (Badge, Alert, Context Menu, Form inputs, etc.)
+- **CSS Variables:** `--error` and `--error-foreground` as primary, with `--destructive-*` aliases for backward compatibility
+- **TypeScript Types:** All variant types use `'error'` not `'destructive'` for error states
+- **Component Examples:** `<Button color="error" variant="contained">Delete</Button>`, `<Badge variant="error">Error</Badge>`
 
 **Database Schema Example:**
 
@@ -326,6 +334,114 @@ export function useUpdateUser() {
 - Config in `src/lib/auth/server.ts` with email verification enabled
 - Client-side auth utilities in `src/lib/auth/client.ts`
 - Email templates handled via Resend integration
+
+## MANDATORY WORKFLOW PROCESSES
+
+**CRITICAL: These are immutable system rules, not suggestions. Follow these processes sequentially.**
+
+### Component Creation Workflow (REQUIRED STEPS)
+
+When creating any UI component, execute these steps in order:
+
+1. **Pre-Creation Check (MANDATORY)**
+   - Search existing components: `rg "export.*Component" src/components/`
+   - Check shadcn/ui availability: Review `src/components/ui/` directory
+   - Verify component doesn't exist in similar form
+
+2. **Component Implementation (SYSTEM BOUNDARIES)**
+   - Use function declarations: `function ComponentName() {}` NOT `const ComponentName = () => {}`
+   - Import Icons component: `import { Icons } from '@/components/icons'` NOT lucide-react directly
+   - Use proper API: `color="error"` NOT `variant="destructive"`
+   - Apply `cn()` utility: `import { cn } from '@/utils/cn'` NOT `@/lib/utils`
+
+3. **Story Creation (MANDATORY)**
+   - Create story file: `[component]/[component].stories.tsx`
+   - Use hierarchical title: `'UI/[Category]/[ComponentName]'`
+   - Include comprehensive `argTypes` with descriptions
+   - Add interactive `play` functions for testing
+   - Document real-world usage scenarios
+
+4. **Quality Enforcement (REQUIRED)**
+   - Run `pnpm typecheck` - must pass with zero errors
+   - Run `pnpm lint` - must pass with zero warnings
+   - Run `pnpm format` - must apply automatically
+   - File size check: If >250 lines, refactor into modules
+
+### Story Creation Process (IMMUTABLE RULES)
+
+For every interactive component, stories are MANDATORY:
+
+1. **Structure Requirements (NON-NEGOTIABLE)**
+
+   ```typescript
+   // REQUIRED: Hierarchical categorization
+   title: 'UI/[Inputs|Surfaces|Data Display|Feedback|Navigation|Layout]/ComponentName'
+
+   // REQUIRED: Comprehensive argTypes with descriptions
+   argTypes: {
+     propName: {
+       description: 'Detailed explanation of prop behavior',
+       control: 'select',
+       options: [...],
+     },
+   }
+   ```
+
+2. **Content Requirements (SYSTEM BOUNDARIES)**
+   - Default story showing primary usage
+   - All variant combinations (colors, sizes, states)
+   - Interactive examples with `play` functions
+   - Real-world integration scenarios
+   - Error and edge case handling
+
+3. **Testing Integration (MANDATORY)**
+   - Every interactive element needs `play` functions
+   - Use proper selectors: `canvas.getByRole()` or `canvas.getByTestId()`
+   - Assert user interactions: `expect(args.onClick).toHaveBeenCalled()`
+
+### Code Review Process (REQUIRED EXECUTION)
+
+After completing any development task, execute this checklist:
+
+1. **API Compliance Check**
+   - ✅ Components use our color system: `primary`, `secondary`, `error`, `warning`, `info`, `success`
+   - ✅ No default shadcn patterns: NO `destructive`, `outline`, `ghost`
+   - ✅ Proper variants: `contained`, `outlined`, `text`, `link`
+
+2. **Quality Gates (ZERO TOLERANCE)**
+   - ✅ TypeScript: Zero errors (`pnpm typecheck`)
+   - ✅ ESLint: Zero warnings (`pnpm lint`)
+   - ✅ Formatting: Applied (`pnpm format`)
+   - ✅ File size: <250 lines or properly refactored
+
+3. **Testing Requirements (MANDATORY)**
+   - ✅ Interactive components have stories
+   - ✅ Stories include `play` functions
+   - ✅ All major variants covered
+   - ✅ Error states documented
+
+### Agent Behavior Boundaries (IMMUTABLE RULES)
+
+**File Exploration vs Creation:**
+
+- NEVER read files randomly or speculatively
+- ALWAYS use targeted searches: `rg "pattern"` or specific file paths
+- BEFORE creating any component, MUST search: `rg "export.*ComponentName" src/`
+- READ documentation first: Check `docs/` and `.serena/memories/` for context
+
+**Error Recovery Process (REQUIRED STEPS):**
+
+1. **TypeScript Errors:** Fix immediately, never ignore
+2. **ESLint Warnings:** Resolve before proceeding with any other task
+3. **Build Failures:** Debug systematically, don't guess at solutions
+4. **Test Failures:** Investigate root cause, don't skip tests
+
+**Context Pollution Prevention:**
+
+- Follow file size limits strictly (250+ lines = refactor required)
+- Use modular imports, avoid reading large files unnecessarily
+- Reference established patterns instead of inventing new ones
+- Front-load context from CLAUDE.md rather than exploring randomly
 
 ## Project Structure
 

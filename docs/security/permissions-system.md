@@ -409,13 +409,13 @@ function PostActions({ post }: { post: Post }) {
       )}
 
       {canDelete && (
-        <Button variant="destructive" onClick={() => deletePost(post.id)}>
+        <Button color="error" onClick={() => deletePost(post.id)}>
           Delete
         </Button>
       )}
 
       {canModerate && (
-        <Button variant="outline" onClick={() => moderatePost(post.id)}>
+        <Button variant="outlined" onClick={() => moderatePost(post.id)}>
           Moderate
         </Button>
       )}

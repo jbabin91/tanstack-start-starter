@@ -45,10 +45,10 @@ function RouteComponent() {
               </AlertDescription>
             </Alert>
 
-            <Alert variant="destructive">
+            <Alert variant="error">
               <AlertTitle>Error Alert</AlertTitle>
               <AlertDescription>
-                This is an error alert - for destructive actions and errors.
+                This is an error alert - for error actions and errors.
               </AlertDescription>
             </Alert>
 
@@ -91,8 +91,8 @@ function RouteComponent() {
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-destructive mb-2 h-12 w-full rounded"></div>
-              <h3 className="text-destructive font-semibold">Destructive</h3>
+              <div className="bg-error mb-2 h-12 w-full rounded"></div>
+              <h3 className="text-error font-semibold">Error</h3>
               <p className="text-muted-foreground text-sm">Errors & dangers</p>
             </div>
 
@@ -108,11 +108,11 @@ function RouteComponent() {
           <h2 className="mb-4 text-2xl font-semibold">Usage Examples</h2>
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Button color="default">Primary Button</Button>
+              <Button color="primary">Primary Button</Button>
               <Button color="secondary">Secondary Button</Button>
               <Button color="success">Success Button</Button>
               <Button color="warning">Warning Button</Button>
-              <Button color="destructive">Destructive Button</Button>
+              <Button color="error">Destructive Button</Button>
               <Button color="info">Info Button</Button>
             </div>
 
@@ -126,8 +126,8 @@ function RouteComponent() {
                 <span className="text-warning">Away</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-destructive h-3 w-3 rounded-full"></div>
-                <span className="text-destructive">Offline</span>
+                <div className="bg-error h-3 w-3 rounded-full"></div>
+                <span className="text-error">Offline</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="bg-info h-3 w-3 rounded-full"></div>
