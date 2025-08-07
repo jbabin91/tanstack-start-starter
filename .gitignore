@@ -44,3 +44,14 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+# Storybook
+*storybook.log
+storybook-static
+
+# Playwright
+playwright-report
+test-results
+
+# Vitest
+coverage

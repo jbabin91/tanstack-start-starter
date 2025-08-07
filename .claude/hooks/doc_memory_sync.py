@@ -12,6 +12,7 @@ Updates cross-references when serena memories change
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, Any, List
@@ -189,6 +190,15 @@ def main():
                 print(f"   📄 docs/{ref}", file=sys.stderr)
         
         print("   ✅ Documentation index updated", file=sys.stderr)
+        
+        # Format and lint the updated files
+        print("   🎨 Running format and lint:md...", file=sys.stderr)
+        try:
+            subprocess.run(["pnpm", "format"], check=False, capture_output=True)
+            subprocess.run(["pnpm", "lint:md:fix"], check=False, capture_output=True)
+            print("   ✅ Format and lint:md completed", file=sys.stderr)
+        except Exception as e:
+            print(f"   ⚠️  Format/lint warning: {e}", file=sys.stderr)
         
         context.output.exit_success("Memory documentation sync completed")
             

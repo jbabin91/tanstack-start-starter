@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["@storybook/react-vite", "vitest"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../src/**/*.stories.tsx", "./types.d.ts"]
+}

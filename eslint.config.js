@@ -9,13 +9,24 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sortKeysPlus from 'eslint-plugin-sort-keys-plus';
+import storybook from 'eslint-plugin-storybook';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['node_modules', '.nitro', '.output', '.tanstack', '**/*.gen.ts'],
+    ignores: [
+      'node_modules',
+      '.nitro',
+      '.output',
+      '.tanstack',
+      'coverage',
+      'playwright-report',
+      'test-results',
+      'storybook-static',
+      '**/*.gen.ts',
+    ],
   },
   {
     languageOptions: {
@@ -61,7 +72,11 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
-        project: ['./tsconfig.json'],
+        project: [
+          './tsconfig.json',
+          './e2e/tsconfig.json',
+          './.storybook/tsconfig.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -157,5 +172,15 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['**/*.stories.*'],
+    plugins: {
+      storybook,
+    },
+    rules: {
+      ...storybook.configs['flat/recommended'].rules,
+    },
+  },
+
   configPrettier,
 );

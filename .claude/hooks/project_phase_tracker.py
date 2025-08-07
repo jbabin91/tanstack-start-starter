@@ -12,6 +12,7 @@ Tracks development phases based on todo completion patterns
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, Any, List, Optional
@@ -241,6 +242,15 @@ def main():
         update_project_context_with_phase(phase_info)
         
         print("   ✅ Project status updated", file=sys.stderr)
+        
+        # Format and lint the updated files
+        print("   🎨 Running format and lint:md...", file=sys.stderr)
+        try:
+            subprocess.run(["pnpm", "format"], check=False, capture_output=True)
+            subprocess.run(["pnpm", "lint:md:fix"], check=False, capture_output=True)
+            print("   ✅ Format and lint:md completed", file=sys.stderr)
+        except Exception as e:
+            print(f"   ⚠️  Format/lint warning: {e}", file=sys.stderr)
         
         context.output.exit_success("Project phase tracking completed")
             
