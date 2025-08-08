@@ -31,6 +31,7 @@ const options = {
   databaseHooks: {
     session: {
       create: {
+        // eslint-disable-next-line @typescript-eslint/require-await
         before: async (session, context) => {
           // Extract IP address using utility function
           const { ipAddress } = extractIPAddress(
@@ -38,19 +39,20 @@ const options = {
             context?.request,
           );
 
-          // Create session metadata using utility function
-          await createSessionMetadata({
-            sessionId: session.id,
-            sessionIP: session.ipAddress,
-            request: context?.request,
-          });
-
           return {
             data: {
               ...session,
               ipAddress: ipAddress ?? session.ipAddress,
             },
           };
+        },
+        after: async (session, context) => {
+          // Create session metadata after the session has been created in the database
+          await createSessionMetadata({
+            sessionId: session.id,
+            sessionIP: session.ipAddress,
+            request: context?.request,
+          });
         },
       },
     },
