@@ -447,14 +447,14 @@ const getPostsWithAuthors = async (organizationId?: string) => {
 const searchPosts = async (query: string, organizationId?: string) => {
   return await db.execute(sql`
     SELECT p.*, u.name as author_name, o.name as org_name,
-           ts_rank(to_tsvector('english', p.title || ' ' || p.content), 
+           ts_rank(to_tsvector('english', p.title || ' ' || p.content),
                    plainto_tsquery('english', ${query})) as rank
     FROM posts p
     JOIN users u ON p.author_id = u.id
     LEFT JOIN organizations o ON p.organization_id = o.id
     WHERE p.status = 'published'
       AND ${organizationId ? sql`p.organization_id = ${organizationId}` : sql`1=1`}
-      AND to_tsvector('english', p.title || ' ' || p.content) 
+      AND to_tsvector('english', p.title || ' ' || p.content)
           @@ plainto_tsquery('english', ${query})
     ORDER BY rank DESC, p.published_at DESC
     LIMIT 20
@@ -472,10 +472,10 @@ import { sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, index } from 'drizzle-orm/pg-core';
 
 // Add new column with proper indexing
-export async function up(db: any) {
+export async function up(db: Database) {
   // Add column
   await db.execute(sql`
-    ALTER TABLE posts 
+    ALTER TABLE posts
     ADD COLUMN reading_time INTEGER DEFAULT 0
   `);
 
@@ -486,13 +486,13 @@ export async function up(db: any) {
 
   // Backfill data
   await db.execute(sql`
-    UPDATE posts 
+    UPDATE posts
     SET reading_time = GREATEST(1, LENGTH(content) / 250)
     WHERE content IS NOT NULL
   `);
 }
 
-export async function down(db: any) {
+export async function down(db: Database) {
   await db.execute(sql`
     DROP INDEX IF EXISTS posts_reading_time_idx
   `);

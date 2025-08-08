@@ -78,7 +78,7 @@ export const sessionMetadata = pgTable(
     // Security and trust scoring
     securityScore: integer().notNull().default(50), // 0-100
     isTrustedDevice: boolean().notNull().default(false),
-    trustFactors: jsonb(), // Detailed trust calculation data
+    trustFactors: jsonb().$type<Record<string, any>>(), // Detailed trust calculation data
     suspiciousActivityCount: integer().notNull().default(0),
     lastSecurityCheck: timestamp({ withTimezone: true }),
 
@@ -177,7 +177,7 @@ export const sessionActivityLog = pgTable(
 
     // Activity details
     activityType: activityTypeEnum().notNull(),
-    activityDetails: jsonb(), // Flexible event data
+    activityDetails: jsonb().$type<Record<string, any>>(), // Flexible event data
     ipAddress: varchar({ length: 45 }), // IPv6 compatible
     userAgent: text(),
     requestPath: text(),

@@ -69,7 +69,10 @@ export const fetchCurrentSession = createServerFn().handler(async () => {
       ...currentSession[0],
       metadata: metadata.length > 0 ? metadata[0] : null,
       trustedDevice,
-      recentActivity,
+      recentActivity: recentActivity.map((activity) => ({
+        ...activity,
+        activityDetails: activity.activityDetails ?? {},
+      })),
       isCurrentSession: true,
     };
 

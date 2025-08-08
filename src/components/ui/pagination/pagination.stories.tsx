@@ -41,7 +41,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicPagination: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>
@@ -74,7 +74,7 @@ export const BasicPagination: Story = {
 };
 
 export const PaginationWithEllipsis: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>
@@ -119,7 +119,7 @@ export const PaginationWithEllipsis: Story = {
 };
 
 export const LargePagination: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>
@@ -423,7 +423,7 @@ export const FirstLastPages: Story = {
 };
 
 export const MinimalPagination: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>
@@ -445,7 +445,7 @@ export const MinimalPagination: Story = {
 };
 
 export const SinglePage: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>
@@ -466,7 +466,7 @@ export const SinglePage: Story = {
 };
 
 export const InteractivePagination: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
         <PaginationItem>

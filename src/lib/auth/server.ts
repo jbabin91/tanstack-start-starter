@@ -1,8 +1,9 @@
 import { serverOnly } from '@tanstack/react-start';
-import { betterAuth } from 'better-auth';
+import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
   admin,
+  customSession,
   multiSession,
   organization,
   username,
@@ -11,135 +12,179 @@ import { reactStartCookies } from 'better-auth/react-start';
 
 import { getUserFirstMembership } from '@/lib/auth/utils/membership-queries';
 import { db } from '@/lib/db';
-import { members, organizations } from '@/lib/db/schemas/auth';
-import { nanoid } from '@/lib/nanoid';
 import { sendEmailVerification } from '@/modules/email/templates/email-verification';
 import { sendPasswordReset } from '@/modules/email/templates/password-reset';
 
 import { extractIPAddress } from './utils/ip-extraction';
 import { createSessionMetadata } from './utils/session-metadata-creator';
 
+const options = {
+  advanced: {
+    database: {
+      generateId: false,
+    },
+  },
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    usePlural: true,
+  }),
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session, context) => {
+          // Extract IP address using utility function
+          const { ipAddress } = extractIPAddress(
+            session.ipAddress,
+            context?.request,
+          );
+
+          // Create session metadata using utility function
+          await createSessionMetadata({
+            sessionId: session.id,
+            sessionIP: session.ipAddress,
+            request: context?.request,
+          });
+
+          return {
+            data: {
+              ...session,
+              ipAddress: ipAddress ?? session.ipAddress,
+            },
+          };
+        },
+      },
+    },
+  },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendPasswordReset({
+        to: user.email,
+        url,
+        userName: user.name,
+      });
+    },
+  },
+  emailVerification: {
+    async afterEmailVerification() {
+      // Custom logic after verification
+    },
+    autoSignInAfterVerification: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmailVerification({
+        to: user.email,
+        url,
+        userName: user.name,
+      });
+    },
+  },
+  plugins: [
+    admin(),
+    reactStartCookies(),
+    multiSession(),
+    organization({
+      organizationCreation: {
+        afterCreate: async ({ organization, user }) => {
+          // Log organization creation
+          await Promise.resolve(
+            console.log(
+              `Organization ${organization.name} created for user ${user.id}`,
+            ),
+          );
+        },
+      },
+    }),
+    username({
+      minUsernameLength: 3,
+      maxUsernameLength: 30,
+      usernameValidator: (username) => {
+        // Prevent reserved usernames
+        const reservedUsernames = [
+          'admin',
+          'root',
+          'administrator',
+          'support',
+          'help',
+          'api',
+          'www',
+          'mail',
+          'ftp',
+        ];
+        if (reservedUsernames.includes(username.toLowerCase())) {
+          return false;
+        }
+        // Ensure username contains only alphanumeric characters, underscores, and hyphens
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+          return false;
+        }
+        // Ensure username doesn't start or end with special characters
+        if (/^[-_]|[-_]$/.test(username)) {
+          return false;
+        }
+        return true;
+      },
+      usernameNormalization: (username) => {
+        // Normalize username by converting to lowercase and replacing confusing characters
+        return username
+          .toLowerCase()
+          .replaceAll('0', 'o')
+          .replaceAll('1', 'l')
+          .replaceAll('3', 'e')
+          .replaceAll('4', 'a')
+          .replaceAll('5', 's');
+      },
+    }),
+  ],
+  session: {
+    additionalFields: {
+      activeOrganizationId: {
+        type: 'string',
+        required: false,
+      },
+    },
+  },
+  user: {
+    additionalFields: {
+      address: {
+        type: 'string',
+      },
+      phone: {
+        type: 'string',
+      },
+      website: {
+        type: 'string',
+      },
+    },
+  },
+} satisfies BetterAuthOptions;
+
 const getAuthConfig = serverOnly(() =>
   betterAuth({
-    advanced: {
-      database: {
-        generateId: false,
-      },
-    },
-    database: drizzleAdapter(db, {
-      provider: 'pg',
-      usePlural: true,
-    }),
-    databaseHooks: {
-      user: {
-        create: {
-          after: async (user) => {
-            // Auto-create a personal organization for new users
-            const orgId = nanoid();
-            const orgSlug = `${(user as any).username ?? user.name.toLowerCase().replaceAll(/\s+/g, '-')}-${orgId.slice(-6)}`;
-
-            // Create the organization
-            await db.insert(organizations).values({
-              id: orgId,
-              name: `${user.name}'s Organization`,
-              slug: orgSlug,
-              createdAt: new Date(),
-            });
-
-            // Add user as owner of their personal organization
-            await db.insert(members).values({
-              id: nanoid(),
-              organizationId: orgId,
-              userId: user.id,
-              role: 'owner',
-              createdAt: new Date(),
-            });
-          },
-        },
-      },
-      session: {
-        create: {
-          before: async (session, context) => {
-            // Extract IP address using utility function
-            const { ipAddress } = extractIPAddress(
-              session.ipAddress,
-              context?.request,
-            );
-
-            // Get user's organization membership and role for permission computation
-            const userMembership = await getUserFirstMembership(session.userId);
-
-            // Set active organization if not already set
-            const activeOrganizationId =
-              (session as any).activeOrganizationId ??
-              (userMembership.length > 0
-                ? userMembership[0].organizationId
-                : undefined);
-
-            return {
-              data: {
-                ...session,
-                activeOrganizationId,
-                ipAddress: ipAddress ?? session.ipAddress,
-              },
-            };
-          },
-          after: async (session, context) => {
-            // Create session metadata using utility function
-            await createSessionMetadata({
-              sessionId: session.id,
-              sessionIP: session.ipAddress,
-              request: context?.request,
-            });
-          },
-        },
-      },
-    },
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: true,
-      sendResetPassword: async ({ user, url }) => {
-        await sendPasswordReset({
-          to: user.email,
-          url,
-          userName: user.name,
-        });
-      },
-    },
-    emailVerification: {
-      async afterEmailVerification() {
-        // Custom logic after verification
-      },
-      autoSignInAfterVerification: true,
-      sendOnSignUp: true,
-      sendVerificationEmail: async ({ user, url }) => {
-        await sendEmailVerification({
-          to: user.email,
-          url,
-          userName: user.name,
-        });
-      },
-    },
+    ...options,
     plugins: [
-      admin(),
-      reactStartCookies(),
-      multiSession(),
-      organization(),
-      username(),
+      ...(options.plugins ?? []),
+      customSession(async ({ user, session }) => {
+        // Get user's organization membership and role for permission computation
+        const userMembership = await getUserFirstMembership(session.userId);
+
+        // Set active organization if not already set
+        const activeOrganizationId =
+          session.activeOrganizationId ??
+          (userMembership.length > 0
+            ? userMembership[0].organizationId
+            : undefined);
+
+        return {
+          user,
+          session: {
+            ...session,
+            activeOrganizationId,
+          },
+        };
+      }, options),
     ],
-    user: {
-      additionalFields: {
-        address: {
-          type: 'string',
-        },
-        phone: {
-          type: 'string',
-        },
-        website: {
-          type: 'string',
-        },
-      },
-    },
   }),
 );
 

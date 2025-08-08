@@ -587,7 +587,7 @@ export type SearchResult = {
   title: string;
   excerpt?: string;
   url: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   relevanceScore?: number;
 };
 
@@ -1346,7 +1346,7 @@ export function useSearchFilters(contentType: string = 'posts') {
 
   // Convert filter state to search API format
   const toSearchFilters = useCallback(() => {
-    const searchFilters: any = {};
+    const searchFilters: Record<string, unknown> = {};
 
     Object.entries(filters).forEach(([filterId, value]) => {
       switch (filterId) {
@@ -1419,7 +1419,7 @@ import { useSearchFilters } from '@/modules/search/hooks/use-search-filters';
 
 interface FilterPanelProps {
   contentType: string;
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: SearchFilters) => void;
   className?: string;
 }
 
@@ -1442,7 +1442,7 @@ export function FilterPanel({ contentType, onFiltersChange, className }: FilterP
     )
   );
 
-  const handleFilterChange = (filterId: string, value: any) => {
+  const handleFilterChange = (filterId: string, value: FilterValue) => {
     updateFilter(filterId, value);
     // Debounce the API call
     setTimeout(() => {
@@ -1557,11 +1557,10 @@ export function FilterPanel({ contentType, onFiltersChange, className }: FilterP
 import { createServerFn } from '@tanstack/react-start';
 import { logger } from '@/lib/logger';
 
-export function withPerformanceMonitoring<T extends (...args: any[]) => any>(
-  fn: T,
-  operationName: string,
-): T {
-  return ((...args: any[]) => {
+export function withPerformanceMonitoring<
+  T extends (...args: unknown[]) => unknown,
+>(fn: T, operationName: string): T {
+  return ((...args: unknown[]) => {
     const startTime = performance.now();
     const result = fn(...args);
 
@@ -1829,7 +1828,7 @@ export function trackSearchEvent(
     | 'filter_applied'
     | 'result_clicked'
     | 'zero_results',
-  properties: Record<string, any> = {},
+  properties: Record<string, unknown> = {},
 ) {
   Sentry.addBreadcrumb({
     category: 'search',
@@ -1880,7 +1879,7 @@ export function useSearchAnalytics() {
     });
   };
 
-  const trackFilterUsage = (filterId: string, value: any) => {
+  const trackFilterUsage = (filterId: string, value: FilterValue) => {
     posthog?.capture('search_filter_applied', {
       filter_id: filterId,
       filter_type: typeof value,

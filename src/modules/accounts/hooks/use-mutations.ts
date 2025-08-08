@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import type { SessionWithDetails } from '@/modules/accounts/api/get-sessions';
 import { revokeSession } from '@/modules/accounts/api/revoke-session';
 import { sessionQueries } from '@/modules/accounts/hooks/use-queries';
 
@@ -24,10 +25,13 @@ export function useRevokeSession() {
       );
 
       // Optimistically update to remove the session
-      queryClient.setQueryData(sessionQueries.all().queryKey, (old: any) => {
-        if (!old) return old;
-        return old.filter((session: any) => session.id !== data.sessionId);
-      });
+      queryClient.setQueryData(
+        sessionQueries.all().queryKey,
+        (old: SessionWithDetails[] | undefined) => {
+          if (!old) return old;
+          return old.filter((session) => session.id !== data.sessionId);
+        },
+      );
 
       // Return a context object with the snapshotted value
       return { previousSessions };

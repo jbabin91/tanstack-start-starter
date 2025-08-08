@@ -86,7 +86,7 @@ export const DefaultTabs: Story = {
   args: {
     defaultValue: 'account',
   },
-  render: (args: any) => (
+  render: (args) => (
     <Tabs className="w-[400px]" {...args}>
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="account">Account</TabsTrigger>
@@ -142,7 +142,7 @@ export const ThreeTabs: Story = {
   args: {
     defaultValue: 'overview',
   },
-  render: (args: any) => (
+  render: (args) => (
     <Tabs className="w-[500px]" {...args}>
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -218,7 +218,7 @@ export const VerticalTabs: Story = {
     defaultValue: 'profile',
     orientation: 'vertical',
   },
-  render: (args: any) => (
+  render: (args) => (
     <div className="w-[600px]">
       <Tabs className="flex gap-4" {...args}>
         <TabsList className="flex h-auto flex-col">
@@ -334,7 +334,7 @@ export const InteractiveTabs: Story = {
   args: {
     defaultValue: 'tab1',
   },
-  render: (args: any) => (
+  render: (args) => (
     <Tabs className="w-[400px]" {...args}>
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger data-testid="tab-1" value="tab1">
@@ -435,7 +435,7 @@ export const SettingsForm: Story = {
   args: {
     defaultValue: 'general',
   },
-  render: (args: any) => (
+  render: (args) => (
     <div className="w-[600px]">
       <h2 className="mb-4 text-2xl font-bold">Settings</h2>
       <Tabs {...args}>

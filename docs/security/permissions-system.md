@@ -262,13 +262,13 @@ All server functions use standardized permission checking:
 // Permission decorator
 function requiresPermission(permissions: string[]) {
   return function (
-    target: any,
+    target: unknown,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const { headers } = getWebRequest();
       const session = await auth.api.getSession({ headers });
 
@@ -584,7 +584,7 @@ async function auditPermissionCheck(
   permission: string,
   resource: string,
   granted: boolean,
-  context: any,
+  context: Record<string, unknown>,
 ) {
   await db.insert(permissionAudits).values({
     userId,

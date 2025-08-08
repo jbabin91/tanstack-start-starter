@@ -130,7 +130,7 @@ export async function getUserFirstMembership(userId: string) {
 databaseHooks: {
   user: {
     read: {
-      after: async (user: any, context: any) => {
+      after: async (user: User, context: SessionContext) => {
         if (!user) return { data: user };
 
         // Get organization context using helper
@@ -159,7 +159,7 @@ databaseHooks: {
       before: async (session, context) => {
         // Set active organization using helper
         const userMembership = await getUserFirstMembership(session.userId);
-        const activeOrganizationId = (session as any).activeOrganizationId ??
+        const activeOrganizationId = (session as Session & { activeOrganizationId?: string }).activeOrganizationId ??
           (userMembership.length > 0 ? userMembership[0].organizationId : undefined);
 
         return { data: { ...session, activeOrganizationId, ipAddress: ipAddress ?? session.ipAddress } };

@@ -59,7 +59,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicTooltip: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="p-8">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
@@ -81,7 +81,7 @@ export const BasicTooltip: Story = {
 };
 
 export const TooltipSides: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="grid grid-cols-3 gap-8 p-12">
       <div></div>
       <div className="flex justify-center">
@@ -151,7 +151,7 @@ export const TooltipSides: Story = {
 };
 
 export const TooltipWithIcons: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="flex gap-4 p-8">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
@@ -237,7 +237,7 @@ export const TooltipWithIcons: Story = {
 };
 
 export const FormFieldTooltips: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="w-[400px] space-y-4 p-8">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
@@ -370,7 +370,7 @@ export const TooltipDelays: Story = {
 };
 
 export const InteractiveTooltip: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="p-8">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
@@ -450,7 +450,7 @@ export const InteractiveTooltip: Story = {
 };
 
 export const TooltipEdgeCases: Story = {
-  render: (args: any) => (
+  render: (args) => (
     <div className="space-y-8 p-8">
       {/* Very long content */}
       <div>

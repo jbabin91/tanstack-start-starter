@@ -46,7 +46,9 @@ export function generateDeviceName(
 /**
  * Generate activity-specific details based on activity type
  */
-export function generateActivityDetails(activityType: ActivityType): object {
+export function generateActivityDetails(
+  activityType: ActivityType,
+): Record<string, unknown> {
   switch (activityType) {
     case 'login': {
       return {

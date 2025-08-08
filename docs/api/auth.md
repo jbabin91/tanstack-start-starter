@@ -217,7 +217,7 @@ function createProtectedServerFn<TInput, TOutput>(
   requiredPermissions?: string[],
 ) {
   return {
-    validator: (schema: any) => ({
+    validator: (schema: Type) => ({
       handler: (fn: (data: TInput, context: AuthContext) => Promise<TOutput>) =>
         createServerFn(config)
           .validator(schema)

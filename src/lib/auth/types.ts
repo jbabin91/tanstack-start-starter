@@ -107,28 +107,6 @@ export type AuthenticatedSession = {
 };
 
 // ============================================================================
-// Route Context Types
-// ============================================================================
-
-/**
- * Type for the root route context
- * Used in createRootRouteWithContext
- */
-export type RootRouteContext = {
-  queryClient: any; // Would be QueryClient from @tanstack/react-query
-  user: UserWithPermissions | null;
-};
-
-/**
- * Type for protected route context
- * Used in routes under /_app
- */
-export type ProtectedRouteContext = {
-  queryClient: any; // Would be QueryClient from @tanstack/react-query
-  user: UserWithPermissions; // Non-null in protected routes
-};
-
-// ============================================================================
 // Permission Checking Types
 // ============================================================================
 

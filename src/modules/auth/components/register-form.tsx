@@ -95,6 +95,10 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
         name: data.name,
         password: data.password,
         username: data.username,
+        // Optional additional fields from auth schema
+        address: '', // Empty strings for optional fields
+        phone: '',
+        website: '',
       });
 
       if (result.error) {

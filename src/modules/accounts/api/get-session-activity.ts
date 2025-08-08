@@ -21,7 +21,7 @@ export type SessionActivity = {
   sessionId: string;
   userId: string;
   activityType: string;
-  activityDetails: any;
+  activityDetails: Record<string, any>;
   ipAddress: string | null;
   userAgent: string | null;
   requestPath: string | null;
@@ -74,7 +74,10 @@ export const fetchSessionActivity = createServerFn()
 
       return {
         sessionId,
-        activities: activities as SessionActivity[],
+        activities: activities.map((activity) => ({
+          ...activity,
+          activityDetails: activity.activityDetails ?? {},
+        })) as SessionActivity[],
         total: activities.length,
         hasMore: activities.length === limit, // Simple indication if there might be more
       };

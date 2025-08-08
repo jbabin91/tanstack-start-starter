@@ -91,18 +91,21 @@ function createEnv<
 
   const missingServerVars = isServer
     ? serverKeys.filter(
-        (key) => !(key in envVars) || (envVars as any)[key] === undefined,
+        (key) =>
+          !(key in envVars) ||
+          envVars[key as keyof typeof envVars] === undefined,
       )
     : [];
 
   const missingClientVars = clientKeys.filter(
-    (key) => !(key in envVars) || (envVars as any)[key] === undefined,
+    (key) =>
+      !(key in envVars) || envVars[key as keyof typeof envVars] === undefined,
   );
 
   if (missingServerVars.length > 0) {
     // Only show available vars that are required by server schema
     const availableVars = serverKeys.filter(
-      (key) => (envVars as any)[key] !== undefined,
+      (key) => envVars[key as keyof typeof envVars] !== undefined,
     );
     const requiredVars = serverKeys;
     throw new Error(

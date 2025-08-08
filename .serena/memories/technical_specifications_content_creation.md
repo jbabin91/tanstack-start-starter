@@ -820,7 +820,7 @@ interface CollaborationEvent {
     | 'comment_add';
   postId: string;
   userId: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: number;
 }
 

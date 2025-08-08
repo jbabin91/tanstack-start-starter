@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { SessionWithDetails } from '@/modules/accounts/types';
+import type { SessionWithDetails } from '@/modules/accounts/api/get-sessions';
 
 type SessionCardProps = {
   session: SessionWithDetails;

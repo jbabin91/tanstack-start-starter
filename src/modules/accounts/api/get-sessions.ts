@@ -10,70 +10,33 @@ import {
   sessions,
   trustedDevices,
 } from '@/lib/db/schemas';
+// Import session type from auth schema
+import type { Session } from '@/lib/db/schemas/auth';
+import {
+  type SessionActivityLog,
+  type SessionMetadata,
+  type TrustedDevice,
+} from '@/lib/db/schemas/session-metadata';
 import { logger } from '@/lib/logger';
 
-export type SessionWithDetails = {
-  id: string;
-  expiresAt: Date;
-  token: string;
-  createdAt: Date;
-  updatedAt: Date;
-  ipAddress: string | null;
-  userAgent: string | null;
-  userId: string;
-  impersonatedBy: string | null;
-  activeOrganizationId: string | null;
-  metadata: {
-    id: string;
-    deviceFingerprint: string;
-    deviceType: string;
-    deviceName: string | null;
-    browserName: string | null;
-    browserVersion: string | null;
-    osName: string | null;
-    osVersion: string | null;
-    isMobile: boolean;
-    countryCode: string | null;
-    region: string | null;
-    city: string | null;
-    timezone: string | null;
-    ispName: string | null;
-    connectionType: string | null;
-    securityScore: number;
-    isTrustedDevice: boolean;
-    suspiciousActivityCount: number;
-    lastActivityAt: Date;
-    pageViewsCount: number;
-    requestsCount: number;
-    lastPageVisited: string | null;
-    sessionDurationSeconds: number | null;
-    createdAt: Date;
-    updatedAt: Date;
-  } | null;
-  trustedDevice: {
-    id: string;
-    deviceFingerprint: string;
-    deviceName: string;
-    deviceType: string;
-    trustLevel: string;
-    isActive: boolean;
-    firstSeenAt: Date;
-    lastSeenAt: Date;
-    trustedAt: Date;
-    expiresAt: Date | null;
-  } | null;
-  recentActivity: {
-    id: string;
-    activityType: string;
-    activityDetails: any;
-    ipAddress: string | null;
-    userAgent: string | null;
-    requestPath: string | null;
-    httpMethod: string | null;
-    responseStatus: number | null;
-    responseTimeMs: number | null;
-    createdAt: Date;
-  }[];
+// Enhanced activity details with discriminated union (for type-safe access)
+export type ActivityDetails =
+  | { type: 'login'; method: string; success: boolean }
+  | { type: 'logout'; reason?: string }
+  | { type: 'page_view'; path: string; duration?: number }
+  | { type: 'api_call'; endpoint: string; statusCode: number }
+  | {
+      type: 'security_event';
+      level: 'low' | 'medium' | 'high';
+      details: string;
+    };
+
+// Compose the final type using arktype-generated types + extensions
+// Use the original activityDetails type from the database to avoid conflicts
+export type SessionWithDetails = Session & {
+  metadata: SessionMetadata | null;
+  trustedDevice: TrustedDevice | null;
+  recentActivity: SessionActivityLog[];
   isCurrentSession: boolean;
 };
 

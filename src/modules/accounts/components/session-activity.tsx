@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { SessionActivityFromAPI as SessionActivityType } from '@/modules/accounts/types';
+import type { SessionActivity as SessionActivityType } from '@/modules/accounts/api/get-session-activity';
 
 type SessionActivityProps = {
   activities: SessionActivityType[];

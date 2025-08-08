@@ -564,10 +564,13 @@ export function useUpdateProfile() {
       });
 
       // Update auth session cache if it's the current user
-      queryClient.setQueryData(['auth', 'current-session'], (oldData: any) => ({
-        ...oldData,
-        user: { ...oldData?.user, ...updatedUser },
-      }));
+      queryClient.setQueryData(
+        ['auth', 'current-session'],
+        (oldData: Session | undefined) => ({
+          ...oldData,
+          user: { ...oldData?.user, ...updatedUser },
+        }),
+      );
     },
   });
 }
