@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/no-process-exit */
+/* eslint-disable unicorn/prefer-top-level-await */
 import { faker } from '@faker-js/faker';
 import { reset } from 'drizzle-seed';
 
@@ -57,10 +59,12 @@ export async function seedDatabase() {
 
 // When this file is run directly, execute the seeding
 if (import.meta.url === `file://${process.argv[1]}`) {
-  // eslint-disable-next-line unicorn/prefer-top-level-await
-  seedDatabase().catch((error) => {
-    console.error('❌ Seeding failed:', error);
-    // eslint-disable-next-line unicorn/no-process-exit
-    process.exit(1);
-  });
+  seedDatabase()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('❌ Seeding failed:', error);
+      process.exit(1);
+    });
 }
