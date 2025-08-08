@@ -112,6 +112,9 @@ function BasicContactForm() {
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
+                  <FormDescription>
+                    Enter your full name as you&apos;d like us to address you.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -130,6 +133,9 @@ function BasicContactForm() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    We&apos;ll use this email to respond to your message.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -210,6 +216,7 @@ function ProfileSettingsForm() {
                     <FormControl>
                       <Input placeholder="John" {...field} />
                     </FormControl>
+                    <FormDescription>Your first or given name.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -224,6 +231,7 @@ function ProfileSettingsForm() {
                     <FormControl>
                       <Input placeholder="Doe" {...field} />
                     </FormControl>
+                    <FormDescription>Your family or last name.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -243,6 +251,9 @@ function ProfileSettingsForm() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Your email address for account notifications.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -290,6 +301,9 @@ function ProfileSettingsForm() {
                       <SelectItem value="moderator">Moderator</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormDescription>
+                    Your role determines your access permissions.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -379,6 +393,9 @@ function SecuritySettingsForm() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Enter your current password for verification.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -418,6 +435,9 @@ function SecuritySettingsForm() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Re-enter your new password to confirm it matches.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -614,6 +634,9 @@ function FormStatesComponent() {
                     <FormControl>
                       <Input {...field} aria-invalid />
                     </FormControl>
+                    <FormDescription>
+                      This field demonstrates error state handling.
+                    </FormDescription>
                     <FormMessage>
                       This field is required and cannot be empty.
                     </FormMessage>
