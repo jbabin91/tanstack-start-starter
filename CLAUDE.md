@@ -420,6 +420,73 @@ After completing any development task, execute this checklist:
    - ✅ All major variants covered
    - ✅ Error states documented
 
+### Storybook Testing Requirements (REQUIRED)
+
+**CRITICAL: These are non-negotiable testing standards for all Storybook stories.**
+
+1. **Portal Component Tests (MANDATORY)**
+   - **Select, Dialog, Tooltip components MUST use `within(document.body)`**
+   - Portal components render outside the canvas DOM scope
+   - Standard `canvas.getByRole()` will fail - use `within(document.body).getByRole()`
+   - Example: `const selectTrigger = within(document.body).getByRole('combobox');`
+
+2. **Animation Timing (REQUIRED)**
+   - **MUST use `waitFor()` + `setTimeout(300)` for animated components**
+   - Animations need time to complete before assertions
+   - Pattern: `await waitFor(() => new Promise(resolve => setTimeout(resolve, 300)));`
+   - Apply to: Tooltips, Dialogs, Select dropdowns, any CSS transitions
+
+3. **ARIA Compliance (MANDATORY)**
+   - **ALL form fields MUST have FormDescription** - Cannot be empty or omitted
+   - **Select components MUST have aria-label** - Required for screen reader accessibility
+   - Form fields without descriptions fail WCAG AA compliance
+   - Example: `<FormDescription>Choose your preferred option</FormDescription>`
+
+4. **Unique IDs (REQUIRED)**
+   - **Error message IDs MUST be unique across all stories**
+   - Use component-specific prefixes: `email-error`, `password-error`, `select-error`
+   - Duplicate IDs cause DOM validation failures in Storybook
+   - Pattern: `<FormMessage id="component-field-error">`
+
+5. **Required Imports (SYSTEM BOUNDARY)**
+   - **MUST import from '@storybook/test':** `{ expect, userEvent, waitFor, within }`
+   - DO NOT import from '@testing-library/react' or other testing libraries
+   - Storybook provides optimized versions for story testing
+   - Example: `import { expect, userEvent, waitFor, within } from '@storybook/test';`
+
+**Complete Testing Pattern:**
+
+```typescript
+import { expect, userEvent, waitFor, within } from '@storybook/test';
+
+export const Interactive: Story = {
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // For standard components
+    const button = canvas.getByRole('button');
+    await userEvent.click(button);
+
+    // For portal components (Select, Dialog, Tooltip)
+    const portalElement = within(document.body).getByRole('combobox');
+    await userEvent.click(portalElement);
+
+    // For animated components
+    await waitFor(() => new Promise((resolve) => setTimeout(resolve, 300)));
+
+    // Assertions
+    expect(args.onClick).toHaveBeenCalled();
+  },
+};
+```
+
+**Reference Documentation:**
+
+- Complete patterns and examples: `docs/development/storybook-testing.md`
+- Portal component testing strategies
+- Animation timing best practices
+- ARIA compliance requirements
+
 ### Agent Behavior Boundaries (IMMUTABLE RULES)
 
 **File Exploration vs Creation:**
