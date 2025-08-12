@@ -2,7 +2,6 @@ import { defineConfig } from 'cz-git';
 
 export default defineConfig({
   extends: ['@commitlint/config-conventional'],
-
   // commitlint rules
   rules: {
     // Ensure types match your existing patterns
@@ -33,12 +32,14 @@ export default defineConfig({
     'subject-full-stop': [2, 'never', '.'],
     'subject-empty': [2, 'never'],
     // Header length limit
-    'header-max-length': [2, 'always', 100],
+    'header-max-length': [2, 'always', 200],
+    // Body length limit
+    'body-max-length': [2, 'always', Infinity],
+    'body-max-line-length': [0, 'always'], // Disable line length limit completely
   },
-
   // cz-git configuration
   prompt: {
-    alias: { fd: 'docs: fix typos' },
+    alias: { fd: 'docs: fix typos', ud: 'chore: update dependencies' },
     messages: {
       type: "Select the type of change that you're committing:",
       scope: 'Denote the SCOPE of this change (optional):',
