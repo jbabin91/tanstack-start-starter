@@ -125,6 +125,35 @@ modules/{feature}/
 - Check for existing utilities first before creating new ones
 - Import shadcn/ui components from `@/components/ui/<component>`
 
+**Barrel Files (Index.ts Re-exports):**
+
+**❌ AVOID in most cases** - Import directly from source files for better tree-shaking and explicit dependencies
+
+**✅ ACCEPTABLE exceptions:**
+
+- **Drizzle schema aggregation** (`src/lib/db/schemas/index.ts`) - Technical requirement for relational queries
+- **Component library patterns** (`src/components/ui/*/index.ts`) - Standard shadcn/ui design pattern
+- **Test utility aggregation** (`src/test/utils.tsx`) - Standard testing practice
+
+**❌ DO NOT use for:**
+
+- Feature modules (`src/modules/*/index.ts`) - Use direct imports
+- Business logic utilities - Use direct imports
+- Type-only re-exports - Use direct imports
+
+```typescript
+// ✅ GOOD: Direct imports and standard patterns
+import { Button } from '@/components/ui/button'; // Uses index.ts (standard shadcn/ui pattern)
+import { users, posts } from '@/lib/db/schemas/auth'; // Direct import from schema file
+
+// ❌ BAD: Unnecessary barrel files
+import { UserService } from '@/modules/users'; // Don't create this
+import { utils } from '@/lib/utils'; // Don't create this
+
+// ✅ ACCEPTABLE: Required for Drizzle
+import * as schema from '@/lib/db/schemas'; // Needed for drizzle({ schema })
+```
+
 **TanStack Start v1.87+ (CRITICAL):**
 
 ```typescript
