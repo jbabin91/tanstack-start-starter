@@ -1,0 +1,185 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Database Schema and Core Infrastructure",
+        "description": "Establish PostgreSQL database with Drizzle ORM, core entity schemas, and migration system",
+        "details": "Create Drizzle configuration for PostgreSQL with proper connection pooling. Define core schemas for users, organizations, sessions, posts, comments, and media entities. Setup migration system with proper indexes for foreign keys and search columns. Use nanoid() for primary keys, implement proper foreign key constraints with cascade behavior, and create performance indexes on frequently queried columns. Configure connection to Neon/Supabase PostgreSQL instance.",
+        "testStrategy": "Unit tests for schema validation, migration rollback tests, connection pool tests, and database constraint verification. Test data isolation between organizations.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Multi-Session Authentication with better-auth",
+        "description": "Setup better-auth with multi-session support, email verification, and username authentication",
+        "details": "Configure better-auth with multi-session, organization, and username plugins. Implement JWT token management, session tracking across devices, and email verification flow. Setup OAuth providers (Google, GitHub) and create authentication middleware for route protection. Generate auth schema using better-auth config and integrate with existing user schema.",
+        "testStrategy": "Integration tests for login/logout flows, session management across devices, email verification process, and OAuth provider integration. Security tests for JWT validation and session hijacking prevention.",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "review",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Setup Email Infrastructure with Resend Integration",
+        "description": "Integrate Resend for transactional emails including verification, invitations, and notifications",
+        "details": "Configure Resend API integration with proper error handling and retry logic. Create email templates for user verification, password reset, organization invitations, and system notifications. Implement email queue system for reliable delivery and setup email analytics tracking. Use React Email for template creation with responsive design.",
+        "testStrategy": "Unit tests for email template rendering, integration tests for email delivery, mock tests for Resend API responses, and end-to-end tests for email verification flows.",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Organization Management and Multi-tenancy",
+        "description": "Create organization structure with member management, role-based permissions, and data isolation",
+        "details": "Build organization entity with membership relationships, implement RBAC with admin/editor/viewer roles, and create invitation system with email notifications. Setup row-level security for data isolation between organizations, implement organization switching functionality, and create member management interface. Use proper foreign key constraints to ensure data integrity.",
+        "testStrategy": "Unit tests for permission checking, integration tests for member invitation flow, security tests for data isolation between organizations, and load tests for organization switching performance.",
+        "priority": "high",
+        "dependencies": [1, 2],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Create Core Content Management System",
+        "description": "Implement posts CRUD operations with draft/publish workflows and basic metadata",
+        "details": "Build post entity with title, content, status (draft/published), author, organization, and timestamps. Implement server functions for CRUD operations using TanStack Start createServerFn. Add version control foundation with post history tracking, auto-save functionality, and content validation using Arktype. Setup proper authorization checks for organization-based access.",
+        "testStrategy": "Unit tests for CRUD operations, integration tests for draft/publish workflows, permission tests for organization-based access, and performance tests for auto-save functionality.",
+        "priority": "medium",
+        "dependencies": [1, 4],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement PostgreSQL Full-Text Search System",
+        "description": "Setup advanced search functionality with full-text search, filters, and ranking",
+        "details": "Configure PostgreSQL full-text search with proper indexing on post content and metadata. Implement search ranking based on relevance and recency, create faceted filters for categories, tags, authors, and date ranges. Build search analytics tracking and saved search functionality. Use tsvector and tsquery for optimal search performance.",
+        "testStrategy": "Unit tests for search query building, performance tests for search index efficiency, integration tests for faceted filtering, and accuracy tests for search ranking algorithms.",
+        "priority": "medium",
+        "dependencies": [1, 5],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Build User Dashboard and Navigation Interface",
+        "description": "Create responsive dashboard with activity feeds, navigation, and user management features",
+        "details": "Build dashboard layout using shadcn/ui components with responsive design for mobile, tablet, and desktop. Implement activity feed showing recent posts, comments, and organization activities. Create navigation with organization switching, user profile management, and session management interface. Add dark/light mode toggle with system preference detection.",
+        "testStrategy": "Visual regression tests for responsive design, accessibility tests for WCAG AA compliance, performance tests for dashboard loading times, and user interaction tests for navigation flows.",
+        "priority": "medium",
+        "dependencies": [2, 4, 5],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Develop GitHub-Style Content Editor with Markdown Support",
+        "description": "Create rich text editor with markdown support, real-time preview, and media handling",
+        "status": "pending",
+        "dependencies": [5, 7],
+        "priority": "medium",
+        "details": "Build content editor using React Hook Form with Zod validation, implement markdown parsing and real-time preview functionality. Add media upload support using Cloudflare R2 for S3-compatible storage with excellent free tier (10GB, 1M reads/month), built-in CDN, no egress fees, and zero infrastructure management. Use @aws-sdk/client-s3 with R2-specific endpoints and credentials as officially recommended by Cloudflare for R2 integration. Implement auto-save functionality to prevent data loss and keyboard shortcuts for common actions. Cloudflare R2 provides enterprise-grade storage features without the complexity of managing data persistence and backups required by MinIO or persistent volumes.",
+        "testStrategy": "Unit tests for markdown parsing, integration tests for media upload with Cloudflare R2 using @aws-sdk/client-s3, user experience tests for auto-save functionality, and performance tests for real-time preview rendering. Include tests for CDN delivery performance and S3-compatible API integration with R2-specific endpoints.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Compare MinIO vs Cloudflare R2 for media storage",
+            "description": "Evaluate MinIO vs Cloudflare R2 and recommend storage solution",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Compare MinIO vs Cloudflare R2 for media storage needs. MinIO requires managing data persistence and backups (still needs volumes), while Cloudflare R2 offers managed S3-compatible storage with excellent free tier (10GB, 1M reads/month), built-in CDN, no egress fees, and zero infrastructure management. Analyze factors: infrastructure complexity, cost structure, CDN benefits, maintenance overhead, and integration with TanStack Start using @aws-sdk/client-s3 (officially recommended by Cloudflare). Document recommendation for Cloudflare R2 as the better choice for avoiding infrastructure complexity while getting enterprise-grade storage features.",
+            "testStrategy": "Test S3 API compatibility using @aws-sdk/client-s3 with R2 endpoints, validate CDN performance, and compare integration complexity between options"
+          },
+          {
+            "id": 2,
+            "title": "Implement markdown editor with React Hook Form",
+            "description": "Build the core editor component with form validation",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Create markdown editor using React Hook Form with Zod validation schema. Implement textarea with markdown syntax highlighting, basic toolbar with common formatting buttons, and form state management with proper error handling.",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Add real-time markdown preview functionality",
+            "description": "Implement live preview pane showing rendered markdown",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Build preview component that renders markdown in real-time as user types. Use a markdown parser (like remark/rehype) with syntax highlighting support. Implement split-pane layout with resizable divider between editor and preview.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement media upload functionality with Cloudflare R2",
+            "description": "Build media upload system using Cloudflare R2 storage",
+            "status": "pending",
+            "dependencies": [1],
+            "details": "Implement file upload handling with drag-and-drop support, progress indicators, and error handling. Create server functions for media processing, validation (file type, size limits), and integration with Cloudflare R2 using @aws-sdk/client-s3 with R2-specific endpoints and credentials. Add image embedding into markdown with proper CDN URL generation for optimal delivery performance. Configure R2 bucket settings and API credentials for S3-compatible operations.",
+            "testStrategy": "Test file uploads with Cloudflare R2 integration using @aws-sdk/client-s3, validate S3 API compatibility with R2 endpoints, verify CDN URL generation and delivery performance"
+          },
+          {
+            "id": 5,
+            "title": "Add auto-save functionality",
+            "description": "Implement automatic content saving to prevent data loss",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Create auto-save mechanism that saves drafts periodically and on content changes. Add visual indicators for save status, handle network failures gracefully, and provide manual save option. Integrate with existing post CRUD operations.",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement keyboard shortcuts and accessibility",
+            "description": "Add keyboard shortcuts for common actions and ensure accessibility",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Implement keyboard shortcuts for bold, italic, headers, lists, and other common markdown actions. Ensure proper ARIA labels, keyboard navigation, and screen reader compatibility. Add help overlay showing available shortcuts.",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Configure Cloudflare R2 integration",
+            "description": "Setup Cloudflare R2 bucket and API configuration",
+            "status": "pending",
+            "dependencies": [1],
+            "details": "Create Cloudflare R2 bucket for media storage, configure API credentials and permissions for S3-compatible operations, setup CORS policies for direct uploads, and implement presigned URL generation using @aws-sdk/client-s3 with R2-specific endpoints for secure file uploads. Configure CDN settings for optimal media delivery performance and setup environment variables for R2 integration using the officially recommended AWS SDK approach.",
+            "testStrategy": "Test bucket creation and permissions, validate CORS configuration for uploads, verify presigned URL functionality using @aws-sdk/client-s3 with R2 endpoints, and test CDN performance"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Session Management and Security Features",
+        "description": "Create session tracking interface with device management and security monitoring",
+        "details": "Build session management interface showing active devices, locations, and last activity timestamps. Implement session revocation functionality, suspicious activity detection, and audit logging. Create security dashboard for users to monitor account access and setup session timeout configurations.",
+        "testStrategy": "Security tests for session hijacking prevention, integration tests for multi-device session management, audit tests for activity logging, and performance tests for session cleanup processes.",
+        "priority": "medium",
+        "dependencies": [2, 7],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Add Comments System and User Interaction Features",
+        "description": "Implement threaded comments, notifications, and user interaction features",
+        "details": "Create comment entity with threaded discussion support, implement real-time notifications for post interactions, and build notification center interface. Add user mention functionality, comment moderation tools for organization admins, and email notifications for comment activities. Use WebSocket or Server-Sent Events for real-time updates.",
+        "testStrategy": "Unit tests for comment threading logic, integration tests for notification delivery, real-time tests for comment updates, and moderation tests for admin controls.",
+        "priority": "low",
+        "dependencies": [5, 7, 8],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-12T04:57:11.722Z",
+      "updated": "2025-08-13T03:01:55.916Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
