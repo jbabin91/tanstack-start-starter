@@ -9,24 +9,6 @@
             "command": "uv run .claude/hooks/post_tool_use.py"
           }
         ]
-      },
-      {
-        "matcher": "mcp__serena__write_memory",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run .claude/hooks/doc_memory_sync.py"
-          }
-        ]
-      },
-      {
-        "matcher": "TodoWrite",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run .claude/hooks/project_phase_tracker.py"
-          }
-        ]
       }
     ],
     "PreToolUse": [

@@ -25,6 +25,8 @@ def suggest_subagent(prompt: str) -> Optional[str]:
     prompt_lower = prompt.lower()
 
     subagent_patterns = {
+        'task-orchestrator': ['task master', 'task list', 'project management', 'next task', 'task status', 'orchestrate', 'coordinate tasks'],
+        'task-executor': ['work on task', 'implement task', 'complete task', 'task implementation', 'execute task'],
         'fullstack-developer': ['full stack', 'api', 'database', 'frontend', 'backend', 'complete feature'],
         'frontend-developer': ['ui', 'component', 'react', 'styling', 'responsive', 'interface'],
         'backend-developer': ['database', 'schema', 'api endpoint', 'drizzle', 'migration', 'server'],
@@ -136,24 +138,37 @@ def inject_project_context(prompt: str) -> str:
     needs_status = any(keyword in prompt_lower for keyword in ['status', 'progress', 'where are we', 'current state', 'phase'])
     needs_planning = any(keyword in prompt_lower for keyword in ['plan', 'design', 'architecture', 'strategy', 'roadmap', 'next steps'])
 
-    # Add project status for status/planning questions
+    # Add Task Master status for status/planning questions
     if needs_status or needs_planning:
-        status_path = Path('.serena/memories/project_status.md')
-        if status_path.exists():
+        taskmaster_dir = Path('.taskmaster')
+        if taskmaster_dir.exists():
             try:
-                with open(status_path, 'r') as f:
-                    content = f.read()
-                    # Extract current phase info
-                    lines = content.split('\n')
-                    for line in lines:
-                        if line.startswith('## Current Phase:'):
-                            context_parts.append(line.replace('## Current Phase:', 'Current phase:'))
-                        elif line.startswith('**Next Phase:**'):
-                            context_parts.append(line.replace('**', ''))
-                        elif line.startswith('**Active Todos:**'):
-                            context_parts.append(line.replace('**', ''))
+                # Try to get task status via CLI
+                import subprocess
+                result = subprocess.run(
+                    ['task-master', 'list', '--status=pending,in-progress'],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    cwd='.'
+                )
+                if result.returncode == 0 and result.stdout:
+                    # Parse basic stats from output
+                    lines = result.stdout.strip().split('\n')
+                    pending_count = sum(1 for line in lines if 'pending' in line.lower())
+                    in_progress_count = sum(1 for line in lines if 'in-progress' in line.lower())
+                    
+                    if pending_count > 0:
+                        context_parts.append(f"Pending tasks: {pending_count}")
+                    if in_progress_count > 0:
+                        context_parts.append(f"In progress: {in_progress_count}")
+                    
+                    context_parts.append("Current phase: Implementation")
             except Exception:
-                pass
+                # Fallback to basic file check
+                tasks_file = taskmaster_dir / 'tasks' / 'tasks.json'
+                if tasks_file.exists():
+                    context_parts.append("Task Master active with tasks available")
 
     # Add recent activity context
     logs_dir = Path(".claude/logs")
