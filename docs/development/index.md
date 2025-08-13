@@ -57,27 +57,34 @@ export const getPost = createServerFn({ method: 'GET' })
 
 ### Query Patterns
 
-TanStack Query integration follows this structure:
+TanStack Query integration follows the **TkDodo hierarchical pattern**:
 
 ```typescript
 // src/modules/posts/hooks/use-queries.ts
 export const postQueries = {
-  all: () =>
+  all: () => ['posts'] as const,
+  lists: () => [...postQueries.all(), 'list'] as const,
+  list: () =>
     queryOptions({
-      queryKey: ['posts'] as const,
+      queryKey: [...postQueries.lists()],
       queryFn: () => getAllPosts(),
     }),
-
-  byId: (id: string) =>
+  details: () => [...postQueries.all(), 'detail'] as const,
+  detail: (id: string) =>
     queryOptions({
-      queryKey: ['posts', id] as const,
+      queryKey: [...postQueries.details(), id],
       queryFn: () => getPost({ data: id }),
+    }),
+  byUser: (userId: string) =>
+    queryOptions({
+      queryKey: [...postQueries.all(), 'byUser', userId],
+      queryFn: () => getUserPosts({ data: { userId } }),
     }),
 };
 
 // Custom hooks with object parameters (REQUIRED pattern)
 export function usePost({ id }: { id: string }) {
-  return useSuspenseQuery(postQueries.byId(id));
+  return useSuspenseQuery(postQueries.detail(id));
 }
 
 export function usePostWithLoading({
@@ -88,9 +95,13 @@ export function usePostWithLoading({
   enabled?: boolean;
 }) {
   return useQuery({
-    ...postQueries.byId(id ?? ''),
+    ...postQueries.detail(id ?? ''),
     enabled: enabled && !!id,
   });
+}
+
+export function usePosts() {
+  return useSuspenseQuery(postQueries.list());
 }
 ```
 
@@ -452,34 +463,51 @@ const postsWithAuthors = await db.query.posts.findMany({
 ### Query Optimization
 
 ```typescript
-// Use proper query key patterns for cache management
+// Use TkDodo hierarchical query key patterns for cache management
 export const postQueries = {
-  // Base queries
-  all: () =>
+  all: () => ['posts'] as const,
+  lists: () => [...postQueries.all(), 'list'] as const,
+  list: () =>
     queryOptions({
-      queryKey: ['posts'] as const,
+      queryKey: [...postQueries.lists()],
       queryFn: () => getAllPosts(),
     }),
-
-  // Parameterized queries
+  details: () => [...postQueries.all(), 'detail'] as const,
+  detail: (id: string) =>
+    queryOptions({
+      queryKey: [...postQueries.details(), id],
+      queryFn: () => getPost({ data: id }),
+    }),
   byUser: (userId: string) =>
     queryOptions({
-      queryKey: ['posts', 'user', userId] as const,
-      queryFn: () => getUserPosts({ userId }),
-    }),
-
-  // Specific resource queries
-  byId: (id: string) =>
-    queryOptions({
-      queryKey: ['posts', id] as const,
-      queryFn: () => getPost({ data: id }),
+      queryKey: [...postQueries.all(), 'byUser', userId],
+      queryFn: () => getUserPosts({ data: { userId } }),
     }),
 };
 
-// Cache invalidation patterns
+// Cache invalidation patterns using hierarchical keys
+// Invalidate all posts (including lists and details)
+queryClient.invalidateQueries({ queryKey: postQueries.all() });
+
+// Invalidate specific user's posts
 queryClient.invalidateQueries({
   queryKey: postQueries.byUser(userId).queryKey,
 });
+
+// Invalidate all post details
+queryClient.invalidateQueries({ queryKey: postQueries.details() });
+
+// Example: Invalidate all sessions
+queryClient.invalidateQueries({ queryKey: sessionQueries.all() });
+
+// Example: Update optimistic cache
+queryClient.setQueryData(
+  sessionQueries.list().queryKey,
+  (old: Session[] | undefined) => {
+    // Update logic here
+    return old?.filter((session) => session.id !== deletedId);
+  },
+);
 ```
 
 ## Error Handling

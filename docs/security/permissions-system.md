@@ -13,51 +13,94 @@ The platform uses a hierarchical permission system with:
 
 ## Permission Architecture
 
-### Permission Types
+### Database-First Design with Enums
 
-#### Global Permissions
-
-Applied to all users regardless of context:
+The system uses PostgreSQL enums as the single source of truth:
 
 ```typescript
-const globalPermissions = {
-  'profile:edit': 'Edit own profile information',
-  'posts:create': 'Create personal posts',
-  'posts:edit:own': 'Edit own posts',
-  'drafts:manage:own': 'Manage own drafts',
-  'organizations:create': 'Create new organizations',
-  'organizations:join': 'Join organizations via invitation',
-};
+// src/lib/db/schemas/auth.ts
+export const systemRoleEnum = pgEnum('system_role', [
+  'user',
+  'admin',
+  'super_admin',
+]);
+
+export const organizationRoleEnum = pgEnum('organization_role', [
+  'member',
+  'admin',
+  'owner',
+]);
+
+export const users = pgTable('users', {
+  // ... other fields
+  role: systemRoleEnum().default('user'),
+});
+
+export const members = pgTable('members', {
+  // ... other fields
+  role: organizationRoleEnum().default('member').notNull(),
+});
 ```
 
-#### Organization Permissions
+### Type-Safe Permission Configuration
 
-Granted based on role within specific organizations:
+Permissions are defined declaratively using configuration:
 
 ```typescript
-const organizationPermissions = {
-  // Content permissions
-  'posts:create': 'Create posts in organization context',
-  'posts:edit:own': 'Edit own organization posts',
-  'posts:edit:all': 'Edit all organization posts',
-  'posts:delete:own': 'Delete own organization posts',
-  'posts:delete:all': 'Delete any organization posts',
-  'posts:approve': 'Approve posts for publication',
-  'posts:moderate': 'Moderate published posts',
+// src/lib/auth/permissions.ts
+export type SystemRole = (typeof systemRoleEnum.enumValues)[number];
+export type OrganizationRole = (typeof organizationRoleEnum.enumValues)[number];
 
-  // Member management
-  'members:view': 'View organization members',
-  'members:invite': 'Invite new members',
-  'members:remove': 'Remove members',
-  'members:promote': 'Change member roles',
+const PERMISSION_CONFIG = {
+  system: {
+    user: ['posts:create', 'profile:edit', 'organizations:create'],
+    admin: [
+      'posts:create',
+      'posts:edit',
+      'posts:moderate',
+      'profile:edit',
+      'organizations:create',
+      'users:manage',
+    ],
+    super_admin: ['*'], // All permissions
+  },
+  organization: {
+    member: ['posts:create', 'posts:edit:own'],
+    admin: [
+      'posts:create',
+      'posts:edit:own',
+      'posts:edit:all',
+      'members:view',
+      'members:invite',
+      'org:settings',
+    ],
+    owner: [
+      'posts:create',
+      'posts:edit:all',
+      'posts:delete:all',
+      'members:view',
+      'members:invite',
+      'members:remove',
+      'org:settings',
+      'org:billing',
+      'org:delete',
+    ],
+  },
+} as const;
 
-  // Organization management
-  'org:settings': 'Modify organization settings',
-  'org:templates': 'Manage content templates',
-  'org:guidelines': 'Manage writing guidelines',
-  'org:analytics': 'View organization analytics',
-  'org:delete': 'Delete organization',
-};
+export function computePermissions(
+  systemRole?: string | null,
+  organizationRole?: string | null,
+): string[] {
+  const systemPermissions = systemRole
+    ? (PERMISSION_CONFIG.system[systemRole as SystemRole] ?? [])
+    : [];
+  const orgPermissions = organizationRole
+    ? (PERMISSION_CONFIG.organization[organizationRole as OrganizationRole] ??
+      [])
+    : [];
+  return [...new Set([...systemPermissions, ...orgPermissions])];
+}
 ```
 
 ### Role Hierarchy
@@ -131,67 +174,75 @@ const ownerRole = {
 
 ## Permission Resolution
 
-### Context-Based Resolution
+### Better-Auth Integration
 
-Permissions are resolved based on the current context:
+Permissions are automatically computed and attached to the user object via better-auth database hooks:
 
 ```typescript
-async function getUserPermissions(
-  userId: string,
-  organizationId?: string,
-): Promise<string[]> {
-  // Personal context
-  if (!organizationId) {
-    return getPersonalPermissions(userId);
-  }
+// src/lib/auth/server.ts
+import { getUserMembership } from '@/lib/auth/utils/membership-queries';
+import { computePermissions } from '@/lib/auth/permissions';
 
-  // Organization context
-  const membership = await getOrganizationMembership(userId, organizationId);
-  if (!membership) {
-    return []; // No access to organization
-  }
+databaseHooks: {
+  user: {
+    read: {
+      after: async (user: User, context: SessionContext) => {
+        if (!user) return { data: user };
 
-  return getOrganizationPermissions(membership.role);
+        // Get organization context
+        const membership = await getUserMembership({
+          userId: user.id,
+          organizationId: context?.session?.activeOrganizationId,
+        });
+
+        const orgRole = membership.length > 0 ? membership[0].organizationRole : null;
+        const permissions = computePermissions(user.role, orgRole);
+
+        return {
+          data: {
+            ...user,
+            permissions,
+            organizationRole: orgRole,
+            activeOrganizationId: membership.length > 0 ? membership[0].organizationId : null,
+            activeOrganizationName: membership.length > 0 ? membership[0].organizationName : null,
+          },
+        };
+      },
+    },
+  },
+}
+```
+
+### Helper Functions for DRY Code
+
+```typescript
+// src/lib/auth/utils/membership-queries.ts
+export async function getUserMembership({
+  userId,
+  organizationId,
+}: {
+  userId: string;
+  organizationId?: string;
+}) {
+  return await db
+    .select({
+      organizationId: members.organizationId,
+      organizationRole: members.role,
+      organizationName: organizations.name,
+    })
+    .from(members)
+    .innerJoin(organizations, eq(members.organizationId, organizations.id))
+    .where(
+      and(
+        eq(members.userId, userId),
+        organizationId ? eq(members.organizationId, organizationId) : undefined,
+      ),
+    )
+    .limit(1);
 }
 
-function getPersonalPermissions(userId: string): string[] {
-  return [
-    'profile:edit',
-    'posts:create',
-    'posts:edit:own',
-    'posts:delete:own',
-    'drafts:manage:own',
-    'organizations:create',
-    'organizations:join',
-  ];
-}
-
-function getOrganizationPermissions(role: string): string[] {
-  const rolePermissions = {
-    owner: ['*'],
-    admin: [
-      'posts:create',
-      'posts:edit:all',
-      'posts:delete:all',
-      'posts:approve',
-      'posts:moderate',
-      'members:view',
-      'members:invite',
-      'members:remove',
-      'org:settings',
-      'org:templates',
-      'org:guidelines',
-      'org:analytics',
-    ],
-    member: [
-      'posts:create',
-      'posts:edit:own',
-      'posts:delete:own',
-      'members:view',
-    ],
-  };
-
-  return rolePermissions[role] || [];
+export async function getUserFirstMembership(userId: string) {
+  return getUserMembership({ userId });
 }
 ```
 
@@ -331,35 +382,41 @@ export const deletePost = createServerFn({ method: 'DELETE' })
 
 ### Route Protection
 
-File-based route protection using TanStack Router:
+File-based route protection using TanStack Router with better-auth integration:
 
 ```typescript
+// src/routes/__root.tsx
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  user: Awaited<ReturnType<typeof getUser>>; // Includes computed permissions
+}>()({
+  beforeLoad: async ({ context }) => {
+    // Single call gets user + permissions (computed by better-auth hook)
+    const user = await context.queryClient.fetchQuery(
+      authQueries.currentUser(),
+    );
+    return { user };
+  },
+});
+
 // src/routes/_app/admin.tsx
 export const Route = createFileRoute('/_app/admin')({
-  beforeLoad: async ({ context }) => {
-    const session = await context.queryClient.fetchQuery(
-      authQueries.currentSession(),
-    );
-
-    if (!session.user) {
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
       throw redirect({ to: '/login' });
     }
 
-    const permissions = await getUserPermissions(
-      session.user.id,
-      session.session.organizationId,
-    );
-
+    // Permissions already computed and available
     const canAccess =
-      permissions.includes('org:settings') || permissions.includes('*');
+      context.user.permissions?.includes('org:settings') ||
+      context.user.permissions?.includes('*');
 
     if (!canAccess) {
       throw redirect({ to: '/dashboard' });
     }
 
     return {
-      user: session.user,
-      permissions,
+      user: context.user,
     };
   },
 });
@@ -367,38 +424,24 @@ export const Route = createFileRoute('/_app/admin')({
 
 ## Client-Side Permission Checking
 
-### Permission Hooks
+### Simplified Permission Access
+
+Since permissions are computed by better-auth hooks, they're available directly from route context:
 
 ```typescript
-// src/hooks/use-permissions.ts
-export function usePermissions(organizationId?: string) {
-  return useQuery({
-    queryKey: ['permissions', organizationId],
-    queryFn: () => checkPermissions({
-      permissions: [], // Get all permissions
-      organizationId
-    }),
-  });
-}
-
-export function useHasPermission(
-  permission: string,
-  organizationId?: string
-) {
-  const { data: permissionData } = usePermissions(organizationId);
-
-  return (
-    permissionData?.userPermissions?.includes(permission) ||
-    permissionData?.userPermissions?.includes('*') ||
-    false
-  );
-}
-
 // Usage in components
 function PostActions({ post }: { post: Post }) {
-  const canEdit = useHasPermission('posts:edit:own', post.organizationId);
-  const canDelete = useHasPermission('posts:delete:own', post.organizationId);
-  const canModerate = useHasPermission('posts:moderate', post.organizationId);
+  const { user } = Route.useRouteContext();
+
+  // Permissions already computed and available
+  const canEdit = user?.permissions?.includes('posts:edit:own') ||
+                  user?.permissions?.includes('posts:edit:all') ||
+                  user?.permissions?.includes('*');
+  const canDelete = user?.permissions?.includes('posts:delete:own') ||
+                   user?.permissions?.includes('posts:delete:all') ||
+                   user?.permissions?.includes('*');
+  const canModerate = user?.permissions?.includes('posts:moderate') ||
+                     user?.permissions?.includes('*');
 
   return (
     <div className="flex gap-2">
@@ -421,6 +464,24 @@ function PostActions({ post }: { post: Post }) {
       )}
     </div>
   );
+}
+
+// Helper function for reusable permission checking
+function hasPermission(user: any, permission: string): boolean {
+  return user?.permissions?.includes(permission) ||
+         user?.permissions?.includes('*') ||
+         false;
+}
+
+// Usage with helper
+function AdminFeature() {
+  const { user } = Route.useRouteContext();
+
+  if (!hasPermission(user, 'admin:access')) {
+    return <AccessDenied />;
+  }
+
+  return <AdminPanel />;
 }
 ```
 

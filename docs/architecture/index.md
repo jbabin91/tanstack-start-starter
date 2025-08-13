@@ -116,6 +116,8 @@ This document provides a comprehensive overview of the system architecture for t
 - **Icons component** - Centralized icon management instead of direct lucide imports
 - **cn utility** - Class name merging at `@/utils/cn`
 - **Path aliases** - Always use `@/` for src imports
+- **ID Generation** - All entities use `nanoid()` from `@/lib/nanoid` with custom alphabet
+- **Environment Management** - Uses `dotenvx` with configuration in `src/configs/env.ts`
 
 ## Module Architecture
 
