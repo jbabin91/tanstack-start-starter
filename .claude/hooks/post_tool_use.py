@@ -115,8 +115,151 @@ def run_lint_check(file_path: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def run_type_check(file_path: str) -> Dict[str, Any]:
-    """Run TypeScript type checking"""
+def run_ide_diagnostics(file_path: str) -> Dict[str, Any]:
+    """Run IDE diagnostics check using MCP, with comprehensive fallback"""
+    try:
+        # Try IDE diagnostics first
+        import subprocess
+        import json
+        
+        # Call mcp__ide__getDiagnostics via claude command
+        result = subprocess.run(
+            ["claude", "--mcp-call", "mcp__ide__getDiagnostics", f"--uri=file://{Path(file_path).resolve()}"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            diagnostics_data = json.loads(result.stdout)
+            
+            # Find diagnostics for our file
+            file_diagnostics = []
+            for item in diagnostics_data:
+                if file_path in item.get("uri", ""):
+                    file_diagnostics.extend(item.get("diagnostics", []))
+            
+            # Categorize diagnostics
+            errors = [d for d in file_diagnostics if d.get("severity") == 1]  # Error
+            warnings = [d for d in file_diagnostics if d.get("severity") == 2]  # Warning
+            
+            if errors:
+                error_messages = [f"Line {d.get('range', {}).get('start', {}).get('line', '?')}: {d.get('message', 'Unknown error')}" for d in errors]
+                return {"success": False, "error": "; ".join(error_messages), "warnings": len(warnings) > 0}
+            elif warnings:
+                warning_messages = [f"Line {d.get('range', {}).get('start', {}).get('line', '?')}: {d.get('message', 'Unknown warning')}" for d in warnings]
+                return {"success": True, "changed": False, "warnings": "; ".join(warning_messages)}
+            else:
+                return {"success": True, "changed": False, "message": "IDE diagnostics passed"}
+        else:
+            # Fallback to comprehensive quality checks
+            return run_comprehensive_fallback(file_path)
+            
+    except Exception as e:
+        # Fallback to comprehensive quality checks
+        return run_comprehensive_fallback(file_path)
+
+
+def run_comprehensive_fallback(file_path: str) -> Dict[str, Any]:
+    """Run comprehensive quality checks when IDE diagnostics unavailable"""
+    results = {
+        "success": True,
+        "changed": False,
+        "errors": [],
+        "warnings": [],
+        "fixes": []
+    }
+    
+    # 1. Format check and fix
+    format_result = run_format_check(file_path)
+    if format_result.get("changed"):
+        results["fixes"].append("Code formatted")
+        results["changed"] = True
+    if not format_result.get("success"):
+        results["errors"].append(f"Format error: {format_result.get('error', 'Unknown')}")
+        results["success"] = False
+    
+    # 2. Lint check and fix
+    lint_result = run_lint_check(file_path)
+    if lint_result.get("changed"):
+        results["fixes"].append("Linting issues fixed")
+        results["changed"] = True
+    if not lint_result.get("success"):
+        if lint_result.get("warnings"):
+            results["warnings"].append(f"Lint warnings: {lint_result.get('error', 'Unknown')}")
+        else:
+            results["errors"].append(f"Lint error: {lint_result.get('error', 'Unknown')}")
+            results["success"] = False
+    
+    # 3. TypeScript type check
+    type_result = run_type_check_fallback(file_path)
+    if not type_result.get("success"):
+        if type_result.get("warnings"):
+            results["warnings"].append(f"Type errors: {type_result.get('error', 'Unknown')}")
+        else:
+            results["errors"].append(f"Type error: {type_result.get('error', 'Unknown')}")
+            results["success"] = False
+    
+    # 4. Markdown lint check
+    if file_path.endswith(('.md', '.mdx')):
+        md_result = run_markdown_lint(file_path)
+        if md_result.get("changed"):
+            results["fixes"].append("Markdown formatting fixed")
+            results["changed"] = True
+        if not md_result.get("success"):
+            if md_result.get("warnings"):
+                results["warnings"].append(f"Markdown warnings: {md_result.get('error', 'Unknown')}")
+            else:
+                results["errors"].append(f"Markdown error: {md_result.get('error', 'Unknown')}")
+                results["success"] = False
+    
+    # Combine messages for return
+    if results["errors"]:
+        return {"success": False, "error": "; ".join(results["errors"]), "warnings": len(results["warnings"]) > 0}
+    elif results["warnings"]:
+        return {"success": True, "changed": results["changed"], "warnings": "; ".join(results["warnings"])}
+    else:
+        message = "Comprehensive quality checks passed"
+        if results["fixes"]:
+            message += f" ({', '.join(results['fixes'])})"
+        return {"success": True, "changed": results["changed"], "message": message}
+
+
+def run_markdown_lint(file_path: str) -> Dict[str, Any]:
+    """Run markdown linting with markdownlint-cli2"""
+    try:
+        # Run markdown lint with auto-fix
+        result = subprocess.run(
+            ["pnpm", "lint:md:fix", file_path],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            return {"success": True, "changed": True, "message": "Markdown linting completed"}
+        else:
+            # Check if there are remaining issues
+            check_result = subprocess.run(
+                ["pnpm", "lint:md", file_path],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if check_result.returncode == 0:
+                return {"success": True, "changed": True, "message": "Markdown issues fixed"}
+            else:
+                return {"success": False, "error": check_result.stdout, "warnings": True}
+                
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Markdown lint timed out"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def run_type_check_fallback(file_path: str) -> Dict[str, Any]:
+    """Fallback TypeScript type checking using pnpm"""
     if not file_path.endswith(('.ts', '.tsx')):
         return {"success": True, "changed": False}
     
@@ -137,6 +280,11 @@ def run_type_check(file_path: str) -> Dict[str, Any]:
         return {"success": False, "error": "Type check timed out"}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+def run_type_check(file_path: str) -> Dict[str, Any]:
+    """Run IDE diagnostics first, fallback to TypeScript type checking"""
+    return run_ide_diagnostics(file_path)
 
 
 def run_spell_check(file_path: str) -> Dict[str, Any]:

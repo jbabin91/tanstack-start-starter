@@ -46,6 +46,21 @@ Implementation details, API references, and developer guides:
 - `pnpm format` / `pnpm format:check` - Prettier formatting
 - `pnpm typecheck` - TypeScript type checking
 
+## EXTREMELY IMPORTANT: IDE Quality Checks
+
+**ALWAYS run the following commands before completing any task:**
+
+Automatically use the IDE's built-in diagnostics tool to check for linting and type errors:
+
+- Run `mcp__ide__getDiagnostics` to check all files for diagnostics
+- If IDE diagnostics unavailable, fallback to: `pnpm lint:fix`, `pnpm format`, `pnpm typecheck`, `pnpm lint:md`
+- Fix any linting or type errors before considering the task complete
+- Do this for any file you create or modify
+
+This is a CRITICAL step that must NEVER be skipped when working on any code-related task.
+
+**Note:** The `post_tool_use.py` hook automatically runs these checks after file modifications.
+
 **Commit Quality:**
 
 - `pnpm commit` - Interactive commit creation with cz-git (enforces conventional commits)
