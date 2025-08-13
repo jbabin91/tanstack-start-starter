@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getWebRequest } from '@tanstack/react-start/server';
 
+import { computePermissions } from '@/lib/auth/permissions';
 import { auth } from '@/lib/auth/server';
-import { computePermissions } from '@/lib/auth/types';
 import { getUserMembership } from '@/lib/auth/utils/membership-queries';
 import { logger } from '@/lib/logger';
 

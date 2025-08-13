@@ -4,25 +4,27 @@ import { fetchCurrentSession } from '@/modules/accounts/api/get-current-session'
 import { fetchSessionActivity } from '@/modules/accounts/api/get-session-activity';
 import { fetchSessions } from '@/modules/accounts/api/get-sessions';
 
-// Simple query pattern - queryOptions with direct key access
 export const sessionQueries = {
-  all: () =>
+  all: () => ['sessions'] as const,
+  lists: () => [...sessionQueries.all(), 'list'] as const,
+  list: () =>
     queryOptions({
-      queryKey: ['sessions'] as const,
+      queryKey: [...sessionQueries.lists()],
       queryFn: () => fetchSessions(),
       refetchInterval: 30_000,
       staleTime: 60_000,
     }),
-  current: () =>
+  details: () => [...sessionQueries.all(), 'detail'] as const,
+  detail: (type: 'current') =>
     queryOptions({
-      queryKey: ['sessions', 'current'] as const,
+      queryKey: [...sessionQueries.details(), type],
       queryFn: () => fetchCurrentSession(),
       refetchInterval: 10_000,
       staleTime: 120_000,
     }),
   activity: (sessionId: string) =>
     queryOptions({
-      queryKey: ['sessions', 'activity', sessionId] as const,
+      queryKey: [...sessionQueries.all(), 'activity', sessionId],
       queryFn: () => fetchSessionActivity({ data: { sessionId } }),
       enabled: !!sessionId,
       refetchInterval: 300_000, // 5 minutes
@@ -34,14 +36,14 @@ export const sessionQueries = {
  * Hook to get all sessions for the current user
  */
 export function useSessions() {
-  return useQuery(sessionQueries.all());
+  return useQuery(sessionQueries.list());
 }
 
 /**
  * Hook to get current session information
  */
 export function useCurrentSession() {
-  return useQuery(sessionQueries.current());
+  return useQuery(sessionQueries.detail('current'));
 }
 
 /**

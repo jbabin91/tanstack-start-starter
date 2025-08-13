@@ -16,7 +16,7 @@ import { userQueries, useUsers } from '@/modules/users/hooks/use-queries';
 export const Route = createFileRoute('/_app/users')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(userQueries.all());
+    await context.queryClient.ensureQueryData(userQueries.list());
   },
   head: () => ({
     meta: [{ title: 'Users' }],

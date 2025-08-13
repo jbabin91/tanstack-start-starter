@@ -9,8 +9,8 @@ export const Route = createFileRoute('/_app/users/$userId/posts/$postId')({
   component: RouteComponent,
   loader: async ({ params: { postId, userId }, context }) => {
     const [postData, userData] = await Promise.all([
-      context.queryClient.ensureQueryData(postQueries.byId(postId)),
-      context.queryClient.ensureQueryData(userQueries.byId(userId)),
+      context.queryClient.ensureQueryData(postQueries.detail(postId)),
+      context.queryClient.ensureQueryData(userQueries.detail(userId)),
     ]);
 
     return {

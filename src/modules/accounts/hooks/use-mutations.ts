@@ -16,17 +16,17 @@ export function useRevokeSession() {
     onMutate: async ({ data }) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({
-        queryKey: sessionQueries.all().queryKey,
+        queryKey: sessionQueries.lists(),
       });
 
       // Snapshot the previous value
       const previousSessions = queryClient.getQueryData(
-        sessionQueries.all().queryKey,
+        sessionQueries.list().queryKey,
       );
 
       // Optimistically update to remove the session
       queryClient.setQueryData(
-        sessionQueries.all().queryKey,
+        sessionQueries.list().queryKey,
         (old: SessionWithDetails[] | undefined) => {
           if (!old) return old;
           return old.filter((session) => session.id !== data.sessionId);
@@ -43,7 +43,7 @@ export function useRevokeSession() {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousSessions) {
         queryClient.setQueryData(
-          sessionQueries.all().queryKey,
+          sessionQueries.list().queryKey,
           context.previousSessions,
         );
       }
@@ -55,7 +55,7 @@ export function useRevokeSession() {
     onSettled: () => {
       // Always refetch after error or success to ensure we have the latest data
       queryClient.invalidateQueries({
-        queryKey: sessionQueries.all().queryKey,
+        queryKey: sessionQueries.all(),
       });
     },
   });
