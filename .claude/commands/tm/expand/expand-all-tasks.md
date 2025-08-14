@@ -6,7 +6,7 @@ Intelligently expands all tasks that would benefit from breakdown.
 
 ## Execution
 
-```bash
+```sh
 task-master expand --all
 ```
 

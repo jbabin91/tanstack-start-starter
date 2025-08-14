@@ -12,7 +12,7 @@ This moves a task back to the pending state, useful for:
 
 ## Execution
 
-```bash
+```sh
 task-master set-status --id=$ARGUMENTS --status=pending
 ```
 

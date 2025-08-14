@@ -6,9 +6,9 @@ Initialize a Task Master project without prompts, accepting all defaults.
 
 ## Quick Setup
 
-````bash
+```sh
 task-master init -y
-```text
+```
 
 ## What It Does
 
@@ -31,28 +31,20 @@ After quick init:
 
 1. Configure AI models if needed:
 
-````
-
-/project:tm/models/setup
-
-````text
+   ```txt
+   /project:tm/models/setup
+   ```
 
 2. Parse PRD if available:
 
-```text
-
-/project:tm/parse-prd <file>
-
-```text
+   ```txt
+   /project:tm/parse-prd <file>
+   ```
 
 3. Or create first task:
 
-```text
-
-/project:tm/add-task create initial setup
-
-```text
+   ```txt
+   /project:tm/add-task create initial setup
+   ```
 
 Perfect for rapid project setup!
-```text
-````

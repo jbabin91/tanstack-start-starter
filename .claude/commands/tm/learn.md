@@ -23,7 +23,7 @@ Based on your project state:
 
 **No tasks yet?**
 
-````text
+```txt
 You'll want to start with:
 1. /project:task-master:init <prd-file>
    → Creates tasks from requirements
@@ -32,7 +32,7 @@ You'll want to start with:
    → Alternative task generation
 
 Try: /project:task-master:init demo-prd.md
-```text
+```
 
 **Have tasks?**
 Let me analyze what you might need...
@@ -61,25 +61,25 @@ Let me analyze what you might need...
 
 **Command Chaining:**
 
-```text
+```txt
 /project:task-master:next
 /project:task-master:start <id>
 /project:workflows:auto-implement
-```text
+```
 
 **Smart Filters:**
 
-```text
+```txt
 /project:task-master:list pending high
 /project:task-master:list blocked
 /project:task-master:list 1-5 tree
-```text
+```
 
 **Automation:**
 
-```text
+```txt
 /project:workflows:pipeline init → expand-all → sprint-plan
-```text
+```
 
 ### 5. **Learning Path**
 
@@ -112,4 +112,3 @@ Based on what you asked about, try:
 
 Want to learn more about a specific command?
 Type: /project:help <command-name>
-````

@@ -30,13 +30,13 @@ Automatically detect what to update:
 
 Support for multiple task updates:
 
-````text
+```txt
 Examples:
 - "complete tasks 12, 15, 18"
 - "all pending auth tasks to in-progress"
 - "increase priority for tasks blocking 45"
 - "defer all documentation tasks"
-```text
+```
 
 ### 4. **Contextual Validation**
 
@@ -49,14 +49,14 @@ Before updating, check:
 
 Show preview:
 
-```text
+```txt
 Update Preview:
 ─────────────────
 Tasks to update: #23, #24, #25
 Change: status → in-progress
 Impact: Will unblock tasks #30, #31
 Warning: Task #24 has unmet dependencies
-```text
+```
 
 ### 5. **Smart Suggestions**
 
@@ -77,4 +77,3 @@ After updates:
 - Log changes with context
 
 Result: Flexible, intelligent task updates with safety checks.
-````

@@ -13,7 +13,7 @@ Parse arguments to determine initialization preferences.
 
 2. **Project Setup**
 
-   ```bash
+   ```sh
    task-master init
    ```
 
@@ -48,8 +48,7 @@ After successful init:
 
 If PRD file provided:
 
-````text
+```txt
 /project:tm/init my-prd.md
 → Automatically runs parse-prd after init
-```text
-````
+```

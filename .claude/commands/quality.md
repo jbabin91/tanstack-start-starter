@@ -25,7 +25,7 @@ Run the complete quality check pipeline in this specific order:
 
 ### Step 1: Auto-format code
 
-```bash
+```sh
 pnpm format
 ```
 
@@ -33,7 +33,7 @@ This runs Prettier on the entire codebase to ensure consistent formatting.
 
 ### Step 2: Auto-fix linting issues
 
-```bash
+```sh
 pnpm lint:fix
 ```
 
@@ -41,7 +41,7 @@ This runs ESLint with automatic fixes for any issues that can be auto-resolved.
 
 ### Step 3: Auto-fix markdown issues
 
-```bash
+```sh
 pnpm lint:md:fix
 ```
 
@@ -49,7 +49,7 @@ This runs markdownlint-cli2 with automatic fixes for markdown files.
 
 ### Step 4: Type checking
 
-```bash
+```sh
 pnpm typecheck
 ```
 

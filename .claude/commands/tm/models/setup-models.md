@@ -6,7 +6,7 @@ Guides you through setting up AI providers for Task Master.
 
 ## Execution
 
-```bash
+```sh
 task-master models --setup
 ```
 

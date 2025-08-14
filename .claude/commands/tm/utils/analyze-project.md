@@ -20,7 +20,7 @@ Based on $ARGUMENTS:
 
 ### 2. **Velocity Analytics**
 
-````text
+```txt
 📊 Velocity Analysis
 ━━━━━━━━━━━━━━━━━━━
 Current Sprint: 24 points/week ↗️ +20%
@@ -36,7 +36,7 @@ Recommendations:
 1. Implement parallel review process
 2. Add staging environment
 3. Mock external dependencies
-```text
+```
 
 ### 3. **Risk Assessment**
 
@@ -58,14 +58,14 @@ Recommendations:
 
 Visual dependency analysis:
 
-```text
+```txt
 Critical Path:
 #12 → #15 → #23 → #45 → #50 (20 days)
          ↘ #24 → #46 ↗
 
 Optimization: Parallelize #15 and #24
 Time Saved: 3 days
-```text
+```
 
 ### 5. **Quality Metrics**
 
@@ -103,4 +103,3 @@ High-level summary with:
 - Success probability
 
 Result: Data-driven decisions with clear action paths.
-````

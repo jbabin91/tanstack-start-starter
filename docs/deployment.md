@@ -41,7 +41,7 @@ If deploying manually to other platforms:
 
 ### Build Commands
 
-```bash
+```sh
 # Install dependencies
 pnpm install
 
@@ -54,7 +54,7 @@ pnpm start
 
 ### Database Setup
 
-```bash
+```sh
 # Run migrations
 pnpm db:migrate
 

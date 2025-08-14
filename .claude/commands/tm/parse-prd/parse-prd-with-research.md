@@ -8,7 +8,7 @@ Uses the research AI provider (typically Perplexity) for more comprehensive task
 
 ## Execution
 
-```bash
+```sh
 task-master parse-prd --input=$ARGUMENTS --research
 ```
 

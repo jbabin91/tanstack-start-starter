@@ -12,7 +12,7 @@ Welcome to the TanStack Start blogging platform! This guide will help you get up
 
 ### 1. Clone and Install
 
-```bash
+```sh
 git clone <repository-url>
 cd tanstack-start-starter
 pnpm install
@@ -20,7 +20,7 @@ pnpm install
 
 ### 2. Environment Setup
 
-```bash
+```sh
 # Copy environment template
 cp .env.example .env
 
@@ -30,7 +30,7 @@ pnpm auth:generate
 
 ### 3. Database Setup
 
-```bash
+```sh
 # Start your PostgreSQL instance, then:
 pnpm db:migrate     # Run database migrations
 pnpm db:seed        # Seed with sample data (optional)
@@ -38,7 +38,7 @@ pnpm db:seed        # Seed with sample data (optional)
 
 ### 4. Start Development
 
-```bash
+```sh
 pnpm dev            # Start development server on port 3000
 ```
 
@@ -50,7 +50,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the application.
 
 The project enforces code quality automatically:
 
-```bash
+```sh
 pnpm lint           # ESLint with auto-fix
 pnpm format         # Prettier formatting
 pnpm typecheck      # TypeScript validation
@@ -60,7 +60,7 @@ All checks run automatically after file changes via hooks.
 
 ### Database Operations
 
-```bash
+```sh
 pnpm db:studio      # Open Drizzle Studio
 pnpm db:generate    # Generate new migrations
 pnpm db:reset       # Reset database (careful!)
@@ -70,14 +70,14 @@ pnpm db:reset       # Reset database (careful!)
 
 Use conventional commits:
 
-```bash
+```sh
 pnpm commit         # Interactive commit tool
 # or manually: git commit -m "feat(auth): add OAuth login"
 ```
 
 ## Project Structure
 
-```text
+```sh
 src/
 ├── components/     # Reusable UI components
 ├── modules/        # Feature modules (users, posts, etc.)
@@ -139,7 +139,7 @@ docs/              # Technical documentation (you are here)
 
 ### Database Connection
 
-```bash
+```sh
 # If database connection fails:
 # 1. Ensure PostgreSQL is running
 # 2. Check .env database URL
@@ -148,7 +148,7 @@ docs/              # Technical documentation (you are here)
 
 ### Type Errors
 
-```bash
+```sh
 # If TypeScript errors persist:
 pnpm typecheck      # See detailed errors
 # Check imports use @/ alias, not relative paths
@@ -156,7 +156,7 @@ pnpm typecheck      # See detailed errors
 
 ### Linting Issues
 
-```bash
+```sh
 # Auto-fix most linting problems:
 pnpm lint:fix
 pnpm format

@@ -19,7 +19,7 @@ Optional filters:
 
 ## Execution
 
-```bash
+```sh
 task-master sync-readme [--with-subtasks] [--status=<status>]
 ```
 

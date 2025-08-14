@@ -19,9 +19,9 @@ Parse natural language or IDs:
 
 ## Execution
 
-````bash
+```sh
 task-master remove-dependency --id=<task-id> --depends-on=<dependency-id>
-```text
+```
 
 ## Pre-Removal Checks
 
@@ -57,10 +57,9 @@ After removing:
 
 ## Example
 
-```text
+```txt
 /project:tm/remove-dependency 5 from 3
 → Removed: Task #5 no longer depends on #3
 → Task #5 is now UNBLOCKED and ready to start
 → Warning: Consider if #5 still needs #2 completed first
-```text
-````
+```

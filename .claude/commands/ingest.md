@@ -31,7 +31,7 @@ Ingest and analyze a GitHub repository using the GitIngest CLI tool, then provid
 
 **Basic Command**:
 
-```bash
+```sh
 gitingest https://github.com/user/repo -o -
 ```
 

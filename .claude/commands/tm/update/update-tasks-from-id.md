@@ -16,9 +16,9 @@ Update multiple related tasks based on new requirements or context changes.
 
 ## Execution
 
-`````bash
+```sh
 task-master update --from=<id> --prompt="<context>"
-```text
+```
 
 ## Update Process
 
@@ -63,29 +63,26 @@ AI analyzes the update context and:
 
 3. **Change Preview**
 
-````text
+   ```txt
+   Bulk Update Preview
+   ━━━━━━━━━━━━━━━━━━
+   Starting from: Task #5
+   Tasks to update: 8 tasks + 12 subtasks
 
-Bulk Update Preview
-━━━━━━━━━━━━━━━━━━
-Starting from: Task #5
-Tasks to update: 8 tasks + 12 subtasks
+   Context: "add security requirements"
 
-Context: "add security requirements"
+   Changes will include:
+   - Add security sections to descriptions
+   - Update test strategies for security
+   - Add security-related subtasks where needed
+   - Adjust time estimates (+20% average)
 
-Changes will include:
-
-- Add security sections to descriptions
-- Update test strategies for security
-- Add security-related subtasks where needed
-- Adjust time estimates (+20% average)
-
-Continue? (y/n)
-
-````text
+   Continue? (y/n)
+   ```
 
 ## Example Updates
 
-```text
+```txt
 /project:tm/update/from-id 5: change database to PostgreSQL
 → Analyzing impact starting from task #5
 → Found 6 related tasks to update
@@ -99,7 +96,7 @@ Applied updates:
 ✓ Task #8: Revised testing strategy
 ✓ Task #9: Updated deployment steps
 ✓ Task #12: Changed backup procedures
-```text
+```
 
 ## Safety Features
 
@@ -115,5 +112,3 @@ Applied updates:
 - Consistency verification
 - Suggest review tasks
 - Update timeline if needed
-````text
-`````

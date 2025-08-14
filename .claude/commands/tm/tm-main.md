@@ -156,23 +156,22 @@ Commands are organized hierarchically to match Task Master's CLI structure while
 
 Most commands accept natural language arguments:
 
-````text
+```txt
 /project:tm/add-task create user authentication system
 /project:tm/update mark all API tasks as high priority
 /project:tm/list show blocked tasks
-```text
+```
 
 ### ID-Based Commands
 
 Commands requiring IDs intelligently parse from $ARGUMENTS:
 
-```text
+```txt
 /project:tm/show 45
 /project:tm/expand 23
 /project:tm/set-status/to-done 67
-```text
+```
 
 ### Smart Defaults
 
 Commands provide intelligent defaults and suggestions based on context.
-````

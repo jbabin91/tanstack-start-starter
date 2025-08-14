@@ -15,7 +15,7 @@ This command validates task completion and updates project state intelligently.
 
 ## Execution
 
-```bash
+```sh
 task-master set-status --id=$ARGUMENTS --status=done
 ```
 

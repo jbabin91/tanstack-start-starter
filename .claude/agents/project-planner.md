@@ -123,7 +123,7 @@ recommended_workflow:
 
 ALWAYS identify parallel tasks and provide specific commands for execution:
 
-```bash
+```sh
 # Example parallel execution
 claude-agents run api-developer --task "Create user endpoints" &
 claude-agents run tdd-specialist --task "Write user tests" &

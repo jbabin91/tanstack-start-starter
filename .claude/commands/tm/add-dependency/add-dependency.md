@@ -19,7 +19,7 @@ Parse natural language or IDs:
 
 ## Execution
 
-```bash
+```sh
 task-master add-dependency --id=<task-id> --depends-on=<dependency-id>
 ```
 
@@ -50,7 +50,7 @@ After adding dependency:
 
 ## Example Flows
 
-```text
+```txt
 /project:tm/add-dependency 5 needs 3
 → Task #5 now depends on Task #3
 → Task #5 is now blocked until #3 completes

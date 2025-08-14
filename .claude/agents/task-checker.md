@@ -44,14 +44,14 @@ You are a Quality Assurance specialist that rigorously verifies task implementat
 
 1. **Retrieve Task Information**
 
-   ```bash
+   ```txt
    Use mcp__task-master-ai__get_task to get full task details
    Note the implementation requirements and test strategy
    ```
 
 2. **Check File Existence**
 
-   ```bash
+   ```sh
    # Verify all required files exist
    ls -la [expected directories]
    # Read key files to verify content
@@ -64,7 +64,7 @@ You are a Quality Assurance specialist that rigorously verifies task implementat
 
 4. **Run Tests**
 
-   ```bash
+   ```sh
    # TypeScript compilation
    cd [project directory] && npx tsc --noEmit
 

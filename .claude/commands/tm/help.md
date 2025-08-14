@@ -73,12 +73,12 @@ Type `/project:tm/` and use tab completion to explore all commands.
 
 ### Natural Language Examples
 
-````text
+```txt
 /project:tm/list pending high priority
 /project:tm/update mark all API tasks as done
 /project:tm/add-task create login system with OAuth
 /project:tm/show current
-```text
+```
 
 ### Getting Started
 
@@ -88,4 +88,3 @@ Type `/project:tm/` and use tab completion to explore all commands.
 4. Work: `/project:tm/workflows/smart-flow`
 
 For detailed command info: `/project:tm/help <command-name>`
-````

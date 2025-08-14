@@ -10,9 +10,9 @@ Shows comprehensive task complexity analysis with actionable insights.
 
 ## Execution
 
-````bash
+```sh
 task-master complexity-report [--file=<path>]
-```text
+```
 
 ## Report Location
 
@@ -23,7 +23,7 @@ Custom: Specify with --file parameter
 
 ### 1. **Executive Summary**
 
-```text
+```txt
 Complexity Analysis Summary
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Analysis Date: 2024-01-15
@@ -36,7 +36,7 @@ Critical Findings:
 - 5 tasks need immediate expansion
 - 3 tasks have high technical risk
 - 2 tasks block critical path
-```text
+```
 
 ### 2. **Detailed Task Analysis**
 
@@ -52,14 +52,14 @@ For each complex task:
 
 Visual representation:
 
-```text
+```txt
 Risk vs Complexity Matrix
 ━━━━━━━━━━━━━━━━━━━━━━━
 High Risk  | #5(9) #12(8) | #23(6)
 Med Risk   | #34(7)       | #45(5) #67(5)
 Low Risk   | #78(8)       | [15 tasks]
            | High Complex  | Med Complex
-```text
+```
 
 ### 4. **Recommendations**
 
@@ -113,7 +113,7 @@ Use report for:
 
 ## Example Usage
 
-```text
+```txt
 /project:tm/complexity-report
 → Opens latest analysis
 
@@ -123,5 +123,4 @@ Use report for:
 After viewing:
 /project:tm/expand 5
 → Expand high-complexity task
-```text
-````
+```

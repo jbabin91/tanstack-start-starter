@@ -382,6 +382,86 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
+### Search Performance Materialized Views
+
+For high-performance search operations, use materialized views that are refreshed periodically:
+
+```sql
+-- Trending posts materialized view (refreshed hourly)
+CREATE MATERIALIZED VIEW trending_posts AS
+SELECT
+  p.id,
+  p.title,
+  p.slug,
+  p.excerpt,
+  p.published_at,
+  p.view_count,
+  p.like_count,
+  p.comment_count,
+  p.share_count,
+  u.name as author_name,
+  u.username as author_username,
+  o.name as organization_name,
+  -- Trending score calculation with time decay
+  (
+    (p.view_count * 1.0) +
+    (p.like_count * 10.0) +
+    (p.comment_count * 5.0) +
+    (p.share_count * 15.0) +
+    -- Time decay factor (newer posts get boost)
+    (EXTRACT(EPOCH FROM (NOW() - p.published_at)) / 3600.0 * -0.1)
+  ) as trending_score
+FROM posts p
+JOIN users u ON p.author_id = u.id
+LEFT JOIN organizations o ON p.organization_id = o.id
+WHERE
+  p.status = 'published'
+  AND p.published_at > NOW() - INTERVAL '30 days'
+ORDER BY trending_score DESC
+LIMIT 1000;
+
+-- Create unique index for concurrent refresh
+CREATE UNIQUE INDEX trending_posts_id_idx ON trending_posts (id);
+
+-- Popular tags materialized view for search facets
+CREATE MATERIALIZED VIEW popular_tags AS
+SELECT
+  t.name,
+  t.slug,
+  COUNT(pt.post_id) as post_count,
+  COUNT(CASE WHEN p.published_at > NOW() - INTERVAL '7 days' THEN 1 END) as recent_count
+FROM tags t
+JOIN post_tags pt ON t.name = pt.tag
+JOIN posts p ON pt.post_id = p.id
+WHERE p.status = 'published'
+GROUP BY t.name, t.slug
+HAVING COUNT(pt.post_id) >= 3  -- Only tags with 3+ posts
+ORDER BY post_count DESC, recent_count DESC
+LIMIT 200;
+
+CREATE UNIQUE INDEX popular_tags_name_idx ON popular_tags (name);
+
+-- Refresh commands (run via cron)
+REFRESH MATERIALIZED VIEW CONCURRENTLY trending_posts;
+REFRESH MATERIALIZED VIEW CONCURRENTLY popular_tags;
+```
+
+### Search Analytics Indexing
+
+For search performance monitoring and user behavior tracking:
+
+```sql
+-- Composite indexes for search analytics queries
+CREATE INDEX search_queries_created_at_idx ON search_queries (created_at DESC);
+CREATE INDEX search_queries_query_idx ON search_queries USING gin(query gin_trgm_ops);
+CREATE INDEX search_queries_user_query_idx ON search_queries (user_id, created_at DESC);
+
+-- Performance index for trending search queries
+CREATE INDEX search_queries_result_count_idx
+  ON search_queries (result_count, created_at DESC)
+  WHERE result_count > 0;
+```
+
 ## Performance Optimization
 
 ### Index Strategy

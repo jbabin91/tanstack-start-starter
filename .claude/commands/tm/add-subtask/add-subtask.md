@@ -21,13 +21,13 @@ Flexible natural language:
 
 ### 1. Create New Subtask
 
-```bash
+```sh
 task-master add-subtask --parent=<id> --title="<title>" --description="<desc>"
 ```
 
 ### 2. Convert Existing Task
 
-```bash
+```sh
 task-master add-subtask --parent=<id> --task-id=<existing-id>
 ```
 
@@ -58,7 +58,7 @@ task-master add-subtask --parent=<id> --task-id=<existing-id>
 
 ## Example Flows
 
-```text
+```txt
 /project:tm/add-subtask to 5: implement user authentication
 → Created subtask #5.1: "implement user authentication"
 → Parent task #5 now has 1 subtask

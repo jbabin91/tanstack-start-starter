@@ -2,7 +2,7 @@ Quick install Task Master globally if not already installed.
 
 Execute this streamlined installation:
 
-```bash
+```sh
 # Check and install in one command
 task-master --version 2>/dev/null || npm install -g task-master-ai
 

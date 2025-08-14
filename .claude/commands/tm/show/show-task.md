@@ -44,7 +44,7 @@ For each task, intelligently include:
 
 ### 3. **Visual Enhancements**
 
-````text
+```txt
 📋 Task #45: Implement User Authentication
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Status: 🟡 in-progress (2 hours)
@@ -59,7 +59,7 @@ Recent Activity:
 - 2h ago: Status changed to in-progress
 - 4h ago: Dependency #42 completed
 - Yesterday: Task expanded with 3 subtasks
-```text
+```
 
 ### 4. **Intelligent Insights**
 
@@ -87,4 +87,3 @@ When showing multiple tasks:
 - Optimal completion order
 - Parallel work opportunities
 - Combined complexity analysis
-````

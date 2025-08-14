@@ -17,9 +17,9 @@ Permanently removes a task while maintaining project integrity.
 
 ## Execution
 
-`````bash
+```sh
 task-master remove-task --id=<id> [-y]
-```text
+```
 
 ## Pre-Removal Analysis
 
@@ -37,22 +37,19 @@ task-master remove-task --id=<id> [-y]
 
 3. **Impact Assessment**
 
-````text
+   ```txt
+   Task Removal Impact
+   ━━━━━━━━━━━━━━━━━━
+   Task: #5 "Implement authentication" (in-progress)
+   Status: 60% complete (~8 hours work)
 
-Task Removal Impact
-━━━━━━━━━━━━━━━━━━
-Task: #5 "Implement authentication" (in-progress)
-Status: 60% complete (~8 hours work)
+   Will affect:
+   - 3 tasks depend on this (will be blocked)
+   - Has 4 subtasks (will be deleted)
+   - Part of critical path
 
-Will affect:
-
-- 3 tasks depend on this (will be blocked)
-- Has 4 subtasks (will be deleted)
-- Part of critical path
-
-⚠️ This action cannot be undone
-
-````text
+   ⚠️  This action cannot be undone
+   ```
 
 ## Smart Warnings
 
@@ -89,7 +86,7 @@ Suggest before deletion:
 
 ## Example Flows
 
-```text
+```txt
 /project:tm/remove-task 5
 → Task #5 is in-progress with 8 hours logged
 → 3 other tasks depend on this
@@ -101,7 +98,7 @@ Remove anyway? (y/n)
 → Updated: 3 task dependencies
 → Warning: Tasks #7, #8, #9 now have missing dependency
 → Run /project:tm/fix-dependencies to resolve
-```text
+```
 
 ## Safety Features
 
@@ -110,5 +107,3 @@ Remove anyway? (y/n)
 - Removal logging
 - Suggest alternatives
 - No cascade delete of dependents
-````text
-`````

@@ -16,7 +16,7 @@ This status indicates a task is valid but not currently actionable or prioritize
 
 ## Execution
 
-```bash
+```sh
 task-master set-status --id=$ARGUMENTS --status=deferred
 ```
 

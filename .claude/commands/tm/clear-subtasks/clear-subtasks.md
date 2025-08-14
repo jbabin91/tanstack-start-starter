@@ -10,9 +10,9 @@ Bulk removal of all subtasks from a parent task.
 
 ## Execution
 
-````bash
+```sh
 task-master clear-subtasks --id=<task-id>
-```text
+```
 
 ## Pre-Clear Analysis
 
@@ -30,7 +30,7 @@ task-master clear-subtasks --id=<task-id>
 
 ## Confirmation Required
 
-```text
+```txt
 Clear Subtasks Confirmation
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 Parent Task: #5 "Implement user authentication"
@@ -42,7 +42,7 @@ Subtasks to remove: 4
 
 ⚠️  This will permanently delete all subtask data
 Continue? (y/n)
-```text
+```
 
 ## Smart Features
 
@@ -77,12 +77,11 @@ Suggest alternatives:
 
 ## Example
 
-```text
+```txt
 /project:tm/clear-subtasks 5
 → Found 4 subtasks to remove
 → Warning: Subtask #5.2 is in-progress
 → Cleared all subtasks from task #5
 → Updated parent task estimates
 → Suggestion: Consider re-expanding with better breakdown
-```text
-````
+```

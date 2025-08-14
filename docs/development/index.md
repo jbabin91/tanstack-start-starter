@@ -389,7 +389,7 @@ type CreatePostInput = typeof CreatePostInput.infer;
 
 All code quality is enforced automatically:
 
-```bash
+```sh
 # These run automatically on file changes
 pnpm format      # Prettier formatting
 pnpm lint        # ESLint validation
@@ -643,7 +643,7 @@ describe('PostCard', () => {
 
 ### Build Optimization
 
-```bash
+```sh
 # Ensure clean build
 pnpm build
 
@@ -659,7 +659,7 @@ pnpm test
 
 ### Environment Variables
 
-```bash
+```sh
 # Required for production
 DATABASE_URL=postgresql://...
 BETTER_AUTH_SECRET=...

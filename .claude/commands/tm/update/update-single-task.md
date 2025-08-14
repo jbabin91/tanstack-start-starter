@@ -19,9 +19,9 @@ Natural language updates:
 
 ## Execution
 
-````bash
+```sh
 task-master update-task --id=<id> --prompt="<context>"
-```text
+```
 
 ## Update Types
 
@@ -70,7 +70,7 @@ The AI:
 
 ## Example Updates
 
-```text
+```txt
 /project:tm/update/single 5: add rate limiting
 → Updating Task #5: "Implement API endpoints"
 
@@ -85,7 +85,7 @@ Updated sections:
 ✓ Time Estimate: Increased by 2 hours
 
 Suggestion: Also update task #6 (API Gateway) for consistency?
-```text
+```
 
 ## Smart Features
 
@@ -123,4 +123,3 @@ Quick syntax for specific fields:
 - Check related tasks
 - Update suggestions
 - Timeline adjustments
-````

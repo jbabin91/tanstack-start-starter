@@ -6,9 +6,9 @@ Shows the currently configured AI providers and models for Task Master.
 
 ## Execution
 
-````bash
+```sh
 task-master models
-```text
+```
 
 ## Information Displayed
 
@@ -29,7 +29,7 @@ task-master models
 
 ## Visual Status
 
-```text
+```txt
 Task Master AI Model Configuration
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Main:     ✅ claude-3-5-sonnet (configured)
@@ -41,7 +41,7 @@ Available Models:
 - gpt-4-turbo
 - gpt-3.5-turbo
 - perplexity-sonar
-```text
+```
 
 ## Next Actions
 
@@ -50,4 +50,3 @@ Based on configuration:
 - If missing API keys → Suggest setup
 - If no research model → Explain benefits
 - If all configured → Show usage tips
-````

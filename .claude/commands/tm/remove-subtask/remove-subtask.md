@@ -19,15 +19,15 @@ Remove a subtask and optionally convert it back to a standalone task.
 
 ### 1. Delete Subtask
 
-````bash
+```sh
 task-master remove-subtask --id=<parentId.subtaskId>
-```text
+```
 
 ### 2. Convert to Standalone
 
-```bash
+```sh
 task-master remove-subtask --id=<parentId.subtaskId> --convert
-```text
+```
 
 ## Pre-Removal Checks
 
@@ -66,7 +66,7 @@ task-master remove-subtask --id=<parentId.subtaskId> --convert
 
 ## Example Flows
 
-```text
+```txt
 /project:tm/remove-subtask 5.1
 → Warning: Subtask #5.1 is in-progress
 → This will delete all subtask data
@@ -78,7 +78,7 @@ Confirm deletion? (y/n)
 → Preserved: All task data and history
 → Updated: 2 dependency references
 → New task #89 is now independent
-```text
+```
 
 ## Post-Removal
 
@@ -86,4 +86,3 @@ Confirm deletion? (y/n)
 - Recalculate estimates
 - Show updated hierarchy
 - Suggest next actions
-````

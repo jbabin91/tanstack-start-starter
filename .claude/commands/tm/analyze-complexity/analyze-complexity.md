@@ -10,9 +10,9 @@ Uses AI to analyze tasks and recommend which ones need breakdown.
 
 ## Execution Options
 
-````bash
+```sh s
 task-master analyze-complexity [--research] [--threshold=5]
-```text
+```
 
 ## Analysis Parameters
 
@@ -73,7 +73,7 @@ For complex tasks:
 
 ## Output Format
 
-```text
+```txt
 Task Complexity Analysis Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -99,7 +99,7 @@ Summary:
 - Expand immediately: 2 tasks
 - Consider expanding: 5 tasks
 - Keep as-is: 15 tasks
-```text
+```
 
 ## Actionable Output
 
@@ -123,9 +123,8 @@ Results are:
 
 After analysis:
 
-```text
+```txt
 /project:tm/expand 5    # Expand specific task
 /project:tm/expand/all  # Expand all recommended
 /project:tm/complexity-report  # View detailed report
-```text
-````
+```

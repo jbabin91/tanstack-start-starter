@@ -21,7 +21,7 @@ A modern, Medium-style blogging platform built with TanStack Start, featuring Gi
 
 ### Setup
 
-```bash
+```sh
 # Clone and install
 git clone <repository-url>
 cd tanstack-start-starter
@@ -90,7 +90,7 @@ pnpm dev            # Runs on http://localhost:3000
 
 ### Code Quality (Automated)
 
-```bash
+```sh
 pnpm lint           # ESLint with auto-fix
 pnpm format         # Prettier formatting
 pnpm typecheck      # TypeScript validation
@@ -100,7 +100,7 @@ All quality checks run automatically on file changes.
 
 ### Database Operations
 
-```bash
+```sh
 pnpm db:studio      # Open Drizzle Studio
 pnpm db:generate    # Generate migrations
 pnpm db:reset       # Reset database
@@ -108,7 +108,7 @@ pnpm db:reset       # Reset database
 
 ### Commit Standards
 
-```bash
+```sh
 pnpm commit         # Interactive conventional commits
 # Example: feat(auth): add OAuth login support
 ```

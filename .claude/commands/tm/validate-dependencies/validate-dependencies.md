@@ -6,9 +6,9 @@ Comprehensive check for dependency problems across the entire project.
 
 ## Execution
 
-````bash
+```bash
 task-master validate-dependencies
-```text
+```
 
 ## Validation Checks
 
@@ -43,7 +43,7 @@ The validation provides:
 
 ## Report Format
 
-```text
+```txt
 Dependency Validation Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ No circular dependencies found
@@ -54,7 +54,7 @@ Dependency Validation Report
    - Task #67 depends on deleted task #66
 
 Critical Path: #1 → #5 → #23 → #45 → #50 (15 days)
-```text
+```
 
 ## Actionable Output
 
@@ -72,4 +72,3 @@ After validation:
 - Run `/project:tm/fix-dependencies` to auto-fix
 - Manually adjust problematic dependencies
 - Rerun to verify fixes
-````

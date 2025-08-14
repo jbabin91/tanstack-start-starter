@@ -634,6 +634,207 @@ export function useSearchWithDebounce(initialQuery = '') {
 }
 ```
 
+## Advanced Filtering Architecture
+
+The search system includes a comprehensive filtering architecture supporting dynamic, type-safe filter configurations across all content types.
+
+### Filter Type System
+
+```typescript
+// src/modules/search/types/filters.ts
+export type FilterValue =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[]
+  | DateRange;
+
+export interface DateRange {
+  from?: string;
+  to?: string;
+}
+
+export interface BaseFilter {
+  id: string;
+  label: string;
+  type:
+    | 'select'
+    | 'multi-select'
+    | 'date-range'
+    | 'numeric-range'
+    | 'boolean'
+    | 'search';
+  category: 'content' | 'metadata' | 'engagement' | 'temporal';
+  value?: FilterValue;
+  options?: FilterOption[];
+  placeholder?: string;
+  validation?: FilterValidation;
+}
+
+export interface FilterGroup {
+  id: string;
+  label: string;
+  icon?: string;
+  collapsible: boolean;
+  defaultExpanded: boolean;
+  filters: BaseFilter[];
+}
+```
+
+### Dynamic Filter Configuration
+
+```typescript
+// src/modules/search/config/filter-config.ts
+export const searchFilterConfig: Record<string, FilterGroup[]> = {
+  posts: [
+    {
+      id: 'content-type',
+      label: 'Content',
+      icon: 'FileText',
+      collapsible: false,
+      defaultExpanded: true,
+      filters: [
+        {
+          id: 'content-type',
+          label: 'Content Type',
+          type: 'multi-select',
+          category: 'content',
+          options: [
+            { value: 'posts', label: 'Posts', icon: 'FileText' },
+            { value: 'users', label: 'People', icon: 'Users' },
+            {
+              value: 'organizations',
+              label: 'Organizations',
+              icon: 'Building',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'metadata',
+      label: 'Post Details',
+      icon: 'Info',
+      collapsible: true,
+      defaultExpanded: false,
+      filters: [
+        {
+          id: 'reading-time',
+          label: 'Reading Time',
+          type: 'select',
+          category: 'metadata',
+          options: [
+            { value: 'any', label: 'Any length' },
+            { value: '0-5', label: 'Quick read (< 5 min)' },
+            { value: '5-10', label: 'Medium read (5-10 min)' },
+            { value: '10-999', label: 'Long read (> 10 min)' },
+          ],
+        },
+        {
+          id: 'date-range',
+          label: 'Published Date',
+          type: 'date-range',
+          category: 'temporal',
+        },
+      ],
+    },
+    {
+      id: 'engagement',
+      label: 'Engagement',
+      icon: 'Heart',
+      collapsible: true,
+      defaultExpanded: false,
+      filters: [
+        {
+          id: 'min-likes',
+          label: 'Minimum Likes',
+          type: 'numeric-range',
+          category: 'engagement',
+          validation: { min: 0, max: 10000 },
+        },
+      ],
+    },
+  ],
+  users: [
+    // User-specific filter configurations
+  ],
+  organizations: [
+    // Organization-specific filter configurations
+  ],
+};
+```
+
+### Filter State Management
+
+```typescript
+// src/modules/search/hooks/use-search-filters.ts
+export function useSearchFilters(contentType: string = 'posts') {
+  const [filters, setFilters] = useState<FilterState>({});
+  const [activeFilterCount, setActiveFilterCount] = useState(0);
+
+  const filterConfig = useMemo(() => {
+    return searchFilterConfig[contentType] || searchFilterConfig.posts;
+  }, [contentType]);
+
+  const updateFilter = useCallback((filterId: string, value: FilterValue) => {
+    setFilters((prev) => {
+      const newFilters = { ...prev };
+
+      if (
+        value === undefined ||
+        value === '' ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
+        delete newFilters[filterId];
+      } else {
+        newFilters[filterId] = value;
+      }
+
+      return newFilters;
+    });
+  }, []);
+
+  // Convert filter state to search API format
+  const toSearchFilters = useCallback(() => {
+    const searchFilters: Record<string, unknown> = {};
+
+    Object.entries(filters).forEach(([filterId, value]) => {
+      switch (filterId) {
+        case 'content-type':
+          searchFilters.contentType = Array.isArray(value) ? value : [value];
+          break;
+        case 'date-range':
+          if (typeof value === 'object' && value !== null && 'from' in value) {
+            searchFilters.dateRange = value;
+          }
+          break;
+        case 'reading-time':
+          if (typeof value === 'string' && value !== 'any') {
+            const [min, max] = value.split('-').map(Number);
+            searchFilters.readingTime = {
+              min,
+              max: max === 999 ? undefined : max,
+            };
+          }
+          break;
+        // Add more filter mappings as needed
+      }
+    });
+
+    return searchFilters;
+  }, [filters]);
+
+  return {
+    filters,
+    filterConfig,
+    activeFilterCount,
+    updateFilter,
+    toSearchFilters,
+  };
+}
+```
+
 ## Strategic Context
 
 This search API implements the content discovery system outlined in:

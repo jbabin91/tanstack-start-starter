@@ -22,38 +22,38 @@ Parse pipeline specification from arguments. Supported formats:
 
 **1. Project Setup Pipeline**
 
-````text
+```txt
 init [prd] →
 expand-all →
 complexity-report →
 sprint-plan →
 show first-sprint
-```text
+```
 
 **2. Daily Work Pipeline**
 
-```text
+```txt
 standup →
 if:in-progress → continue →
 else → next → start
-```text
+```
 
 **3. Task Completion Pipeline**
 
-```text
+```txt
 complete [id] →
 git-commit →
 if:blocked-tasks-freed → show-freed →
 next
-```text
+```
 
 **4. Quality Check Pipeline**
 
-```text
+```txt
 list in-progress →
 for:each → check-idle-time →
 if:idle>1day → prompt-update
-```text
+```
 
 ### Pipeline Features
 
@@ -85,4 +85,3 @@ if:idle>1day → prompt-update
 
 This enables complex workflows like:
 `parse-prd → expand-all → filter:complex>70 → assign:senior → sprint-plan:weighted`
-````

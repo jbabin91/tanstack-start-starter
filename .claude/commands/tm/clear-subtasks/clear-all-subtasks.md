@@ -6,38 +6,35 @@ Remove all subtasks across the entire project. Use with extreme caution.
 
 ## Execution
 
-`````bash
+```sh s
 task-master clear-subtasks --all
-```text
+```
 
 ## Pre-Clear Analysis
 
 1. **Project-Wide Summary**
 
-````text
+   ```txt
+   Global Subtask Summary
+   ━━━━━━━━━━━━━━━━━━━━
+   Total parent tasks: 12
+   Total subtasks: 47
+   - Completed: 15
+   - In-progress: 8
+   - Pending: 24
 
-Global Subtask Summary
-━━━━━━━━━━━━━━━━━━━━
-Total parent tasks: 12
-Total subtasks: 47
-
-- Completed: 15
-- In-progress: 8
-- Pending: 24
-
-Work at risk: ~120 hours
-
-````text
+   Work at risk: ~120 hours
+   ```
 
 2. **Critical Warnings**
-- In-progress subtasks that will lose work
-- Completed subtasks with valuable history
-- Complex dependency chains
-- Integration test results
+   - In-progress subtasks that will lose work
+   - Completed subtasks with valuable history
+   - Complex dependency chains
+   - Integration test results
 
 ## Double Confirmation
 
-```text
+```txt
 ⚠️  DESTRUCTIVE OPERATION WARNING ⚠️
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 This will remove ALL 47 subtasks from your project
@@ -46,7 +43,7 @@ Including 8 in-progress and 15 completed subtasks
 This action CANNOT be undone
 
 Type 'CLEAR ALL SUBTASKS' to confirm:
-```text
+```
 
 ## Smart Safeguards
 
@@ -84,7 +81,7 @@ Before clearing all:
 
 ## Post-Clear Report
 
-```text
+```txt
 Global Subtask Clear Complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Removed: 47 subtasks from 12 tasks
@@ -96,6 +93,4 @@ Next steps:
 - Review updated task list
 - Re-expand complex tasks as needed
 - Check project timeline
-```text
-````text
-`````
+```

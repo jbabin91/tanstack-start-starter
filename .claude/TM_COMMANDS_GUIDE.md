@@ -8,7 +8,7 @@ All Task Master functionality is available through the `/project:tm/` namespace 
 
 ## Quick Start
 
-````bash
+```sh
 # Install Task Master
 /project:tm/setup/quick-install
 
@@ -20,7 +20,7 @@ All Task Master functionality is available through the `/project:tm/` namespace 
 
 # Start working
 /project:tm/next
-```text
+```
 
 ## Command Structure
 
@@ -99,11 +99,11 @@ Commands are organized hierarchically to match Task Master's CLI:
 
 All commands understand natural language:
 
-```text
+```txt
 /project:tm/list pending high priority
 /project:tm/update mark 23 as done
 /project:tm/add-task implement OAuth login
-```text
+```
 
 ### Smart Context
 
@@ -125,27 +125,27 @@ Commands analyze project state and provide intelligent suggestions based on:
 
 ### Daily Development
 
-```text
+```txt
 /project:tm/workflows/smart-flow morning
 /project:tm/next
 /project:tm/set-status/to-in-progress <id>
 /project:tm/set-status/to-done <id>
-```text
+```
 
 ### Task Breakdown
 
-```text
+```txt
 /project:tm/show <id>
 /project:tm/expand <id>
 /project:tm/list/with-subtasks
-```text
+```
 
 ### Sprint Planning
 
-```text
+```txt
 /project:tm/analyze-complexity
 /project:tm/workflows/pipeline init → expand/all → status
-```text
+```
 
 ## Migration from Old Commands
 
@@ -162,4 +162,3 @@ Commands analyze project state and provide intelligent suggestions based on:
 3. Commands provide smart defaults
 4. Chain commands for automation
 5. Check `/project:tm/learn` for interactive help
-````

@@ -6,9 +6,9 @@ Intelligently fixes common dependency problems while preserving project logic.
 
 ## Execution
 
-````bash
+```sh
 task-master fix-dependencies
-```text
+```
 
 ## What Gets Fixed
 
@@ -59,7 +59,7 @@ task-master fix-dependencies
 
 ## Output Example
 
-```text
+```txt
 Dependency Auto-Fix Report
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Fixed Automatically:
@@ -74,7 +74,7 @@ Manual Review Needed:
   Suggestion: Break into subtasks
 
 Run '/project:tm/validate-dependencies' to verify fixes
-```text
+```
 
 ## Safety
 
@@ -82,4 +82,3 @@ Run '/project:tm/validate-dependencies' to verify fixes
 - Rollback capability
 - Change logging
 - No data loss
-````

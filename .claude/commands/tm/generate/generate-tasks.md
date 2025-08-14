@@ -6,15 +6,15 @@ Creates separate markdown files for each task, perfect for AI agents or document
 
 ## Execution
 
-````bash
+```sh
 task-master generate
-```text
+```
 
 ## What It Creates
 
 For each task, generates a file like `task_001.txt`:
 
-```text
+```txt
 Task ID: 1
 Title: Implement user authentication
 Status: pending
@@ -43,20 +43,20 @@ Create a secure user authentication system with login, logout, and session manag
 1.2 Create login endpoints (pending)
 1.3 Implement session management (pending)
 1.4 Add password reset (pending)
-```text
+```
 
 ## File Organization
 
 Creates structure:
 
-```text
+```sh
 .taskmaster/
 └── tasks/
     ├── task_001.txt
     ├── task_002.txt
     ├── task_003.txt
     └── ...
-```text
+```
 
 ## Smart Features
 
@@ -97,7 +97,7 @@ Based on arguments:
 
 ## Post-Generation
 
-```text
+```txt
 Task File Generation Complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 Generated: 45 task files
@@ -112,7 +112,7 @@ Ready for:
 - AI agent consumption
 - Version control
 - Team distribution
-```text
+```
 
 ## Integration Benefits
 
@@ -121,4 +121,3 @@ Ready for:
 - AI tool compatibility
 - Offline task access
 - Backup redundancy
-````

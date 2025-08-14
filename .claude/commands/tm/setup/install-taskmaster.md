@@ -6,7 +6,7 @@ This command helps you get Task Master set up globally on your system.
 
 1. **Check Current Installation**
 
-   ```bash
+   ```sh
    # Check if task-master command exists
    which task-master || echo "Task Master not found"
 
@@ -16,7 +16,7 @@ This command helps you get Task Master set up globally on your system.
 
 2. **System Requirements Check**
 
-   ```bash
+   ```sh
    # Verify Node.js is installed
    node --version
 
@@ -29,13 +29,13 @@ This command helps you get Task Master set up globally on your system.
 3. **Install Task Master Globally**
    If not installed, run:
 
-   ```bash
+   ```sh
    npm install -g task-master-ai
    ```
 
 4. **Verify Installation**
 
-   ```bash
+   ```sh
    # Check version
    task-master --version
 
@@ -45,7 +45,7 @@ This command helps you get Task Master set up globally on your system.
 
 5. **Initial Setup**
 
-   ```bash
+   ```sh
    # Initialize in current directory
    task-master init
    ```
@@ -53,7 +53,7 @@ This command helps you get Task Master set up globally on your system.
 6. **Configure AI Provider**
    Ensure you have at least one AI provider API key set:
 
-   ```bash
+   ```sh
    # Check current configuration
    task-master models --status
 
@@ -68,7 +68,7 @@ This command helps you get Task Master set up globally on your system.
 
 7. **Quick Test**
 
-   ```bash
+   ```sh
    # Create a test PRD
    echo "Build a simple hello world API" > test-prd.txt
 
@@ -82,43 +82,43 @@ If installation fails:
 
 **Permission Errors:**
 
-````bash
+```sh
 # Try with sudo (macOS/Linux)
 sudo npm install -g task-master-ai
 
 # Or fix npm permissions
 npm config set prefix ~/.npm-global
 export PATH=~/.npm-global/bin:$PATH
-```text
+```
 
 **Network Issues:**
 
-```bash
+```sh
 # Use different registry
 npm install -g task-master-ai --registry https://registry.npmjs.org/
-```text
+```
 
 **Node Version Issues:**
 
-```bash
+```sh
 # Install Node 18+ via nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 nvm install 18
 nvm use 18
-```text
+```
 
 ## Success Confirmation
 
 Once installed, you should see:
 
-```text
+```txt
 ✅ Task Master v0.16.2 (or higher) installed
 ✅ Command 'task-master' available globally
 ✅ AI provider configured
 ✅ Ready to use slash commands!
 
 Try: /project:task-master:init your-prd.md
-```text
+```
 
 ## Next Steps
 
@@ -127,4 +127,3 @@ After installation:
 1. Run `/project:utils:check-health` to verify setup
 2. Configure AI providers with `/project:task-master:models`
 3. Start using Task Master commands!
-````

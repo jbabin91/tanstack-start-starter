@@ -272,7 +272,7 @@ export function useUser({ id }: { id: string }) {
 
 ### Quality Enforcement
 
-```bash
+```sh
 # Automatic on file changes
 pnpm format      # Prettier formatting
 pnpm lint        # ESLint validation

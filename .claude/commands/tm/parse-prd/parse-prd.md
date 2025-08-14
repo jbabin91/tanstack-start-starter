@@ -8,7 +8,7 @@ Analyzes your requirements document and generates a complete task breakdown.
 
 ## Execution
 
-```bash
+```sh
 task-master parse-prd --input=$ARGUMENTS
 ```
 

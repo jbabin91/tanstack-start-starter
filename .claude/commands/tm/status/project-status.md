@@ -42,7 +42,7 @@ Based on $ARGUMENTS, focus on:
 
 Dynamic visualization based on data:
 
-````text
+```txt
 Sprint Progress: ████████░░ 80% (16/20 tasks)
 Velocity Trend: ↗️ +15% this week
 Blocked Tasks:  🔴 3 critical path items
@@ -51,7 +51,7 @@ Priority Distribution:
 High:   ████████ 8 tasks (2 blocked)
 Medium: ████░░░░ 4 tasks
 Low:    ██░░░░░░ 2 tasks
-```text
+```
 
 ### 5. **Actionable Recommendations**
 
@@ -70,4 +70,3 @@ Compare to previous periods:
 - Pattern recognition
 - Improvement areas
 - Success patterns to repeat
-````

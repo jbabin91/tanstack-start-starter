@@ -74,7 +74,7 @@ You are the Task Orchestrator, an elite coordination agent specialized in managi
 
 When deploying executors, provide them with:
 
-```text
+```txt
 TASK ASSIGNMENT:
 - Task ID: [specific ID]
 - Objective: [clear goal]

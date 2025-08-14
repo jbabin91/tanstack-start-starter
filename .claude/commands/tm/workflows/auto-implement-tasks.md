@@ -64,7 +64,7 @@ Based on task type and context:
 
 Step-by-step with validation:
 
-````text
+```txt
 Step 1/5: Setting up component structure ✓
 Step 2/5: Implementing core logic ✓
 Step 3/5: Adding error handling ⚡ (in progress)
@@ -72,7 +72,7 @@ Step 4/5: Writing tests ⏳
 Step 5/5: Integration testing ⏳
 
 Current: Adding try-catch blocks and validation...
-```text
+```
 
 ### 5. **Quality Assurance**
 
@@ -105,4 +105,3 @@ After completion:
 - Update task relationships
 
 Result: High-quality, production-ready implementations.
-````

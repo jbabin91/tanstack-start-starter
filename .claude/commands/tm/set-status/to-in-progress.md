@@ -15,7 +15,7 @@ This command does more than just change status - it prepares your environment fo
 
 ## Execution
 
-```bash
+```sh
 task-master set-status --id=$ARGUMENTS --status=in-progress
 ```
 
