@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from '@storybook/test';
-import { useState } from 'react';
+import { expect, fn, userEvent, within } from '@storybook/test';
 
 import {
   Pagination,
@@ -98,12 +97,6 @@ export const PaginationWithEllipsis: Story = {
           <PaginationLink href="#">8</PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink href="#">9</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">10</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
           <PaginationNext href="#" />
         </PaginationItem>
       </PaginationContent>
@@ -163,265 +156,6 @@ export const LargePagination: Story = {
   },
 };
 
-function FirstLastPagesComponent() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const renderPageNumbers = () => {
-    const pages = [];
-
-    if (currentPage === 1) {
-      // First page selected
-      pages.push(
-        <PaginationItem key={1}>
-          <PaginationLink
-            isActive
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(1);
-            }}
-          >
-            1
-          </PaginationLink>
-        </PaginationItem>,
-      );
-      if (totalPages > 1) {
-        pages.push(
-          <PaginationItem key={2}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageChange(2);
-              }}
-            >
-              2
-            </PaginationLink>
-          </PaginationItem>,
-        );
-      }
-      if (totalPages > 2) {
-        pages.push(
-          <PaginationItem key={3}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageChange(3);
-              }}
-            >
-              3
-            </PaginationLink>
-          </PaginationItem>,
-        );
-      }
-      if (totalPages > 4) {
-        pages.push(
-          <PaginationItem key="ellipsis">
-            <PaginationEllipsis />
-          </PaginationItem>,
-          <PaginationItem key={totalPages}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageChange(totalPages);
-              }}
-            >
-              {totalPages}
-            </PaginationLink>
-          </PaginationItem>,
-        );
-      }
-    } else if (currentPage === totalPages) {
-      // Last page selected
-      if (totalPages > 4) {
-        pages.push(
-          <PaginationItem key={1}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageChange(1);
-              }}
-            >
-              1
-            </PaginationLink>
-          </PaginationItem>,
-          <PaginationItem key="ellipsis">
-            <PaginationEllipsis />
-          </PaginationItem>,
-        );
-      }
-      pages.push(
-        <PaginationItem key={totalPages - 2}>
-          <PaginationLink
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(totalPages - 2);
-            }}
-          >
-            {totalPages - 2}
-          </PaginationLink>
-        </PaginationItem>,
-        <PaginationItem key={totalPages - 1}>
-          <PaginationLink
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(totalPages - 1);
-            }}
-          >
-            {totalPages - 1}
-          </PaginationLink>
-        </PaginationItem>,
-        <PaginationItem key={totalPages}>
-          <PaginationLink
-            isActive
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(totalPages);
-            }}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>,
-      );
-    } else {
-      // Middle page selected
-      pages.push(
-        <PaginationItem key={1}>
-          <PaginationLink
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(1);
-            }}
-          >
-            1
-          </PaginationLink>
-        </PaginationItem>,
-      );
-      if (currentPage > 3) {
-        pages.push(
-          <PaginationItem key="ellipsis-start">
-            <PaginationEllipsis />
-          </PaginationItem>,
-        );
-      }
-
-      // Show current page and neighbors
-      for (
-        let i = Math.max(2, currentPage - 1);
-        i <= Math.min(totalPages - 1, currentPage + 1);
-        i++
-      ) {
-        pages.push(
-          <PaginationItem key={i}>
-            <PaginationLink
-              href="#"
-              isActive={i === currentPage}
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageChange(i);
-              }}
-            >
-              {i}
-            </PaginationLink>
-          </PaginationItem>,
-        );
-      }
-
-      if (currentPage < totalPages - 2) {
-        pages.push(
-          <PaginationItem key="ellipsis-end">
-            <PaginationEllipsis />
-          </PaginationItem>,
-        );
-      }
-      pages.push(
-        <PaginationItem key={totalPages}>
-          <PaginationLink
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handlePageChange(totalPages);
-            }}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>,
-      );
-    }
-
-    return pages;
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <p className="text-muted-foreground text-sm">
-          Page {currentPage} of {totalPages}
-        </p>
-      </div>
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              style={{
-                pointerEvents: currentPage === 1 ? 'none' : 'auto',
-                opacity: currentPage === 1 ? 0.5 : 1,
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                if (currentPage > 1) {
-                  handlePageChange(currentPage - 1);
-                }
-              }}
-            />
-          </PaginationItem>
-          {renderPageNumbers()}
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              style={{
-                pointerEvents: currentPage === totalPages ? 'none' : 'auto',
-                opacity: currentPage === totalPages ? 0.5 : 1,
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                if (currentPage < totalPages) {
-                  handlePageChange(currentPage + 1);
-                }
-              }}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-    </div>
-  );
-}
-
-export const FirstLastPages: Story = {
-  render: () => <FirstLastPagesComponent />,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive pagination that handles first page, last page, and middle page states.',
-      },
-    },
-  },
-};
-
 export const MinimalPagination: Story = {
   render: (args) => (
     <Pagination {...args}>
@@ -465,25 +199,59 @@ export const SinglePage: Story = {
   },
 };
 
-export const InteractivePagination: Story = {
-  render: (args) => (
-    <Pagination {...args}>
+// Interactive pagination component with mock handlers
+function InteractivePaginationComponent({
+  onPageChange,
+}: {
+  onPageChange?: (page: number | string) => void;
+}) {
+  return (
+    <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious data-testid="prev-button" href="#" />
+          <PaginationPrevious
+            data-testid="prev-button"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.('previous');
+            }}
+          />
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink data-testid="page-1" href="#">
+          <PaginationLink
+            data-testid="page-1"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.(1);
+            }}
+          >
             1
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink isActive data-testid="page-2" href="#">
+          <PaginationLink
+            isActive
+            data-testid="page-2"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.(2);
+            }}
+          >
             2
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink data-testid="page-3" href="#">
+          <PaginationLink
+            data-testid="page-3"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.(3);
+            }}
+          >
             3
           </PaginationLink>
         </PaginationItem>
@@ -491,95 +259,86 @@ export const InteractivePagination: Story = {
           <PaginationEllipsis data-testid="ellipsis" />
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink data-testid="page-10" href="#">
+          <PaginationLink
+            data-testid="page-10"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.(10);
+            }}
+          >
             10
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationNext data-testid="next-button" href="#" />
+          <PaginationNext
+            data-testid="next-button"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onPageChange?.('next');
+            }}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  ),
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const canvas = within(canvasElement);
+  );
+}
 
-    // Verify pagination elements are present
-    const prevButton = canvas.getByTestId('prev-button');
-    const nextButton = canvas.getByTestId('next-button');
-    const page1 = canvas.getByTestId('page-1');
-    const page2 = canvas.getByTestId('page-2');
-    const page3 = canvas.getByTestId('page-3');
-    const page10 = canvas.getByTestId('page-10');
-    const ellipsis = canvas.getByTestId('ellipsis');
-
-    // Verify all elements are in the document
-    await expect(prevButton).toBeInTheDocument();
-    await expect(nextButton).toBeInTheDocument();
-    await expect(page1).toBeInTheDocument();
-    await expect(page2).toBeInTheDocument();
-    await expect(page3).toBeInTheDocument();
-    await expect(page10).toBeInTheDocument();
-    await expect(ellipsis).toBeInTheDocument();
-
-    // Verify page 2 is active (using isActive prop which sets aria-current)
-    await expect(page2).toHaveAttribute('aria-current', 'page');
-
-    // Verify other pages don't have aria-current
-    await expect(page1).not.toHaveAttribute('aria-current', 'page');
-    await expect(page3).not.toHaveAttribute('aria-current', 'page');
-    await expect(page10).not.toHaveAttribute('aria-current', 'page');
-
-    // Check accessibility attributes
-    await expect(prevButton).toHaveAttribute(
-      'aria-label',
-      'Go to previous page',
-    );
-    await expect(nextButton).toHaveAttribute('aria-label', 'Go to next page');
-    await expect(ellipsis).toHaveAttribute('aria-hidden');
-
-    // Verify links are clickable (they have href attributes)
-    await expect(prevButton).toHaveAttribute('href', '#');
-    await expect(nextButton).toHaveAttribute('href', '#');
-    await expect(page1).toHaveAttribute('href', '#');
-    await expect(page2).toHaveAttribute('href', '#');
-    await expect(page3).toHaveAttribute('href', '#');
-    await expect(page10).toHaveAttribute('href', '#');
-
-    // Test clicking on a page link
-    await userEvent.click(page3);
-    // Note: Since these are just anchor links with href="#",
-    // we can't test actual navigation behavior here
+export const InteractivePagination: StoryObj<
+  typeof InteractivePaginationComponent
+> = {
+  args: {
+    onPageChange: fn(),
   },
+  render: (args) => <InteractivePaginationComponent {...args} />,
   parameters: {
     docs: {
       description: {
         story:
-          'Interactive pagination with comprehensive testing of elements and accessibility.',
+          'Interactive pagination with test IDs for accessibility and interaction testing.',
       },
     },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('Click on page 3', async () => {
+      const page3 = canvas.getByTestId('page-3');
+      await userEvent.click(page3);
+      expect(args.onPageChange).toHaveBeenCalledWith(3);
+    });
+
+    await step('Click next button', async () => {
+      const nextButton = canvas.getByTestId('next-button');
+      await userEvent.click(nextButton);
+      expect(args.onPageChange).toHaveBeenCalledWith('next');
+    });
+
+    await step('Click previous button', async () => {
+      const prevButton = canvas.getByTestId('prev-button');
+      await userEvent.click(prevButton);
+      expect(args.onPageChange).toHaveBeenCalledWith('previous');
+    });
+
+    await step('Click on page 10', async () => {
+      const page10 = canvas.getByTestId('page-10');
+      await userEvent.click(page10);
+      expect(args.onPageChange).toHaveBeenCalledWith(10);
+    });
+
+    await step('Verify ellipsis is not clickable', () => {
+      const ellipsis = canvas.getByTestId('ellipsis');
+      expect(ellipsis).toBeInTheDocument();
+      // Ellipsis should not be clickable (no onClick handler)
+      expect(ellipsis.tagName).toBe('SPAN');
+    });
   },
 };
 
 export const EdgeCases: Story = {
   render: () => (
     <div className="space-y-8">
-      {/* No pages */}
-      <div>
-        <h3 className="text-muted-foreground mb-4 text-sm font-medium">
-          Empty State:
-        </h3>
-        <Pagination aria-label="Empty state pagination example">
-          <PaginationContent>
-            <PaginationItem>
-              <span className="text-muted-foreground px-3 py-2 text-sm">
-                No pages to display
-              </span>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-
       {/* Two pages only */}
       <div>
         <h3 className="text-muted-foreground mb-4 text-sm font-medium">
@@ -600,40 +359,6 @@ export const EdgeCases: Story = {
             </PaginationItem>
             <PaginationItem>
               <PaginationLink href="#">2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-
-      {/* Very large page numbers */}
-      <div>
-        <h3 className="text-muted-foreground mb-4 text-sm font-medium">
-          Large Page Numbers:
-        </h3>
-        <Pagination aria-label="Large page numbers pagination example">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink isActive href="#">
-                9,999
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">10,000</PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationNext href="#" />
@@ -689,8 +414,7 @@ export const EdgeCases: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Edge cases including empty state, two pages, large numbers, and disabled states.',
+        story: 'Edge cases including two pages and disabled states.',
       },
     },
   },

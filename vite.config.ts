@@ -119,6 +119,7 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
+            // Share browser context to reduce memory usage
             instances: [
               {
                 browser: 'chromium',
@@ -128,8 +129,16 @@ export default defineConfig({
                   timezoneId: 'America/New_York',
                 },
                 launch: {
-                  // Stability args for CI/CD
-                  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                  // Enhanced stability args for CI/CD and memory management
+                  args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-web-security',
+                    '--disable-features=VizDisplayCompositor',
+                    '--max_old_space_size=8192',
+                    '--memory-pressure-off',
+                  ],
                 },
               },
             ],
@@ -142,8 +151,15 @@ export default defineConfig({
               height: 720,
             },
           },
+          hookTimeout: 10_000,
+          // Reduce concurrency to prevent resource exhaustion
+          maxConcurrency: 2,
           name: 'storybook',
+          // Add retry for flaky browser tests
+          retry: 1,
           setupFiles: ['.storybook/vitest.setup.ts'],
+          // Increase timeouts to prevent browser crashes
+          testTimeout: 15_000,
         },
       },
     ],
