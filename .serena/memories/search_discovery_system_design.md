@@ -1,56 +1,138 @@
 # Search & Discovery System Design
 
-## Medium-like Blogging Platform
+## Strategic Design Overview
 
----
+This document outlines the strategic design for a Search & Discovery system for our TanStack Start-based blogging platform, focusing on PostgreSQL optimization, advanced filtering capabilities, and exceptional user experience.
 
-## Executive Summary
+**Focused Design Documents:**
 
-This document outlines the comprehensive design for a Search & Discovery system for our TanStack Start-based blogging platform. The system focuses on PostgreSQL optimization, advanced filtering capabilities, and exceptional user experience while maintaining performance at scale.
+- **[Search UX Design](./search_ux_design.md)** - User experience patterns and interface specifications
+- **[Search Implementation Roadmap](./search_implementation_roadmap.md)** - Comprehensive development planning and timeline
+- **[Search Analytics Strategy](./search_analytics_strategy.md)** - Performance monitoring and user behavior tracking
 
 **Related Strategic Documents:**
 
-- **[Content Creation System Design](./content_creation_writing_interface_design.md)** - Content authoring and publishing workflows that feed into search
-- **[Navigation Architecture](./ux_architecture_navigation_design.md)** - Organization-aware navigation and discovery patterns
-- **[Implementation Roadmap](./implementation_roadmap_content_creation.md)** - Development planning for content and search features
+- **[Content Creation System Design](./content_creation_writing_interface_design.md)** - Content authoring workflows that feed into search
+- **[Navigation Architecture](./ux_architecture_navigation_design.md)** - Organization-aware navigation patterns
+- **[Implementation Roadmap](./implementation_roadmap_content_creation.md)** - Content creation development planning
 
 **Technical Implementation:**
 
-- **[Project Overview](../../docs/overview/introduction.md)** - Technical architecture and current project status
-- **[Database Design](../../docs/architecture/database.md)** - PostgreSQL schema and full-text search optimization
-- **[Development Guide](../../docs/development/index.md)** - Performance patterns and query optimization
-- **[Search API Reference](../../docs/api/search.md)** - Implementation details for search endpoints
+- **[Database Architecture](../../docs/architecture/database.md)** - PostgreSQL schema and full-text search optimization
+- **[Search API Reference](../../docs/api/search.md)** - Complete server function implementations
+- **[Component Patterns](../../docs/development/component-patterns.md)** - Search UI component implementations
 
-### Key Design Principles
+## Strategic Design Principles
 
-- **PostgreSQL-First**: Optimized full-text search without external dependencies
-- **Advanced Filtering Priority**: Robust filtering system as primary feature
-- **Mobile-Optimized UX**: Progressive disclosure and touch-friendly interfaces
-- **Performance-Conscious**: Strategic indexing and query optimization
-- **Analytics-Ready**: Sentry/PostHog integration for user behavior insights
+### 1. PostgreSQL-First Architecture
 
-### Core Features
+- **Native full-text search** using PostgreSQL's built-in capabilities with GIN indexes
+- **Zero external dependencies** - no Elasticsearch or other search engines required
+- **Optimized materialized views** for trending content and faceted search
+- **Strategic indexing** for sub-200ms query performance at scale
 
-1. Universal search with intelligent ranking
-2. Advanced filtering system with multiple content types
-3. Topic-based content discovery
-4. Organization-centric exploration
-5. Real-time search with proper optimization
-6. Search history and personalization
+### 2. Advanced Filtering as Core Feature
 
----
+- **Dynamic filter configurations** supporting multiple content types (posts, users, organizations)
+- **Type-safe filter system** with comprehensive validation and state management
+- **Progressive disclosure** - from quick filters to advanced filtering panels
+- **Mobile-optimized** filtering with bottom sheet patterns
 
-## Database Requirements
+### 3. Organization-Aware Discovery
 
-Search functionality requires database schema extensions that are fully documented in the [Database Architecture](../../docs/architecture/database.md). Key requirements include:
+- **Contextual search** that respects organization boundaries when appropriate
+- **Multi-tenant content discovery** supporting both personal and organizational content
+- **Organization-specific trending** and featured content algorithms
+- **Role-based filtering** based on user permissions and organization membership
 
-- **Search-optimized posts schema** with full-text search vectors and engagement metrics
-- **Tags and categories system** for content organization and filtering
-- **Search analytics tables** for performance monitoring and user behavior tracking
+### 4. Performance-Conscious Design
 
-See [Database Architecture](../../docs/architecture/database.md) for complete schema definitions and indexing strategies.
+- **Sub-200ms search response** targets for 95th percentile
+- **Real-time search** with proper debouncing and optimization
+- **Connection pool optimization** for search workloads
+- **Caching strategies** for frequent queries and faceted search results
 
----
+### 5. Analytics-Driven Optimization
+
+- **Sentry integration** for performance monitoring and slow query detection
+- **PostHog integration** for user behavior tracking and search pattern analysis
+- **Zero-result query tracking** for content gap identification
+- **Search-to-engagement conversion** monitoring for UX optimization
+
+## Core Feature Strategy
+
+### 1. Universal Search with Intelligent Ranking
+
+**Strategic Goal**: Provide a single search interface that intelligently ranks content across all types.
+
+**Key Features**:
+
+- Full-text search across posts with weighted ranking (title > content > excerpt)
+- User discovery by name, bio, and expertise areas
+- Organization search by name, description, and activity level
+- Cross-content type ranking algorithm balancing relevance and recency
+
+### 2. Advanced Filtering System
+
+**Strategic Goal**: Enable users to precisely filter content using multiple criteria combinations.
+
+**Key Features**:
+
+- Dynamic filter configurations based on content type
+- Collapsible filter groups with progressive disclosure
+- Real-time filter application with debounced API calls
+- URL state synchronization for shareable filtered searches
+
+### 3. Topic-Based Content Discovery
+
+**Strategic Goal**: Help users discover content through curated topic exploration.
+
+**Key Features**:
+
+- Trending topics calculated from engagement metrics and time decay
+- Category-based browsing with hierarchical organization
+- Tag-based content clustering and recommendation
+- Cross-pollination between similar topics and categories
+
+### 4. Organization-Centric Exploration
+
+**Strategic Goal**: Surface organizational content and facilitate community discovery.
+
+**Key Features**:
+
+- Active organization discovery based on publishing activity
+- Organization-specific trending content within their ecosystem
+- Member activity highlighting and rising contributor identification
+- Cross-organization content discovery respecting privacy settings
+
+### 5. Search History and Personalization
+
+**Strategic Goal**: Improve search experience through user behavior learning.
+
+**Key Features**:
+
+- Search query history for authenticated users
+- Personalized search suggestions based on past queries
+- Content recommendation based on search and engagement patterns
+- Saved searches for complex filter combinations
+
+## Database Strategy
+
+**See [Database Architecture](../../docs/architecture/database.md) for complete implementation details.**
+
+### Search-Optimized Schema Design
+
+- **Full-text search vectors** with automatic updates via database triggers
+- **Engagement metrics** denormalized for fast trending calculations
+- **Search analytics tables** for performance monitoring and behavior analysis
+- **Composite indexes** optimized for common search query patterns
+
+### Performance Optimization
+
+- **GIN indexes** for full-text search with `pg_trgm` extension for fuzzy matching
+- **Materialized views** for trending content refreshed hourly via cron jobs
+- **Partial indexes** for specific search conditions to improve query performance
+- **Connection pooling** optimized for read-heavy search workloads
 
 ## User Experience Design
 

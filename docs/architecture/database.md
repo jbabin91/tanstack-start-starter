@@ -321,6 +321,106 @@ export const postViews = pgTable(
     index('post_views_post_user_idx').on(table.postId, table.userId),
   ],
 );
+
+// Search analytics for performance monitoring
+export const searchQueries = pgTable(
+  'search_queries',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    query: text(),
+    userId: text().references(() => users.id, { onDelete: 'set null' }),
+    organizationId: text().references(() => organizations.id, {
+      onDelete: 'set null',
+    }),
+    resultCount: integer().notNull().default(0),
+    responseTimeMs: integer().notNull().default(0),
+    contentType: varchar({ length: 50 }), // posts, users, organizations, all
+    filters: jsonb().$type<Record<string, unknown>>(),
+    clickedResultId: text(),
+    clickedResultType: varchar({ length: 20 }), // post, user, organization
+    clickedPosition: integer(),
+    ipAddress: varchar({ length: 45 }),
+    userAgent: text(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    // Performance monitoring indexes
+    index('search_queries_query_idx').using(
+      'gin',
+      table.query.op('gin_trgm_ops'),
+    ),
+    index('search_queries_user_id_idx').on(table.userId),
+    index('search_queries_created_at_idx').on(table.createdAt),
+    index('search_queries_response_time_idx').on(table.responseTimeMs),
+
+    // Analytics indexes
+    index('search_queries_result_count_idx').on(
+      table.resultCount,
+      table.createdAt,
+    ),
+    index('search_queries_content_type_idx').on(table.contentType),
+
+    // Zero results analysis
+    index('search_queries_zero_results_idx')
+      .on(table.query)
+      .where(sql`${table.resultCount} = 0`),
+  ],
+);
+
+// Categories for content organization and filtering
+export const categories = pgTable(
+  'categories',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    name: varchar({ length: 100 }).notNull().unique(),
+    slug: varchar({ length: 100 }).notNull().unique(),
+    description: text(),
+    color: varchar({ length: 7 }), // Hex color
+    icon: varchar({ length: 50 }), // Lucide icon name
+    parentId: text().references(() => categories.id, { onDelete: 'set null' }),
+    postCount: integer().default(0), // Denormalized for performance
+    isActive: boolean().default(true),
+    sortOrder: integer().default(0),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index('categories_name_idx').on(table.name),
+    index('categories_slug_idx').on(table.slug),
+    index('categories_parent_id_idx').on(table.parentId),
+    index('categories_post_count_idx').on(table.postCount),
+    index('categories_sort_order_idx').on(table.sortOrder),
+  ],
+);
+
+// Post category relationships
+export const postCategories = pgTable(
+  'post_categories',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    postId: text()
+      .notNull()
+      .references(() => posts.id, { onDelete: 'cascade' }),
+    categoryId: text()
+      .notNull()
+      .references(() => categories.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('post_categories_post_id_idx').on(table.postId),
+    index('post_categories_category_id_idx').on(table.categoryId),
+    unique('unique_post_category').on(table.postId, table.categoryId),
+  ],
+);
 ```
 
 ## Search Optimization
@@ -426,20 +526,46 @@ CREATE UNIQUE INDEX trending_posts_id_idx ON trending_posts (id);
 -- Popular tags materialized view for search facets
 CREATE MATERIALIZED VIEW popular_tags AS
 SELECT
-  t.name,
-  t.slug,
+  pt.tag as name,
+  LOWER(REPLACE(pt.tag, ' ', '-')) as slug,
   COUNT(pt.post_id) as post_count,
   COUNT(CASE WHEN p.published_at > NOW() - INTERVAL '7 days' THEN 1 END) as recent_count
-FROM tags t
-JOIN post_tags pt ON t.name = pt.tag
+FROM post_tags pt
 JOIN posts p ON pt.post_id = p.id
 WHERE p.status = 'published'
-GROUP BY t.name, t.slug
+GROUP BY pt.tag
 HAVING COUNT(pt.post_id) >= 3  -- Only tags with 3+ posts
 ORDER BY post_count DESC, recent_count DESC
 LIMIT 200;
 
 CREATE UNIQUE INDEX popular_tags_name_idx ON popular_tags (name);
+
+-- Popular categories materialized view for explore page
+CREATE MATERIALIZED VIEW popular_categories AS
+SELECT
+  c.id,
+  c.name,
+  c.slug,
+  c.description,
+  c.color,
+  c.icon,
+  COUNT(DISTINCT pc.post_id) as post_count,
+  COUNT(CASE WHEN p.published_at > NOW() - INTERVAL '7 days' THEN 1 END) as recent_count,
+  -- Growth calculation (posts this week vs last week)
+  (
+    COUNT(CASE WHEN p.published_at > NOW() - INTERVAL '7 days' THEN 1 END)::float /
+    GREATEST(COUNT(CASE WHEN p.published_at BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days' THEN 1 END), 1)::float
+  ) as growth_ratio
+FROM categories c
+LEFT JOIN post_categories pc ON c.id = pc.category_id
+LEFT JOIN posts p ON pc.post_id = p.id AND p.status = 'published'
+WHERE c.is_active = true
+GROUP BY c.id, c.name, c.slug, c.description, c.color, c.icon
+HAVING COUNT(DISTINCT pc.post_id) > 0
+ORDER BY post_count DESC, growth_ratio DESC
+LIMIT 100;
+
+CREATE UNIQUE INDEX popular_categories_id_idx ON popular_categories (id);
 
 -- Refresh commands (run via cron)
 REFRESH MATERIALIZED VIEW CONCURRENTLY trending_posts;

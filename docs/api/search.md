@@ -835,6 +835,389 @@ export function useSearchFilters(contentType: string = 'posts') {
 }
 ```
 
+## Performance Optimization
+
+### Query Performance Monitoring
+
+```typescript
+// src/modules/search/middleware/performance-monitor.ts
+import { createServerFn } from '@tanstack/react-start';
+import { logger } from '@/lib/logger';
+
+export function withPerformanceMonitoring<
+  T extends (...args: unknown[]) => unknown,
+>(fn: T, operationName: string): T {
+  return ((...args: unknown[]) => {
+    const startTime = performance.now();
+    const result = fn(...args);
+
+    if (result instanceof Promise) {
+      return result.finally(() => {
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        logger.info('search_performance', {
+          operation: operationName,
+          duration_ms: duration,
+          args: args.length > 0 ? JSON.stringify(args[0]) : undefined,
+        });
+
+        // Alert on slow queries
+        if (duration > 1000) {
+          logger.warn('slow_search_query', {
+            operation: operationName,
+            duration_ms: duration,
+            args: JSON.stringify(args[0]),
+          });
+        }
+      });
+    }
+
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+
+    logger.info('search_performance', {
+      operation: operationName,
+      duration_ms: duration,
+    });
+
+    return result;
+  }) as T;
+}
+
+// Usage
+export const searchContent = withPerformanceMonitoring(
+  createServerFn({ method: 'POST' })
+    .validator((data: SearchFilters) => data)
+    .handler(async (filters: SearchFilters) => {
+      // Search implementation
+    }),
+  'search_content',
+);
+```
+
+### Real-time Search Optimization
+
+```typescript
+// src/modules/search/hooks/use-realtime-search.ts
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { searchQueries } from '@/modules/search/hooks/use-queries';
+import type { SearchFilters, SearchResult } from '@/modules/search/types';
+
+interface UseRealtimeSearchOptions {
+  debounceMs?: number;
+  minQueryLength?: number;
+  enabled?: boolean;
+}
+
+export function useRealtimeSearch(
+  initialFilters: SearchFilters = {},
+  options: UseRealtimeSearchOptions = {},
+) {
+  const { debounceMs = 300, minQueryLength = 2, enabled = true } = options;
+
+  const [filters, setFilters] = useState<SearchFilters>(initialFilters);
+  const [debouncedFilters, setDebouncedFilters] =
+    useState<SearchFilters>(initialFilters);
+  const [isTyping, setIsTyping] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout>();
+
+  // Debounce filter changes
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    setIsTyping(true);
+
+    debounceRef.current = setTimeout(() => {
+      setDebouncedFilters(filters);
+      setIsTyping(false);
+    }, debounceMs);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [filters, debounceMs]);
+
+  // Determine if search should be enabled
+  const shouldSearch =
+    enabled &&
+    (!debouncedFilters.query ||
+      debouncedFilters.query.length >= minQueryLength);
+
+  // Search query
+  const searchQuery = useQuery({
+    ...searchQueries.search(debouncedFilters),
+    enabled: shouldSearch,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  }, []);
+
+  const updateQuery = useCallback(
+    (query: string) => {
+      updateFilters({ query });
+    },
+    [updateFilters],
+  );
+
+  const clearSearch = useCallback(() => {
+    setFilters({});
+    setDebouncedFilters({});
+  }, []);
+
+  return {
+    // State
+    filters,
+    debouncedFilters,
+    isTyping,
+
+    // Query state
+    results: searchQuery.data?.results || [],
+    totalCount: searchQuery.data?.totalCount || 0,
+    facets: searchQuery.data?.facets,
+    isLoading: searchQuery.isLoading || isTyping,
+    isError: searchQuery.isError,
+    error: searchQuery.error,
+
+    // Actions
+    updateFilters,
+    updateQuery,
+    clearSearch,
+    refetch: searchQuery.refetch,
+  };
+}
+```
+
+### Connection Pool Configuration
+
+```typescript
+// src/lib/db/search-connection.ts
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { env } from '@/configs/env';
+
+// Dedicated connection pool for search operations
+const searchSql = postgres(env.DATABASE_URL, {
+  // Optimized for read-heavy search workloads
+  max: 15, // Higher connection limit
+  idle_timeout: 30,
+  connect_timeout: 10,
+
+  // Disable prepared statements for dynamic search queries
+  prepare: false,
+
+  // Enable connection pooling optimizations
+  connection: {
+    application_name: 'search-service',
+    statement_timeout: '30s', // Prevent long-running queries
+    idle_in_transaction_session_timeout: '5s',
+  },
+
+  // Enable SSL in production
+  ssl: env.NODE_ENV === 'production' ? 'require' : false,
+});
+
+export const searchDb = drizzle(searchSql, {
+  logger: env.NODE_ENV === 'development',
+});
+
+// Connection health check
+export async function checkSearchDbHealth() {
+  try {
+    const result = await searchSql`SELECT 1 as health`;
+    return result.length > 0;
+  } catch (error) {
+    console.error('Search DB health check failed:', error);
+    return false;
+  }
+}
+```
+
+## Analytics Integration
+
+### Sentry Performance Monitoring
+
+```typescript
+// src/modules/search/middleware/sentry-monitoring.ts
+import * as Sentry from '@sentry/node';
+import type { SearchFilters } from '@/modules/search/types';
+
+export function trackSearchPerformance(
+  operation: string,
+  filters: SearchFilters,
+  resultCount: number,
+  duration: number,
+) {
+  // Track search performance
+  Sentry.metrics.increment('search.query.count', 1, {
+    tags: {
+      operation,
+      content_type: filters.contentType?.join(',') || 'all',
+      has_query: !!filters.query,
+      has_filters: Object.keys(filters).length > 1,
+    },
+  });
+
+  // Track search latency
+  Sentry.metrics.timing('search.query.duration', duration, 'millisecond', {
+    tags: {
+      operation,
+      result_count_bucket: getResultCountBucket(resultCount),
+    },
+  });
+
+  // Track slow queries
+  if (duration > 1000) {
+    Sentry.captureMessage('Slow search query detected', {
+      level: 'warning',
+      tags: {
+        operation,
+        duration_ms: duration,
+        result_count: resultCount,
+      },
+      extra: {
+        filters: JSON.stringify(filters),
+      },
+    });
+  }
+
+  // Track zero results
+  if (resultCount === 0 && filters.query) {
+    Sentry.metrics.increment('search.zero_results', 1, {
+      tags: {
+        query_length: filters.query.length.toString(),
+        has_filters: Object.keys(filters).length > 1,
+      },
+    });
+  }
+}
+
+function getResultCountBucket(count: number): string {
+  if (count === 0) return '0';
+  if (count <= 10) return '1-10';
+  if (count <= 50) return '11-50';
+  if (count <= 100) return '51-100';
+  return '100+';
+}
+
+// Search event tracking
+export function trackSearchEvent(
+  event:
+    | 'search_initiated'
+    | 'filter_applied'
+    | 'result_clicked'
+    | 'zero_results',
+  properties: Record<string, unknown> = {},
+) {
+  Sentry.addBreadcrumb({
+    category: 'search',
+    message: event,
+    data: properties,
+    level: 'info',
+  });
+
+  // Also track as custom event for analytics
+  Sentry.captureMessage(`Search Event: ${event}`, {
+    level: 'info',
+    tags: {
+      event_type: 'search_analytics',
+      search_event: event,
+    },
+    extra: properties,
+  });
+}
+```
+
+### PostHog Analytics Integration
+
+```typescript
+// src/modules/search/hooks/use-search-analytics.ts
+import { useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import type { SearchFilters, SearchResult } from '@/modules/search/types';
+
+export function useSearchAnalytics() {
+  const posthog = usePostHog();
+
+  const trackSearch = (
+    filters: SearchFilters,
+    resultCount: number,
+    duration: number,
+  ) => {
+    posthog?.capture('search_performed', {
+      query: filters.query,
+      query_length: filters.query?.length || 0,
+      content_type: filters.contentType,
+      has_filters: Object.keys(filters).length > 1,
+      result_count: resultCount,
+      duration_ms: duration,
+      filter_categories: filters.categories?.length || 0,
+      filter_tags: filters.tags?.length || 0,
+      date_range: !!filters.dateRange,
+      min_likes: filters.minLikes || 0,
+    });
+  };
+
+  const trackFilterUsage = (filterId: string, value: FilterValue) => {
+    posthog?.capture('search_filter_applied', {
+      filter_id: filterId,
+      filter_type: typeof value,
+      is_array: Array.isArray(value),
+      value_count: Array.isArray(value) ? value.length : 1,
+    });
+  };
+
+  const trackResultClick = (
+    result: SearchResult,
+    position: number,
+    query?: string,
+  ) => {
+    posthog?.capture('search_result_clicked', {
+      result_type: result.type,
+      result_id: result.id,
+      position,
+      query,
+      query_length: query?.length || 0,
+      relevance_score: result.relevanceScore,
+    });
+
+    // Identify user behavior patterns
+    posthog?.capture('content_engagement', {
+      content_type: result.type,
+      content_id: result.id,
+      source: 'search',
+      position,
+    });
+  };
+
+  const trackZeroResults = (filters: SearchFilters) => {
+    posthog?.capture('search_zero_results', {
+      query: filters.query,
+      query_length: filters.query?.length || 0,
+      filter_count: Object.keys(filters).length - 1, // Exclude query
+      has_categories: !!filters.categories?.length,
+      has_tags: !!filters.tags?.length,
+      has_date_range: !!filters.dateRange,
+    });
+  };
+
+  return {
+    trackSearch,
+    trackFilterUsage,
+    trackResultClick,
+    trackZeroResults,
+  };
+}
+```
+
 ## Strategic Context
 
 This search API implements the content discovery system outlined in:
