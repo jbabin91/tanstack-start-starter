@@ -39,7 +39,10 @@ export default defineConfig({
   },
   // cz-git configuration
   prompt: {
-    alias: { fd: 'docs: fix typos', ud: 'chore: update dependencies' },
+    alias: {
+      fd: 'docs: fix typos',
+      b: 'chore(repo): :hammer: bump dependencies',
+    },
     messages: {
       type: "Select the type of change that you're committing:",
       scope: 'Denote the SCOPE of this change (optional):',
