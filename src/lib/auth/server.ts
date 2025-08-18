@@ -160,6 +160,7 @@ const options = {
       },
     },
   },
+  telemetry: { enabled: false },
 } satisfies BetterAuthOptions;
 
 const getAuthConfig = serverOnly(() =>
