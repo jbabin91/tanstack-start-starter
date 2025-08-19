@@ -4,14 +4,14 @@ This documentation is organized using a tiered system that works seamlessly with
 
 ## Documentation Structure
 
-### 📋 Strategic Planning (`.serena/memories/`)
+### 📋 Strategic Planning & Context
 
-High-level strategic decisions, system designs, and architectural planning:
+Strategic planning information is maintained through:
 
-- **System Design Documents**: Comprehensive feature specifications and user experience designs
-- **Implementation Roadmaps**: Phase-by-phase development plans with technical details
-- **Technical Specifications**: Detailed technical requirements and API designs
-- **Project Planning**: Strategic decisions and architectural considerations
+- **Task Master**: Structured task management with AI-powered planning in `.taskmaster/`
+- **Claude Code Context**: Essential project context and patterns in `CLAUDE.md`
+- **Architecture Documentation**: Comprehensive system design in `/docs/architecture/`
+- **Development Guidelines**: Implementation patterns and standards in `/docs/development/`
 
 ### 📚 Technical Documentation (`/docs/`)
 
@@ -27,10 +27,12 @@ Detailed implementation guides, API references, and developer resources:
 
 ## Cross-References
 
-Strategic planning documents in `.serena/memories/` reference detailed technical documentation in `/docs/`. Look for links like:
+Documentation is interconnected across the project:
 
-- `[API Documentation](../docs/api/posts.md)` - Links from memories to docs
-- `[System Design](../.serena/memories/search_discovery_system_design.md)` - Links from docs to memories
+- **Task Master** references detailed technical documentation in `/docs/`
+- **CLAUDE.md** imports essential context from `/docs/` files using `@` references
+- **Architecture docs** link to implementation guides and API references
+- **Development guides** reference component patterns and testing strategies
 
 ## Documentation Automation
 
@@ -47,8 +49,9 @@ The documentation system includes automated hooks that:
 - [Quick Start Guide](./overview/quickstart.md)
 - [Development Setup](./development/setup.md)
 - [API Reference](./api/index.md)
+- [Database Schema](./api/database.md)
 - [Architecture Overview](./architecture/index.md)
-- [Deployment Guide](./deployment.md)
+- [Security Documentation](./security/index.md)
 
 ### For Users
 
@@ -56,18 +59,19 @@ The documentation system includes automated hooks that:
 - [Writing and Publishing](./guides/writing-and-publishing.md)
 - [Organization Management](./guides/organization-management.md)
 
-### For Strategic Planning
+### For Project Planning
 
-- [Content Creation System Design](../.serena/memories/content_creation_writing_interface_design.md)
-- [Search & Discovery System](../.serena/memories/search_discovery_system_design.md)
-- [Navigation & Dashboard Architecture](../.serena/memories/ux_architecture_navigation_design.md)
-- [Implementation Roadmaps](../.serena/memories/implementation_roadmap_content_creation.md)
+- [Claude Code Integration](./CLAUDE.md)
+- [Architecture Decision Records](./architecture/index.md)
+- [Database Design](./api/database.md)
+- [Development Patterns](./development/index.md)
 
 ## Contributing to Documentation
 
 When adding new features or making architectural changes:
 
-1. **Strategic decisions** → Document in `.serena/memories/`
-2. **Implementation details** → Document in `/docs/`
-3. **Cross-reference** → Link between strategic and technical docs
-4. **Review** → Ensure both AI agents and humans can navigate effectively
+1. **Task Planning** → Create tasks in Task Master for structured implementation
+2. **Implementation details** → Document patterns and APIs in `/docs/`
+3. **Context Updates** → Update `CLAUDE.md` with essential patterns and commands
+4. **Cross-reference** → Link between architectural docs and implementation guides
+5. **Review** → Ensure both AI agents and humans can navigate effectively

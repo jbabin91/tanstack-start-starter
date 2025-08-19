@@ -80,13 +80,21 @@ pnpm commit         # Interactive commit tool
 ```sh
 src/
 ├── components/     # Reusable UI components
+│   ├── ui/        # ShadCN/UI components
+│   └── layouts/   # Layout components
 ├── modules/        # Feature modules (users, posts, etc.)
+│   ├── auth/      # Authentication & sessions
+│   ├── email/     # Email functionality
+│   └── posts/     # Content management
 ├── lib/           # Core utilities and configurations
+│   ├── auth/      # Better-auth configuration
+│   └── db/        # Database schemas and connection
 ├── routes/        # File-based routing
+│   ├── _app/      # Protected routes
+│   └── _public/   # Public routes
 └── configs/       # Configuration files
 
 docs/              # Technical documentation (you are here)
-.serena/memories/  # Strategic planning documents
 ```
 
 ## Key Features Overview
@@ -99,15 +107,16 @@ docs/              # Technical documentation (you are here)
 
 ### Content Creation
 
-- GitHub-style markdown editor ([Design Doc](../../.serena/memories/content_creation_writing_interface_design.md))
+- GitHub-style markdown editor with real-time preview
 - Organization publishing workflows
 - Co-authoring support
+- Auto-save functionality
 
 ### Search & Discovery
 
-- PostgreSQL full-text search ([System Design](../../.serena/memories/search_discovery_system_design.md))
+- PostgreSQL full-text search with GIN indexes
 - Advanced filtering and categorization
-- Personalized content recommendations
+- Content ranking and relevance scoring
 
 ## Development Commands Reference
 
@@ -124,14 +133,14 @@ docs/              # Technical documentation (you are here)
 
 1. **Explore the codebase** - Start with `src/routes/` to understand routing
 2. **Read architecture docs** - [Architecture Overview](../architecture/index.md)
-3. **Review strategic planning** - Check `.serena/memories/` for system designs
+3. **Review database schema** - Check [Database Documentation](../api/database.md)
 4. **Set up your editor** - Configure TypeScript and ESLint extensions
-5. **Make your first contribution** - Pick up a task from the implementation roadmap
+5. **Review implementation patterns** - See [Development Guide](../development/index.md)
 
 ## Getting Help
 
 - **Technical Documentation** - Browse `/docs/` for implementation details
-- **Strategic Context** - Check `.serena/memories/` for architectural decisions
+- **API Reference** - See [API Documentation](../api/index.md) for server functions
 - **Code Patterns** - Review existing modules for established patterns
 - **Development Standards** - See [CLAUDE.md](../../CLAUDE.md) for detailed guidelines
 

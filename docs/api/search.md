@@ -16,27 +16,34 @@ The search system provides:
 ### Search Posts
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+// Reusable schema - can be used in forms and server functions
+export const SearchPostsInputSchema = type({
+  query: 'string >= 1',
+  'organizationId?': 'string',
+  'authorId?': 'string',
+  'tags?': 'string[]',
+  'publishingType?':
+    '"personal" | "organization_member" | "organization_official"',
+  'dateRange?': {
+    'from?': 'string',
+    'to?': 'string',
+  },
+  'limit?': 'number <= 100',
+  'offset?': 'number',
+  'sortBy?': '"relevance" | "date" | "views"',
+});
+
 export const searchPosts = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      organizationId: t.string().optional(),
-      authorId: t.string().optional(),
-      tags: t.array(t.string()).optional(),
-      publishingType: t
-        .enum(['personal', 'organization_member', 'organization_official'])
-        .optional(),
-      dateRange: t
-        .object({
-          from: t.string().optional(),
-          to: t.string().optional(),
-        })
-        .optional(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-      sortBy: t.enum(['relevance', 'date', 'views']).default('relevance'),
-    }),
-  )
+  .validator((data: unknown) => {
+    const result = SearchPostsInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
   .handler(
     async ({
       query,
@@ -45,9 +52,9 @@ export const searchPosts = createServerFn({ method: 'GET' })
       tags,
       publishingType,
       dateRange,
-      limit,
-      offset,
-      sortBy,
+      limit = 20,
+      offset = 0,
+      sortBy = 'relevance',
     }) => {
       // Build the full-text search query
       const searchQuery = query
@@ -180,15 +187,24 @@ export const searchPosts = createServerFn({ method: 'GET' })
 ### Get Search Suggestions
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+export const GetSearchSuggestionsInputSchema = type({
+  query: 'string >= 1',
+  'type?': '"posts" | "users" | "organizations" | "all"',
+  'limit?': 'number <= 10',
+});
+
 export const getSearchSuggestions = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      type: t.enum(['posts', 'users', 'organizations', 'all']).default('all'),
-      limit: t.number().default(5).max(10),
-    }),
-  )
-  .handler(async ({ query, type, limit }) => {
+  .validator((data: unknown) => {
+    const result = GetSearchSuggestionsInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
+  .handler(async ({ query, type = 'all', limit = 5 }) => {
     const suggestions = {
       posts: [],
       users: [],
@@ -255,19 +271,35 @@ export const getSearchSuggestions = createServerFn({ method: 'GET' })
 ### Search Users
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+export const SearchUsersInputSchema = type({
+  query: 'string >= 1',
+  'organizationId?': 'string',
+  'skills?': 'string[]',
+  'location?': 'string',
+  'limit?': 'number <= 100',
+  'offset?': 'number',
+});
+
 export const searchUsers = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      organizationId: t.string().optional(),
-      skills: t.array(t.string()).optional(),
-      location: t.string().optional(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
+  .validator((data: unknown) => {
+    const result = SearchUsersInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
   .handler(
-    async ({ query, organizationId, skills, location, limit, offset }) => {
+    async ({
+      query,
+      organizationId,
+      skills,
+      location,
+      limit = 20,
+      offset = 0,
+    }) => {
       let baseQuery = db
         .select({
           id: users.id,
@@ -349,22 +381,29 @@ export const searchUsers = createServerFn({ method: 'GET' })
 ### Search Organizations
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+export const SearchOrganizationsInputSchema = type({
+  query: 'string >= 1',
+  'category?': 'string',
+  'memberCount?': {
+    'min?': 'number',
+    'max?': 'number',
+  },
+  'limit?': 'number <= 100',
+  'offset?': 'number',
+});
+
 export const searchOrganizations = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      category: t.string().optional(),
-      memberCount: t
-        .object({
-          min: t.number().optional(),
-          max: t.number().optional(),
-        })
-        .optional(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
-  .handler(async ({ query, category, memberCount, limit, offset }) => {
+  .validator((data: unknown) => {
+    const result = SearchOrganizationsInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
+  .handler(async ({ query, category, memberCount, limit = 20, offset = 0 }) => {
     let baseQuery = db
       .select({
         id: organizations.id,
@@ -436,22 +475,27 @@ export const searchOrganizations = createServerFn({ method: 'GET' })
 ### Universal Search
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+export const GlobalSearchInputSchema = type({
+  query: 'string >= 1',
+  'filters?': {
+    'types?': '("posts" | "users" | "organizations")[]',
+    'organizationId?': 'string',
+  },
+  'limit?': 'number <= 50',
+});
+
 export const globalSearch = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      filters: t
-        .object({
-          types: t
-            .array(t.enum(['posts', 'users', 'organizations']))
-            .optional(),
-          organizationId: t.string().optional(),
-        })
-        .optional(),
-      limit: t.number().default(20).max(50),
-    }),
-  )
-  .handler(async ({ query, filters, limit }) => {
+  .validator((data: unknown) => {
+    const result = GlobalSearchInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
+  .handler(async ({ query, filters, limit = 20 }) => {
     const results = {
       posts: [],
       users: [],
@@ -509,20 +553,27 @@ export const globalSearch = createServerFn({ method: 'GET' })
 ### Track Search Query
 
 ```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { type } from 'arktype';
+
+export const TrackSearchQueryInputSchema = type({
+  query: 'string',
+  resultCount: 'number',
+  'selectedResult?': {
+    type: '"post" | "user" | "organization"',
+    id: 'string',
+    position: 'number',
+  },
+});
+
 export const trackSearchQuery = createServerFn({ method: 'POST' })
-  .validator(
-    t.object({
-      query: t.string(),
-      resultCount: t.number(),
-      selectedResult: t
-        .object({
-          type: t.enum(['post', 'user', 'organization']),
-          id: t.string(),
-          position: t.number(),
-        })
-        .optional(),
-    }),
-  )
+  .validator((data: unknown) => {
+    const result = TrackSearchQueryInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
   .handler(async ({ query, resultCount, selectedResult }) => {
     const { headers } = getWebRequest();
     const session = await auth.api.getSession({ headers });

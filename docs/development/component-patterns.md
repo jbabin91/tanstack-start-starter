@@ -29,7 +29,7 @@ import { Settings, User, Search } from 'lucide-react';
 
 ### Available Icons
 
-The Icons component includes commonly used icons:
+The Icons component includes these icons (from actual implementation):
 
 ```typescript
 // Navigation & UI
@@ -40,14 +40,22 @@ The Icons component includes commonly used icons:
 <Icons.search />
 <Icons.settings />
 <Icons.x />
+<Icons.panelLeft />
+<Icons.gripVertical />
+<Icons.filter />
+<Icons.externalLink />
 
 // Status & Actions
+<Icons.check />
 <Icons.checkCircle />
 <Icons.xCircle />
 <Icons.alertCircle />
 <Icons.alertTriangle />
-<Icons.loader />
-<Icons.spinner />
+<Icons.loader />        // Loader2Icon from lucide
+<Icons.spinner />       // Custom spinner SVG
+<Icons.ban />
+<Icons.circle />
+<Icons.info />
 
 // Content & Media
 <Icons.file />
@@ -55,19 +63,45 @@ The Icons component includes commonly used icons:
 <Icons.eye />
 <Icons.eyeOff />
 <Icons.edit />
+<Icons.download />
 
 // Users & Social
 <Icons.user />
 <Icons.users />
 <Icons.mail />
 <Icons.phone />
+<Icons.shield />
+
+// System & Devices
+<Icons.monitor />
+<Icons.smartphone />
+<Icons.tablet />
+<Icons.wifi />
+<Icons.globe />
+<Icons.zap />
+
+// Interface Elements
+<Icons.bell />
+<Icons.calendar />
+<Icons.clock />
+<Icons.dollarSign />
+<Icons.mapPin />
+<Icons.minus />
+<Icons.moreHorizontal />
+<Icons.activity />
+<Icons.palette />
+
+// Theme
+<Icons.sun />
+<Icons.moon />
 
 // Custom icons
-<Icons.logo />
-<Icons.react />
-<Icons.tailwind />
-<Icons.gitHub />
-<Icons.google />
+<Icons.logo />      // Custom logo SVG
+<Icons.spinner />   // Custom spinner SVG
+<Icons.react />     // React logo
+<Icons.tailwind />  // Tailwind CSS logo
+<Icons.gitHub />    // GitHub logo
+<Icons.google />    // Google logo
 ```
 
 ### Adding New Icons
@@ -435,8 +469,11 @@ const PostCard = memo(function PostCard({ post }: { post: Post }) {
 // Icons are tree-shaken automatically through the Icons component
 // Only imported icons are included in the bundle
 
-// If you need a one-off icon, import directly
+// The Icons component is comprehensive, but if you need a one-off icon:
 import { RareIcon } from 'lucide-react';
+
+// However, consider adding frequently used icons to the Icons component
+// to maintain consistency and enable tree-shaking benefits
 ```
 
 ## Testing Components
@@ -457,633 +494,27 @@ test('renders button with icon', () => {
 });
 ```
 
-## Search & Discovery Component Patterns
+## Advanced Component Patterns (Future Implementation)
 
-### Advanced Filter Panel Components
+The project architecture supports advanced component patterns that can be implemented as needed:
 
-The platform includes a comprehensive filtering system for search and content discovery. These patterns are documented for the search & discovery features.
+### Search & Discovery Components
 
-#### Filter Panel Architecture
+When search functionality is implemented, these patterns would be useful:
 
-```typescript
-// src/components/search/filters/filter-panel.tsx
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, X, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+- **Filter Panel Components** - Collapsible filter interfaces with state management
+- **Real-time Search Hooks** - Debounced search with loading states
+- **Search Result Cards** - Consistent result display with analytics tracking
 
-interface FilterPanelProps {
-  contentType: string;
-  onFiltersChange: (filters: SearchFilters) => void;
-  className?: string;
-}
+### Editor Components
 
-function FilterPanel({ contentType, onFiltersChange, className }: FilterPanelProps) {
-  const {
-    filterConfig,
-    activeFilterCount,
-    hasActiveFilters,
-    updateFilter,
-    clearAllFilters,
-    getFilterValue,
-    toSearchFilters,
-  } = useSearchFilters(contentType);
+For content creation features, these patterns would apply:
 
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(
-      filterConfig
-        .filter(group => group.defaultExpanded)
-        .map(group => group.id)
-    )
-  );
+- **Auto-save Hooks** - Debounced and interval-based content saving
+- **Editor Status Bars** - Word count, reading time, and save status indicators
+- **Markdown Editors** - Rich text editing with live preview
 
-  const handleFilterChange = (filterId: string, value: FilterValue) => {
-    updateFilter(filterId, value);
-    // Debounce the API call
-    setTimeout(() => {
-      onFiltersChange(toSearchFilters());
-    }, 300);
-  };
-
-  const toggleGroup = (groupId: string) => {
-    setExpandedGroups(prev => {
-      const next = new Set(prev);
-      if (next.has(groupId)) {
-        next.delete(groupId);
-      } else {
-        next.add(groupId);
-      }
-      return next;
-    });
-  };
-
-  return (
-    <Card className={className}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg">Filters</CardTitle>
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="text-xs">
-                {activeFilterCount}
-              </Badge>
-            )}
-          </div>
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearAllFilters}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Clear
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {filterConfig.map(group => (
-          <div key={group.id}>
-            {group.collapsible ? (
-              <Collapsible
-                open={expandedGroups.has(group.id)}
-                onOpenChange={() => toggleGroup(group.id)}
-              >
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-between p-2 h-auto"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{group.label}</span>
-                    </div>
-                    {expandedGroups.has(group.id) ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <FilterGroup
-                    group={group}
-                    values={getFilterValue}
-                    onChange={handleFilterChange}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
-            ) : (
-              <FilterGroup
-                group={group}
-                values={getFilterValue}
-                onChange={handleFilterChange}
-              />
-            )}
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-```
-
-#### Filter State Management Hook
-
-```typescript
-// src/modules/search/hooks/use-search-filters.ts
-import { useState, useCallback, useMemo } from 'react';
-import type { BaseFilter, FilterValue } from '@/modules/search/types/filters';
-import { searchFilterConfig } from '@/modules/search/config/filter-config';
-
-export interface FilterState {
-  [filterId: string]: FilterValue;
-}
-
-export function useSearchFilters(contentType: string = 'posts') {
-  const [filters, setFilters] = useState<FilterState>({});
-  const [activeFilterCount, setActiveFilterCount] = useState(0);
-
-  const filterConfig = useMemo(() => {
-    return searchFilterConfig[contentType] || searchFilterConfig.posts;
-  }, [contentType]);
-
-  const updateFilter = useCallback((filterId: string, value: FilterValue) => {
-    setFilters((prev) => {
-      const newFilters = { ...prev };
-
-      if (
-        value === undefined ||
-        value === '' ||
-        (Array.isArray(value) && value.length === 0)
-      ) {
-        delete newFilters[filterId];
-      } else {
-        newFilters[filterId] = value;
-      }
-
-      // Update active filter count
-      const count = Object.keys(newFilters).filter((key) => {
-        const filterValue = newFilters[key];
-        return (
-          filterValue !== undefined &&
-          filterValue !== '' &&
-          (!Array.isArray(filterValue) || filterValue.length > 0)
-        );
-      }).length;
-
-      setActiveFilterCount(count);
-
-      return newFilters;
-    });
-  }, []);
-
-  const clearAllFilters = useCallback(() => {
-    setFilters({});
-    setActiveFilterCount(0);
-  }, []);
-
-  // Convert filter state to search API format
-  const toSearchFilters = useCallback(() => {
-    const searchFilters: Record<string, unknown> = {};
-
-    Object.entries(filters).forEach(([filterId, value]) => {
-      switch (filterId) {
-        case 'content-type':
-          searchFilters.contentType = Array.isArray(value) ? value : [value];
-          break;
-        case 'categories':
-          searchFilters.categories = Array.isArray(value) ? value : [value];
-          break;
-        case 'date-range':
-          if (typeof value === 'object' && value !== null && 'from' in value) {
-            searchFilters.dateRange = value;
-          }
-          break;
-        case 'reading-time':
-          if (typeof value === 'string' && value !== 'any') {
-            const [min, max] = value.split('-').map(Number);
-            searchFilters.readingTime = {
-              min,
-              max: max === 999 ? undefined : max,
-            };
-          }
-          break;
-        // Add more filter mappings as needed
-      }
-    });
-
-    return searchFilters;
-  }, [filters]);
-
-  return {
-    filters,
-    filterConfig,
-    activeFilterCount,
-    hasActiveFilters: activeFilterCount > 0,
-    updateFilter,
-    clearAllFilters,
-    getFilterValue: useCallback(
-      (filterId: string) => filters[filterId],
-      [filters],
-    ),
-    toSearchFilters,
-  };
-}
-```
-
-#### Real-time Search Hook Pattern
-
-```typescript
-// src/modules/search/hooks/use-realtime-search.ts
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { searchQueries } from '@/modules/search/hooks/use-queries';
-
-interface UseRealtimeSearchOptions {
-  debounceMs?: number;
-  minQueryLength?: number;
-  enabled?: boolean;
-}
-
-export function useRealtimeSearch(
-  initialFilters: SearchFilters = {},
-  options: UseRealtimeSearchOptions = {},
-) {
-  const { debounceMs = 300, minQueryLength = 2, enabled = true } = options;
-
-  const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [debouncedFilters, setDebouncedFilters] =
-    useState<SearchFilters>(initialFilters);
-  const [isTyping, setIsTyping] = useState(false);
-  const debounceRef = useRef<NodeJS.Timeout>();
-
-  // Debounce filter changes
-  useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    setIsTyping(true);
-
-    debounceRef.current = setTimeout(() => {
-      setDebouncedFilters(filters);
-      setIsTyping(false);
-    }, debounceMs);
-
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [filters, debounceMs]);
-
-  // Determine if search should be enabled
-  const shouldSearch =
-    enabled &&
-    (!debouncedFilters.query ||
-      debouncedFilters.query.length >= minQueryLength);
-
-  // Search query
-  const searchQuery = useQuery({
-    ...searchQueries.search(debouncedFilters),
-    enabled: shouldSearch,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  });
-
-  const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  }, []);
-
-  const updateQuery = useCallback(
-    (query: string) => {
-      updateFilters({ query });
-    },
-    [updateFilters],
-  );
-
-  return {
-    // State
-    filters,
-    debouncedFilters,
-    isTyping,
-
-    // Query state
-    results: searchQuery.data?.results || [],
-    totalCount: searchQuery.data?.totalCount || 0,
-    isLoading: searchQuery.isLoading || isTyping,
-    isError: searchQuery.isError,
-    error: searchQuery.error,
-
-    // Actions
-    updateFilters,
-    updateQuery,
-    clearSearch: useCallback(() => {
-      setFilters({});
-      setDebouncedFilters({});
-    }, []),
-    refetch: searchQuery.refetch,
-  };
-}
-```
-
-### Search Interface Components
-
-#### Search Result Components
-
-```typescript
-// src/components/search/search-result-card.tsx
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Icons } from '@/components/icons';
-import { cn } from '@/utils/cn';
-
-interface SearchResultCardProps {
-  result: SearchResult;
-  onResultClick?: (result: SearchResult, position: number) => void;
-  position: number;
-  className?: string;
-}
-
-function SearchResultCard({ result, onResultClick, position, className }: SearchResultCardProps) {
-  const handleClick = () => {
-    onResultClick?.(result, position);
-  };
-
-  return (
-    <Card
-      className={cn('cursor-pointer hover:shadow-md transition-shadow', className)}
-      onClick={handleClick}
-    >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-lg line-clamp-2">
-            {result.title || result.name}
-          </CardTitle>
-          <Badge variant="secondary" className="ml-2 flex-shrink-0">
-            {result.type}
-          </Badge>
-        </div>
-        {result.type === 'post' && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Icons.user className="h-3 w-3" />
-            <span>{result.author?.name}</span>
-            {result.organization && (
-              <>
-                <span>•</span>
-                <span>{result.organization.name}</span>
-              </>
-            )}
-            <span>•</span>
-            <span>{result.readingTime} min read</span>
-          </div>
-        )}
-      </CardHeader>
-      <CardContent>
-        {result.excerpt && (
-          <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-            {result.excerpt}
-          </p>
-        )}
-        {result.tags && result.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {result.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {result.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{result.tags.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-```
-
-#### Search Analytics Hook
-
-```typescript
-// src/modules/search/hooks/use-search-analytics.ts
-import { useCallback } from 'react';
-import { usePostHog } from 'posthog-js/react';
-import type { SearchFilters, SearchResult } from '@/modules/search/types';
-
-export function useSearchAnalytics() {
-  const posthog = usePostHog();
-
-  const trackSearch = useCallback(
-    (filters: SearchFilters, resultCount: number, duration: number) => {
-      posthog?.capture('search_performed', {
-        query: filters.query,
-        query_length: filters.query?.length || 0,
-        content_type: filters.contentType,
-        has_filters: Object.keys(filters).length > 1,
-        result_count: resultCount,
-        duration_ms: duration,
-        filter_categories: filters.categories?.length || 0,
-        filter_tags: filters.tags?.length || 0,
-        date_range: !!filters.dateRange,
-      });
-    },
-    [posthog],
-  );
-
-  const trackFilterUsage = useCallback(
-    (filterId: string, value: unknown) => {
-      posthog?.capture('search_filter_applied', {
-        filter_id: filterId,
-        filter_type: typeof value,
-        is_array: Array.isArray(value),
-        value_count: Array.isArray(value) ? value.length : 1,
-      });
-    },
-    [posthog],
-  );
-
-  const trackResultClick = useCallback(
-    (result: SearchResult, position: number, query?: string) => {
-      posthog?.capture('search_result_clicked', {
-        result_type: result.type,
-        result_id: result.id,
-        position,
-        query,
-        query_length: query?.length || 0,
-        relevance_score: result.relevanceScore,
-      });
-    },
-    [posthog],
-  );
-
-  return {
-    trackSearch,
-    trackFilterUsage,
-    trackResultClick,
-  };
-}
-```
-
-## Editor Component Patterns
-
-### Markdown Editor Components
-
-For content creation features, the platform includes specialized editor components following these patterns:
-
-#### Auto-save Hook Pattern
-
-```typescript
-// src/modules/editor/hooks/use-auto-save.ts
-import { useEffect, useRef, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { saveDraft } from '@/modules/posts/api/save-draft';
-
-interface UseAutoSaveOptions {
-  interval?: number;
-  debounceMs?: number;
-  enabled?: boolean;
-}
-
-export function useAutoSave(
-  content: string,
-  draftId?: string,
-  options: UseAutoSaveOptions = {},
-) {
-  const { interval = 10000, debounceMs = 2000, enabled = true } = options;
-
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const intervalRef = useRef<NodeJS.Timeout>();
-  const lastSavedContent = useRef(content);
-
-  const saveMutation = useMutation({
-    mutationFn: saveDraft,
-    onSuccess: () => {
-      lastSavedContent.current = content;
-    },
-  });
-
-  const performSave = useCallback(() => {
-    if (content !== lastSavedContent.current && draftId) {
-      saveMutation.mutate({ draftId, content });
-    }
-  }, [content, draftId, saveMutation]);
-
-  // Debounced auto-save on content change
-  useEffect(() => {
-    if (!enabled) return;
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(performSave, debounceMs);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [content, performSave, debounceMs, enabled]);
-
-  // Interval-based auto-save
-  useEffect(() => {
-    if (!enabled) return;
-
-    intervalRef.current = setInterval(performSave, interval);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [performSave, interval, enabled]);
-
-  return {
-    isSaving: saveMutation.isPending,
-    saveError: saveMutation.error,
-    lastSaved: saveMutation.isSuccess ? new Date() : null,
-    forceSave: performSave,
-  };
-}
-```
-
-#### Editor Status Bar Component
-
-```typescript
-// src/components/editor/editor-status-bar.tsx
-import { Badge } from '@/components/ui/badge';
-import { Icons } from '@/components/icons';
-import { cn } from '@/utils/cn';
-
-interface EditorStatusBarProps {
-  wordCount: number;
-  readingTime: number;
-  isSaving?: boolean;
-  saveError?: Error | null;
-  lastSaved?: Date | null;
-  className?: string;
-}
-
-function EditorStatusBar({
-  wordCount,
-  readingTime,
-  isSaving,
-  saveError,
-  lastSaved,
-  className,
-}: EditorStatusBarProps) {
-  const formatLastSaved = (date: Date) => {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-
-    if (diffMins < 1) return 'Just saved';
-    if (diffMins === 1) return '1 min ago';
-    return `${diffMins} min ago`;
-  };
-
-  return (
-    <div className={cn(
-      'flex items-center justify-between px-4 py-2 border-t bg-muted/30',
-      className
-    )}>
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <span>📊 Words: {wordCount}</span>
-        <span>Reading time: {readingTime} min</span>
-      </div>
-
-      <div className="flex items-center gap-2">
-        {isSaving && (
-          <Badge variant="secondary" className="flex items-center gap-1">
-            <Icons.spinner className="h-3 w-3 animate-spin" />
-            Saving...
-          </Badge>
-        )}
-
-        {saveError && (
-          <Badge variant="destructive" className="flex items-center gap-1">
-            <Icons.alertCircle className="h-3 w-3" />
-            Failed to save
-          </Badge>
-        )}
-
-        {!isSaving && !saveError && lastSaved && (
-          <span className="text-xs text-muted-foreground">
-            Last saved: {formatLastSaved(lastSaved)}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-```
+These patterns follow the established conventions using the Icons component, `cn` utility, and ShadCN/UI components.
 
 ## Best Practices Summary
 

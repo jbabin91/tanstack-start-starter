@@ -6,6 +6,14 @@ This section documents all server functions and API endpoints for the TanStack S
 
 The platform uses **TanStack Start v1.87+ server functions** instead of traditional REST API routes. Each server function is a type-safe endpoint that integrates seamlessly with TanStack Query on the client.
 
+## Implementation Status
+
+- ✅ **Basic querying implemented** - Simple server functions for core data access
+- 🏗️ **Comprehensive features available** - Full implementation patterns in [Implementation Guides](../implementation/)
+- 📋 **Ready for development** - Database schema and patterns support advanced features
+
+The current APIs provide essential functionality while the database schema and implementation guides support building comprehensive features as needed.
+
 ### Server Function Pattern (Latest)
 
 ```typescript
@@ -74,25 +82,44 @@ export const protectedFunction = createServerFn({ method: 'POST' }).handler(
 
 ## API Modules
 
-### [Authentication](./auth.md)
+### [Database](./database.md)
 
-User authentication, sessions, and organization context management.
+Comprehensive database schema documentation with all tables, relationships, and performance optimization. Covers users, sessions, organizations, posts, comments, media, and session metadata schemas.
 
-### [Users](./users.md)
+### [Sessions](./sessions.md)
 
-User profiles, settings, and account management.
-
-### [Posts](./posts.md)
-
-Content creation, drafts, publishing, and co-authoring.
+Multi-session management, device tracking, security monitoring, and organization context switching. Includes comprehensive session metadata, trusted devices, and activity logging.
 
 ### [Organizations](./organizations.md)
 
-Organization management, member roles, and publishing workflows.
+Organization management using better-auth organization plugin, member roles, invitations, and multi-tenant data isolation.
 
-### [Search](./search.md)
+### [Email](./email.md)
 
-Full-text search, filtering, and content discovery.
+Transactional email system with Resend integration and better-auth email verification flows.
+
+### [Authentication](./auth.md)
+
+User authentication, permission system, organization context switching, and multi-session account management.
+
+### [Posts](./posts.md)
+
+Content querying with comprehensive database schema for drafts, co-authoring, and publishing workflows.
+
+- **Implementation**: [Content Creation Guide](../implementation/content-creation.md)
+
+### [Users](./users.md)
+
+User profiles, settings, and account management endpoints.
+
+- **Implementation**: [User Profiles Guide](../implementation/user-profiles.md)
+- **Social Features**: [Social Features Guide](../implementation/social-features.md)
+
+### [Search](./search.md) _(Planned)_
+
+Full-text search, filtering, and content discovery endpoints.
+
+- **Implementation**: [Search & Discovery Guide](../implementation/search-discovery.md)
 
 ### [Comments](./comments.md) _(Planned)_
 
@@ -146,11 +173,11 @@ export function usePost({ id }: { id: string }) {
 
 ## Strategic Context
 
-This API documentation provides implementation details for the systems designed in:
+This API documentation implements the architectural patterns defined in:
 
-- [Content Creation System](../../.serena/memories/content_creation_writing_interface_design.md) - Editor and publishing workflows
-- [Search & Discovery System](../../.serena/memories/search_discovery_system_design.md) - Search and filtering capabilities
-- [Navigation Architecture](../../.serena/memories/ux_architecture_navigation_design.md) - User interface and navigation patterns
+- [Architecture Overview](../architecture/index.md) - System architecture and technical design decisions
+- [Database Architecture](../architecture/database.md) - Schema design and performance optimization
+- [Development Patterns](../development/index.md) - Implementation standards and patterns
 
 ## Development Guidelines
 

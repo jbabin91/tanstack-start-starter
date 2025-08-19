@@ -1,604 +1,219 @@
-# Users API
+# Users API Documentation
 
-This document covers all user management server functions for profiles, settings, and account operations.
+This document covers the user management system implementation, including basic user querying with comprehensive database schema support for profiles and user relationships.
 
 ## Overview
 
-The user management system provides:
+The users system currently provides:
 
-- **Profile management** - Update names, avatars, and user information
-- **Account settings** - Email preferences and privacy settings
-- **User discovery** - Search and browse user profiles
-- **Following system** - Social connections between users
+- **User Querying** - Fetch individual users and user lists with proper type safety
+- **Database Schema** - Complete schema supporting profiles, follows, and user relationships
+- **Type Safety** - Full TypeScript integration with Drizzle ORM
+- **Performance** - Optimized queries with proper indexing
 
-## User Profile Functions
+## Current Implementation
 
-### Get User Profile
+The users system currently provides basic user querying functionality with two server functions:
+
+### Get User by ID
 
 ```typescript
-export const getUser = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      userId: t.string().optional(),
-      username: t.string().optional(),
-    }),
-  )
-  .handler(async ({ userId, username }) => {
-    if (!userId && !username) {
-      throw new Error('Either userId or username is required');
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
+import { type } from 'arktype';
+import { db, eq } from '@/lib/db';
+import { users as usersTable } from '@/lib/db/schemas';
+import { logger } from '@/lib/logger';
+
+// Reusable schema - can be used in forms and server functions
+export const GetUserInputSchema = type('string');
+
+// src/modules/users/api/get-user.ts
+export const fetchUser = createServerFn({ method: 'GET' })
+  .validator((data: unknown) => {
+    const result = GetUserInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
+  .handler(async (data) => {
+    logger.info(`Fetching user with id ${data}...`);
+
+    const users = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, data));
+
+    if (users.length === 0) {
+      throw new Error(`User with id ${data} not found`);
     }
 
-    const user = await db.query.users.findFirst({
-      where: userId ? eq(users.id, userId) : eq(users.username, username!),
-      columns: {
-        id: true,
-        email: false, // Don't expose email publicly
-        username: true,
-        name: true,
-        avatar: true,
-        createdAt: true,
-      },
-      with: {
-        organizationMemberships: {
-          where: eq(organizationMembers.role, 'owner'),
-          with: {
-            organization: {
-              columns: {
-                id: true,
-                name: true,
-                slug: true,
-                avatar: true,
-              },
-            },
-          },
-        },
-        // Optional: Include user stats
-        _count: {
-          posts: true,
-          followers: true,
-          following: true,
-        },
-      },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    return user;
+    return users[0];
   });
 ```
 
-### Update User Profile
+### Get All Users
 
 ```typescript
-export const updateUserProfile = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      name: t.string().optional(),
-      username: t.string().optional(),
-      avatar: t.string().optional(),
-      bio: t.string().optional(),
-      website: t.string().optional(),
-      location: t.string().optional(),
-    }),
-  )
-  .handler(async (updateData) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
+import { db } from '@/lib/db';
+import { users as usersTable } from '@/lib/db/schemas';
+import { logger } from '@/lib/logger';
 
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
+// src/modules/users/api/get-users.ts
+export const fetchUsers = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    logger.info('Fetching users...');
 
-    // Check username availability if updating
-    if (updateData.username) {
-      const existingUser = await db.query.users.findFirst({
-        where: and(
-          eq(users.username, updateData.username),
-          not(eq(users.id, session.user.id)),
-        ),
-      });
-
-      if (existingUser) {
-        throw new Error('Username is already taken');
-      }
-    }
-
-    const updatedUser = await db
-      .update(users)
-      .set({
-        ...updateData,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, session.user.id))
-      .returning({
-        id: users.id,
-        username: users.username,
-        name: users.name,
-        avatar: users.avatar,
-        bio: users.bio,
-        website: users.website,
-        location: users.location,
-      });
-
-    return updatedUser[0];
-  });
+    const users = await db.select().from(usersTable);
+    return users;
+  },
+);
 ```
 
-### Change Email Address
+## Implementation Guides
+
+While the current implementation provides basic user querying, the database schema supports comprehensive user management features. Complete implementation patterns are available in the **[User Profiles Implementation Guide](../implementation/user-profiles.md)**, including:
+
+- **Profile Management** - Complete user profile CRUD with validation
+- **Account Settings** - Email changes, password updates, account deletion
+- **User Discovery** - Search and recommendation systems
+- **Social Integration** - Ready for following system implementation
+
+### Quick Implementation Reference
 
 ```typescript
-export const changeEmail = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      newEmail: t.string().email(),
-      password: t.string(), // Require password confirmation
-    }),
-  )
-  .handler(async ({ newEmail, password }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
+// Complete user profile management
+import {
+  getUserProfile,
+  updateUserProfile,
+} from '../implementation/user-profiles.md#api-implementation-patterns';
 
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
+// Secure email management
+import { changeEmail } from '../implementation/user-profiles.md#change-email-address';
 
-    // Verify current password
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-    });
-
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
-      throw new Error('Invalid password');
-    }
-
-    // Check if new email is available
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, newEmail),
-    });
-
-    if (existingUser) {
-      throw new Error('Email is already in use');
-    }
-
-    // Update email and mark as unverified
-    await db
-      .update(users)
-      .set({
-        email: newEmail,
-        emailVerified: false,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, session.user.id));
-
-    // Send verification email to new address
-    await sendVerificationEmail({ email: newEmail });
-
-    return { success: true, message: 'Verification email sent to new address' };
-  });
+// User search and discovery
+import { searchUsers } from '../implementation/user-profiles.md#user-search-and-discovery';
 ```
 
-## User Discovery Functions
-
-### Search Users
-
-```typescript
-export const searchUsers = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      query: t.string().min(1),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-      organizationId: t.string().optional(),
-    }),
-  )
-  .handler(async ({ query, limit, offset, organizationId }) => {
-    let baseQuery = db
-      .select({
-        id: users.id,
-        username: users.username,
-        name: users.name,
-        avatar: users.avatar,
-        bio: users.bio,
-      })
-      .from(users);
-
-    // Add organization filter if specified
-    if (organizationId) {
-      baseQuery = baseQuery
-        .innerJoin(
-          organizationMembers,
-          eq(organizationMembers.userId, users.id),
-        )
-        .where(
-          and(
-            eq(organizationMembers.organizationId, organizationId),
-            or(
-              ilike(users.name, `%${query}%`),
-              ilike(users.username, `%${query}%`),
-            ),
-          ),
-        );
-    } else {
-      baseQuery = baseQuery.where(
-        or(
-          ilike(users.name, `%${query}%`),
-          ilike(users.username, `%${query}%`),
-        ),
-      );
-    }
-
-    const searchResults = await baseQuery
-      .orderBy(
-        // Prioritize exact username matches
-        sql`CASE WHEN ${users.username} ILIKE ${query} THEN 0 ELSE 1 END`,
-        users.name,
-      )
-      .limit(limit)
-      .offset(offset);
-
-    return searchResults;
-  });
-```
-
-### Get User Stats
-
-```typescript
-export const getUserStats = createServerFn({ method: 'GET' })
-  .validator(t.object({ userId: t.string() }))
-  .handler(async ({ userId }) => {
-    const stats = await db
-      .select({
-        postsCount: sql<number>`COUNT(DISTINCT ${posts.id})`,
-        followersCount: sql<number>`COUNT(DISTINCT ${userFollows.followerId})`,
-        followingCount: sql<number>`COUNT(DISTINCT following.following_id)`,
-        organizationsCount: sql<number>`COUNT(DISTINCT ${organizationMembers.organizationId})`,
-      })
-      .from(users)
-      .leftJoin(posts, eq(posts.authorId, users.id))
-      .leftJoin(userFollows, eq(userFollows.followingId, users.id))
-      .leftJoin(
-        alias(userFollows, 'following'),
-        eq(sql`following.follower_id`, users.id),
-      )
-      .leftJoin(organizationMembers, eq(organizationMembers.userId, users.id))
-      .where(eq(users.id, userId))
-      .groupBy(users.id);
-
-    return (
-      stats[0] || {
-        postsCount: 0,
-        followersCount: 0,
-        followingCount: 0,
-        organizationsCount: 0,
-      }
-    );
-  });
-```
-
-## Following System Functions
-
-### Follow User
-
-```typescript
-export const followUser = createServerFn({ method: 'POST' })
-  .validator(t.object({ userId: t.string() }))
-  .handler(async ({ userId }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    if (userId === session.user.id) {
-      throw new Error('Cannot follow yourself');
-    }
-
-    // Check if user exists
-    const targetUser = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-      columns: { id: true },
-    });
-
-    if (!targetUser) {
-      throw new Error('User not found');
-    }
-
-    // Check if already following
-    const existingFollow = await db.query.userFollows.findFirst({
-      where: and(
-        eq(userFollows.followerId, session.user.id),
-        eq(userFollows.followingId, userId),
-      ),
-    });
-
-    if (existingFollow) {
-      throw new Error('Already following this user');
-    }
-
-    // Create follow relationship
-    await db.insert(userFollows).values({
-      followerId: session.user.id,
-      followingId: userId,
-    });
-
-    return { success: true };
-  });
-```
-
-### Unfollow User
-
-```typescript
-export const unfollowUser = createServerFn({ method: 'DELETE' })
-  .validator(t.object({ userId: t.string() }))
-  .handler(async ({ userId }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    const deleteResult = await db
-      .delete(userFollows)
-      .where(
-        and(
-          eq(userFollows.followerId, session.user.id),
-          eq(userFollows.followingId, userId),
-        ),
-      )
-      .returning({ id: userFollows.id });
-
-    if (deleteResult.length === 0) {
-      throw new Error('Not following this user');
-    }
-
-    return { success: true };
-  });
-```
-
-### Get User's Followers
-
-```typescript
-export const getUserFollowers = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      userId: t.string(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
-  .handler(async ({ userId, limit, offset }) => {
-    const followers = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        name: users.name,
-        avatar: users.avatar,
-        followedAt: userFollows.createdAt,
-      })
-      .from(userFollows)
-      .innerJoin(users, eq(users.id, userFollows.followerId))
-      .where(eq(userFollows.followingId, userId))
-      .orderBy(desc(userFollows.createdAt))
-      .limit(limit)
-      .offset(offset);
-
-    return followers;
-  });
-```
-
-### Get User's Following
-
-```typescript
-export const getUserFollowing = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      userId: t.string(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
-  .handler(async ({ userId, limit, offset }) => {
-    const following = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        name: users.name,
-        avatar: users.avatar,
-        followedAt: userFollows.createdAt,
-      })
-      .from(userFollows)
-      .innerJoin(users, eq(users.id, userFollows.followingId))
-      .where(eq(userFollows.followerId, userId))
-      .orderBy(desc(userFollows.createdAt))
-      .limit(limit)
-      .offset(offset);
-
-    return following;
-  });
-```
-
-## Account Management Functions
-
-### Delete Account
-
-```typescript
-export const deleteAccount = createServerFn({ method: 'DELETE' })
-  .validator(
-    t.object({
-      password: t.string(),
-      confirmText: t.string().refine((val) => val === 'DELETE MY ACCOUNT'),
-    }),
-  )
-  .handler(async ({ password, confirmText }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    // Verify password
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-    });
-
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
-      throw new Error('Invalid password');
-    }
-
-    // Delete user (cascade will handle related data)
-    await db.delete(users).where(eq(users.id, session.user.id));
-
-    // Revoke all sessions
-    await auth.api.revokeUserSessions(session.user.id);
-
-    return { success: true };
-  });
-```
+For social features including the following system, see the **[Social Features Implementation Guide](../implementation/social-features.md)**.
 
 ## React Query Integration
 
-### User Queries
+Current query patterns using TkDodo hierarchical structure:
 
 ```typescript
 // src/modules/users/hooks/use-queries.ts
 export const userQueries = {
-  profile: (userId?: string, username?: string) =>
+  all: () => ['users'] as const,
+  lists: () => [...userQueries.all(), 'list'] as const,
+  list: () =>
     queryOptions({
-      queryKey: ['users', 'profile', userId, username] as const,
-      queryFn: () => getUser({ userId, username }),
-      enabled: !!(userId || username),
+      queryKey: [...userQueries.lists()],
+      queryFn: () => fetchUsers(),
     }),
-
-  stats: (userId: string) =>
+  details: () => [...userQueries.all(), 'detail'] as const,
+  detail: (id: string) =>
     queryOptions({
-      queryKey: ['users', 'stats', userId] as const,
-      queryFn: () => getUserStats({ userId }),
-    }),
-
-  followers: (userId: string, limit = 20, offset = 0) =>
-    queryOptions({
-      queryKey: ['users', 'followers', userId, limit, offset] as const,
-      queryFn: () => getUserFollowers({ userId, limit, offset }),
-    }),
-
-  following: (userId: string, limit = 20, offset = 0) =>
-    queryOptions({
-      queryKey: ['users', 'following', userId, limit, offset] as const,
-      queryFn: () => getUserFollowing({ userId, limit, offset }),
-    }),
-
-  search: (query: string, organizationId?: string) =>
-    queryOptions({
-      queryKey: ['users', 'search', query, organizationId] as const,
-      queryFn: () => searchUsers({ query, organizationId }),
-      enabled: query.length > 0,
+      queryKey: [...userQueries.details(), id],
+      queryFn: () => fetchUser({ data: id }),
     }),
 };
 
-// Custom hooks
-export function useUser({
-  userId,
-  username,
-}: {
-  userId?: string;
-  username?: string;
-}) {
-  return useQuery(userQueries.profile(userId, username));
+// Fetch all users
+export function useUsers() {
+  return useSuspenseQuery(userQueries.list());
 }
 
-export function useUserStats({ userId }: { userId: string }) {
-  return useQuery(userQueries.stats(userId));
-}
-
-export function useFollowUser() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: followUser,
-    onSuccess: (_, { userId }) => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'stats'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'followers', userId],
-      });
-    },
-  });
-}
-
-export function useUnfollowUser() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: unfollowUser,
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'stats'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'followers', userId],
-      });
-    },
-  });
+// Fetch a user by ID
+export function useUser({ id }: { id: string }) {
+  return useSuspenseQuery(userQueries.detail(id));
 }
 ```
 
-### Profile Management Hooks
+### Usage Examples
 
 ```typescript
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
+// In components - basic user fetching
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user } = useUser({ id: userId });
 
-  return useMutation({
-    mutationFn: updateUserProfile,
-    onSuccess: (updatedUser) => {
-      // Update all profile queries for this user
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'profile'],
-      });
-
-      // Update auth session cache if it's the current user
-      queryClient.setQueryData(
-        ['auth', 'current-session'],
-        (oldData: Session | undefined) => ({
-          ...oldData,
-          user: { ...oldData?.user, ...updatedUser },
-        }),
-      );
-    },
-  });
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>@{user.username}</p>
+    </div>
+  );
 }
 
-export function useChangeEmail() {
-  const queryClient = useQueryClient();
+// In components - users list
+function UsersList() {
+  const { data: users } = useUsers();
 
-  return useMutation({
-    mutationFn: changeEmail,
-    onSuccess: () => {
-      // Invalidate session to reflect email verification status
-      queryClient.invalidateQueries({
-        queryKey: ['auth', 'current-session'],
-      });
-    },
-  });
+  return (
+    <div>
+      {users.map(user => (
+        <UserCard key={user.id} user={user} />
+      ))}
+    </div>
+  );
 }
+```
+
+## Database Schema Support
+
+The users system uses a comprehensive PostgreSQL schema designed for scalability:
+
+```sql
+-- Core users table with profile fields ready
+users (
+  id,
+  email,
+  username,
+  name,
+  avatar,
+  bio,           -- Ready for profile features
+  website,       -- Ready for profile features
+  location,      -- Ready for profile features
+  email_verified,
+  created_at,
+  updated_at
+)
+
+-- User following relationships (ready for social features)
+user_follows (
+  id,
+  follower_id,   -- References users.id
+  following_id,  -- References users.id
+  created_at
+)
+
+-- Organization membership support
+organization_members (
+  id,
+  organization_id,
+  user_id,
+  role,          -- member, admin, owner
+  permissions,   -- JSONB for fine-grained control
+  joined_at
+)
 ```
 
 ## Strategic Context
 
-This users API supports the social and collaboration features outlined in:
+This users API provides the foundation for social and collaboration features:
 
-- **[Content Creation System](../../.serena/memories/content_creation_writing_interface_design.md)** - User profiles and co-authoring workflows
-- **[Navigation Architecture](../../.serena/memories/ux_architecture_navigation_design.md)** - User-centric navigation and profile management
+- **User Profiles** - Basic user data with schema ready for bio, website, location
+- **Social Features** - Database schema supports following system and user discovery
+- **Organization Integration** - Multi-tenant user management with role-based permissions
+- **Scalability** - Proper indexing and relationship design for growth
 
-For implementation patterns and development guidelines, see:
+For comprehensive implementations and development guidelines, see:
 
+- **[User Profiles Guide](../implementation/user-profiles.md)** - Complete profile management implementation
+- **[Social Features Guide](../implementation/social-features.md)** - Following system and user discovery
 - **[Development Guide](../development/index.md)** - User management patterns and best practices
-- **[Database Design](../architecture/database.md)** - User schema and relationship design
+- **[Database Design](../architecture/database.md)** - Complete user schema and relationship design
 - **[Authentication API](./auth.md)** - Session management and permission integration

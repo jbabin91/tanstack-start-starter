@@ -10,6 +10,18 @@ This guide covers development patterns, best practices, and implementation stand
 
 ## Development Patterns
 
+### [State Management Architecture](./state-management.md)
+
+Complete guide to the platform's layered state management approach:
+
+- **Server State** - TanStack Query for API data and caching
+- **URL State** - TanStack Router search params for shareable UI state
+- **Form State** - React Hook Form for complex form handling
+- **Local State** - React built-ins for component-specific UI state
+- **Auth State** - Better-auth + router context for user sessions
+
+Essential reading for understanding when and how to use each state layer.
+
 ### Module Structure
 
 Each feature follows a consistent pattern:
@@ -208,46 +220,80 @@ import { Icons } from '@/components/icons';
 
 ### Form Patterns with React Hook Form
 
+**Note:** See [State Management Architecture](./state-management.md) for comprehensive examples using Arktype validation.
+
 ```typescript
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { type } from 'arktype';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Icons } from '@/components/icons';
 
-const schema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  content: z.string().min(10, 'Content must be at least 10 characters'),
+const FormSchema = type({
+  title: 'string > 0',
+  content: 'string >= 10',
 });
 
-type FormData = z.infer<typeof schema>;
+type FormData = typeof FormSchema.infer;
 
 function CreatePostForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const form = useForm<FormData>();
 
-  const onSubmit = async (data: FormData) => {
-    await createPost(data);
+  const onSubmit = (data: FormData) => {
+    const validationResult = FormSchema(data);
+    if (validationResult instanceof type.errors) {
+      console.error('Validation failed:', validationResult.summary);
+      return;
+    }
+    // Submit validated data
+    createPost(validationResult);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        {...register('title')}
-        aria-invalid={errors.title ? 'true' : 'false'}
-      />
-      {errors.title && <span>{errors.title.message}</span>}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter post title..." />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <textarea {...register('content')} />
-      {errors.content && <span>{errors.content.message}</span>}
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Content</FormLabel>
+              <FormControl>
+                <Textarea {...field} placeholder="Write your content..." />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? <Icons.spinner className="animate-spin" /> : 'Submit'}
-      </Button>
-    </form>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? (
+            <>
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            'Submit'
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }
 ```

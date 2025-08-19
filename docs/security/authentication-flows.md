@@ -649,13 +649,15 @@ export async function validateSession(requiredPermissions?: string[]) {
 
 ## Strategic Context
 
-This authentication system implements the security requirements outlined in:
+This authentication system implements comprehensive security patterns for:
 
-- **[Content Creation System](../../.serena/memories/content_creation_writing_interface_design.md)** - Organization publishing workflows and co-authoring permissions
-- **[Navigation Architecture](../../.serena/memories/ux_architecture_navigation_design.md)** - Organization context switching and role-based navigation
+- **Organization publishing workflows** - Multi-tenant content access and co-authoring permissions
+- **Session management** - Multi-device and organization context switching
+- **Role-based access control** - Hierarchical permissions across personal and organizational contexts
 
 For related documentation, see:
 
-- **[Authentication API](../api/auth.md)** - Server function implementations
+- **[Sessions API](../api/sessions.md)** - Multi-session management implementation
+- **[Organizations API](../api/organizations.md)** - Organization context and membership management
 - **[Permissions System](./permissions-system.md)** - Role-based access control details
-- **[Session Management](./session-management.md)** - Multi-session and security patterns
+- **[Database Schema](../api/database.md)** - Authentication and session table schemas

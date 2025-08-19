@@ -1,814 +1,403 @@
-# Posts API
+# Posts API Documentation
 
-This document covers all content creation server functions for posts, drafts, publishing workflows, and co-authoring.
+This document covers the posts management system implementation, including basic content querying with database schema support for advanced features.
 
 ## Overview
 
-The posts system provides:
+The posts system currently provides:
 
-- **Draft management** - Auto-save and manual draft operations
-- **Publishing workflows** - Personal and organization publishing with review
-- **Co-authoring** - Collaborative writing with multiple authors
-- **Content versioning** - Track changes and revisions
+- **Content Querying** - Fetch posts by ID and user with proper type safety
+- **Database Schema** - Complete schema supporting drafts, co-authoring, and organization workflows
+- **Type Safety** - Full TypeScript integration with Drizzle ORM
+- **Performance** - Optimized queries with proper indexing
 
-## Draft Management Functions
+## Core Posts API
 
-### Create Draft
+### Get Post by ID
+
+Fetch a single post by its unique identifier.
 
 ```typescript
-export const createDraft = createServerFn({ method: 'POST' })
-  .validator(
-    t.object({
-      title: t.string().optional(),
-      content: t.string().optional(),
-      organizationId: t.string().optional(),
-    }),
-  )
-  .handler(async ({ title, content, organizationId }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
+import { type } from 'arktype';
+import { db, eq } from '@/lib/db';
+import { posts as postsTable } from '@/lib/db/schemas';
+import { logger } from '@/lib/logger';
+import { fetchPostById } from '@/modules/posts/api/get-post';
 
-    if (!session?.user) {
-      throw new Error('Authentication required');
+// Reusable schema - can be used in forms and server functions
+export const GetPostInputSchema = type('string');
+
+export const fetchPostById = createServerFn({ method: 'GET' })
+  .validator((data: unknown) => {
+    const result = GetPostInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
+    }
+    return result;
+  })
+  .handler(async (data) => {
+    logger.info(`Fetching post with id ${data}...`);
+
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(eq(postsTable.id, data));
+
+    if (posts.length === 0) {
+      throw new Error(`Post with id ${data} not found`);
     }
 
-    const draft = await db
-      .insert(drafts)
-      .values({
-        authorId: session.user.id,
-        title: title || 'Untitled Draft',
-        content: content || '',
-        organizationId,
-        isAutoSave: false,
-      })
-      .returning();
-
-    return draft[0];
+    return posts[0];
   });
+
+// Client usage
+const { data: post } = useQuery({
+  queryKey: ['posts', postId],
+  queryFn: () => fetchPostById(postId),
+});
 ```
 
-### Auto-save Draft
+**Parameters:**
+
+- `data: string` - The post ID to fetch
+
+**Returns:**
 
 ```typescript
-export const autoSaveDraft = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      draftId: t.string().optional(),
-      title: t.string(),
-      content: t.string(),
-      organizationId: t.string().optional(),
-    }),
-  )
-  .handler(async ({ draftId, title, content, organizationId }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
+type Post = {
+  id: string;
+  title: string;
+  slug: string;
+  content: string | null;
+  excerpt: string | null;
+  status: 'draft' | 'published' | 'archived';
+  publishingType: 'personal' | 'organization_member' | 'organization_official';
+  authorId: string;
+  organizationId: string | null;
+  readingTime: number;
+  wordCount: number;
+  featuredImage: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  socialImage: string | null;
+  submittedAt: Date | null;
+  publishedAt: Date | null;
+  lastReviewedAt: Date | null;
+  reviewedBy: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+```
 
-    if (!session?.user) {
-      throw new Error('Authentication required');
+### Get Posts by User
+
+Fetch all posts authored by a specific user.
+
+```typescript
+import { createServerFn } from '@tanstack/react-start';
+import { getWebRequest } from '@tanstack/react-start/server';
+import { type } from 'arktype';
+import { db, eq } from '@/lib/db';
+import { posts as postsTable } from '@/lib/db/schemas';
+import { logger } from '@/lib/logger';
+import { fetchPostsByUserId } from '@/modules/posts/api/get-posts-by-user';
+
+export const GetPostsByUserInputSchema = type('string');
+
+export const fetchPostsByUserId = createServerFn({ method: 'GET' })
+  .validator((data: unknown) => {
+    const result = GetPostsByUserInputSchema(data);
+    if (result instanceof type.errors) {
+      throw new Error(result.summary);
     }
+    return result;
+  })
+  .handler(async (data) => {
+    logger.info(`Fetching posts for user with id ${data}...`);
 
-    if (draftId) {
-      // Update existing draft
-      const updatedDraft = await db
-        .update(drafts)
-        .set({
-          title,
-          content,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(eq(drafts.id, draftId), eq(drafts.authorId, session.user.id)),
-        )
-        .returning();
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(eq(postsTable.userId, data));
 
-      if (updatedDraft.length === 0) {
-        throw new Error('Draft not found or access denied');
-      }
-
-      return updatedDraft[0];
-    } else {
-      // Create new auto-save draft
-      const newDraft = await db
-        .insert(drafts)
-        .values({
-          authorId: session.user.id,
-          title,
-          content,
-          organizationId,
-          isAutoSave: true,
-        })
-        .returning();
-
-      return newDraft[0];
-    }
+    return posts;
   });
+
+// Client usage
+const { data: userPosts } = useQuery({
+  queryKey: ['posts', 'by-user', userId],
+  queryFn: () => fetchPostsByUserId(userId),
+});
 ```
 
-### Get User Drafts
+**Parameters:**
 
-```typescript
-export const getUserDrafts = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      organizationId: t.string().optional(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
-  .handler(async ({ organizationId, limit, offset }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
+- `data: string` - The user ID to fetch posts for
 
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
+**Returns:** `Post[]` - Array of posts authored by the user
 
-    const drafts = await db.query.drafts.findMany({
-      where: and(
-        eq(drafts.authorId, session.user.id),
-        organizationId ? eq(drafts.organizationId, organizationId) : undefined,
-      ),
-      with: {
-        organization: {
-          columns: { id: true, name: true, slug: true },
-        },
-      },
-      orderBy: desc(drafts.updatedAt),
-      limit,
-      offset,
-    });
+## Database Schema Integration
 
-    return drafts;
-  });
+The posts system leverages a comprehensive database schema with support for advanced features:
+
+### Core Post Table
+
+```sql
+posts (
+  id                  TEXT PRIMARY KEY,
+  title               VARCHAR(500) NOT NULL,
+  slug                VARCHAR(200) NOT NULL,
+  content             TEXT,
+  excerpt             TEXT,
+  status              VARCHAR(20) DEFAULT 'draft',
+  publishing_type     VARCHAR(20) DEFAULT 'personal',
+
+  -- Authorship
+  author_id           TEXT NOT NULL REFERENCES users(id),
+  organization_id     TEXT REFERENCES organizations(id),
+
+  -- Content metadata
+  reading_time        INTEGER DEFAULT 0,
+  word_count          INTEGER DEFAULT 0,
+  featured_image      TEXT,
+
+  -- SEO and social
+  meta_title          VARCHAR(255),
+  meta_description    VARCHAR(500),
+  social_image        TEXT,
+
+  -- Publishing workflow
+  submitted_at        TIMESTAMP,
+  published_at        TIMESTAMP,
+  last_reviewed_at    TIMESTAMP,
+  reviewed_by         TEXT REFERENCES users(id),
+
+  created_at          TIMESTAMP DEFAULT NOW(),
+  updated_at          TIMESTAMP DEFAULT NOW()
+);
 ```
 
-## Post Publishing Functions
+### Related Tables
 
-### Create Post from Draft
+**Co-authoring Support:**
 
-```typescript
-export const createPostFromDraft = createServerFn({ method: 'POST' })
-  .validator(
-    t.object({
-      draftId: t.string(),
-      publishingType: t
-        .enum(['personal', 'organization_member', 'organization_official'])
-        .default('personal'),
-      tags: t.array(t.string()).optional(),
-      excerpt: t.string().optional(),
-      featuredImage: t.string().optional(),
-      publishImmediately: t.boolean().default(false),
-    }),
-  )
-  .handler(
-    async ({
-      draftId,
-      publishingType,
-      tags,
-      excerpt,
-      featuredImage,
-      publishImmediately,
-    }) => {
-      const { headers } = getWebRequest();
-      const session = await auth.api.getSession({ headers });
-
-      if (!session?.user) {
-        throw new Error('Authentication required');
-      }
-
-      const draft = await db.query.drafts.findFirst({
-        where: and(
-          eq(drafts.id, draftId),
-          eq(drafts.authorId, session.user.id),
-        ),
-      });
-
-      if (!draft) {
-        throw new Error('Draft not found');
-      }
-
-      // Verify organization publishing permissions
-      if (publishingType.startsWith('organization') && draft.organizationId) {
-        const membership = await db.query.organizationMembers.findFirst({
-          where: and(
-            eq(organizationMembers.userId, session.user.id),
-            eq(organizationMembers.organizationId, draft.organizationId),
-          ),
-        });
-
-        if (!membership) {
-          throw new Error('Not a member of this organization');
-        }
-
-        if (
-          publishingType === 'organization_official' &&
-          !['admin', 'owner'].includes(membership.role)
-        ) {
-          // Submit for review instead
-          publishImmediately = false;
-        }
-      }
-
-      const slug = generateSlug(draft.title);
-      const wordCount = countWords(draft.content);
-      const readingTime = Math.ceil(wordCount / 250);
-
-      const post = await db
-        .insert(posts)
-        .values({
-          title: draft.title,
-          slug,
-          content: draft.content,
-          excerpt: excerpt || extractExcerpt(draft.content),
-          authorId: session.user.id,
-          organizationId: draft.organizationId,
-          publishingType,
-          featuredImage,
-          wordCount,
-          readingTime,
-          status: publishImmediately ? 'published' : 'pending_review',
-          publishedAt: publishImmediately ? new Date() : null,
-          submittedAt: !publishImmediately ? new Date() : null,
-        })
-        .returning();
-
-      // Add tags if provided
-      if (tags?.length) {
-        await db.insert(postTags).values(
-          tags.map((tag) => ({
-            postId: post[0].id,
-            tag: tag.toLowerCase(),
-          })),
-        );
-      }
-
-      // Clean up draft
-      await db.delete(drafts).where(eq(drafts.id, draftId));
-
-      return {
-        post: post[0],
-        status: publishImmediately ? 'published' : 'submitted_for_review',
-      };
-    },
-  );
+```sql
+post_co_authors (
+  id           TEXT PRIMARY KEY,
+  post_id      TEXT NOT NULL REFERENCES posts(id),
+  user_id      TEXT NOT NULL REFERENCES users(id),
+  role         VARCHAR(20) DEFAULT 'editor',
+  invited_by   TEXT NOT NULL REFERENCES users(id),
+  accepted_at  TIMESTAMP,
+  created_at   TIMESTAMP DEFAULT NOW()
+);
 ```
 
-### Get Posts
+**Draft Management:**
 
-```typescript
-export const getPosts = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      organizationId: t.string().optional(),
-      authorId: t.string().optional(),
-      status: t
-        .enum(['published', 'draft', 'pending_review', 'archived'])
-        .optional(),
-      tags: t.array(t.string()).optional(),
-      limit: t.number().default(20).max(100),
-      offset: t.number().default(0),
-    }),
-  )
-  .handler(
-    async ({
-      organizationId,
-      authorId,
-      status = 'published',
-      tags,
-      limit,
-      offset,
-    }) => {
-      let whereConditions = [eq(posts.status, status)];
-
-      if (organizationId) {
-        whereConditions.push(eq(posts.organizationId, organizationId));
-      }
-
-      if (authorId) {
-        whereConditions.push(eq(posts.authorId, authorId));
-      }
-
-      let query = db.query.posts.findMany({
-        where: and(...whereConditions),
-        with: {
-          author: {
-            columns: { id: true, name: true, username: true, avatar: true },
-          },
-          organization: {
-            columns: { id: true, name: true, slug: true, avatar: true },
-          },
-          tags: {
-            columns: { tag: true },
-          },
-          coAuthors: {
-            with: {
-              user: {
-                columns: { id: true, name: true, username: true, avatar: true },
-              },
-            },
-          },
-        },
-        orderBy: desc(posts.publishedAt),
-        limit,
-        offset,
-      });
-
-      // Filter by tags if provided
-      if (tags?.length) {
-        const taggedPosts = await db
-          .select({
-            postId: postTags.postId,
-          })
-          .from(postTags)
-          .where(inArray(postTags.tag, tags))
-          .groupBy(postTags.postId)
-          .having(sql`COUNT(DISTINCT ${postTags.tag}) = ${tags.length}`);
-
-        const postIds = taggedPosts.map((t) => t.postId);
-        whereConditions.push(inArray(posts.id, postIds));
-      }
-
-      return await query;
-    },
-  );
+```sql
+drafts (
+  id           TEXT PRIMARY KEY,
+  post_id      TEXT REFERENCES posts(id),
+  user_id      TEXT NOT NULL REFERENCES users(id),
+  title        TEXT,
+  content      TEXT,
+  metadata     JSONB,
+  is_auto_save BOOLEAN DEFAULT true,
+  created_at   TIMESTAMP DEFAULT NOW(),
+  updated_at   TIMESTAMP DEFAULT NOW()
+);
 ```
 
-### Get Single Post
+**Tags and Categories:**
 
-```typescript
-export const getPost = createServerFn({ method: 'GET' })
-  .validator(
-    t.object({
-      slug: t.string().optional(),
-      id: t.string().optional(),
-      organizationSlug: t.string().optional(),
-    }),
-  )
-  .handler(async ({ slug, id, organizationSlug }) => {
-    if (!slug && !id) {
-      throw new Error('Either slug or id is required');
-    }
+```sql
+post_tags (
+  id         TEXT PRIMARY KEY,
+  post_id    TEXT NOT NULL REFERENCES posts(id),
+  tag        VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
-    let whereCondition;
-
-    if (id) {
-      whereCondition = eq(posts.id, id);
-    } else {
-      if (organizationSlug) {
-        // Organization post: /org/slug/post-slug
-        const org = await db.query.organizations.findFirst({
-          where: eq(organizations.slug, organizationSlug),
-        });
-
-        if (!org) {
-          throw new Error('Organization not found');
-        }
-
-        whereCondition = and(
-          eq(posts.slug, slug!),
-          eq(posts.organizationId, org.id),
-        );
-      } else {
-        // Personal post: /@username/post-slug
-        whereCondition = and(
-          eq(posts.slug, slug!),
-          isNull(posts.organizationId),
-        );
-      }
-    }
-
-    const post = await db.query.posts.findFirst({
-      where: whereCondition,
-      with: {
-        author: {
-          columns: {
-            id: true,
-            name: true,
-            username: true,
-            avatar: true,
-            bio: true,
-          },
-        },
-        organization: {
-          columns: {
-            id: true,
-            name: true,
-            slug: true,
-            avatar: true,
-            description: true,
-          },
-        },
-        tags: true,
-        coAuthors: {
-          with: {
-            user: {
-              columns: { id: true, name: true, username: true, avatar: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    if (post.status !== 'published') {
-      // Check if user has permission to view unpublished post
-      const { headers } = getWebRequest();
-      const session = await auth.api.getSession({ headers });
-
-      const canView =
-        session?.user &&
-        (session.user.id === post.authorId ||
-          post.coAuthors.some((ca) => ca.userId === session.user.id) ||
-          (post.organizationId &&
-            (await hasOrganizationPermission(
-              session.user.id,
-              post.organizationId,
-              'posts:view:all',
-            ))));
-
-      if (!canView) {
-        throw new Error('Post not found');
-      }
-    }
-
-    // Track view if published
-    if (post.status === 'published') {
-      await trackPostView(post.id, session?.user?.id);
-    }
-
-    return post;
-  });
-```
-
-## Co-authoring Functions
-
-### Add Co-author
-
-```typescript
-export const addCoAuthor = createServerFn({ method: 'POST' })
-  .validator(
-    t.object({
-      postId: t.string(),
-      userId: t.string(),
-      role: t.enum(['editor', 'viewer', 'reviewer']).default('editor'),
-    }),
-  )
-  .handler(async ({ postId, userId, role }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    const post = await db.query.posts.findFirst({
-      where: eq(posts.id, postId),
-    });
-
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    // Check if user can add co-authors
-    const canManage =
-      session.user.id === post.authorId ||
-      (await hasPostPermission(session.user.id, postId, 'manage_coauthors'));
-
-    if (!canManage) {
-      throw new Error('Permission denied');
-    }
-
-    // Check if user is already a co-author
-    const existingCoAuthor = await db.query.postCoAuthors.findFirst({
-      where: and(
-        eq(postCoAuthors.postId, postId),
-        eq(postCoAuthors.userId, userId),
-      ),
-    });
-
-    if (existingCoAuthor) {
-      throw new Error('User is already a co-author');
-    }
-
-    const coAuthor = await db
-      .insert(postCoAuthors)
-      .values({
-        postId,
-        userId,
-        role,
-        invitedBy: session.user.id,
-      })
-      .returning();
-
-    // Send notification to invited user
-    await sendCoAuthorInvitation(userId, postId, session.user.id);
-
-    return coAuthor[0];
-  });
-```
-
-### Accept Co-author Invitation
-
-```typescript
-export const acceptCoAuthorInvitation = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      coAuthorId: t.string(),
-    }),
-  )
-  .handler(async ({ coAuthorId }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    const coAuthor = await db.query.postCoAuthors.findFirst({
-      where: and(
-        eq(postCoAuthors.id, coAuthorId),
-        eq(postCoAuthors.userId, session.user.id),
-        isNull(postCoAuthors.acceptedAt),
-      ),
-    });
-
-    if (!coAuthor) {
-      throw new Error('Invitation not found');
-    }
-
-    const updatedCoAuthor = await db
-      .update(postCoAuthors)
-      .set({ acceptedAt: new Date() })
-      .where(eq(postCoAuthors.id, coAuthorId))
-      .returning();
-
-    return updatedCoAuthor[0];
-  });
-```
-
-## Publishing Workflow Functions
-
-### Submit for Review
-
-```typescript
-export const submitForReview = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      postId: t.string(),
-      message: t.string().optional(),
-    }),
-  )
-  .handler(async ({ postId, message }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    const post = await db.query.posts.findFirst({
-      where: eq(posts.id, postId),
-    });
-
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    // Check permission
-    if (post.authorId !== session.user.id) {
-      throw new Error('Permission denied');
-    }
-
-    if (post.status !== 'draft') {
-      throw new Error('Post is not in draft status');
-    }
-
-    await db
-      .update(posts)
-      .set({
-        status: 'pending_review',
-        submittedAt: new Date(),
-        lastReviewedAt: null,
-      })
-      .where(eq(posts.id, postId));
-
-    // Notify organization reviewers
-    if (post.organizationId) {
-      await notifyReviewers(post.organizationId, postId, message);
-    }
-
-    return { success: true };
-  });
-```
-
-### Review Post
-
-```typescript
-export const reviewPost = createServerFn({ method: 'PUT' })
-  .validator(
-    t.object({
-      postId: t.string(),
-      action: t.enum(['approve', 'reject', 'request_changes']),
-      feedback: t.string().optional(),
-    }),
-  )
-  .handler(async ({ postId, action, feedback }) => {
-    const { headers } = getWebRequest();
-    const session = await auth.api.getSession({ headers });
-
-    if (!session?.user) {
-      throw new Error('Authentication required');
-    }
-
-    const post = await db.query.posts.findFirst({
-      where: eq(posts.id, postId),
-      with: { organization: true },
-    });
-
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    // Check reviewer permissions
-    if (!post.organizationId) {
-      throw new Error('This post is not part of an organization');
-    }
-
-    const hasReviewPermission = await hasOrganizationPermission(
-      session.user.id,
-      post.organizationId,
-      'posts:review',
-    );
-
-    if (!hasReviewPermission) {
-      throw new Error('Permission denied');
-    }
-
-    let newStatus: string;
-    let publishedAt: Date | null = null;
-
-    switch (action) {
-      case 'approve':
-        newStatus = 'published';
-        publishedAt = new Date();
-        break;
-      case 'reject':
-        newStatus = 'draft';
-        break;
-      case 'request_changes':
-        newStatus = 'draft';
-        break;
-    }
-
-    await db
-      .update(posts)
-      .set({
-        status: newStatus,
-        publishedAt,
-        lastReviewedAt: new Date(),
-        reviewedBy: session.user.id,
-      })
-      .where(eq(posts.id, postId));
-
-    // Add review comment if feedback provided
-    if (feedback) {
-      await addReviewComment(postId, session.user.id, feedback, action);
-    }
-
-    // Notify author
-    await notifyAuthor(post.authorId, postId, action, feedback);
-
-    return { success: true, status: newStatus };
-  });
+post_categories (
+  id          TEXT PRIMARY KEY,
+  post_id     TEXT NOT NULL REFERENCES posts(id),
+  category_id TEXT NOT NULL REFERENCES categories(id),
+  created_at  TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ## React Query Integration
 
-### Posts Queries
+### Query Patterns
+
+The posts system uses TanStack Query for type-safe client-side data management:
 
 ```typescript
 // src/modules/posts/hooks/use-queries.ts
 export const postQueries = {
-  list: (filters: GetPostsFilters = {}) =>
+  all: () => ['posts'] as const,
+
+  details: () => [...postQueries.all(), 'detail'] as const,
+  detail: (id: string) =>
     queryOptions({
-      queryKey: ['posts', 'list', filters] as const,
-      queryFn: () => getPosts(filters),
+      queryKey: [...postQueries.details(), id],
+      queryFn: () => fetchPostById(id),
     }),
 
-  bySlug: (slug: string, organizationSlug?: string) =>
+  byUser: (userId: string) =>
     queryOptions({
-      queryKey: ['posts', 'slug', slug, organizationSlug] as const,
-      queryFn: () => getPost({ slug, organizationSlug }),
-    }),
-
-  byId: (id: string) =>
-    queryOptions({
-      queryKey: ['posts', 'id', id] as const,
-      queryFn: () => getPost({ id }),
-    }),
-
-  drafts: (organizationId?: string) =>
-    queryOptions({
-      queryKey: ['posts', 'drafts', organizationId] as const,
-      queryFn: () => getUserDrafts({ organizationId }),
+      queryKey: [...postQueries.all(), 'by-user', userId],
+      queryFn: () => fetchPostsByUserId(userId),
     }),
 };
 
-// Custom hooks
-export function usePosts(filters?: GetPostsFilters) {
-  return useQuery(postQueries.list(filters));
+// Custom hooks with object parameters (required pattern)
+export function usePost({ id }: { id: string }) {
+  return useSuspenseQuery(postQueries.detail(id));
 }
 
-export function usePost({
-  slug,
+export function usePostWithLoading({
   id,
-  organizationSlug,
+  enabled = true,
 }: {
-  slug?: string;
   id?: string;
-  organizationSlug?: string;
+  enabled?: boolean;
 }) {
-  return useQuery(
-    slug ? postQueries.bySlug(slug, organizationSlug) : postQueries.byId(id!),
-  );
+  return useQuery({
+    ...postQueries.detail(id ?? ''),
+    enabled: enabled && !!id,
+  });
 }
 
-export function useDrafts({
-  organizationId,
-}: { organizationId?: string } = {}) {
-  return useQuery(postQueries.drafts(organizationId));
+export function useUserPosts({ userId }: { userId: string }) {
+  return useQuery(postQueries.byUser(userId));
 }
 ```
 
-### Post Mutations
+### Cache Management
 
 ```typescript
-export function useCreateDraft() {
-  const queryClient = useQueryClient();
+// Invalidate all posts
+queryClient.invalidateQueries({ queryKey: postQueries.all() });
 
-  return useMutation({
-    mutationFn: createDraft,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['posts', 'drafts'],
-      });
-    },
-  });
-}
+// Invalidate specific user's posts
+queryClient.invalidateQueries({
+  queryKey: postQueries.byUser(userId).queryKey,
+});
 
-export function useAutoSave() {
-  return useMutation({
-    mutationFn: autoSaveDraft,
-    // Don't show loading states for auto-save
-    meta: { hideLoading: true },
-  });
-}
+// Update specific post cache
+queryClient.setQueryData(
+  postQueries.detail(postId).queryKey,
+  (old: Post | undefined) => {
+    if (!old) return old;
+    return { ...old, title: 'Updated Title' };
+  },
+);
+```
 
-export function usePublishPost() {
-  const queryClient = useQueryClient();
+## Performance Considerations
 
-  return useMutation({
-    mutationFn: createPostFromDraft,
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({
-        queryKey: ['posts', 'drafts'],
-      });
+### Query Optimization
 
-      if (result.status === 'published') {
-        queryClient.invalidateQueries({
-          queryKey: ['posts', 'list'],
-        });
+- **Indexes**: All foreign keys and frequently queried fields are indexed
+- **Type Safety**: Full TypeScript integration prevents runtime errors
+- **Efficient Queries**: Direct database queries without unnecessary joins
+- **Proper Error Handling**: Graceful error responses with meaningful messages
+
+### Caching Strategy
+
+- **5-minute stale time** for post details
+- **1-minute stale time** for post lists
+- **Background refetch** on window focus
+- **Optimistic updates** for mutations
+
+## Error Handling
+
+### Post Access Errors
+
+```typescript
+export function usePostErrorHandler() {
+  const router = useRouter();
+
+  return (error: unknown) => {
+    if (error instanceof Error) {
+      switch (error.message) {
+        case 'Post with id ${id} not found':
+          router.navigate({ to: '/404' });
+          break;
+        default:
+          toast.error('An error occurred while loading the post');
       }
-    },
-  });
-}
-
-export function useAddCoAuthor() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: addCoAuthor,
-    onSuccess: (_, { postId }) => {
-      queryClient.invalidateQueries({
-        queryKey: ['posts', 'id', postId],
-      });
-    },
-  });
+    }
+  };
 }
 ```
+
+## Publishing Workflows
+
+### Publishing Types
+
+The database schema supports three publishing types:
+
+1. **Personal** (`personal`) - Individual user posts
+2. **Organization Member** (`organization_member`) - Posts by org members
+3. **Organization Official** (`organization_official`) - Official org content
+
+### Status Workflow
+
+Posts can progress through these statuses:
+
+```txt
+draft → published → archived
+  ↓
+submitted → reviewed → published
+```
+
+**Status Values:**
+
+- `draft` - Work in progress, not visible publicly
+- `published` - Live and visible to appropriate audiences
+- `archived` - No longer active but preserved
 
 ## Strategic Context
 
-This posts API implements the content creation system designed in:
+The posts API provides the foundation for content management with:
 
-- **[Content Creation System](../../.serena/memories/content_creation_writing_interface_design.md)** - GitHub-style editor, co-authoring, and publishing workflows
-- **[Implementation Roadmap](../../.serena/memories/implementation_roadmap_content_creation.md)** - Phase-by-phase development planning
+- **Simple Implementation** - Basic querying with comprehensive database schema
+- **Type Safety** - Full TypeScript integration with Drizzle ORM
+- **Extensibility** - Database schema supports advanced features like co-authoring and workflows
+- **Performance** - Optimized queries with proper indexing
 
-For related documentation, see:
+## Implementation Guides
 
-- **[Authentication API](./auth.md)** - User sessions and permissions
-- **[Organizations API](./organizations.md)** - Organization management and member roles
-- **[Development Guide](../development/index.md)** - Implementation patterns and standards
+While the current implementation provides basic querying, the database schema supports comprehensive content management features. Complete implementation patterns are available in the **[Content Creation Implementation Guide](../implementation/content-creation.md)**, including:
+
+- **Post Creation & Editing** - Complete CRUD operations with validation
+- **Draft Management** - Auto-save functionality and draft workflows
+- **Publishing Workflows** - Review processes and organization publishing
+- **Co-authoring System** - Invitation and collaborative editing features
+- **Metadata Management** - SEO, social sharing, and content optimization
+
+### Quick Implementation Reference
+
+```typescript
+// Full post creation with draft support
+import { createPost } from '../implementation/content-creation.md#create-new-post';
+
+// Auto-save draft functionality
+import { saveDraft } from '../implementation/content-creation.md#draft-auto-save';
+
+// Co-author invitation system
+import { inviteCoAuthor } from '../implementation/content-creation.md#co-author-management';
+```
+
+For implementation patterns and development guidelines, see:
+
+- **[Content Creation Guide](../implementation/content-creation.md)** - Complete post management implementation
+- **[Database Schema](../architecture/database.md)** - Complete schema with relations and indexes
+- **[Authentication API](./auth.md)** - User context and permission checking
+- **[Development Guide](../development/index.md)** - Query patterns and performance optimization
+- **[Architecture Overview](../architecture/index.md)** - System-wide content management integration
