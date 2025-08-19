@@ -1088,13 +1088,13 @@ import { useFollowStatus } from '@/modules/social/hooks/use-social-queries';
 import { useFollowUser, useUnfollowUser } from '@/modules/social/hooks/use-social-mutations';
 import { useRouter } from '@tanstack/react-router';
 
-interface FollowButtonProps {
+type FollowButtonProps = {
   userId: string;
   currentUserId: string;
   className?: string;
   size?: 'sm' | 'default' | 'lg';
   variant?: 'default' | 'outline';
-}
+};
 
 export function FollowButton({
   userId,
@@ -1174,10 +1174,10 @@ import { Icons } from '@/components/icons';
 import { useActivityFeed } from '@/modules/social/hooks/use-social-queries';
 import { formatDistanceToNow } from 'date-fns';
 
-interface ActivityFeedProps {
+type ActivityFeedProps = {
   timeframe?: '24h' | '7d' | '30d' | 'all';
   className?: string;
-}
+};
 
 export function ActivityFeed({
   timeframe = '7d',
@@ -1342,11 +1342,11 @@ import { Icons } from '@/components/icons';
 import { useRecommendedUsers } from '@/modules/social/hooks/use-social-queries';
 import { FollowButton } from './follow-button';
 
-interface UserRecommendationsProps {
+type UserRecommendationsProps = {
   currentUserId: string;
   algorithm?: 'network' | 'activity' | 'interests';
   className?: string;
-}
+};
 
 export function UserRecommendations({
   currentUserId,

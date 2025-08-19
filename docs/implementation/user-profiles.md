@@ -555,10 +555,10 @@ import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
 import { useUserProfile } from '@/modules/users/hooks/use-profile-queries';
 
-interface UserProfileCardProps {
+type UserProfileCardProps = {
   userId: string;
   className?: string;
-}
+};
 
 export function UserProfileCard({ userId, className }: UserProfileCardProps) {
   const { data: user, isLoading, error } = useUserProfile({ userId });
@@ -652,10 +652,10 @@ export const ProfileFormSchema = type({
 
 type ProfileFormData = typeof ProfileFormSchema.infer;
 
-interface EditProfileFormProps {
+type EditProfileFormProps = {
   initialData: ProfileFormData;
   onSuccess: () => void;
-}
+};
 
 export function EditProfileForm({ initialData, onSuccess }: EditProfileFormProps) {
   const form = useForm<ProfileFormData>({

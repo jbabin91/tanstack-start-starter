@@ -28,7 +28,7 @@ export type SessionWithDetails = Session & {
 ### Session Metadata
 
 ```typescript
-interface SessionMetadata {
+type SessionMetadata = {
   id: string;
   sessionId: string;
   deviceFingerprint: string;
@@ -43,7 +43,7 @@ interface SessionMetadata {
   timezone: string | null;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 ```
 
 ### Activity Tracking
@@ -99,7 +99,7 @@ export const fetchSessions = createServerFn().handler(async () => {
 **Response Format:**
 
 ```typescript
-interface SessionWithDetails {
+type SessionWithDetails = {
   id: string;
   userId: string;
   token: string;
@@ -113,7 +113,7 @@ interface SessionWithDetails {
   trustedDevice: TrustedDevice | null;
   recentActivity: SessionActivityLog[];
   isCurrentSession: boolean;
-}
+};
 ```
 
 ### `getCurrentSession`
@@ -379,7 +379,7 @@ await logActivity({
 ### Device Trust Management
 
 ```typescript
-export interface TrustedDevice {
+export type TrustedDevice = {
   id: string;
   userId: string;
   deviceFingerprint: string;
@@ -389,7 +389,7 @@ export interface TrustedDevice {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 // Check and update trusted device status
 export async function checkAndUpdateTrustedDevice({

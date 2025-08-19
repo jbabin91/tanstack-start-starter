@@ -980,11 +980,11 @@ export const PostFormSchema = type({
 
 type PostFormData = typeof PostFormSchema.infer;
 
-interface PostEditorProps {
+type PostEditorProps = {
   postId: string;
   initialData: PostFormData;
   onSave?: (data: PostFormData) => void;
-}
+};
 
 export function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
   const form = useForm<PostFormData>({
@@ -1112,13 +1112,13 @@ export function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
-interface UseAutoSaveOptions {
+type UseAutoSaveOptions = {
   content: string;
   onSave: (content: string) => Promise<any>;
   debounceMs?: number;
   intervalMs?: number;
   enabled?: boolean;
-}
+};
 
 export function useAutoSave({
   content,

@@ -454,59 +454,59 @@ describe('Email Client Compatibility', () => {
 
 ## Template Types and Validation
 
-### TypeScript Interfaces
+### TypeScript Type Definitions
 
-Create strict TypeScript interfaces for all templates:
+Create strict TypeScript types for all templates:
 
 ```typescript
 // src/modules/email/templates/types.ts
-export interface BaseEmailProps {
+export type BaseEmailProps = {
   /** Organization context for multi-tenant emails */
   organizationId?: string;
   /** User ID for tracking and personalization */
   userId?: string;
-}
+};
 
-export interface AuthenticationEmailProps extends BaseEmailProps {
+export type AuthenticationEmailProps = BaseEmailProps & {
   userName: string;
   userEmail: string;
-}
+};
 
-export interface VerificationEmailProps extends AuthenticationEmailProps {
+export type VerificationEmailProps = AuthenticationEmailProps & {
   verificationUrl: string;
   expiresAt: Date;
-}
+};
 
-export interface PasswordResetEmailProps extends AuthenticationEmailProps {
+export type PasswordResetEmailProps = AuthenticationEmailProps & {
   resetUrl: string;
   expiresAt: Date;
-}
+};
 
-export interface OrganizationInvitationEmailProps extends BaseEmailProps {
+export type OrganizationInvitationEmailProps = BaseEmailProps & {
   inviterName: string;
   organizationName: string;
   role: 'admin' | 'member' | 'viewer';
   acceptUrl: string;
   expiresAt: Date;
-}
+};
 
-export interface ContentEmailProps extends BaseEmailProps {
+export type ContentEmailProps = BaseEmailProps & {
   authorName: string;
   postTitle: string;
   postUrl: string;
   organizationName?: string;
-}
+};
 
-export interface PostPublishedEmailProps extends ContentEmailProps {
+export type PostPublishedEmailProps = ContentEmailProps & {
   publishedAt: Date;
   excerpt?: string;
-}
+};
 
-export interface CommentNotificationEmailProps extends ContentEmailProps {
+export type CommentNotificationEmailProps = ContentEmailProps & {
   commenterName: string;
   commentExcerpt: string;
   commentUrl: string;
-}
+};
 ```
 
 ### Validation Schemas
@@ -700,13 +700,13 @@ import { PasswordResetEmail } from './password-reset-email';
 import { OrganizationInvitationEmail } from './organization-invitation-email';
 import { PostPublishedEmail } from './post-published-email';
 
-export interface EmailTemplate {
+export type EmailTemplate = {
   name: string;
   component: ComponentType<any>;
   description: string;
   category: 'authentication' | 'organization' | 'content' | 'system';
   requiredProps: string[];
-}
+};
 
 export const emailTemplates: Record<string, EmailTemplate> = {
   'verification-email': {
@@ -761,12 +761,12 @@ Handle template updates gracefully:
 
 ```typescript
 // src/modules/email/templates/versioning.ts
-export interface TemplateVersion {
+export type TemplateVersion = {
   version: string;
   component: ComponentType<any>;
   deprecated?: boolean;
   migrationGuide?: string;
-}
+};
 
 export const templateVersions: Record<string, TemplateVersion[]> = {
   'verification-email': [

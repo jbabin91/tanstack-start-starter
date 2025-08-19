@@ -306,11 +306,11 @@ function Button({ variant, size, className, ...props }) {
 // src/components/layouts/page-layout.tsx
 import { cn } from '@/utils/cn';
 
-interface PageLayoutProps {
+type PageLayoutProps = {
   children: React.ReactNode;
   className?: string;
   title?: string;
-}
+};
 
 function PageLayout({ children, className, title }: PageLayoutProps) {
   return (
@@ -332,23 +332,37 @@ function PageLayout({ children, className, title }: PageLayoutProps) {
 
 ### Loading States
 
-```typescript
-function LoadingSpinner({ className }: { className?: string }) {
-  return (
-    <Icons.spinner className={cn('animate-spin h-4 w-4', className)} />
-  );
-}
+The Button component has built-in loading state support with automatic spinner and disable functionality:
 
-function LoadingButton({
-  children,
-  isLoading,
-  ...props
-}: ButtonProps & { isLoading?: boolean }) {
+```typescript
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/icons';
+
+function ExampleForm() {
+  const handleSubmit = async () => {
+    await submitForm();
+  };
+
   return (
-    <Button disabled={isLoading} {...props}>
-      {isLoading && <LoadingSpinner className="mr-2" />}
-      {children}
-    </Button>
+    <div className="space-y-4">
+      {/* ✅ CORRECT: Use built-in loading prop */}
+      <Button
+        loading={false} // In real usage, this would come from form state or mutation
+        loadingText="Submitting..."
+        onClick={handleSubmit}
+      >
+        Submit Form
+      </Button>
+
+      {/* ✅ CORRECT: Loading with original text */}
+      <Button loading={false} onClick={handleSubmit}>
+        Save Changes
+      </Button>
+
+      {/* ❌ INCORRECT: Don't create wrapper components or manual state */}
+      {/* const [isSubmitting, setIsSubmitting] = useState(false); */}
+      {/* <LoadingButton isLoading={isSubmitting}>Submit</LoadingButton> */}
+    </div>
   );
 }
 ```
@@ -356,14 +370,20 @@ function LoadingButton({
 ### Form Components
 
 ```typescript
-// Using React Hook Form with ShadCN components
+// Using React Hook Form with ShadCN components and built-in form state
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/icons';
 
 function MyForm() {
   const form = useForm();
+
+  const onSubmit = async (data) => {
+    // React Hook Form automatically manages isSubmitting state
+    await submitFormData(data);
+  };
 
   return (
     <Form {...form}>
@@ -375,14 +395,18 @@ function MyForm() {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} disabled={form.formState.isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">
+        <Button
+          type="submit"
+          loading={form.formState.isSubmitting}
+          loadingText="Saving..."
+        >
           <Icons.save className="h-4 w-4 mr-2" />
           Save
         </Button>

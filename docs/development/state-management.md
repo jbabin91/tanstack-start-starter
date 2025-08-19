@@ -343,15 +343,12 @@ function PostEditor({ draftId }: { draftId?: string }) {
               <Button type="button" variant="ghost">
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  'Save Post'
-                )}
+              <Button
+                type="submit"
+                loading={isSaving}
+                loadingText="Saving..."
+              >
+                Save Post
               </Button>
             </div>
           </form>
@@ -474,15 +471,13 @@ function PostActionsMenu({ post }: { post: Post }) {
             <Button variant="ghost" onClick={() => setShowDeleteDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? (
-                <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              loading={isDeleting}
+              loadingText="Deleting..."
+            >
+              Delete
             </Button>
           </div>
         </DialogContent>
@@ -823,15 +818,12 @@ function CreatePostForm() {
           <Button type="button" variant="ghost">
             Cancel
           </Button>
-          <Button type="submit" disabled={createPostMutation.isPending}>
-            {createPostMutation.isPending ? (
-              <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              'Create Post'
-            )}
+          <Button
+            type="submit"
+            loading={createPostMutation.isPending}
+            loadingText="Creating..."
+          >
+            Create Post
           </Button>
         </div>
         {form.formState.errors.root && (

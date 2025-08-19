@@ -176,10 +176,10 @@ function PostCard({ post, onEdit }: PostCardProps) {
 }
 
 // Always export type with component
-interface PostCardProps {
+type PostCardProps = {
   post: Post;
   onEdit?: (post: Post) => void;
-}
+};
 ```
 
 ### UI Component Patterns
@@ -459,12 +459,47 @@ import { Posts } from '@/lib/db/schemas';
 ### TypeScript Standards
 
 ```typescript
-// Prefer type over interface
+// ✅ PREFER: Use type for object definitions
 type User = {
   id: string;
   email: string;
   name: string;
 };
+
+// ✅ PREFER: Use type for component props
+type UserCardProps = {
+  user: User;
+  onEdit?: (user: User) => void;
+};
+
+// ❌ AVOID: Don't use interface unless required
+// interface User {
+//   id: string;
+//   email: string;
+// }
+
+// ✅ REQUIRED: Use interface for module definitions and declaration merging
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+// Global window extensions
+interface Window {
+  gtag: (command: string, ...args: unknown[]) => void;
+}
+
+// Node.js environment variables
+interface NodeJS {
+  ProcessEnv: {
+    DATABASE_URL: string;
+    BETTER_AUTH_SECRET: string;
+  };
+}
+
+// Module declaration merging (TanStack Router example)
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+/* eslint-enable @typescript-eslint/consistent-type-definitions */
 
 // Use type imports
 import type { User } from '@/modules/users/types';
@@ -474,6 +509,18 @@ export function useUser({ id }: { id: string }) {
   return useSuspenseQuery(userQueries.byId(id));
 }
 ```
+
+**Type vs Interface Guidelines:**
+
+- **Use `type`** for all object definitions, component props, and API responses
+- **Use `interface`** only when you need declaration merging or module augmentation
+- **Add ESLint disable comments** around required interfaces to suppress the `@typescript-eslint/consistent-type-definitions` rule
+
+**Specific Interface Use Cases:**
+
+- **Module declaration merging:** `declare module '@tanstack/react-router'` (TanStack Router type registration)
+- **Global augmentation:** Extending `Window`, `NodeJS.ProcessEnv`, or other built-in types
+- **Library type extensions:** Adding properties to existing library interfaces
 
 ## Performance Best Practices
 
