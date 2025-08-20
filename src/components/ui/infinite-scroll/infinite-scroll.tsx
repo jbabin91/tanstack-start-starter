@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import { ScrollArea } from '../scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type InfiniteScrollProps = {
   isLoading: boolean;

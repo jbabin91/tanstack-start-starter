@@ -46,6 +46,7 @@ export default tseslint.config(
       'import-x/first': 'error',
       'import-x/newline-after-import': 'error',
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
+      'import-x/no-relative-parent-imports': 'error',
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
       'unicorn/filename-case': [
@@ -179,6 +180,13 @@ export default tseslint.config(
     },
     rules: {
       ...storybook.configs['flat/recommended'].rules,
+      '@eslint-react/no-array-index-key': 'off',
+    },
+  },
+  {
+    files: ['.storybook/**/*'],
+    rules: {
+      'import-x/no-relative-parent-imports': 'off',
     },
   },
 
