@@ -1,5 +1,5 @@
+import { useRender } from '@base-ui-components/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Slot } from 'radix-ui';
 import * as React from 'react';
 
 import { Spinner } from '@/components/ui/spinner';
@@ -49,36 +49,30 @@ const buttonVariants = cva(
  * Props:
  * - loading?: boolean — If true, shows a spinner and disables the button.
  * - loadingText?: string — Optional text to show instead of children when loading.
- * - All regular button props, plus variant, size, color, asChild.
+ * - All regular button props, plus variant, size, color, render.
  */
+type ButtonProps = {
+  render?: useRender.RenderProp;
+  loading?: boolean;
+  loadingText?: string;
+} & React.ComponentProps<'button'> &
+  VariantProps<typeof buttonVariants>;
+
 function Button({
   className,
   variant,
   size,
   color,
-  asChild = false,
   loading = false,
   loadingText,
   disabled,
   children,
+  type = 'button',
+  render,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-    loading?: boolean;
-    loadingText?: string;
-  }) {
-  const Comp = asChild ? Slot.Root : 'button';
-
-  return (
-    <Comp
-      aria-busy={loading ?? undefined}
-      aria-disabled={loading ?? disabled ?? undefined}
-      className={cn(buttonVariants({ className, color, size, variant }))}
-      data-slot="button"
-      disabled={loading || disabled}
-      {...props}
-    >
+}: ButtonProps) {
+  const buttonContent = (
+    <>
       {loading && (
         <>
           <Spinner className="text-primary-foreground mr-2" size="small" />
@@ -96,8 +90,22 @@ function Button({
         </>
       )}
       {!loading && children}
-    </Comp>
+    </>
   );
+
+  return useRender({
+    render: render ?? <button type={type} />,
+    props: {
+      'data-slot': 'button',
+      'aria-busy': loading ?? undefined,
+      'aria-disabled': loading ?? disabled ?? undefined,
+      disabled: loading || disabled,
+      className: cn(buttonVariants({ className, color, size, variant })),
+      type,
+      ...props,
+      children: buttonContent,
+    },
+  });
 }
 
 export { Button, buttonVariants };
