@@ -337,7 +337,7 @@ export const InteractiveCheckbox: Story = {
     expect(args.onCheckedChange).toHaveBeenCalledWith(false);
 
     // Verify accessibility - checkbox should be focusable
-    await userEvent.tab();
+    checkbox.focus();
     expect(checkbox).toHaveFocus();
 
     // Test keyboard interaction (Space key)

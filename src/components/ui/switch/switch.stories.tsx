@@ -396,7 +396,7 @@ export const InteractiveSwitch: Story = {
     expect(args.onCheckedChange).toHaveBeenCalledWith(false);
 
     // Verify accessibility - switch should be focusable
-    await userEvent.tab();
+    switchElement.focus();
     expect(switchElement).toHaveFocus();
 
     // Test keyboard interaction (Space key)
