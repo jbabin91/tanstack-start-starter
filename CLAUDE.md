@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 @./docs/development/index.md
 @./docs/architecture/database.md  
 @./docs/development/component-patterns.md
-@./docs/development/storybook-testing.md
+@./docs/development/testing-patterns.md
 
 ## Essential Commands
 

@@ -194,6 +194,8 @@ export const RealWorldForm: Story = {
 
 ## Component Testing Patterns
 
+**Note**: These patterns follow the project's universal [Testing Library query priority guidelines](../development/testing-patterns.md#testing-library-query-priority). Always use semantic queries (`getByRole`, `getByLabelText`) over test IDs.
+
 ### Basic Interaction Testing
 
 Every interactive story should include a play function:
@@ -222,17 +224,18 @@ For more complex interactions:
 export const FormInteraction: Story = {
   render: () => (
     <form>
-      <Input data-testid="email-input" type="email" placeholder="Email" />
-      <Input data-testid="password-input" type="password" placeholder="Password" />
-      <Button type="submit" data-testid="submit-button">Submit</Button>
+      <Input type="email" placeholder="Enter your email address" aria-label="Email address" />
+      <Input type="password" placeholder="Enter your password" aria-label="Password" />
+      <Button type="submit">Submit</Button>
     </form>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const emailInput = canvas.getByTestId('email-input');
-    const passwordInput = canvas.getByTestId('password-input');
-    const submitButton = canvas.getByTestId('submit-button');
+    // ✅ Use semantic queries - more accessible and user-focused
+    const emailInput = canvas.getByRole('textbox', { name: 'Email address' });
+    const passwordInput = canvas.getByLabelText('Password');
+    const submitButton = canvas.getByRole('button', { name: 'Submit' });
 
     await userEvent.type(emailInput, 'user@example.com');
     await userEvent.type(passwordInput, 'password123');
@@ -243,6 +246,239 @@ export const FormInteraction: Story = {
     await expect(passwordInput).toHaveValue('password123');
   },
 };
+```
+
+## Storybook-Specific Testing Patterns
+
+### Portal Component Testing
+
+Components that render in portals (Select, Dialog, Tooltip) require special testing approaches since they render outside the Storybook canvas.
+
+#### The Problem
+
+Portal components render outside `storybook-root`, causing tests to fail when searching within `canvasElement`:
+
+```typescript
+// ❌ WRONG - Portal elements won't be found
+export const InteractiveTest: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('combobox'));
+    // This will fail - portal content isn't in canvasElement
+    expect(canvas.getByRole('option')).toBeVisible();
+  },
+};
+```
+
+#### The Solution
+
+Use `within(document.body)` to search the entire document for portal content:
+
+```typescript
+// ✅ CORRECT - Portal testing pattern
+export const InteractiveTest: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Trigger opens within canvas
+    await userEvent.click(canvas.getByRole('combobox'));
+
+    // Portal content searched in document body
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeVisible();
+    });
+
+    // Select an option
+    await userEvent.click(screen.getByRole('option', { name: 'Option 1' }));
+
+    // Verify selection in canvas
+    expect(canvas.getByDisplayValue('Option 1')).toBeVisible();
+  },
+};
+```
+
+#### Portal Components Requiring This Pattern
+
+- **Select**: Dropdown options render in portal
+- **Dialog**: Modal content renders in portal
+- **Tooltip**: Tooltip content renders in portal
+- **Popover**: Popover content renders in portal
+- **Command**: Command palette renders in portal
+
+### Animation Timing Handling
+
+Components with animations require careful timing and flexible assertions to handle transitional states.
+
+#### The Problem
+
+Elements may have `data-state="open"` but still be transitioning, causing visibility checks to fail:
+
+```typescript
+// ❌ WRONG - Doesn't account for animation timing
+await userEvent.click(trigger);
+expect(screen.getByRole('dialog')).toBeVisible(); // Might fail during transition
+```
+
+#### The Solution
+
+Use `waitFor()` with appropriate delays and flexible assertions:
+
+```typescript
+// ✅ CORRECT - Animation-aware testing
+export const AnimatedComponent: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Open with animation
+    await userEvent.click(canvas.getByRole('button', { name: 'Open Dialog' }));
+
+    // Wait for animation to complete
+    await waitFor(
+      () => {
+        expect(screen.getByRole('dialog')).toBeVisible();
+      },
+      { timeout: 1000 },
+    );
+
+    // Close with animation
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    // Flexible assertion for exit animation
+    await waitFor(
+      () => {
+        const dialog = screen.queryByRole('dialog');
+        // Element might be hidden OR removed during exit
+        expect(dialog).toSatisfy((el) => el === null || !el.checkVisibility());
+      },
+      { timeout: 1000 },
+    );
+  },
+};
+```
+
+#### Animation Timing Patterns
+
+**For Opening Animations:**
+
+```typescript
+// Pattern 1: waitFor with timeout
+await waitFor(
+  () => {
+    expect(element).toBeVisible();
+  },
+  { timeout: 1000 },
+);
+
+// Pattern 2: Combined with setTimeout for complex animations
+await new Promise((resolve) => setTimeout(resolve, 300));
+await waitFor(() => {
+  expect(element).toBeVisible();
+});
+```
+
+**For Closing Animations:**
+
+```typescript
+// Flexible assertion for exit states
+await waitFor(
+  () => {
+    const element = screen.queryByRole('dialog');
+    expect(element).toSatisfy((el) => el === null || !el.checkVisibility());
+  },
+  { timeout: 1000 },
+);
+```
+
+### Common Storybook Test Failures and Solutions
+
+#### Multiple Elements Found
+
+**Problem:** Tests find multiple elements with the same text or role.
+
+```typescript
+// ❌ WRONG - Ambiguous selector
+expect(screen.getByText('Settings')).toBeVisible();
+// Error: Found multiple elements with text 'Settings'
+```
+
+**Solution:** Scope searches within specific containers or use more specific selectors.
+
+```typescript
+// ✅ CORRECT - Scoped search
+const dialog = screen.getByRole('dialog');
+expect(within(dialog).getByText('Settings')).toBeVisible();
+
+// Or use more specific role
+expect(screen.getByRole('heading', { name: 'Settings' })).toBeVisible();
+```
+
+#### Element Not Found in Portal
+
+**Problem:** Portal content not found when searching in canvas.
+
+```typescript
+// ❌ WRONG
+const canvas = within(canvasElement);
+expect(canvas.getByRole('tooltip')).toBeVisible(); // Tooltip is in portal
+```
+
+**Solution:** Use document body for portal content.
+
+```typescript
+// ✅ CORRECT
+const screen = within(document.body);
+expect(screen.getByRole('tooltip')).toBeVisible();
+```
+
+#### Timing Assertion Failures
+
+**Problem:** Elements found but not visible due to animations.
+
+```typescript
+// ❌ WRONG
+await userEvent.click(trigger);
+expect(screen.getByRole('dialog')).toBeVisible(); // Might be transitioning
+```
+
+**Solution:** Use waitFor with appropriate timeouts.
+
+```typescript
+// ✅ CORRECT
+await userEvent.click(trigger);
+await waitFor(
+  () => {
+    expect(screen.getByRole('dialog')).toBeVisible();
+  },
+  { timeout: 1000 },
+);
+```
+
+### Required Storybook Test Imports
+
+Essential imports for comprehensive Storybook testing:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, waitFor, within } from '@storybook/test';
+import { fn } from '@storybook/test';
+
+// For form testing
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Component imports
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 ```
 
 ## ArgTypes Configuration
