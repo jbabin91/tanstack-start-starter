@@ -181,6 +181,9 @@ export default tseslint.config(
     rules: {
       ...storybook.configs['flat/recommended'].rules,
       '@eslint-react/no-array-index-key': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      'react-hooks/rules-of-hooks': 'off',
+      'unicorn/no-array-reduce': 'off',
     },
   },
   {
