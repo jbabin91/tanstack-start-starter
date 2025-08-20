@@ -1105,7 +1105,9 @@ export function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
 }
 ```
 
-### Auto-Save Hook
+### Auto-Save Hook Implementation
+
+Our auto-save implementation correctly separates auto-save operations from manual form submissions, ensuring proper UX and avoiding state conflicts.
 
 ```typescript
 // src/modules/editor/hooks/use-auto-save.ts
@@ -1132,19 +1134,24 @@ export function useAutoSave({
   const intervalRef = useRef<NodeJS.Timeout>();
   const lastSavedContent = useRef(content);
 
-  const saveMutation = useMutation({
+  // Separate mutation for auto-save operations
+  const autoSaveMutation = useMutation({
     mutationFn: onSave,
     onSuccess: () => {
       lastSavedContent.current = content;
       setLastSaved(new Date());
     },
+    onError: (error) => {
+      console.warn('Auto-save failed:', error);
+      // Auto-save failures are logged but don't interrupt user workflow
+    },
   });
 
   const performSave = useCallback(() => {
     if (content !== lastSavedContent.current && content.trim().length > 0) {
-      saveMutation.mutate(content);
+      autoSaveMutation.mutate(content);
     }
-  }, [content, saveMutation]);
+  }, [content, autoSaveMutation]);
 
   // Debounced auto-save on content change
   useEffect(() => {
@@ -1177,13 +1184,101 @@ export function useAutoSave({
   }, [performSave, intervalMs, enabled]);
 
   return {
-    isSaving: saveMutation.isPending,
-    saveError: saveMutation.error,
+    isSaving: autoSaveMutation.isPending,
+    saveError: autoSaveMutation.error,
     lastSaved,
     forceSave: performSave,
   };
 }
 ```
+
+### Key Auto-Save Design Principles
+
+1. **Separate Concerns**: Auto-save uses its own mutation hook, completely separate from manual save operations
+2. **UI State Isolation**: `isSaving` from auto-save is used only for indicators, never for button states
+3. **Error Handling**: Auto-save errors are logged but don't interrupt the user workflow
+4. **Performance**: Debouncing prevents excessive save operations during typing
+5. **Reliability**: Interval-based saving ensures periodic saves even during long editing sessions
+
+### Auto-Save vs Manual Save State Management
+
+```typescript
+function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
+  const form = useForm<PostFormData>({
+    defaultValues: initialData,
+  });
+
+  // Manual save mutation - separate from auto-save
+  const updatePost = useUpdatePost();
+
+  // Auto-save implementation
+  const watchedValues = form.watch();
+  const { isSaving, lastSaved } = useAutoSave({
+    content: JSON.stringify(watchedValues),
+    onSave: useCallback((content) => {
+      const data = JSON.parse(content);
+      return saveDraft({
+        postId,
+        title: data.title,
+        content: data.content,
+        isAutoSave: true, // Marked as auto-save
+      });
+    }, [postId]),
+    debounceMs: 2000,
+    intervalMs: 30000,
+  });
+
+  const handleManualSave = async (data: PostFormData) => {
+    // Manual save uses form submission logic
+    await updatePost.mutateAsync({
+      postId,
+      ...data,
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Auto-save indicator - NOT button state */}
+      <div className="flex justify-between items-center text-sm text-muted-foreground">
+        <div>
+          {isSaving ? (
+            <span className="flex items-center">
+              <Icons.spinner className="mr-1 h-3 w-3 animate-spin" />
+              Saving...
+            </span>
+          ) : lastSaved ? (
+            <span>Saved {formatDistanceToNow(lastSaved)} ago</span>
+          ) : null}
+        </div>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleManualSave)}>
+          {/* Form fields */}
+
+          {/* Manual save button uses form/mutation state - NOT auto-save state */}
+          <Button
+            type="submit"
+            loading={updatePost.isPending}
+            loadingText="Saving..."
+          >
+            Save Changes
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}
+```
+
+### Race Condition Prevention
+
+Our implementation prevents race conditions between auto-save and manual save:
+
+1. **Different Operations**: Auto-save creates/updates drafts, manual save updates the actual post
+2. **Server Function Separation**: `saveDraft` vs `updatePost` are separate endpoints
+3. **TanStack Query Isolation**: Separate mutations prevent state conflicts
+4. **UI State Clarity**: Button loading states come from manual operations only
 
 ## Utility Functions
 
