@@ -210,7 +210,6 @@ function InteractivePaginationComponent({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            data-testid="prev-button"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -220,7 +219,6 @@ function InteractivePaginationComponent({
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
-            data-testid="page-1"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -233,7 +231,6 @@ function InteractivePaginationComponent({
         <PaginationItem>
           <PaginationLink
             isActive
-            data-testid="page-2"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -245,7 +242,6 @@ function InteractivePaginationComponent({
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
-            data-testid="page-3"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -256,11 +252,10 @@ function InteractivePaginationComponent({
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationEllipsis data-testid="ellipsis" />
+          <PaginationEllipsis />
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
-            data-testid="page-10"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -272,7 +267,6 @@ function InteractivePaginationComponent({
         </PaginationItem>
         <PaginationItem>
           <PaginationNext
-            data-testid="next-button"
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -304,33 +298,40 @@ export const InteractivePagination: StoryObj<
     const canvas = within(canvasElement);
 
     await step('Click on page 3', async () => {
-      const page3 = canvas.getByTestId('page-3');
+      // Use semantic query - find link with text "3"
+      const page3 = canvas.getByRole('link', { name: '3' });
       await userEvent.click(page3);
       expect(args.onPageChange).toHaveBeenCalledWith(3);
     });
 
     await step('Click next button', async () => {
-      const nextButton = canvas.getByTestId('next-button');
+      // Use semantic query - find link with "Go to next page" aria-label
+      const nextButton = canvas.getByRole('link', { name: /go to next page/i });
       await userEvent.click(nextButton);
       expect(args.onPageChange).toHaveBeenCalledWith('next');
     });
 
     await step('Click previous button', async () => {
-      const prevButton = canvas.getByTestId('prev-button');
+      // Use semantic query - find link with "Go to previous page" aria-label
+      const prevButton = canvas.getByRole('link', {
+        name: /go to previous page/i,
+      });
       await userEvent.click(prevButton);
       expect(args.onPageChange).toHaveBeenCalledWith('previous');
     });
 
     await step('Click on page 10', async () => {
-      const page10 = canvas.getByTestId('page-10');
+      // Use semantic query - find link with text "10"
+      const page10 = canvas.getByRole('link', { name: '10' });
       await userEvent.click(page10);
       expect(args.onPageChange).toHaveBeenCalledWith(10);
     });
 
     await step('Verify ellipsis is not clickable', () => {
-      const ellipsis = canvas.getByTestId('ellipsis');
+      // Use semantic query - find screen reader text for ellipsis
+      const ellipsis = canvas.getByText('More pages');
       expect(ellipsis).toBeInTheDocument();
-      // Ellipsis should not be clickable (no onClick handler)
+      // Ellipsis should not be clickable (no button role)
       expect(ellipsis.tagName).toBe('SPAN');
     });
   },

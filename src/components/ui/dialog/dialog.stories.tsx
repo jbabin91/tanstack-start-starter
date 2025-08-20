@@ -458,11 +458,9 @@ export const Interactive: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button data-testid="dialog-trigger" variant="contained">
-          Test Dialog
-        </Button>
+        <Button variant="contained">Test Dialog</Button>
       </DialogTrigger>
-      <DialogContent data-testid="dialog-content">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Test Dialog</DialogTitle>
           <DialogDescription>
@@ -474,9 +472,7 @@ export const Interactive: Story = {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button data-testid="dialog-close" variant="contained">
-              Close
-            </Button>
+            <Button variant="contained">Close</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
@@ -486,7 +482,8 @@ export const Interactive: Story = {
     const canvas = within(canvasElement);
 
     await step('Open dialog', async () => {
-      const trigger = canvas.getByTestId('dialog-trigger');
+      // Use semantic query - getByRole with button role and name
+      const trigger = canvas.getByRole('button', { name: 'Test Dialog' });
       await userEvent.click(trigger);
 
       // Wait for trigger to show expanded state
@@ -500,19 +497,19 @@ export const Interactive: Story = {
       // Give animation time to complete
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Wait for dialog to appear - dialog content is rendered in a portal
+      // Wait for dialog to appear - use semantic query for dialog role
       await waitFor(
         async () => {
-          const dialog = within(document.body).getByTestId('dialog-content');
+          const dialog = within(document.body).getByRole('dialog');
           await expect(dialog).toBeVisible();
         },
         { timeout: 2000 },
       );
 
-      // Check that title and description are visible within the dialog
-      const dialogContent = within(document.body).getByTestId('dialog-content');
+      // Check that title and description are visible using semantic queries
+      const dialogContent = within(document.body).getByRole('dialog');
       await expect(
-        within(dialogContent).getByText('Test Dialog'),
+        within(dialogContent).getByRole('heading', { name: 'Test Dialog' }),
       ).toBeVisible();
       await expect(
         within(dialogContent).getByText(
@@ -522,16 +519,24 @@ export const Interactive: Story = {
     });
 
     await step('Close dialog with button', async () => {
-      const closeButton = within(document.body).getByTestId('dialog-close');
-      await userEvent.click(closeButton);
+      // Get all close buttons and select the visible one in the footer (not the X button)
+      const closeButtons = within(document.body).getAllByRole('button', {
+        name: 'Close',
+      });
+      // The footer close button is the first visible button (X button is second)
+      const closeButton = closeButtons.find(
+        (button) =>
+          button.textContent === 'Close' &&
+          (button as HTMLButtonElement).type === 'button',
+      );
+      expect(closeButton).toBeDefined();
+      await userEvent.click(closeButton!);
 
       // Wait for close animation to complete
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Check if dialog is closed (either removed or not visible)
-      const dialogContent = within(document.body).queryByTestId(
-        'dialog-content',
-      );
+      // Check if dialog is closed using semantic query
+      const dialogContent = within(document.body).queryByRole('dialog');
       if (dialogContent) {
         await expect(dialogContent).not.toBeVisible();
       } else {
@@ -540,8 +545,8 @@ export const Interactive: Story = {
     });
 
     await step('Open and close with ESC key', async () => {
-      // Open dialog again
-      const trigger = canvas.getByTestId('dialog-trigger');
+      // Open dialog again using semantic query
+      const trigger = canvas.getByRole('button', { name: 'Test Dialog' });
       await userEvent.click(trigger);
 
       // Wait for trigger to show expanded state
@@ -555,10 +560,10 @@ export const Interactive: Story = {
       // Give animation time to complete
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Wait for dialog to appear and be visible
+      // Wait for dialog to appear and be visible using semantic query
       await waitFor(
         async () => {
-          const dialog = within(document.body).getByTestId('dialog-content');
+          const dialog = within(document.body).getByRole('dialog');
           await expect(dialog).toBeVisible();
         },
         { timeout: 2000 },
@@ -571,9 +576,7 @@ export const Interactive: Story = {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Check if dialog is closed (either removed or not visible)
-      const dialogContent = within(document.body).queryByTestId(
-        'dialog-content',
-      );
+      const dialogContent = within(document.body).queryByRole('dialog');
       if (dialogContent) {
         await expect(dialogContent).not.toBeVisible();
       } else {

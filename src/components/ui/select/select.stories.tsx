@@ -363,11 +363,7 @@ export const InForm: Story = {
 export const Interactive: Story = {
   render: () => (
     <Select>
-      <SelectTrigger
-        aria-label="Interactive select"
-        className="w-[200px]"
-        data-testid="select-trigger"
-      >
+      <SelectTrigger aria-label="Interactive select" className="w-[200px]">
         <SelectValue placeholder="Click to open..." />
       </SelectTrigger>
       <SelectContent>
@@ -381,7 +377,10 @@ export const Interactive: Story = {
     const canvas = within(canvasElement);
 
     await step('Open select dropdown', async () => {
-      const trigger = canvas.getByTestId('select-trigger');
+      // Use semantic query - getByRole with combobox role
+      const trigger = canvas.getByRole('combobox', {
+        name: 'Interactive select',
+      });
       await userEvent.click(trigger);
 
       // Wait for dropdown to open and become visible
@@ -409,13 +408,17 @@ export const Interactive: Story = {
       const secondOption = within(document.body).getByText('Second Option');
       await userEvent.click(secondOption);
 
-      // Check that the value is displayed
-      const trigger = canvas.getByTestId('select-trigger');
+      // Check that the value is displayed using semantic query
+      const trigger = canvas.getByRole('combobox', {
+        name: 'Interactive select',
+      });
       await expect(trigger).toHaveTextContent('Second Option');
     });
 
     await step('Open and close with keyboard', async () => {
-      const trigger = canvas.getByTestId('select-trigger');
+      const trigger = canvas.getByRole('combobox', {
+        name: 'Interactive select',
+      });
       await userEvent.click(trigger);
 
       // Press Escape to close

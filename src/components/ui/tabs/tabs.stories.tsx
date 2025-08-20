@@ -337,17 +337,11 @@ export const InteractiveTabs: Story = {
   render: (args) => (
     <Tabs className="w-[400px]" {...args}>
       <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger data-testid="tab-1" value="tab1">
-          Tab 1
-        </TabsTrigger>
-        <TabsTrigger data-testid="tab-2" value="tab2">
-          Tab 2
-        </TabsTrigger>
-        <TabsTrigger data-testid="tab-3" value="tab3">
-          Tab 3
-        </TabsTrigger>
+        <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+        <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+        <TabsTrigger value="tab3">Tab 3</TabsTrigger>
       </TabsList>
-      <TabsContent data-testid="content-1" value="tab1">
+      <TabsContent value="tab1">
         <div className="rounded-lg border p-4">
           <h3 className="font-medium">First Tab Content</h3>
           <p className="text-muted-foreground mt-2">
@@ -355,7 +349,7 @@ export const InteractiveTabs: Story = {
           </p>
         </div>
       </TabsContent>
-      <TabsContent data-testid="content-2" value="tab2">
+      <TabsContent value="tab2">
         <div className="rounded-lg border p-4">
           <h3 className="font-medium">Second Tab Content</h3>
           <p className="text-muted-foreground mt-2">
@@ -363,7 +357,7 @@ export const InteractiveTabs: Story = {
           </p>
         </div>
       </TabsContent>
-      <TabsContent data-testid="content-3" value="tab3">
+      <TabsContent value="tab3">
         <div className="rounded-lg border p-4">
           <h3 className="font-medium">Third Tab Content</h3>
           <p className="text-muted-foreground mt-2">
@@ -376,21 +370,25 @@ export const InteractiveTabs: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
 
-    // Verify initial state
-    const firstTab = canvas.getByTestId('tab-1');
-    const secondTab = canvas.getByTestId('tab-2');
-    const thirdTab = canvas.getByTestId('tab-3');
+    // Verify initial state using semantic queries
+    const firstTab = canvas.getByRole('tab', { name: 'Tab 1' });
+    const secondTab = canvas.getByRole('tab', { name: 'Tab 2' });
+    const thirdTab = canvas.getByRole('tab', { name: 'Tab 3' });
 
-    const firstContent = canvas.getByTestId('content-1');
+    const firstContent = canvas.getByText('First Tab Content');
     // First tab should be active initially
     await expect(firstTab).toHaveAttribute('data-state', 'active');
     await expect(firstContent).toBeVisible();
 
-    // Other content should not be visible
-    const secondContent = canvas.queryByTestId('content-2');
-    const thirdContent = canvas.queryByTestId('content-3');
-    expect(secondContent).not.toBeVisible();
-    expect(thirdContent).not.toBeVisible();
+    // Other content should not be visible (either null or hidden)
+    const secondContent = canvas.queryByText('Second Tab Content');
+    const thirdContent = canvas.queryByText('Third Tab Content');
+    if (secondContent) {
+      expect(secondContent).not.toBeVisible();
+    }
+    if (thirdContent) {
+      expect(thirdContent).not.toBeVisible();
+    }
 
     // Click second tab
     await userEvent.click(secondTab);
@@ -401,11 +399,13 @@ export const InteractiveTabs: Story = {
 
     // Verify content switched
     await waitFor(() => {
-      const newSecondContent = canvas.getByTestId('content-2');
-      const newFirstContent = canvas.queryByTestId('content-1');
+      const newSecondContent = canvas.getByText('Second Tab Content');
+      const newFirstContent = canvas.queryByText('First Tab Content');
 
       expect(newSecondContent).toBeVisible();
-      expect(newFirstContent).not.toBeVisible();
+      if (newFirstContent) {
+        expect(newFirstContent).not.toBeVisible();
+      }
     });
 
     // Click third tab
@@ -417,7 +417,7 @@ export const InteractiveTabs: Story = {
 
     // Verify content switched to third
     await waitFor(() => {
-      const newThirdContent = canvas.getByTestId('content-3');
+      const newThirdContent = canvas.getByText('Third Tab Content');
       expect(newThirdContent).toBeVisible();
     });
   },

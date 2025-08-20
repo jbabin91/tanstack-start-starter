@@ -374,12 +374,10 @@ export const InteractiveTooltip: Story = {
     <div className="p-8">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <Button data-testid="tooltip-trigger" variant="outlined">
-            Interactive Tooltip
-          </Button>
+          <Button variant="outlined">Interactive Tooltip</Button>
         </TooltipTrigger>
         <TooltipContent>
-          <div data-testid="interactive-tooltip-content">
+          <div>
             <p className="font-medium">Keyboard Shortcuts</p>
             <div className="mt-2 space-y-1 text-sm">
               <div className="flex justify-between">
@@ -402,7 +400,8 @@ export const InteractiveTooltip: Story = {
   ),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
-    const trigger = canvas.getByTestId('tooltip-trigger');
+    // Use semantic query - find button by its text content
+    const trigger = canvas.getByRole('button', { name: 'Interactive Tooltip' });
 
     // Verify trigger exists and is interactive
     expect(trigger).toBeInTheDocument();
