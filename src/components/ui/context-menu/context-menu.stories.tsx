@@ -762,7 +762,9 @@ export const Interactive: Story = {
 
     // Verify action was recorded
     await waitFor(() => {
-      expect(canvas.getByText(/last action:.*refresh/i)).toBeVisible();
+      // Check for both parts: the label and the action value
+      expect(canvas.getByText('Last action:')).toBeVisible();
+      expect(canvas.getByText('refresh')).toBeVisible();
     });
 
     // Open menu again for submenu testing
@@ -787,7 +789,8 @@ export const Interactive: Story = {
 
     // Verify checkbox state change
     await waitFor(() => {
-      expect(canvas.getByText(/auto save:.*enabled/i)).toBeVisible();
+      // Check that Auto Save setting changed to Enabled
+      expect(canvas.getByText('Auto Save: Enabled')).toBeVisible();
     });
 
     // Verify context menu structure has proper data attributes
@@ -801,7 +804,7 @@ export const Interactive: Story = {
     });
 
     // Close menu by clicking outside
-    await userEvent.click(canvas.getByText('Last action'));
+    await userEvent.click(canvas.getByText('refresh'));
 
     // Verify menu is closed
     await waitFor(() => {

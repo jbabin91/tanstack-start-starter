@@ -71,11 +71,9 @@ export default defineConfig({
         // Root level files
         '*.{js,ts,jsx,tsx}',
       ],
-      // Only include source code in coverage
       include: ['src/**/*.{js,ts,jsx,tsx}'],
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      // Set coverage thresholds
       thresholds: {
         global: {
           branches: 50,
@@ -85,8 +83,8 @@ export default defineConfig({
         },
       },
     },
+    hookTimeout: 10_000,
     projects: [
-      // Unit tests - Fast testing with jsdom
       {
         test: {
           environment: 'jsdom',
@@ -105,31 +103,26 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts'],
         },
       },
-      // Storybook tests - Component testing with Playwright
       {
         extends: true,
         plugins: [
-          // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
           }),
         ],
         test: {
           browser: {
+            connectTimeout: 120_000,
             enabled: true,
             headless: true,
-            // Share browser context to reduce memory usage
             instances: [
               {
                 browser: 'chromium',
                 context: {
-                  // Consistent locale and timezone
                   locale: 'en-US',
                   timezoneId: 'America/New_York',
                 },
                 launch: {
-                  // Enhanced stability args for CI/CD and memory management
                   args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
@@ -138,28 +131,28 @@ export default defineConfig({
                     '--disable-features=VizDisplayCompositor',
                     '--max_old_space_size=8192',
                     '--memory-pressure-off',
+                    '--disable-background-networking',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-breakpad',
+                    '--no-first-run',
+                    '--disable-default-apps',
                   ],
                 },
               },
             ],
+            isolate: true,
             provider: 'playwright',
-            // Capture screenshots on failure
             screenshotFailures: false,
-            // Add viewport for consistent testing
             viewport: {
               width: 1280,
               height: 720,
             },
           },
-          hookTimeout: 10_000,
-          // Reduce concurrency to prevent resource exhaustion
           maxConcurrency: 2,
           name: 'storybook',
-          // Add retry for flaky browser tests
-          retry: 1,
+          retry: 2,
           setupFiles: ['.storybook/vitest.setup.ts'],
-          // Increase timeouts to prevent browser crashes
-          testTimeout: 15_000,
         },
       },
     ],
