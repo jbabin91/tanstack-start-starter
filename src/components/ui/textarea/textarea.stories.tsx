@@ -432,9 +432,12 @@ export const InteractiveTextarea: Story = {
 
     // Test selection
     await userEvent.tripleClick(textarea);
-    const textareaElement = textarea as HTMLTextAreaElement;
-    expect(textareaElement.selectionStart).toBe(0);
-    expect(textareaElement.selectionEnd).toBe(textareaElement.value.length);
+    // Type assertion with proper validation
+    if (!(textarea instanceof HTMLTextAreaElement)) {
+      throw new TypeError('Expected textarea to be HTMLTextAreaElement');
+    }
+    expect(textarea.selectionStart).toBe(0);
+    expect(textarea.selectionEnd).toBe(textarea.value.length);
 
     // Test clearing and retyping
     await userEvent.clear(textarea);
@@ -445,16 +448,14 @@ export const InteractiveTextarea: Story = {
 
     // Test keyboard navigation
     await userEvent.keyboard('{Home}');
-    expect((textarea as HTMLTextAreaElement).selectionStart).toBe(0);
+    expect(textarea.selectionStart).toBe(0);
 
     await userEvent.keyboard('{End}');
-    expect((textarea as HTMLTextAreaElement).selectionStart).toBe(
-      (textarea as HTMLTextAreaElement).value.length,
-    );
+    expect(textarea.selectionStart).toBe(textarea.value.length);
 
     // Test multiline input
     await userEvent.keyboard('{Enter}Second line');
-    expect((textarea as HTMLTextAreaElement).value).toContain('\n');
-    expect((textarea as HTMLTextAreaElement).value).toContain('Second line');
+    expect(textarea.value).toContain('\n');
+    expect(textarea.value).toContain('Second line');
   },
 };

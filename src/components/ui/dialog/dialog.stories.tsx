@@ -527,10 +527,13 @@ export const Interactive: Story = {
       const closeButton = closeButtons.find(
         (button) =>
           button.textContent === 'Close' &&
-          (button as HTMLButtonElement).type === 'button',
+          button instanceof HTMLButtonElement &&
+          button.type === 'button',
       );
-      expect(closeButton).toBeDefined();
-      await userEvent.click(closeButton!);
+      if (!closeButton) {
+        throw new TypeError('Expected to find close button');
+      }
+      await userEvent.click(closeButton);
 
       // Wait for close animation to complete
       await new Promise((resolve) => setTimeout(resolve, 300));
