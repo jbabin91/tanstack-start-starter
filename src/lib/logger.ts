@@ -126,7 +126,10 @@ if (typeof process !== 'undefined' && process.on) {
 
   process.on('unhandledRejection', (reason, promise) => {
     logger.fatal(
-      { err: reason as Error, promise },
+      {
+        err: reason instanceof Error ? reason : new Error(String(reason)),
+        promise,
+      },
       'Unhandled promise rejection',
     );
     // Synchronously flush the logger
