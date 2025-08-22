@@ -425,11 +425,11 @@ export const ReverseChronological: Story = {
               </div>
               <p className="text-muted-foreground text-sm">{post.content}</p>
               <div className="mt-3 flex items-center space-x-2">
-                <Button size="sm" variant="text">
+                <Button size="sm" variant="ghost">
                   <Icons.heart className="mr-1 h-3 w-3" />
                   Like
                 </Button>
-                <Button size="sm" variant="text">
+                <Button size="sm" variant="ghost">
                   <Icons.messageCircle className="mr-1 h-3 w-3" />
                   Comment
                 </Button>
@@ -486,7 +486,7 @@ export const WithCustomSentinel: Story = {
               </p>
               <div className="text-muted-foreground mt-3 flex items-center space-x-4 text-xs">
                 <span>{item.timestamp}</span>
-                <Button size="sm" variant="text">
+                <Button size="sm" variant="ghost">
                   <Icons.externalLink className="mr-1 h-3 w-3" />
                   View
                 </Button>

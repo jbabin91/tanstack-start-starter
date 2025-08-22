@@ -595,7 +595,11 @@ export const Interactive: Story = {
             <Button size="sm" variant="outlined" onClick={reset}>
               Reset
             </Button>
-            <Button size="sm" variant="text" onClick={() => setValue('123456')}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setValue('123456')}
+            >
               Fill Example
             </Button>
           </div>

@@ -243,7 +243,7 @@ export const UserProfileMenu: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="relative h-8 w-8 rounded-full" variant="text">
+        <Button className="relative h-8 w-8 rounded-full" variant="ghost">
           <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
             JD
           </div>
@@ -301,7 +301,7 @@ export const ActionMenu: Story = {
       <span className="text-sm">Project: React Dashboard</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="text">
+          <Button size="sm" variant="ghost">
             <Icons.moreHorizontal />
           </Button>
         </DropdownMenuTrigger>
@@ -350,7 +350,7 @@ export const TableRowActions: Story = {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="text">
+            <Button size="sm" variant="ghost">
               <Icons.moreHorizontal />
             </Button>
           </DropdownMenuTrigger>

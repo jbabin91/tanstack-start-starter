@@ -44,7 +44,7 @@ export const Default: Story = {
   render: () => (
     <Collapsible>
       <CollapsibleTrigger asChild>
-        <Button className="justify-between p-0" variant="text">
+        <Button className="justify-between p-0" variant="ghost">
           Can I use this with other UI libraries?
           <Icons.chevronDown className="h-4 w-4" />
         </Button>
@@ -305,7 +305,7 @@ export const NestedCollapsible: Story = {
                 <CollapsibleTrigger asChild>
                   <Button
                     className="h-8 justify-start p-0 font-normal"
-                    variant="text"
+                    variant="ghost"
                   >
                     <Icons.chevronRight className="mr-2 h-3 w-3" />
                     📁 src/
@@ -327,7 +327,7 @@ export const NestedCollapsible: Story = {
                 <CollapsibleTrigger asChild>
                   <Button
                     className="h-8 justify-start p-0 font-normal"
-                    variant="text"
+                    variant="ghost"
                   >
                     <Icons.chevronRight className="mr-2 h-3 w-3" />
                     📁 public/

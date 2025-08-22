@@ -395,7 +395,7 @@ export const WithActions: Story = {
                   <Button
                     key={action.id}
                     className="justify-start"
-                    variant="text"
+                    variant="ghost"
                     onClick={() => setSelectedAction(action.label)}
                   >
                     <action.icon className="mr-3 h-4 w-4" />

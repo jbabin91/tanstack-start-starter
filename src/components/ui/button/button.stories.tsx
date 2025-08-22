@@ -66,10 +66,10 @@ export const Secondary: Story = {
   },
 };
 
-export const Text: Story = {
+export const Ghost: Story = {
   args: {
-    children: 'Text Button',
-    variant: 'text',
+    children: 'Ghost Button',
+    variant: 'ghost',
   },
 };
 
