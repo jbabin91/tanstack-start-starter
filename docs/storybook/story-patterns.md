@@ -716,12 +716,12 @@ All stories must reflect the current component API standards:
 // ✅ CORRECT: Current API
 <Button color="error" variant="contained">Delete</Button>
 <Button color="primary" variant="outlined">Edit</Button>
-<Button color="secondary" variant="text">Cancel</Button>
+<Button color="secondary" variant="ghost">Cancel</Button>
 
 // ❌ INCORRECT: Don't use default shadcn patterns
 <Button variant="destructive">Delete</Button>  // Use color="error"
 <Button variant="outline">Edit</Button>       // Use variant="outlined"
-<Button variant="ghost">Cancel</Button>       // Use variant="text"
+<Button variant="text">Cancel</Button>       // Use variant="ghost"
 ```
 
 ### All Components

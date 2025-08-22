@@ -29,7 +29,8 @@ const buttonVariants = cva(
       },
       variant: {
         contained: 'border shadow-xs',
-        text: 'bg-transparent shadow-none text-primary hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        ghost:
+          'bg-transparent shadow-none text-primary hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         outlined:
           'border bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
         link: 'bg-transparent shadow-none text-foreground underline-offset-4 hover:underline',

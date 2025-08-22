@@ -64,7 +64,7 @@ export function NavBar() {
         ) : (
           <>
             <Link to="/login">
-              <Button size="sm" variant="text">
+              <Button size="sm" variant="ghost">
                 Sign In
               </Button>
             </Link>

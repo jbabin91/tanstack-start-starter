@@ -130,7 +130,7 @@ export function ForgotPasswordForm({
             <Button
               className="w-full"
               disabled={isLoading}
-              variant="text"
+              variant="ghost"
               onClick={handleBackToForm}
             >
               Back to form
