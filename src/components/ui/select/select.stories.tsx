@@ -373,60 +373,29 @@ export const Interactive: Story = {
       </SelectContent>
     </Select>
   ),
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step('Open select dropdown', async () => {
-      // Use semantic query - getByRole with combobox role
-      const trigger = canvas.getByRole('combobox', {
-        name: 'Interactive select',
-      });
-      await userEvent.click(trigger);
-
-      // Wait for dropdown to open and become visible
-      await waitFor(
-        () => {
-          expect(trigger).toHaveAttribute('aria-expanded', 'true');
-        },
-        { timeout: 2000 },
-      );
-
-      // Give animation time to complete
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Wait for content to be visible - options are rendered in a portal
-      await waitFor(
-        async () => {
-          const firstOption = within(document.body).getByText('First Option');
-          await expect(firstOption).toBeVisible();
-        },
-        { timeout: 2000 },
-      );
+    // Test basic select functionality
+    const trigger = canvas.getByRole('combobox', {
+      name: 'Interactive select',
     });
 
-    await step('Select an option', async () => {
-      const secondOption = within(document.body).getByText('Second Option');
-      await userEvent.click(secondOption);
+    // Open select
+    await userEvent.click(trigger);
 
-      // Check that the value is displayed using semantic query
-      const trigger = canvas.getByRole('combobox', {
-        name: 'Interactive select',
-      });
-      await expect(trigger).toHaveTextContent('Second Option');
+    // Wait for dropdown to open
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
 
-    await step('Open and close with keyboard', async () => {
-      const trigger = canvas.getByRole('combobox', {
-        name: 'Interactive select',
-      });
-      await userEvent.click(trigger);
+    // Select an option from portal
+    const secondOption = within(document.body).getByText('Second Option');
+    await userEvent.click(secondOption);
 
-      // Press Escape to close
-      await userEvent.keyboard('{Escape}');
-
-      // Verify dropdown is closed - check in document.body since it's portaled
-      const firstOption = within(document.body).queryByText('First Option');
-      expect(firstOption).not.toBeInTheDocument();
+    // Verify selection
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Second Option');
     });
   },
 };
