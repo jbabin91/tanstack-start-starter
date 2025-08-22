@@ -45,7 +45,7 @@
     }
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.872.0",
+    "@aws-sdk/client-s3": "^3.873.0",
     "@base-ui-components/react": "1.0.0-beta.2",
     "@dotenvx/dotenvx": "^1.49.0",
     "@hookform/resolvers": "^5.2.1",
@@ -65,7 +65,7 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "js-cookie": "^3.0.5",
-    "lucide-react": "^0.540.0",
+    "lucide-react": "^0.541.0",
     "nanoid": "^5.1.5",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",
