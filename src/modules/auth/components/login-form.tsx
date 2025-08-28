@@ -1,5 +1,3 @@
-'use client';
-
 import { arktypeResolver } from '@hookform/resolvers/arktype';
 import { type } from 'arktype';
 import { useState } from 'react';

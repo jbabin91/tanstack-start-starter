@@ -1,8 +1,3 @@
-/**
- * Enhanced utility types for better type safety and developer experience
- * Using modern TypeScript 5.x features
- */
-
 // ============================================================================
 // API Response Types
 // ============================================================================

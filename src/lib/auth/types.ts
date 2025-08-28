@@ -1,10 +1,3 @@
-/**
- * Role and Permission Types for TanStack Start Application
- *
- * This module defines the type system for roles and permissions,
- * used throughout the application for access control.
- */
-
 import type {
   organizationRoleEnum,
   systemRoleEnum,

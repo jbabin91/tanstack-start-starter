@@ -1,10 +1,3 @@
-/**
- * Device Fingerprinting Utilities
- *
- * Creates unique fingerprints for devices based on available
- * request and session information for security purposes.
- */
-
 import type { DeviceType } from './user-agent-parser';
 
 export type FingerprintData = {

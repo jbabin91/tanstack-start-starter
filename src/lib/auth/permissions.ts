@@ -1,10 +1,3 @@
-/**
- * Permission computation utilities for role-based access control
- *
- * This module contains the implementation logic for computing and checking permissions
- * based on system roles and organization roles.
- */
-
 import {
   ORGANIZATION_ROLES,
   type OrganizationRole,

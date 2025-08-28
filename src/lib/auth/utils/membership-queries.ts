@@ -1,8 +1,3 @@
-/**
- * Database query helpers for user membership and organization context
- * Centralizes membership query logic to follow DRY principles
- */
-
 import { and, eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';

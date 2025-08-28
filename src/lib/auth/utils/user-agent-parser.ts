@@ -1,10 +1,3 @@
-/**
- * User Agent Parsing Utilities
- *
- * Provides type-safe parsing of user agent strings using ua-parser-js
- * to extract device, browser, and OS information with high accuracy.
- */
-
 import { UAParser } from 'ua-parser-js';
 
 export type DeviceType = 'mobile' | 'desktop' | 'tablet' | 'unknown';
