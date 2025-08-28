@@ -1,12 +1,6 @@
-/**
- * Account Dashboard Component
- *
- * Private account management dashboard showing user profile information,
- * account statistics, and quick access to account features.
- */
-
 import { Link } from '@tanstack/react-router';
 
+import { DebugIPHeaders } from '@/components/debug-ip-headers';
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -261,6 +255,7 @@ export function AccountDashboard() {
           </CardContent>
         </Card>
       )}
+      <DebugIPHeaders />
     </div>
   );
 }

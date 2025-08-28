@@ -85,7 +85,9 @@ const options = {
   plugins: [
     admin(),
     reactStartCookies(),
-    multiSession(),
+    multiSession({
+      maximumSessions: 5, // Allow up to 5 concurrent sessions per user
+    }),
     organization({
       organizationCreation: {
         afterCreate: async ({ organization, user }) => {
@@ -146,6 +148,7 @@ const options = {
         required: false,
       },
     },
+    freshAge: 60 * 60 * 2, // 2 hours - require fresh session for sensitive operations
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // Cache duration in seconds (5 minutes)
