@@ -4,7 +4,14 @@ import {
   createUpdateSchema,
 } from 'drizzle-arktype';
 import { relations } from 'drizzle-orm';
-import { boolean, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  index,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 
 import { nanoid } from '@/lib/nanoid';
 
@@ -20,32 +27,36 @@ export const organizationRoleEnum = pgEnum('organization_role', [
   'owner',
 ]);
 
-export const users = pgTable('users', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  name: text().notNull(),
-  email: text().notNull().unique(),
-  emailVerified: boolean()
-    .$defaultFn(() => false)
-    .notNull(),
-  image: text(),
-  createdAt: timestamp()
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp()
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  role: systemRoleEnum().default('user'),
-  banned: boolean(),
-  banReason: text(),
-  banExpires: timestamp(),
-  username: text().unique(),
-  displayUsername: text(),
-  address: text(),
-  phone: text(),
-  website: text(),
-});
+export const users = pgTable(
+  'users',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    name: text().notNull(),
+    email: text().notNull().unique(),
+    emailVerified: boolean()
+      .$defaultFn(() => false)
+      .notNull(),
+    image: text(),
+    createdAt: timestamp()
+      .$defaultFn(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    updatedAt: timestamp()
+      .$defaultFn(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    role: systemRoleEnum().default('user'),
+    banned: boolean(),
+    banReason: text(),
+    banExpires: timestamp(),
+    username: text().unique(),
+    displayUsername: text(),
+    address: text(),
+    phone: text(),
+    website: text(),
+  },
+  (table) => [index('users_email_idx').on(table.email)],
+);
 
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
@@ -55,22 +66,30 @@ export type InsertUser = typeof insertUserSchema.infer;
 export type User = typeof selectUserSchema.infer;
 export type UpdateUser = typeof updateUserSchema.infer;
 
-export const sessions = pgTable('sessions', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  expiresAt: timestamp().notNull(),
-  token: text().notNull().unique(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
-  ipAddress: text(),
-  userAgent: text(),
-  userId: text()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  impersonatedBy: text(),
-  activeOrganizationId: text(),
-});
+export const sessions = pgTable(
+  'sessions',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    expiresAt: timestamp().notNull(),
+    token: text().notNull().unique(),
+    createdAt: timestamp().notNull(),
+    updatedAt: timestamp().notNull(),
+    ipAddress: text(),
+    userAgent: text(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    impersonatedBy: text(),
+    activeOrganizationId: text(),
+  },
+  (table) => [
+    index('sessions_user_id_idx').on(table.userId),
+    index('sessions_token_idx').on(table.token),
+    index('sessions_expires_at_idx').on(table.expiresAt),
+  ],
+);
 
 export const insertSessionSchema = createInsertSchema(sessions);
 export const selectSessionSchema = createSelectSchema(sessions);
@@ -80,25 +99,29 @@ export type InsertSession = typeof insertSessionSchema.infer;
 export type Session = typeof selectSessionSchema.infer;
 export type UpdateSession = typeof updateSessionSchema.infer;
 
-export const accounts = pgTable('accounts', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  accountId: text().notNull(),
-  providerId: text().notNull(),
-  userId: text()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  accessToken: text(),
-  refreshToken: text(),
-  idToken: text(),
-  accessTokenExpiresAt: timestamp(),
-  refreshTokenExpiresAt: timestamp(),
-  scope: text(),
-  password: text(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
-});
+export const accounts = pgTable(
+  'accounts',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    accountId: text().notNull(),
+    providerId: text().notNull(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    accessToken: text(),
+    refreshToken: text(),
+    idToken: text(),
+    accessTokenExpiresAt: timestamp(),
+    refreshTokenExpiresAt: timestamp(),
+    scope: text(),
+    password: text(),
+    createdAt: timestamp().notNull(),
+    updatedAt: timestamp().notNull(),
+  },
+  (table) => [index('accounts_user_id_idx').on(table.userId)],
+);
 
 export const insertAccountSchema = createInsertSchema(accounts);
 export const selectAccountSchema = createSelectSchema(accounts);
@@ -108,16 +131,20 @@ export type InsertAccount = typeof insertAccountSchema.infer;
 export type Account = typeof selectAccountSchema.infer;
 export type UpdateAccount = typeof updateAccountSchema.infer;
 
-export const verifications = pgTable('verifications', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  identifier: text().notNull(),
-  value: text().notNull(),
-  expiresAt: timestamp().notNull(),
-  createdAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
-  updatedAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
-});
+export const verifications = pgTable(
+  'verifications',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    identifier: text().notNull(),
+    value: text().notNull(),
+    expiresAt: timestamp().notNull(),
+    createdAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
+    updatedAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
+  },
+  (table) => [index('verifications_identifier_idx').on(table.identifier)],
+);
 
 export const insertVerificationSchema = createInsertSchema(verifications);
 export const selectVerificationSchema = createSelectSchema(verifications);
@@ -127,16 +154,20 @@ export type InsertVerification = typeof insertVerificationSchema.infer;
 export type Verification = typeof selectVerificationSchema.infer;
 export type UpdateVerification = typeof updateVerificationSchema.infer;
 
-export const organizations = pgTable('organizations', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  name: text().notNull(),
-  slug: text().unique(),
-  logo: text(),
-  createdAt: timestamp().notNull(),
-  metadata: text(),
-});
+export const organizations = pgTable(
+  'organizations',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    name: text().notNull(),
+    slug: text().unique(),
+    logo: text(),
+    createdAt: timestamp().notNull(),
+    metadata: text(),
+  },
+  (table) => [index('organizations_slug_idx').on(table.slug)],
+);
 
 export const insertOrganizationSchema = createInsertSchema(organizations);
 export const selectOrganizationSchema = createSelectSchema(organizations);
@@ -146,19 +177,26 @@ export type InsertOrganization = typeof insertOrganizationSchema.infer;
 export type Organization = typeof selectOrganizationSchema.infer;
 export type UpdateOrganization = typeof updateOrganizationSchema.infer;
 
-export const members = pgTable('members', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  organizationId: text()
-    .notNull()
-    .references(() => organizations.id, { onDelete: 'cascade' }),
-  userId: text()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  role: organizationRoleEnum().default('member').notNull(),
-  createdAt: timestamp().notNull(),
-});
+export const members = pgTable(
+  'members',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    organizationId: text()
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    role: organizationRoleEnum().default('member').notNull(),
+    createdAt: timestamp().notNull(),
+  },
+  (table) => [
+    index('members_user_id_idx').on(table.userId),
+    index('members_organization_id_idx').on(table.organizationId),
+  ],
+);
 
 export const insertMemberSchema = createInsertSchema(members);
 export const selectMemberSchema = createSelectSchema(members);
@@ -168,21 +206,28 @@ export type InsertMember = typeof insertMemberSchema.infer;
 export type Member = typeof selectMemberSchema.infer;
 export type UpdateMember = typeof updateMemberSchema.infer;
 
-export const invitations = pgTable('invitations', {
-  id: text()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  organizationId: text()
-    .notNull()
-    .references(() => organizations.id, { onDelete: 'cascade' }),
-  email: text().notNull(),
-  role: organizationRoleEnum().default('member'),
-  status: text().default('pending').notNull(),
-  expiresAt: timestamp().notNull(),
-  inviterId: text()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-});
+export const invitations = pgTable(
+  'invitations',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    organizationId: text()
+      .notNull()
+      .references(() => organizations.id, { onDelete: 'cascade' }),
+    email: text().notNull(),
+    role: organizationRoleEnum().default('member'),
+    status: text().default('pending').notNull(),
+    expiresAt: timestamp().notNull(),
+    inviterId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    index('invitations_organization_id_idx').on(table.organizationId),
+    index('invitations_email_idx').on(table.email),
+  ],
+);
 
 export const insertInvitationSchema = createInsertSchema(invitations);
 export const selectInvitationSchema = createSelectSchema(invitations);

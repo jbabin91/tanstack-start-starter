@@ -11,43 +11,48 @@ export const sessionQueries = {
     queryOptions({
       queryKey: [...sessionQueries.lists()],
       queryFn: () => fetchSessions(),
-      refetchInterval: 30_000,
-      staleTime: 60_000,
+      refetchInterval: 1000 * 60 * 3, // 3 minutes
+      staleTime: 1000 * 60 * 2, // 2 minutes
     }),
   details: () => [...sessionQueries.all(), 'detail'] as const,
   detail: (type: 'current') =>
     queryOptions({
       queryKey: [...sessionQueries.details(), type],
       queryFn: () => fetchCurrentSession(),
-      refetchInterval: 10_000,
-      staleTime: 120_000,
+      refetchInterval: 1000 * 60 * 2, // 2 minutes
+      staleTime: 1000 * 60, // 1 minute
     }),
   activity: (sessionId: string) =>
     queryOptions({
       queryKey: [...sessionQueries.all(), 'activity', sessionId],
       queryFn: () => fetchSessionActivity({ data: { sessionId } }),
       enabled: !!sessionId,
-      refetchInterval: 300_000, // 5 minutes
-      staleTime: 180_000, // 3 minutes
+      refetchInterval: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 3, // 3 minutes
     }),
 };
 
 /**
- * Hook to get all sessions for the current user
+ * Get all sessions for the current user
+ * @returns The list of sessions
  */
 export function useSessions() {
   return useQuery(sessionQueries.list());
 }
 
 /**
- * Hook to get current session information
+ * Get current session information
+ * @returns The current session
  */
 export function useCurrentSession() {
   return useQuery(sessionQueries.detail('current'));
 }
 
 /**
- * Hook to get session activity for a specific session
+ * Get session activity for a specific session
+ * @param sessionId - The ID of the session to get activity for
+ * @param enabled - Whether to enable the query
+ * @returns The session activity
  */
 export function useSessionActivity({
   sessionId,

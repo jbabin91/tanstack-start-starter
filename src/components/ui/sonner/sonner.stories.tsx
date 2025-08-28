@@ -344,7 +344,7 @@ export const CustomStyling: Story = {
           variant="outlined"
           onClick={() =>
             toast.success('Operation successful', {
-              duration: 10_000,
+              duration: 1000 * 10,
               description: 'This toast stays for 10 seconds',
             })
           }

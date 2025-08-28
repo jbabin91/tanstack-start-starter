@@ -60,7 +60,10 @@ export function generateActivityDetails(
     case 'logout': {
       return {
         method: faker.helpers.arrayElement(['manual', 'timeout', 'force']),
-        sessionDurationMs: faker.number.int({ min: 60_000, max: 7_200_000 }),
+        sessionDurationMs: faker.number.int({
+          min: 1000 * 60,
+          max: 1000 * 60 * 120,
+        }), // 1 min to 2 hours
       };
     }
     case 'page_view': {

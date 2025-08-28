@@ -10,7 +10,6 @@ export const authQueries = {
    * Get all auth-related queries (for invalidation)
    */
   all: () => ({ queryKey: ['auth'] as const }),
-
   /**
    * Get current authenticated user with permissions and organization context
    * Permissions are computed automatically by better-auth user callback
@@ -19,8 +18,8 @@ export const authQueries = {
     queryOptions({
       queryKey: ['auth', 'currentUser'] as const,
       queryFn: () => getUser(),
-      staleTime: 300_000, // 5 minutes
-      refetchInterval: 600_000, // 10 minutes
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchInterval: 1000 * 60 * 10, // 10 minutes
     }),
 };
 

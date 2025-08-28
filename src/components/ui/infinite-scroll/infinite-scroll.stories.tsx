@@ -35,7 +35,7 @@ const generateItems = (start: number, count: number) => {
       Math.floor(Math.random() * 4)
     ],
     timestamp: new Date(
-      Date.now() - Math.random() * 10_000_000_000,
+      Date.now() - Math.random() * (1000 * 60 * 60 * 24 * 115), // ~115 days ago max
     ).toLocaleDateString(),
   }));
 };

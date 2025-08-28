@@ -19,12 +19,19 @@ export const userQueries = {
     }),
 };
 
-// Fetch all users
+/**
+ * Get all users
+ * @returns The list of users
+ */
 export function useUsers() {
   return useSuspenseQuery(userQueries.list());
 }
 
-// Fetch a user by ID
+/**
+ * Get a user by ID
+ * @param param0 - The ID of the user to get
+ * @returns The user
+ */
 export function useUser({ id }: { id: string }) {
   return useSuspenseQuery(userQueries.detail(id));
 }

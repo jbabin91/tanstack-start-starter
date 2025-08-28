@@ -18,12 +18,20 @@ export const postQueries = {
     }),
 };
 
-// Fetch a post by ID
+/**
+ * Get a post by ID
+ * @param param0 - The ID of the post to get
+ * @returns The post
+ */
 export function usePost({ id }: { id: string }) {
   return useSuspenseQuery(postQueries.detail(id));
 }
 
-// Fetch posts by user ID
+/**
+ * Get posts by user ID
+ * @param param0 - The ID of the user to get posts for
+ * @returns The posts
+ */
 export function usePostsByUserId({ userId }: { userId: string }) {
   return useSuspenseQuery(postQueries.byUser(userId));
 }
