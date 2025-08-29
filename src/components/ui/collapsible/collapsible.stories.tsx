@@ -15,7 +15,7 @@ import {
 } from './collapsible';
 
 const meta: Meta<typeof Collapsible> = {
-  title: 'UI/Collapsible',
+  title: 'UI/Surfaces/Collapsible',
   component: Collapsible,
   parameters: {
     layout: 'centered',

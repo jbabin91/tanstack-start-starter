@@ -9,7 +9,7 @@ import { isElementVisible } from '@/test/utils';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './hover-card';
 
 const meta: Meta<typeof HoverCard> = {
-  title: 'UI/HoverCard',
+  title: 'UI/Overlays/Hover Card',
   component: HoverCard,
   parameters: {
     layout: 'centered',

@@ -23,7 +23,7 @@ import {
 } from './context-menu';
 
 const meta: Meta<typeof ContextMenu> = {
-  title: 'UI/Context Menu',
+  title: 'UI/Navigation/Context Menu',
   component: ContextMenu,
   parameters: {
     layout: 'centered',

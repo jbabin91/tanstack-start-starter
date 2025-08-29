@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/menubar';
 
 const meta = {
-  title: 'UI/Menubar',
+  title: 'UI/Navigation/Menubar',
   component: Menubar,
   parameters: {
     layout: 'centered',

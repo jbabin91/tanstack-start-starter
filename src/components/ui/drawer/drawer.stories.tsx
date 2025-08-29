@@ -20,7 +20,7 @@ import {
 } from './drawer';
 
 const meta: Meta<typeof Drawer> = {
-  title: 'UI/Drawer',
+  title: 'UI/Navigation/Drawer',
   component: Drawer,
   parameters: {
     layout: 'centered',

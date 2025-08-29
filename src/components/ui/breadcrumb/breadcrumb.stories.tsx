@@ -14,7 +14,7 @@ import {
 } from './breadcrumb';
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: 'UI/Breadcrumb',
+  title: 'UI/Navigation/Breadcrumb',
   component: Breadcrumb,
   parameters: {
     layout: 'centered',

@@ -15,7 +15,7 @@ import {
 import { cn } from '@/utils/cn';
 
 const meta = {
-  title: 'UI/NavigationMenu',
+  title: 'UI/Navigation/Navigation Menu',
   component: NavigationMenu,
   parameters: {
     layout: 'centered',

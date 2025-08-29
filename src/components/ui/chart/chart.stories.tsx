@@ -25,7 +25,7 @@ import {
 } from './chart';
 
 const meta: Meta<typeof ChartContainer> = {
-  title: 'UI/Chart',
+  title: 'UI/Data Display/Chart',
   component: ChartContainer,
   parameters: {
     layout: 'centered',

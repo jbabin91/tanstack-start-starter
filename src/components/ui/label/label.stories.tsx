@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 const meta = {
-  title: 'UI/Label',
+  title: 'UI/Inputs/Label',
   component: Label,
   parameters: {
     layout: 'centered',

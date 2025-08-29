@@ -14,7 +14,7 @@ import {
 } from './carousel';
 
 const meta: Meta<typeof Carousel> = {
-  title: 'UI/Carousel',
+  title: 'UI/Surfaces/Carousel',
   component: Carousel,
   parameters: {
     layout: 'centered',

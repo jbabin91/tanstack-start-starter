@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { InfiniteScroll } from './infinite-scroll';
 
 const meta: Meta<typeof InfiniteScroll> = {
-  title: 'UI/InfiniteScroll',
+  title: 'UI/Layout/Infinite Scroll',
   component: InfiniteScroll,
   parameters: {
     layout: 'centered',

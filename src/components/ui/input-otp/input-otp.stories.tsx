@@ -13,7 +13,7 @@ import {
 } from './input-otp';
 
 const meta: Meta<typeof InputOTP> = {
-  title: 'UI/InputOTP',
+  title: 'UI/Inputs/Input OTP',
   component: InputOTP,
   parameters: {
     layout: 'centered',
