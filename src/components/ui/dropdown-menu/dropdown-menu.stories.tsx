@@ -3,6 +3,7 @@ import { expect, userEvent, waitFor, within } from '@storybook/test';
 import * as React from 'react';
 
 import { Icons } from '@/components/icons';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { isElementVisible } from '@/test/utils';
 
@@ -241,58 +242,109 @@ export const WithSubmenus: Story = {
 
 export const UserProfileMenu: Story = {
   render: () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="relative h-8 w-8 rounded-full" variant="ghost">
-          <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
-            JD
-          </div>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent forceMount align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">John Doe</p>
-            <p className="text-muted-foreground text-xs leading-none">
-              john.doe@example.com
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="relative h-8 w-8 rounded-full p-0" variant="ghost">
+            <Avatar className="h-8 w-8">
+              <AvatarImage alt="@johndoe" src="https://github.com/shadcn.png" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm leading-none font-medium">John Doe</p>
+              <p className="text-muted-foreground text-xs leading-none">
+                john.doe@example.com
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <Icons.user className="mr-2" />
+              Profile
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Icons.settings className="mr-2" />
+              Settings
+              <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Icons.bell className="mr-2" />
+              Notifications
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Icons.user className="mr-2" />
-            Profile
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            <Icons.shield className="mr-2" />
+            Team
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Icons.settings className="mr-2" />
-            Settings
-            <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
+            <Icons.users className="mr-2" />
+            Invite users
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Icons.bell className="mr-2" />
-            Notifications
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="error">
+            <Icons.ban className="mr-2" />
+            Log out
+            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Icons.shield className="mr-2" />
-          Team
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Icons.users className="mr-2" />
-          Invite users
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="error">
-          <Icons.ban className="mr-2" />
-          Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Find the user profile button
+    const profileButton = canvas.getByRole('button');
+    expect(profileButton).toBeVisible();
+
+    // Click to open the dropdown
+    await userEvent.click(profileButton);
+
+    // Wait for dropdown to appear in portal
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeVisible();
+    });
+
+    // Check user info is visible
+    expect(screen.getByText('John Doe')).toBeVisible();
+    expect(screen.getByText('john.doe@example.com')).toBeVisible();
+
+    // Check menu items
+    expect(screen.getByRole('menuitem', { name: /profile/i })).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /settings/i })).toBeVisible();
+    expect(
+      screen.getByRole('menuitem', { name: /notifications/i }),
+    ).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /team/i })).toBeVisible();
+    expect(
+      screen.getByRole('menuitem', { name: /invite users/i }),
+    ).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /log out/i })).toBeVisible();
+
+    // Check keyboard shortcuts are displayed
+    expect(screen.getByText('⇧⌘P')).toBeVisible();
+    expect(screen.getByText('⌘,')).toBeVisible();
+    expect(screen.getByText('⇧⌘Q')).toBeVisible();
+
+    // Click on profile item
+    await userEvent.click(screen.getByRole('menuitem', { name: /profile/i }));
+
+    // Menu should close after clicking
+    await waitFor(() => {
+      const menu = screen.queryByRole('menu');
+      expect(menu).toSatisfy(
+        (el: HTMLElement | null) => el === null || !isElementVisible(el),
+      );
+    });
+  },
 };
 
 export const ActionMenu: Story = {
