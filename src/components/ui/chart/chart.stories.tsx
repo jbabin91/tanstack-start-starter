@@ -77,11 +77,11 @@ const pieData = [
 const chartConfig = {
   desktop: {
     label: 'Desktop',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   mobile: {
     label: 'Mobile',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
 } satisfies ChartConfig;
 
@@ -91,23 +91,23 @@ const pieChartConfig = {
   },
   chrome: {
     label: 'Chrome',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   safari: {
     label: 'Safari',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
   firefox: {
     label: 'Firefox',
-    color: 'hsl(var(--chart-3))',
+    color: 'var(--chart-3)',
   },
   edge: {
     label: 'Edge',
-    color: 'hsl(var(--chart-4))',
+    color: 'var(--chart-4)',
   },
   other: {
     label: 'Other',
-    color: 'hsl(var(--chart-5))',
+    color: 'var(--chart-5)',
   },
 } satisfies ChartConfig;
 
@@ -226,27 +226,26 @@ export const AreaChart_: Story = {
 export const PieChart_: Story = {
   name: 'Pie Chart',
   render: () => (
-    <ChartContainer
-      className="mx-auto aspect-square max-h-[250px]"
-      config={pieChartConfig}
-    >
-      <PieChart>
-        <ChartTooltip
-          content={<ChartTooltipContent nameKey="visitors" />}
-          cursor={false}
-        />
-        <Pie
-          cx="50%"
-          cy="50%"
-          data={pieData}
-          dataKey="visitors"
-          innerRadius={60}
-          nameKey="browser"
-          outerRadius={80}
-          strokeWidth={5}
-        />
-      </PieChart>
-    </ChartContainer>
+    <div className="flex justify-center">
+      <ChartContainer className="h-[250px] w-[250px]" config={pieChartConfig}>
+        <PieChart>
+          <ChartTooltip
+            content={<ChartTooltipContent nameKey="visitors" />}
+            cursor={false}
+          />
+          <Pie
+            cx="50%"
+            cy="50%"
+            data={pieData}
+            dataKey="visitors"
+            innerRadius={60}
+            nameKey="browser"
+            outerRadius={80}
+            strokeWidth={5}
+          />
+        </PieChart>
+      </ChartContainer>
+    </div>
   ),
   parameters: {
     docs: {
@@ -290,12 +289,12 @@ export const WithIcons: Story = {
     const configWithIcons = {
       desktop: {
         label: 'Desktop',
-        color: 'hsl(var(--chart-1))',
+        color: 'var(--chart-1)',
         icon: Icons.monitor,
       },
       mobile: {
         label: 'Mobile',
-        color: 'hsl(var(--chart-2))',
+        color: 'var(--chart-2)',
         icon: Icons.smartphone,
       },
     } satisfies ChartConfig;
@@ -399,15 +398,15 @@ export const MultipleDataSets: Story = {
     const multiConfig = {
       desktop: {
         label: 'Desktop',
-        color: 'hsl(var(--chart-1))',
+        color: 'var(--chart-1)',
       },
       mobile: {
         label: 'Mobile',
-        color: 'hsl(var(--chart-2))',
+        color: 'var(--chart-2)',
       },
       tablet: {
         label: 'Tablet',
-        color: 'hsl(var(--chart-3))',
+        color: 'var(--chart-3)',
       },
     } satisfies ChartConfig;
 
@@ -472,7 +471,7 @@ export const SmallChart: Story = {
         <ChartContainer
           className="h-[80px] w-full"
           config={{
-            desktop: { label: 'Desktop', color: 'hsl(var(--chart-1))' },
+            desktop: { label: 'Desktop', color: 'var(--chart-1)' },
           }}
         >
           <AreaChart
@@ -497,7 +496,7 @@ export const SmallChart: Story = {
         <ChartContainer
           className="h-[80px] w-full"
           config={{
-            mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+            mobile: { label: 'Mobile', color: 'var(--chart-2)' },
           }}
         >
           <AreaChart
@@ -522,7 +521,7 @@ export const SmallChart: Story = {
         <ChartContainer
           className="h-[80px] w-full"
           config={{
-            revenue: { label: 'Revenue', color: 'hsl(var(--chart-3))' },
+            revenue: { label: 'Revenue', color: 'var(--chart-3)' },
           }}
         >
           <LineChart
@@ -549,7 +548,7 @@ export const SmallChart: Story = {
         <ChartContainer
           className="h-[80px] w-full"
           config={{
-            conversion: { label: 'Conversion', color: 'hsl(var(--chart-4))' },
+            conversion: { label: 'Conversion', color: 'var(--chart-4)' },
           }}
         >
           <BarChart
