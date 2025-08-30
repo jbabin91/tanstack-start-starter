@@ -3,6 +3,7 @@ import { expect, within } from '@storybook/test';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import {
   Card,
@@ -185,16 +186,16 @@ export const LoadingCard: Story = {
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>
-        <div className="animate-pulse space-y-2">
-          <div className="bg-muted h-4 w-3/4 rounded"></div>
-          <div className="bg-muted h-3 w-1/2 rounded"></div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="animate-pulse space-y-2">
-          <div className="bg-muted h-3 rounded"></div>
-          <div className="bg-muted h-3 w-5/6 rounded"></div>
-          <div className="bg-muted h-3 w-4/6 rounded"></div>
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-5/6" />
+          <Skeleton className="h-3 w-4/6" />
         </div>
       </CardContent>
     </Card>

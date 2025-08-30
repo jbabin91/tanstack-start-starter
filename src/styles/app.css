@@ -78,9 +78,9 @@
   --primary: oklch(0.15 0.042 265.755);
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --secondary-foreground: oklch(0.45 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted-foreground: oklch(0.52 0.046 257.417);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
   /* Base semantic colors - lighter, modern feel for buttons/badges */
@@ -108,10 +108,10 @@
   --destructive-foreground: oklch(0.98 0.01 25);
 
   /* Text variants - for colored text on light backgrounds */
-  --error-text: oklch(0.25 0.18 25);
-  --success-text: oklch(0.25 0.13 165);
-  --warning-text: oklch(0.22 0.12 85);
-  --info-text: oklch(0.25 0.12 255);
+  --error-text: oklch(0.55 0.22 25);
+  --success-text: oklch(0.45 0.18 165);
+  --warning-text: oklch(0.52 0.18 85);
+  --info-text: oklch(0.52 0.16 255);
 
   /* Pagination disabled text - dark enough to work with opacity */
   --pagination-disabled: oklch(0.05 0.042 265.755);
@@ -179,10 +179,10 @@
   --destructive-foreground: oklch(0.98 0.01 25);
 
   /* Text variants - for colored text on dark backgrounds */
-  --error-text: oklch(0.65 0.19 25);
-  --success-text: oklch(0.65 0.14 165);
-  --warning-text: oklch(0.7 0.13 85);
-  --info-text: oklch(0.65 0.13 255);
+  --error-text: oklch(0.78 0.24 25);
+  --success-text: oklch(0.74 0.18 165);
+  --warning-text: oklch(0.78 0.18 85);
+  --info-text: oklch(0.78 0.17 255);
 
   /* Pagination disabled text - works with opacity on dark backgrounds */
   --pagination-disabled: oklch(0.85 0.042 265.755);

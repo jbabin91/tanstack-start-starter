@@ -31,6 +31,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import {
   Sidebar,
@@ -158,9 +160,9 @@ export const Default: Story = {
           </SidebarContent>
         </Sidebar>
         <SidebarInset>
-          <header className="border-sidebar-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="mx-2 h-4 w-px bg-gray-200" />
+            <Separator className="mx-2 h-4" orientation="vertical" />
             <h1 className="text-lg font-semibold">Dashboard</h1>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">
@@ -336,9 +338,9 @@ export const CollapsibleExample: Story = {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="border-sidebar-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="mx-2 h-4 w-px bg-gray-200" />
+            <Separator className="mx-2 h-4" orientation="vertical" />
             <h1 className="text-lg font-semibold">Collapsible Sidebar</h1>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">
@@ -488,9 +490,9 @@ export const WithNestedMenus: Story = {
           </SidebarContent>
         </Sidebar>
         <SidebarInset>
-          <header className="border-sidebar-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="mx-2 h-4 w-px bg-gray-200" />
+            <Separator className="mx-2 h-4" orientation="vertical" />
             <h1 className="text-lg font-semibold">Nested Menus</h1>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">
@@ -583,9 +585,9 @@ export const WithSearch: Story = {
           </SidebarContent>
         </Sidebar>
         <SidebarInset>
-          <header className="border-sidebar-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="mx-2 h-4 w-px bg-gray-200" />
+            <Separator className="mx-2 h-4" orientation="vertical" />
             <h1 className="text-lg font-semibold">Search Sidebar</h1>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">
@@ -625,10 +627,10 @@ export const LoadingState: Story = {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
-              <div className="bg-muted h-8 w-8 animate-pulse rounded-lg" />
+              <Skeleton className="h-8 w-8 rounded-lg" />
               <div className="space-y-1">
-                <div className="bg-muted h-3 w-20 animate-pulse rounded" />
-                <div className="bg-muted h-2 w-16 animate-pulse rounded" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-2 w-16" />
               </div>
             </div>
           </SidebarHeader>
@@ -658,9 +660,9 @@ export const LoadingState: Story = {
           </SidebarContent>
         </Sidebar>
         <SidebarInset>
-          <header className="border-sidebar-border flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="mx-2 h-4 w-px bg-gray-200" />
+            <Separator className="mx-2 h-4" orientation="vertical" />
             <h1 className="text-lg font-semibold">Loading State</h1>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">

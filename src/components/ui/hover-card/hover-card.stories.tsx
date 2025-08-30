@@ -3,6 +3,7 @@ import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
 import * as React from 'react';
 
 import { Icons } from '@/components/icons';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { isElementVisible } from '@/test/utils';
 
@@ -30,7 +31,9 @@ export const Default: Story = {
   render: () => (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Button variant="link">@shadcn</Button>
+        <span className="text-muted-foreground hover:text-foreground cursor-help font-medium transition-colors duration-200">
+          @shadcn
+        </span>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
         <div className="flex justify-between space-x-4">
@@ -58,15 +61,21 @@ export const UserProfile: Story = {
       <span className="text-muted-foreground text-sm">Designed by</span>
       <HoverCard>
         <HoverCardTrigger asChild>
-          <Button className="p-0 font-semibold" variant="link">
+          <Button
+            className="p-0 font-semibold"
+            color="secondary"
+            variant="link"
+          >
             Jane Cooper
           </Button>
         </HoverCardTrigger>
         <HoverCardContent className="w-80">
           <div className="flex justify-between space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-sm font-medium text-white">
-              JC
-            </div>
+            <Avatar className="h-12 w-12">
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                JC
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1 space-y-1">
               <h4 className="text-sm font-semibold">Jane Cooper</h4>
               <p className="text-muted-foreground text-sm">
@@ -115,9 +124,11 @@ export const ProductCard: Story = {
           <HoverCardContent className="w-96">
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded bg-black">
-                  <span className="text-lg font-bold text-white">N</span>
-                </div>
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback className="bg-black text-lg font-bold text-white">
+                    N
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <h4 className="font-semibold">Next.js 14</h4>
                   <p className="text-muted-foreground text-sm">by Vercel</p>
@@ -162,9 +173,11 @@ export const ProductCard: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded bg-gradient-to-br from-cyan-500 to-blue-600">
-                  <span className="text-lg font-bold text-white">T</span>
-                </div>
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-lg font-bold text-white">
+                    T
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <h4 className="font-semibold">Tailwind CSS</h4>
                   <p className="text-muted-foreground text-sm">
@@ -473,12 +486,14 @@ export const Interactive: Story = {
             </HoverCardTrigger>
             <HoverCardContent className="w-80">
               <div className="flex justify-between space-x-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-600 text-lg font-medium text-white">
-                  {userData.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
-                </div>
+                <Avatar className="h-14 w-14">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-lg font-medium text-white">
+                    {userData.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1 space-y-1">
                   <h4 className="text-sm font-semibold">{userData.name}</h4>
                   <p className="text-muted-foreground text-sm">
@@ -606,4 +621,169 @@ export const Interactive: Story = {
     expect(args.onOpenChange).toHaveBeenCalledWith(true);
     expect(args.onOpenChange).toHaveBeenCalledWith(false);
   },
+};
+
+export const TriggerVariations: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Different approaches for hover card triggers: info-only spans, interactive buttons, and navigation links. The clean typography approach is recommended for most inline text scenarios.',
+      },
+    },
+  },
+  render: () => (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">
+          Clean Typography (Recommended)
+        </h3>
+        <div className="flex items-center space-x-4">
+          <span className="text-muted-foreground text-sm">
+            Hover for info (no click action):
+          </span>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="text-muted-foreground hover:text-foreground cursor-help font-medium transition-colors duration-200">
+                @shadcn
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">@shadcn</h4>
+                <p className="text-sm">
+                  Clean typography approach for hover triggers. Uses subtle
+                  color changes and cursor hints. Info icons work better for
+                  form field help rather than inline hover cards.
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Subtle Underline</h3>
+        <div className="flex items-center space-x-4">
+          <span className="text-muted-foreground text-sm">
+            Hover for detailed info:
+          </span>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="text-muted-foreground hover:text-foreground decoration-muted-foreground/40 hover:decoration-foreground/60 cursor-help font-medium underline decoration-1 underline-offset-2 transition-colors duration-200">
+                @shadcn
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">@shadcn</h4>
+                <p className="text-sm">
+                  Subtle underline approach provides clear indication of
+                  additional information without being too prominent.
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Modern Gradient Underline</h3>
+        <div className="flex items-center space-x-4">
+          <span className="text-muted-foreground text-sm">
+            Hover for info (gradient style):
+          </span>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="hover:text-foreground text-foreground/90 after:from-primary/40 after:to-accent/40 hover:after:from-primary hover:after:to-accent relative cursor-help transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:transition-all after:duration-200">
+                @shadcn
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">@shadcn</h4>
+                <p className="text-sm">
+                  Modern gradient underline provides sophisticated visual
+                  treatment but may be confused with navigation links. Use
+                  sparingly.
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      </div>
+
+      <div className="border-t pt-6">
+        <h3 className="mb-4 text-lg font-semibold">
+          Comparison: Interactive Elements
+        </h3>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="text-base font-medium">
+              Button (With click action)
+            </h4>
+            <div className="flex items-center space-x-4">
+              <span className="text-muted-foreground text-sm">
+                Hover for preview, click to open:
+              </span>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={() => alert('Opening user profile...')}
+                  >
+                    @shadcn
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold">@shadcn</h4>
+                    <p className="text-sm">
+                      Use buttons when clicking performs an action - like
+                      navigating to a profile or opening a modal.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="text-base font-medium">Link (Navigation)</h4>
+            <div className="text-sm">
+              <p className="text-muted-foreground">
+                This component was designed by{' '}
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <a
+                      className="text-primary font-semibold hover:underline"
+                      href="/users/shadcn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        alert('Would navigate to /users/shadcn');
+                      }}
+                    >
+                      shadcn
+                    </a>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold">shadcn</h4>
+                      <p className="text-sm">
+                        Use link elements when clicking navigates to another
+                        page. In a real app, use TanStack Router&apos;s Link
+                        component instead of anchor tags.
+                      </p>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>{' '}
+                for the community.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
 };

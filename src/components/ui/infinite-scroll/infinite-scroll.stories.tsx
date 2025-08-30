@@ -3,6 +3,7 @@ import { expect, fn, within } from '@storybook/test';
 import * as React from 'react';
 
 import { Icons } from '@/components/icons';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
 import { InfiniteScroll } from './infinite-scroll';
@@ -181,9 +182,11 @@ export const MessageList: Story = {
           <div className="space-y-3 p-3">
             {messages.map((message) => (
               <div key={message.id} className="flex space-x-2">
-                <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium">
-                  {message.user[0]}
-                </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs">
+                    {message.user[0]}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-medium">{message.user}</span>

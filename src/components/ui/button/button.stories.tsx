@@ -17,9 +17,9 @@ const meta = {
       options: ['primary', 'secondary', 'error', 'warning', 'info', 'success'],
     },
     variant: {
-      description: 'Visual style variant (filled, outlined, text, link)',
+      description: 'Visual style variant (filled, outlined, ghost, link)',
       control: { type: 'select' },
-      options: ['contained', 'outlined', 'text', 'link'],
+      options: ['contained', 'outlined', 'ghost', 'link'],
     },
     size: {
       description: 'Size affecting height, padding and font size',
@@ -78,6 +78,116 @@ export const Link: Story = {
     children: 'Link Button',
     variant: 'link',
   },
+};
+
+export const VariantColorCombinations: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Testing variant and color combinations to identify potential CSS conflicts.',
+      },
+    },
+  },
+  render: () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold">Contained + Colors</h4>
+        <div className="flex flex-wrap gap-2">
+          <Button color="primary" variant="contained">
+            Primary
+          </Button>
+          <Button color="secondary" variant="contained">
+            Secondary
+          </Button>
+          <Button color="error" variant="contained">
+            Error
+          </Button>
+          <Button color="success" variant="contained">
+            Success
+          </Button>
+          <Button color="warning" variant="contained">
+            Warning
+          </Button>
+          <Button color="info" variant="contained">
+            Info
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold">Ghost + Colors</h4>
+        <div className="flex flex-wrap gap-2">
+          <Button color="primary" variant="ghost">
+            Primary
+          </Button>
+          <Button color="secondary" variant="ghost">
+            Secondary
+          </Button>
+          <Button color="error" variant="ghost">
+            Error
+          </Button>
+          <Button color="success" variant="ghost">
+            Success
+          </Button>
+          <Button color="warning" variant="ghost">
+            Warning
+          </Button>
+          <Button color="info" variant="ghost">
+            Info
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold">Link + Colors</h4>
+        <div className="flex flex-wrap gap-2">
+          <Button color="primary" variant="link">
+            Primary
+          </Button>
+          <Button color="secondary" variant="link">
+            Secondary
+          </Button>
+          <Button color="error" variant="link">
+            Error
+          </Button>
+          <Button color="success" variant="link">
+            Success
+          </Button>
+          <Button color="warning" variant="link">
+            Warning
+          </Button>
+          <Button color="info" variant="link">
+            Info
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold">Outlined + Colors</h4>
+        <div className="flex flex-wrap gap-2">
+          <Button color="primary" variant="outlined">
+            Primary
+          </Button>
+          <Button color="secondary" variant="outlined">
+            Secondary
+          </Button>
+          <Button color="error" variant="outlined">
+            Error
+          </Button>
+          <Button color="success" variant="outlined">
+            Success
+          </Button>
+          <Button color="warning" variant="outlined">
+            Warning
+          </Button>
+          <Button color="info" variant="outlined">
+            Info
+          </Button>
+        </div>
+      </div>
+    </div>
+  ),
 };
 
 export const Small: Story = {

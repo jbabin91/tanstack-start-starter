@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from '@storybook/test';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { Spinner } from './spinner';
 
@@ -166,8 +167,8 @@ export const InCards: Story = {
               Loading profile data...
             </span>
           </div>
-          <div className="h-4 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
         </div>
       </div>
     </div>
