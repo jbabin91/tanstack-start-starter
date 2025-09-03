@@ -1,6 +1,6 @@
 import { UAParser } from 'ua-parser-js';
 
-export type DeviceType = 'mobile' | 'desktop' | 'tablet' | 'unknown';
+import type { DeviceType } from '@/lib/db/schemas/session-metadata';
 
 export type ParsedUserAgent = {
   deviceType: DeviceType;
@@ -65,6 +65,16 @@ export function parseUserAgent(userAgent: string | null): ParsedUserAgent {
   };
 }
 
+// Mobile OS indicators - compiled once for performance
+const MOBILE_OS_INDICATORS = ['ios', 'android'] as const;
+const DESKTOP_OS_INDICATORS = ['windows', 'mac', 'linux'] as const;
+const UNKNOWN_DEVICE_TYPES = [
+  'console',
+  'smarttv',
+  'wearable',
+  'embedded',
+] as const;
+
 /**
  * Map ua-parser-js device types to our DeviceType enum
  */
@@ -76,13 +86,13 @@ function mapDeviceType(
     // If no device type detected, infer from OS
     if (osName) {
       const osLower = osName.toLowerCase();
-      if (osLower.includes('ios') || osLower.includes('android')) {
+      if (
+        MOBILE_OS_INDICATORS.some((indicator) => osLower.includes(indicator))
+      ) {
         return 'mobile';
       }
       if (
-        osLower.includes('windows') ||
-        osLower.includes('mac') ||
-        osLower.includes('linux')
+        DESKTOP_OS_INDICATORS.some((indicator) => osLower.includes(indicator))
       ) {
         return 'desktop';
       }
@@ -90,24 +100,28 @@ function mapDeviceType(
     return 'desktop'; // Default assumption
   }
 
-  switch (uaDeviceType.toLowerCase()) {
-    case 'mobile': {
-      return 'mobile';
-    }
-    case 'tablet': {
-      return 'tablet';
-    }
-    case 'console':
-    case 'smarttv':
-    case 'wearable':
-    case 'embedded': {
-      return 'unknown';
-    }
-    default: {
-      return 'desktop';
-    }
+  const deviceTypeLower = uaDeviceType.toLowerCase();
+
+  if (deviceTypeLower === 'mobile') {
+    return 'mobile';
   }
+  if (deviceTypeLower === 'tablet') {
+    return 'tablet';
+  }
+  if (UNKNOWN_DEVICE_TYPES.includes(deviceTypeLower as any)) {
+    return 'unknown';
+  }
+
+  return 'desktop';
 }
+
+// Device type display names - compiled once for performance
+const DEVICE_TYPE_NAMES = {
+  mobile: 'Mobile Device',
+  desktop: 'Desktop Computer',
+  tablet: 'Tablet',
+  unknown: 'Unknown Device',
+} as const;
 
 /**
  * Generate a user-friendly device name
@@ -118,14 +132,7 @@ function generateDeviceName(
   osName: string | null,
   deviceModel?: string | null,
 ): string {
-  const typeNames = {
-    mobile: 'Mobile Device',
-    desktop: 'Desktop Computer',
-    tablet: 'Tablet',
-    unknown: 'Unknown Device',
-  };
-
-  let baseName = typeNames[deviceType];
+  let baseName: string = DEVICE_TYPE_NAMES[deviceType];
 
   // Use specific device model if available (e.g., "iPhone", "Samsung Galaxy")
   if (deviceModel && deviceType !== 'desktop') {
@@ -147,18 +154,5 @@ function generateDeviceName(
  * Get display name for device type
  */
 export function getDeviceTypeDisplayName(deviceType: DeviceType): string {
-  switch (deviceType) {
-    case 'mobile': {
-      return 'Mobile Device';
-    }
-    case 'tablet': {
-      return 'Tablet';
-    }
-    case 'desktop': {
-      return 'Desktop Computer';
-    }
-    default: {
-      return 'Unknown Device';
-    }
-  }
+  return DEVICE_TYPE_NAMES[deviceType];
 }

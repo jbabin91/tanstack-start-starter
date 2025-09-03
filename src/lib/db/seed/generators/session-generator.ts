@@ -124,6 +124,7 @@ export function generateSessionDataForUser(userId: string): SessionData {
     const securityScore = faker.number.int({ min: 20, max: 95 });
     const isTrustedDevice =
       securityScore > 70 && faker.datatype.boolean({ probability: 0.4 });
+    const usingCloudflareWarp = faker.datatype.boolean({ probability: 0.15 });
 
     sessionMetadata.push({
       sessionId,
@@ -143,6 +144,24 @@ export function generateSessionDataForUser(userId: string): SessionData {
       connectionType: faker.helpers.arrayElement(
         SEED_CONSTANTS.connectionTypes,
       ),
+      cfDataCenter: faker.helpers.arrayElement([
+        'LAX',
+        'SFO',
+        'CDG',
+        'LHR',
+        'NRT',
+        'SIN',
+        'SYD',
+        'DFW',
+        'IAD',
+        'ORD',
+      ]),
+      cfRay:
+        faker.string.alphanumeric({ length: 16 }) +
+        '-' +
+        faker.helpers.arrayElement(['LAX', 'SFO', 'CDG']),
+      isSecureConnection: faker.datatype.boolean({ probability: 0.95 }),
+      usingCloudflareWarp,
       securityScore,
       isTrustedDevice,
       trustFactors: {

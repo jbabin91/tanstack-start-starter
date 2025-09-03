@@ -32,6 +32,26 @@ export function SessionsManager() {
     sessionId: selectedSessionId ?? '',
   });
 
+  // Calculate security statistics
+  const securityStats = sessions
+    ? {
+        total: sessions.length,
+        secure: sessions.filter((s) => (s.metadata?.securityScore ?? 0) >= 80)
+          .length,
+        moderate: sessions.filter((s) => {
+          const score = s.metadata?.securityScore ?? 0;
+          return score >= 60 && score < 80;
+        }).length,
+        lowSecurity: sessions.filter(
+          (s) => (s.metadata?.securityScore ?? 0) < 60,
+        ).length,
+        suspicious: sessions.filter(
+          (s) => (s.metadata?.suspiciousActivityCount ?? 0) > 0,
+        ).length,
+        trusted: sessions.filter((s) => s.metadata?.isTrustedDevice).length,
+      }
+    : null;
+
   return (
     <div className="space-y-6">
       <div>
@@ -43,14 +63,83 @@ export function SessionsManager() {
         </p>
       </div>
 
+      {/* Security Overview */}
+      {securityStats && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Sessions
+              </CardTitle>
+              <Icons.shield className="text-muted-foreground size-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{securityStats.total}</div>
+              <p className="text-muted-foreground text-xs">
+                Active devices and browsers
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Secure Sessions
+              </CardTitle>
+              <Icons.checkCircle className="size-4 text-green-600 dark:text-green-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {securityStats.secure}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                High security score (80+)
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Trusted Devices
+              </CardTitle>
+              <Icons.shield className="size-4 text-blue-600 dark:text-blue-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {securityStats.trusted}
+              </div>
+              <p className="text-muted-foreground text-xs">Marked as trusted</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Security Alerts
+              </CardTitle>
+              <Icons.alertTriangle className="size-4 text-orange-600 dark:text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                {securityStats.suspicious + securityStats.lowSecurity}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Requiring attention
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <Tabs className="space-y-4" defaultValue="sessions">
         <TabsList>
           <TabsTrigger className="flex items-center gap-2" value="sessions">
-            <Icons.shield className="h-4 w-4" />
+            <Icons.shield className="size-4" />
             Active Sessions
           </TabsTrigger>
           <TabsTrigger className="flex items-center gap-2" value="activity">
-            <Icons.activity className="h-4 w-4" />
+            <Icons.activity className="size-4" />
             Activity Log
           </TabsTrigger>
         </TabsList>

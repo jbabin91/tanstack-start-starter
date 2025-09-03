@@ -4,37 +4,47 @@ import { getWebRequest } from '@tanstack/react-start/server';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { extractIPAddress } from '@/lib/auth/utils/ip-extraction';
+import { resolveLocationAndIP } from '@/lib/auth/utils/location-resolver';
 
-const debugIPHeaders = createServerFn({ method: 'GET' }).handler(() => {
+const debugIPHeaders = createServerFn({ method: 'GET' }).handler(async () => {
   const request = getWebRequest();
+
+  // All headers we use for IP tracking and location resolution
+  const TRACKED_HEADERS = [
+    // IP extraction headers
+    'cf-connecting-ip',
+    'x-forwarded-for',
+    'x-real-ip',
+    'x-client-ip',
+    // Cloudflare location/security headers
+    'cf-ipcountry',
+    'cf-ray',
+    'cf-visitor',
+    'cf-warp-tag-id',
+    // Additional proxy headers (for debugging)
+    'x-forwarded-proto',
+    'x-forwarded-host',
+  ] as const;
 
   const headers: Record<string, string> = {};
   for (const [key, value] of request.headers.entries()) {
-    // Only include headers that might contain IP info
-    if (
-      key.toLowerCase().includes('forward') ||
-      key.toLowerCase().includes('real') ||
-      key.toLowerCase().includes('client') ||
-      key.toLowerCase().includes('cf-') ||
-      key.toLowerCase().includes('x-') ||
-      key.toLowerCase().includes('remote')
-    ) {
+    if (TRACKED_HEADERS.includes(key.toLowerCase() as any)) {
       headers[key] = value;
     }
   }
 
   // Get what our extraction function returns
-  const extraction = extractIPAddress(null, request);
+  const { ipAddress, source } = await resolveLocationAndIP(null, request);
 
   return {
     headers,
-    extraction,
+    extraction: { ipAddress, source },
     allHeaderCount: [...request.headers.keys()].length,
   };
 });
 
 export function DebugIPHeaders() {
+  // TODO: Remove this component once IP tracking is verified in production
   const { data, isLoading, error } = useQuery({
     queryKey: ['debug-ip-headers'],
     queryFn: () => debugIPHeaders(),

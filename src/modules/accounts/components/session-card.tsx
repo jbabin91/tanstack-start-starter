@@ -1,5 +1,4 @@
-import { formatDistanceToNow } from 'date-fns';
-
+import { RelativeTime } from '@/components/datetime';
 import { Icons } from '@/components/icons';
 import {
   AlertDialog,
@@ -22,6 +21,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import type { SessionWithDetails } from '@/modules/accounts/api/get-sessions';
+import {
+  formatLocation,
+  formatSessionDuration,
+  getDeviceDisplayName,
+  getDeviceIcon,
+  getRiskIndicators,
+  getSecurityBadge,
+  hasTechnicalDetails,
+} from '@/modules/accounts/utils/session-display';
 
 type SessionCardProps = {
   session: SessionWithDetails;
@@ -29,80 +37,14 @@ type SessionCardProps = {
   onRevoke: (sessionId: string) => Promise<void>;
 };
 
-function getDeviceIcon(deviceType?: string) {
-  switch (deviceType?.toLowerCase()) {
-    case 'mobile': {
-      return <Icons.smartphone className="h-6 w-6" />;
-    }
-    case 'tablet': {
-      return <Icons.tablet className="h-6 w-6" />;
-    }
-    case 'desktop': {
-      return <Icons.monitor className="h-6 w-6" />;
-    }
-    default: {
-      return <Icons.globe className="h-6 w-6" />;
-    }
-  }
-}
-
-function getDeviceDisplayName(deviceType?: string) {
-  switch (deviceType?.toLowerCase()) {
-    case 'mobile': {
-      return 'Mobile Device';
-    }
-    case 'tablet': {
-      return 'Tablet';
-    }
-    case 'desktop': {
-      return 'Desktop Computer';
-    }
-    default: {
-      return 'Unknown Device';
-    }
-  }
-}
-
-function getSecurityBadge(score?: number) {
-  if (!score) return null;
-
-  if (score >= 80) {
-    return (
-      <Badge className="flex items-center gap-1" variant="default">
-        <Icons.shield className="h-3 w-3" />
-        Secure
-      </Badge>
-    );
-  }
-
-  if (score >= 60) {
-    return (
-      <Badge className="flex items-center gap-1" variant="secondary">
-        <Icons.shield className="h-3 w-3" />
-        Moderate
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge className="flex items-center gap-1" variant="error">
-      <Icons.alertCircle className="h-3 w-3" />
-      Low Security
-    </Badge>
-  );
-}
-
 export function SessionCard({
   session,
   isCurrentSession,
   onRevoke,
 }: SessionCardProps) {
   const metadata = session.metadata;
-  const lastActivity = metadata?.lastActivityAt
-    ? formatDistanceToNow(new Date(metadata.lastActivityAt), {
-        addSuffix: true,
-      })
-    : 'Unknown';
+
+  const riskIndicators = getRiskIndicators(metadata);
 
   return (
     <Card className={isCurrentSession ? 'border-primary' : ''}>
@@ -112,7 +54,10 @@ export function SessionCard({
             {getDeviceIcon(metadata?.deviceType)}
             <div>
               <CardTitle className="text-base">
-                {getDeviceDisplayName(metadata?.deviceType)}
+                {getDeviceDisplayName(
+                  metadata?.deviceType,
+                  metadata?.deviceName,
+                )}
                 {isCurrentSession && (
                   <Badge className="ml-2" variant="outline">
                     Current
@@ -125,6 +70,12 @@ export function SessionCard({
                   : (metadata?.browserName ??
                     metadata?.osName ??
                     'Unknown browser/OS')}
+                {metadata?.browserVersion && (
+                  <span className="text-muted-foreground text-xs">
+                    {' '}
+                    v{metadata.browserVersion}
+                  </span>
+                )}
               </CardDescription>
             </div>
           </div>
@@ -140,27 +91,130 @@ export function SessionCard({
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">Location</p>
-            <p className="font-medium">
-              {metadata?.city}, {metadata?.region}
-            </p>
+            <p className="font-medium">{formatLocation(metadata)}</p>
+            {metadata?.timezone && (
+              <p className="text-muted-foreground text-xs">
+                {metadata.timezone}
+              </p>
+            )}
           </div>
           <div>
             <p className="text-muted-foreground">IP Address</p>
             <p className="font-medium">{session.ipAddress ?? 'Unknown'}</p>
+            {metadata?.ispName && (
+              <p className="text-muted-foreground text-xs">
+                {metadata.ispName}
+              </p>
+            )}
           </div>
           <div>
             <p className="text-muted-foreground">Last Activity</p>
-            <p className="font-medium">{lastActivity}</p>
+            {metadata?.lastActivityAt ? (
+              <RelativeTime
+                className="font-medium"
+                date={new Date(metadata.lastActivityAt)}
+              />
+            ) : (
+              <p className="font-medium">Unknown</p>
+            )}
+            {metadata?.lastPageVisited && (
+              <p className="text-muted-foreground truncate text-xs">
+                {metadata.lastPageVisited}
+              </p>
+            )}
           </div>
           <div>
             <p className="text-muted-foreground">Created</p>
-            <p className="font-medium">
-              {formatDistanceToNow(new Date(session.createdAt), {
-                addSuffix: true,
-              })}
-            </p>
+            <RelativeTime
+              className="font-medium"
+              date={new Date(session.createdAt)}
+            />
+            {formatSessionDuration(metadata?.sessionDurationSeconds) && (
+              <p className="text-muted-foreground text-xs">
+                {formatSessionDuration(metadata?.sessionDurationSeconds)} active
+              </p>
+            )}
           </div>
         </div>
+
+        {/* Enhanced technical details - collapsible */}
+        {hasTechnicalDetails(metadata) && (
+          <details className="text-xs">
+            <summary className="text-muted-foreground hover:text-foreground cursor-pointer">
+              Technical Details
+            </summary>
+            <div className="bg-muted/30 mt-2 grid grid-cols-2 gap-2 rounded-md p-3">
+              {metadata?.cfDataCenter && (
+                <div>
+                  <p className="text-muted-foreground">Data Center</p>
+                  <p className="font-medium">{metadata.cfDataCenter}</p>
+                </div>
+              )}
+              {metadata?.connectionType &&
+                metadata.connectionType !== 'unknown' && (
+                  <div>
+                    <p className="text-muted-foreground">Connection</p>
+                    <p className="font-medium capitalize">
+                      {metadata.connectionType}
+                    </p>
+                  </div>
+                )}
+              {metadata?.isSecureConnection !== null && (
+                <div>
+                  <p className="text-muted-foreground">Protocol</p>
+                  <p className="font-medium">
+                    {metadata?.isSecureConnection ? 'HTTPS' : 'HTTP'}
+                  </p>
+                </div>
+              )}
+              {metadata?.usingCloudflareWarp && (
+                <div>
+                  <p className="text-muted-foreground">Privacy</p>
+                  <p className="flex items-center gap-1 font-medium">
+                    <Icons.shield className="size-3" />
+                    Cloudflare WARP
+                  </p>
+                </div>
+              )}
+              {metadata?.pageViewsCount !== undefined &&
+                metadata.pageViewsCount > 0 && (
+                  <div>
+                    <p className="text-muted-foreground">Page Views</p>
+                    <p className="font-medium">
+                      {metadata.pageViewsCount.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              {metadata?.requestsCount !== undefined &&
+                metadata.requestsCount > 0 && (
+                  <div>
+                    <p className="text-muted-foreground">Requests</p>
+                    <p className="font-medium">
+                      {metadata.requestsCount.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+            </div>
+          </details>
+        )}
+
+        {/* Security risk indicators */}
+        {riskIndicators.length > 0 && (
+          <div className="border-destructive bg-destructive/10 space-y-2 rounded-md border-l-4 p-3">
+            <p className="text-destructive-foreground flex items-center gap-1 text-sm font-medium">
+              <Icons.alertTriangle className="size-4" />
+              Security Alerts
+            </p>
+            <ul className="text-muted-foreground space-y-1 text-xs">
+              {riskIndicators.map((risk) => (
+                <li key={risk.text} className="flex items-center gap-2">
+                  {risk.icon}
+                  {risk.text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {!isCurrentSession && (
           <AlertDialog>

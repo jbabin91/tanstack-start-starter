@@ -5,7 +5,7 @@ import { members, organizations } from '@/lib/db/schemas/auth';
 
 /**
  * Get user's organization membership and role
- * Used by both session and user hooks to avoid duplication
+ * Consolidated function that handles both specific org lookup and first membership
  */
 export async function getUserMembership({
   userId,
@@ -28,21 +28,5 @@ export async function getUserMembership({
         organizationId ? eq(members.organizationId, organizationId) : undefined,
       ),
     )
-    .limit(1);
-}
-
-/**
- * Get user's first organization membership (for default active org)
- */
-export async function getUserFirstMembership(userId: string) {
-  return await db
-    .select({
-      organizationId: members.organizationId,
-      organizationRole: members.role,
-      organizationName: organizations.name,
-    })
-    .from(members)
-    .innerJoin(organizations, eq(members.organizationId, organizations.id))
-    .where(eq(members.userId, userId))
     .limit(1);
 }

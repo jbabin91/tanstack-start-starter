@@ -10,12 +10,12 @@ import {
 } from 'better-auth/plugins';
 import { reactStartCookies } from 'better-auth/react-start';
 
-import { getUserFirstMembership } from '@/lib/auth/utils/membership-queries';
+import { getUserMembership } from '@/lib/auth/utils/membership-queries';
 import { db } from '@/lib/db';
 import { sendEmailVerification } from '@/modules/email/templates/email-verification';
 import { sendPasswordReset } from '@/modules/email/templates/password-reset';
 
-import { extractIPAddress } from './utils/ip-extraction';
+import { resolveLocationAndIP } from './utils/location-resolver';
 import { createSessionMetadata } from './utils/session-metadata-creator';
 
 const options = {
@@ -31,10 +31,9 @@ const options = {
   databaseHooks: {
     session: {
       create: {
-        // eslint-disable-next-line @typescript-eslint/require-await
         before: async (session, context) => {
           // Extract IP address using utility function
-          const { ipAddress } = extractIPAddress(
+          const { ipAddress } = await resolveLocationAndIP(
             session.ipAddress,
             context?.request,
           );
@@ -177,7 +176,9 @@ const getAuthConfig = serverOnly(() =>
       ...(options.plugins ?? []),
       customSession(async ({ user, session }) => {
         // Get user's organization membership and role for permission computation
-        const userMembership = await getUserFirstMembership(session.userId);
+        const userMembership = await getUserMembership({
+          userId: session.userId,
+        });
 
         // Set active organization if not already set
         const activeOrganizationId =

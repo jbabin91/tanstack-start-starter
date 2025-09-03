@@ -8,8 +8,7 @@ import {
   generateDeviceFingerprint,
   shouldInitiallyTrustDevice,
 } from './device-fingerprinting';
-import { extractIPAddress } from './ip-extraction';
-import { resolveLocationFromIP } from './location-resolver';
+import { resolveLocationAndIP } from './location-resolver';
 import { parseUserAgent } from './user-agent-parser';
 
 export type SessionMetadataInput = {
@@ -32,43 +31,30 @@ export async function createSessionMetadata(
   // Extract user agent
   const userAgent = request?.headers?.get('user-agent') ?? null;
 
-  // Extract IP address
-  const { ipAddress } = extractIPAddress(sessionIP, request);
-
   // Parse user agent for device information
   const parsedUA = parseUserAgent(userAgent);
 
-  // Generate device fingerprint
-  const deviceFingerprint = generateDeviceFingerprint({
+  // Get IP address and location data in one call
+  const { ipAddress, locationData } = await resolveLocationAndIP(
+    sessionIP,
+    request,
+  );
+
+  // Create shared session data object (used by multiple functions)
+  const sessionData = {
     userAgent,
     ipAddress,
     deviceType: parsedUA.deviceType,
     browserName: parsedUA.browserName,
     osName: parsedUA.osName,
-  });
+  };
 
-  // Calculate security score
-  const securityScore = calculateSecurityScore({
-    userAgent,
-    ipAddress,
-    deviceType: parsedUA.deviceType,
-    browserName: parsedUA.browserName,
-    osName: parsedUA.osName,
-  });
+  // Generate device fingerprint, security score, and trust level
+  const deviceFingerprint = generateDeviceFingerprint(sessionData);
+  const securityScore = calculateSecurityScore(sessionData);
+  const isTrustedDevice = shouldInitiallyTrustDevice(sessionData);
 
-  // Resolve location from IP and request headers
-  const locationData = await resolveLocationFromIP(ipAddress, request);
-
-  // Determine initial trust level
-  const isTrustedDevice = shouldInitiallyTrustDevice({
-    userAgent,
-    ipAddress,
-    deviceType: parsedUA.deviceType,
-    browserName: parsedUA.browserName,
-    osName: parsedUA.osName,
-  });
-
-  // Create the session metadata record
+  // Create the session metadata record - let database handle defaults
   await db.insert(sessionMetadata).values({
     sessionId,
     deviceFingerprint,
@@ -85,14 +71,12 @@ export async function createSessionMetadata(
     timezone: locationData.timezone,
     ispName: locationData.ispName,
     connectionType: locationData.connectionType,
+    cfDataCenter: locationData.cfDataCenter,
+    cfRay: locationData.cfRay,
+    isSecureConnection: locationData.isSecureConnection,
+    usingCloudflareWarp: locationData.usingCloudflareWarp,
     securityScore,
     isTrustedDevice,
-    suspiciousActivityCount: 0,
-    lastActivityAt: new Date(),
-    pageViewsCount: 0,
-    requestsCount: 0,
-    lastPageVisited: null,
-    sessionDurationSeconds: null,
   });
 }
 

@@ -1,4 +1,4 @@
-import type { DeviceType } from './user-agent-parser';
+import type { DeviceType } from '@/lib/db/schemas/session-metadata';
 
 export type FingerprintData = {
   userAgent: string | null;
@@ -76,24 +76,25 @@ export function calculateSecurityScore(data: FingerprintData): number {
   return Math.max(0, Math.min(100, score));
 }
 
+// Suspicious user agent patterns - compiled once at module level for performance
+const SUSPICIOUS_PATTERNS = [
+  /bot/i,
+  /crawler/i,
+  /spider/i,
+  /scraper/i,
+  /headless/i,
+  /phantom/i,
+  /selenium/i,
+  /curl/i,
+  /wget/i,
+] as const;
+
 /**
  * Check if user agent string appears suspicious
  * (Very basic implementation - production would use more sophisticated detection)
  */
 function isSuspiciousUserAgent(userAgent: string): boolean {
-  const suspiciousPatterns = [
-    /bot/i,
-    /crawler/i,
-    /spider/i,
-    /scraper/i,
-    /headless/i,
-    /phantom/i,
-    /selenium/i,
-    /curl/i,
-    /wget/i,
-  ];
-
-  return suspiciousPatterns.some((pattern) => pattern.test(userAgent));
+  return SUSPICIOUS_PATTERNS.some((pattern) => pattern.test(userAgent));
 }
 
 /**

@@ -75,6 +75,12 @@ export const sessionMetadata = pgTable(
     ispName: varchar({ length: 200 }),
     connectionType: connectionTypeEnum().default('unknown'),
 
+    // Cloudflare-specific information
+    cfDataCenter: varchar({ length: 10 }), // "CDG", "LAX", "LHR" etc.
+    cfRay: varchar({ length: 50 }), // Full Cloudflare Ray ID for debugging
+    isSecureConnection: boolean().default(false), // HTTPS vs HTTP
+    usingCloudflareWarp: boolean().default(false), // Privacy-focused users
+
     // Security and trust scoring
     securityScore: integer().notNull().default(50), // 0-100
     isTrustedDevice: boolean().notNull().default(false),

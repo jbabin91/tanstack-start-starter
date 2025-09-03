@@ -7,106 +7,170 @@
 
 import maxmind, { type CityResponse, type Reader } from 'maxmind';
 
-import { isLocalIP } from './ip-extraction';
+export type IPExtractionResult = {
+  ipAddress: string | null;
+  source:
+    | 'session'
+    | 'x-forwarded-for'
+    | 'x-real-ip'
+    | 'cf-connecting-ip'
+    | 'x-client-ip'
+    | 'fallback';
+};
+
+/**
+ * Extract IP address from session object and request headers
+ */
+function extractIPAddress(
+  sessionIP: string | null | undefined,
+  request?: Request | null,
+): IPExtractionResult {
+  if (!request) {
+    return {
+      ipAddress: sessionIP ?? '127.0.0.1',
+      source: sessionIP ? 'session' : 'fallback',
+    };
+  }
+
+  // ALWAYS prioritize Cloudflare headers first - they contain the real client IP
+  // This overrides any session IP that might have been set by better-auth
+  const cfIP = request.headers.get('cf-connecting-ip');
+  if (cfIP) {
+    return {
+      ipAddress: cfIP,
+      source: 'cf-connecting-ip',
+    };
+  }
+
+  // Check session IP only if no Cloudflare header
+  if (sessionIP) {
+    return {
+      ipAddress: sessionIP,
+      source: 'session',
+    };
+  }
+
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const ip = forwardedFor.split(',')[0]?.trim();
+    if (ip) {
+      return {
+        ipAddress: ip,
+        source: 'x-forwarded-for',
+      };
+    }
+  }
+
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) {
+    return {
+      ipAddress: realIP,
+      source: 'x-real-ip',
+    };
+  }
+
+  const clientIP = request.headers.get('x-client-ip');
+  if (clientIP) {
+    return {
+      ipAddress: clientIP,
+      source: 'x-client-ip',
+    };
+  }
+
+  // Fallback for local development
+  return {
+    ipAddress: '127.0.0.1',
+    source: 'fallback',
+  };
+}
+
+/**
+ * Determine if an IP address is a local/development IP
+ */
+function isLocalIP(ip: string | null): boolean {
+  if (!ip) return true;
+
+  return (
+    ip.startsWith('127.') ||
+    ip.startsWith('::1') ||
+    ip.startsWith('192.168.') ||
+    ip.startsWith('10.') ||
+    ip.startsWith('172.16.') ||
+    ip === 'localhost'
+  );
+}
 
 // Cached database reader
 
 let geoIPReader: Reader<CityResponse> | null = null;
 
 export type LocationData = {
-  city: string | null;
-  region: string | null;
-  countryCode: string | null; // ISO 2-letter code
-  timezone: string | null;
-  ispName: string | null;
-  connectionType: 'wifi' | 'cellular' | 'ethernet' | 'unknown' | null;
+  city?: string | null;
+  region?: string | null;
+  countryCode?: string | null; // ISO 2-letter code
+  timezone?: string | null;
+  ispName?: string | null;
+  connectionType?: 'wifi' | 'cellular' | 'ethernet' | 'unknown' | null;
+  cfDataCenter?: string;
+  cfRay?: string;
+  isSecureConnection?: boolean;
+  usingCloudflareWarp?: boolean;
 };
 
 /**
- * Resolve location data from IP address and request headers
+ * Combined IP extraction and location resolution
  *
- * Uses Cloudflare headers when available, falls back to IP geolocation API
- * Production-ready approach that works in any deployment environment
+ * This streamlined function does both IP extraction and location resolution in one call
+ * since they're always used together in session metadata creation.
  */
-export async function resolveLocationFromIP(
-  ipAddress: string | null,
+export async function resolveLocationAndIP(
+  sessionIP: string | null | undefined,
   request?: Request | null,
-): Promise<LocationData> {
-  // Debug logging to see what IP we're getting
-  console.log(
-    'Location resolver received IP:',
-    ipAddress,
-    'isLocal:',
-    isLocalIP(ipAddress),
-  );
+): Promise<{
+  ipAddress: string | null;
+  source: string;
+  locationData: LocationData;
+}> {
+  // Extract IP address from various sources
+  const { ipAddress, source } = extractIPAddress(sessionIP, request);
 
+  // For local development, return minimal data
   if (!ipAddress || isLocalIP(ipAddress)) {
     return {
-      city: 'Local Development',
-      region: 'Localhost',
-      countryCode: null,
-      timezone: null,
-      ispName: null,
-      connectionType: null,
+      ipAddress,
+      source,
+      locationData: {
+        city: 'Local Development',
+        region: 'Localhost',
+      },
     };
   }
 
-  // First, try to get data from Cloudflare headers
+  // Extract Cloudflare metadata
   const cloudflareData = extractCloudflareLocationData(request);
 
-  // If we have Cloudflare country, try to get more detailed location
-  if (cloudflareData.countryCode) {
-    try {
-      const detailedLocation = await getDetailedLocationData(ipAddress);
-
-      // Combine Cloudflare data with detailed location
-      return {
-        countryCode: cloudflareData.countryCode,
-        city: detailedLocation.city,
-        region: detailedLocation.region,
-        timezone: detailedLocation.timezone,
-        ispName: detailedLocation.ispName,
-        connectionType: detailedLocation.connectionType,
-      };
-    } catch (error) {
-      console.warn(
-        'Failed to get detailed location, using Cloudflare data only:',
-        error,
-      );
-
-      // Fall back to just Cloudflare data
-      return {
-        countryCode: cloudflareData.countryCode,
-        city: 'Unknown City',
-        region: 'Unknown Region',
-        timezone: null,
-        ispName: null,
-        connectionType: null,
-      };
-    }
-  }
-
-  // No Cloudflare data, try IP geolocation service directly
+  // Try to get detailed location data
   try {
-    return await getDetailedLocationData(ipAddress);
+    const detailedLocation = await getDetailedLocationData(ipAddress);
+
+    // Combine all available data
+    return {
+      ipAddress,
+      source,
+      locationData: {
+        ...detailedLocation,
+        ...cloudflareData, // This will only include fields that have values
+      },
+    };
   } catch (error) {
     console.error('Failed to resolve location:', error);
-    return getUnknownLocation();
-  }
-}
 
-/**
- * Get placeholder location data for unknown locations
- */
-function getUnknownLocation(): LocationData {
-  return {
-    city: 'Unknown City',
-    region: 'Unknown Region',
-    countryCode: null,
-    timezone: null,
-    ispName: null,
-    connectionType: null,
-  };
+    return {
+      ipAddress,
+      source,
+      locationData: cloudflareData.countryCode ? cloudflareData : {},
+    };
+  }
 }
 
 /**
@@ -123,16 +187,50 @@ export function isValidCountryCode(code: string | null): code is string {
 function extractCloudflareLocationData(
   request?: Request | null,
 ): Partial<LocationData> {
-  if (!request) {
-    return {};
+  if (!request) return {};
+
+  const result: Partial<LocationData> = {};
+
+  // Country code
+  const countryCode = request.headers.get('cf-ipcountry');
+  if (countryCode && isValidCountryCode(countryCode)) {
+    result.countryCode = countryCode;
   }
 
-  const countryCode = request.headers.get('cf-ipcountry');
+  // Ray ID and data center
+  const cfRay = request.headers.get('cf-ray');
+  if (cfRay) {
+    result.cfRay = cfRay;
+    // Extract data center from cf-ray (format: "requestId-datacenter")
+    const dataCenter = cfRay.split('-')[1];
+    if (dataCenter) {
+      result.cfDataCenter = dataCenter;
+    }
+  }
 
-  return {
-    countryCode:
-      countryCode && isValidCountryCode(countryCode) ? countryCode : null,
-  };
+  // Connection security
+  const cfVisitor = request.headers.get('cf-visitor');
+  if (cfVisitor) {
+    try {
+      const visitor = JSON.parse(cfVisitor);
+      if (visitor.scheme === 'https') {
+        result.isSecureConnection = true;
+      }
+    } catch {
+      // Fallback to checking the header value for 'https'
+      if (cfVisitor.includes('https')) {
+        result.isSecureConnection = true;
+      }
+    }
+  }
+
+  // WARP detection
+  const cfWarpTagId = request.headers.get('cf-warp-tag-id');
+  if (cfWarpTagId) {
+    result.usingCloudflareWarp = true;
+  }
+
+  return result;
 }
 
 /**
@@ -157,7 +255,6 @@ async function initializeGeoIPReader(): Promise<Reader<CityResponse>> {
     // Type assertion to ensure we get the correct reader type
     geoIPReader = reader as Reader<CityResponse>;
 
-    console.log('MaxMind GeoLite2 database initialized successfully');
     return geoIPReader;
   } catch (error) {
     console.error('Failed to initialize MaxMind database:', error);
@@ -174,7 +271,12 @@ async function initializeGeoIPReader(): Promise<Reader<CityResponse>> {
  */
 async function getDetailedLocationData(
   ipAddress: string,
-): Promise<LocationData> {
+): Promise<
+  Omit<
+    LocationData,
+    'cfDataCenter' | 'cfRay' | 'isSecureConnection' | 'usingCloudflareWarp'
+  >
+> {
   try {
     const reader = await initializeGeoIPReader();
     const result = reader.get(ipAddress);
@@ -215,7 +317,12 @@ async function getDetailedLocationData(
  */
 async function getDetailedLocationDataAPI(
   ipAddress: string,
-): Promise<LocationData> {
+): Promise<
+  Omit<
+    LocationData,
+    'cfDataCenter' | 'cfRay' | 'isSecureConnection' | 'usingCloudflareWarp'
+  >
+> {
   try {
     // Using ipapi.co free tier - no API key required for basic usage
     const response = await fetch(`https://ipapi.co/${ipAddress}/json/`, {
