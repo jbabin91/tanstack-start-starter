@@ -1,10 +1,3 @@
-/**
- * IP Address Extraction Utilities
- *
- * Handles extracting IP addresses from various request sources
- * including proxy headers and direct connections.
- */
-
 export type IPExtractionResult = {
   ipAddress: string | null;
   source:
@@ -39,6 +32,15 @@ export function extractIPAddress(
   }
 
   // Try various proxy headers in order of preference
+  // Prioritize Cloudflare headers first as they contain the real client IP
+  const cfIP = request.headers.get('cf-connecting-ip');
+  if (cfIP) {
+    return {
+      ipAddress: cfIP,
+      source: 'cf-connecting-ip',
+    };
+  }
+
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) {
     const ip = forwardedFor.split(',')[0]?.trim();
@@ -55,14 +57,6 @@ export function extractIPAddress(
     return {
       ipAddress: realIP,
       source: 'x-real-ip',
-    };
-  }
-
-  const cfIP = request.headers.get('cf-connecting-ip');
-  if (cfIP) {
-    return {
-      ipAddress: cfIP,
-      source: 'cf-connecting-ip',
     };
   }
 

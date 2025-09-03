@@ -1,11 +1,3 @@
-/**
- * Session Metadata Creation Utilities
- *
- * Orchestrates the creation of session metadata by combining
- * IP extraction, user agent parsing, device fingerprinting,
- * and location resolution.
- */
-
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
@@ -64,8 +56,8 @@ export async function createSessionMetadata(
     osName: parsedUA.osName,
   });
 
-  // Resolve location from IP
-  const locationData = resolveLocationFromIP(ipAddress);
+  // Resolve location from IP and request headers
+  const locationData = await resolveLocationFromIP(ipAddress, request);
 
   // Determine initial trust level
   const isTrustedDevice = shouldInitiallyTrustDevice({
