@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { DebugIPHeaders } from '@/components/utils/debug-ip-headers';
 import { useCurrentUser } from '@/modules/auth/hooks/use-current-user';
 
 export function AccountDashboard() {
@@ -255,7 +254,6 @@ export function AccountDashboard() {
           </CardContent>
         </Card>
       )}
-      <DebugIPHeaders />
     </div>
   );
 }
