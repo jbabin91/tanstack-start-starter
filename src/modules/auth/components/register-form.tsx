@@ -301,7 +301,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
               control={form.control}
               name="acceptTerms"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                <FormItem className="flex flex-row items-center space-y-0 space-x-3">
                   <FormControl>
                     <Checkbox
                       aria-describedby="terms-error"

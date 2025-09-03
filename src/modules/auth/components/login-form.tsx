@@ -169,7 +169,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
               control={form.control}
               name="rememberMe"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                <FormItem className="flex flex-row items-center space-y-0 space-x-3">
                   <FormControl>
                     <Checkbox
                       aria-describedby="remember-me-description"
