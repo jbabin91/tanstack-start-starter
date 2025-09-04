@@ -12,6 +12,7 @@ import { reactStartCookies } from 'better-auth/react-start';
 
 import { getUserMembership } from '@/lib/auth/utils/membership-queries';
 import { db } from '@/lib/db';
+import { authLogger } from '@/lib/logger';
 import { sendEmailVerification } from '@/modules/email/templates/email-verification';
 import { sendPasswordReset } from '@/modules/email/templates/password-reset';
 
@@ -89,12 +90,16 @@ const options = {
     }),
     organization({
       organizationCreation: {
+        // eslint-disable-next-line @typescript-eslint/require-await
         afterCreate: async ({ organization, user }) => {
           // Log organization creation
-          await Promise.resolve(
-            console.log(
-              `Organization ${organization.name} created for user ${user.id}`,
-            ),
+          authLogger.info(
+            {
+              organizationId: organization.id,
+              organizationName: organization.name,
+              userId: user.id,
+            },
+            'Organization created',
           );
         },
       },

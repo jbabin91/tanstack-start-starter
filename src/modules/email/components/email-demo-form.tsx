@@ -30,8 +30,7 @@ export function EmailDemoForm() {
 
   async function onSubmit(data: typeof formDemoSchema.infer) {
     await sendDemoEmailFn({ data })
-      .then((e) => {
-        console.log(e);
+      .then(() => {
         toast.success('You submitted the following values', {
           description: (
             <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">

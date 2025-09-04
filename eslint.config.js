@@ -43,10 +43,12 @@ export default defineConfig(
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      eqeqeq: 'error',
       'import-x/first': 'error',
       'import-x/newline-after-import': 'error',
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'import-x/no-relative-parent-imports': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
       'unicorn/filename-case': [
@@ -61,6 +63,7 @@ export default defineConfig(
         },
       ],
       'unicorn/no-null': 'off',
+      'unicorn/prefer-class-fields': 'error',
       'unicorn/prevent-abbreviations': 'off',
     },
   },
@@ -89,6 +92,7 @@ export default defineConfig(
         'error',
         { checksVoidReturn: { attributes: false } },
       ],
+      '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -99,6 +103,7 @@ export default defineConfig(
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/only-throw-error': 'off',
+      '@typescript-eslint/prefer-return-this-type': 'error',
       '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
@@ -193,24 +198,33 @@ export default defineConfig(
       'better-tailwindcss': betterTailwindcss,
     },
     rules: {
-      // Disable rules that conflict with Prettier
       'better-tailwindcss/enforce-consistent-class-order': 'off',
       'better-tailwindcss/enforce-consistent-important-position': 'off',
-      // Prettier handles this
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
       'better-tailwindcss/enforce-consistent-variable-syntax': 'off',
-      // Core functionality rules that work well with Tailwind v4
       'better-tailwindcss/enforce-shorthand-classes': 'warn',
       'better-tailwindcss/no-contradicting-classes': 'off',
       'better-tailwindcss/no-deprecated-classes': 'warn',
       'better-tailwindcss/no-duplicate-classes': 'warn',
-      // Disable strict validation rules for custom classes and config issues
       'better-tailwindcss/no-unregistered-classes': 'off',
     },
     settings: {
       'better-tailwindcss': {
         entryPoint: 'src/styles/app.css',
       },
+    },
+  },
+  {
+    files: [
+      'src/lib/db/seed/**/*',
+      'src/lib/db/reset.ts',
+      '**/*.stories.*',
+      '**/*.test.*',
+      '**/*.spec.*',
+      'e2e/**/*',
+    ],
+    rules: {
+      'no-console': 'off',
     },
   },
   configPrettier,
