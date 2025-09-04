@@ -5,10 +5,9 @@ import * as React from 'react';
 
 import { cn } from '@/utils/cn';
 
-function Avatar({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+type AvatarProps = React.ComponentProps<typeof AvatarPrimitive.Root>;
+
+function Avatar({ className, children, ...props }: AvatarProps) {
   return (
     <AvatarPrimitive.Root
       className={cn(
@@ -17,14 +16,15 @@ function Avatar({
       )}
       data-slot="avatar"
       {...props}
-    />
+    >
+      {children}
+    </AvatarPrimitive.Root>
   );
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+type AvatarImageProps = React.ComponentProps<typeof AvatarPrimitive.Image>;
+
+function AvatarImage({ className, ...props }: AvatarImageProps) {
   return (
     <AvatarPrimitive.Image
       className={cn('aspect-square size-full', className)}
@@ -34,10 +34,11 @@ function AvatarImage({
   );
 }
 
-function AvatarFallback({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+type AvatarFallbackProps = React.ComponentProps<
+  typeof AvatarPrimitive.Fallback
+>;
+
+function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
   return (
     <AvatarPrimitive.Fallback
       className={cn(

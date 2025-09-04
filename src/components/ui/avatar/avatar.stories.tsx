@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
+import { OverlayBadge } from '@/components/ui/badge/overlay-badge';
+
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 const meta: Meta<typeof Avatar> = {
@@ -193,14 +195,13 @@ export const ProfileCard: Story = {
 export const StatusIndicator: Story = {
   render: (args) => (
     <div className="flex items-center space-x-6">
-      <div className="relative">
+      <OverlayBadge color="online" overlap="circular" variant="dot">
         <Avatar {...args}>
           <AvatarImage alt="Online user" src="https://github.com/shadcn.png" />
           <AvatarFallback>ON</AvatarFallback>
         </Avatar>
-        <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-green-500" />
-      </div>
-      <div className="relative">
+      </OverlayBadge>
+      <OverlayBadge color="away" overlap="circular" variant="dot">
         <Avatar {...args}>
           <AvatarImage
             alt="Away user"
@@ -208,9 +209,8 @@ export const StatusIndicator: Story = {
           />
           <AvatarFallback>AW</AvatarFallback>
         </Avatar>
-        <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-yellow-500" />
-      </div>
-      <div className="relative">
+      </OverlayBadge>
+      <OverlayBadge color="offline" overlap="circular" variant="dot">
         <Avatar {...args}>
           <AvatarImage
             alt="Offline user"
@@ -218,7 +218,128 @@ export const StatusIndicator: Story = {
           />
           <AvatarFallback>OF</AvatarFallback>
         </Avatar>
-        <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-gray-500" />
+      </OverlayBadge>
+      <OverlayBadge color="busy" overlap="circular" variant="dot">
+        <Avatar {...args}>
+          <AvatarFallback>BY</AvatarFallback>
+        </Avatar>
+      </OverlayBadge>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Avatars with integrated status indicators showing online (green), away (yellow), offline (gray), and busy (red) states. Now using the OverlayBadge component for better positioning.',
+      },
+    },
+  },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Status indicators are now badges, so we look for badge elements
+    const badges = canvas.getAllByTestId('overlay-badge');
+    expect(badges).toHaveLength(4);
+
+    // Verify all badges are visible
+    for (const badge of badges) {
+      expect(badge).toBeVisible();
+    }
+  },
+};
+
+export const StatusVariations: Story = {
+  render: (args) => (
+    <div className="space-y-6">
+      <div>
+        <h4 className="mb-3 text-sm font-medium">Status Sizes</h4>
+        <div className="flex items-center space-x-4">
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar className="size-6" {...args}>
+              <AvatarFallback className="text-xs">SM</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>MD</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar className="size-12" {...args}>
+              <AvatarFallback className="text-lg">LG</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar className="size-16" {...args}>
+              <AvatarFallback className="text-xl">XL</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+        </div>
+      </div>
+      <div>
+        <h4 className="mb-3 text-sm font-medium">Status Positions</h4>
+        <div className="flex items-center space-x-4">
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>BR</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="top-right"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>TR</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-left"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>BL</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="top-left"
+            color="online"
+            overlap="circular"
+            variant="dot"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>TL</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+        </div>
       </div>
     </div>
   ),
@@ -226,7 +347,7 @@ export const StatusIndicator: Story = {
     docs: {
       description: {
         story:
-          'Avatars with status indicators showing online (green), away (yellow), and offline (gray) states.',
+          "Demonstrates automatic edge positioning using the autoPosition prop. The OverlayBadge dynamically calculates optimal positioning based on the wrapped element's dimensions, ensuring perfect edge placement across all avatar sizes.",
       },
     },
   },
@@ -372,6 +493,165 @@ export const InteractiveAvatar: Story = {
   },
 };
 
+export const BadgeVariations: Story = {
+  render: (args) => (
+    <div className="space-y-6">
+      <div>
+        <h4 className="mb-3 text-sm font-medium">Count Badges</h4>
+        <div className="flex items-center space-x-4">
+          <OverlayBadge
+            badgeContent={5}
+            color="error"
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarImage
+                alt="User with notifications"
+                src="https://github.com/shadcn.png"
+              />
+              <AvatarFallback>5N</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            badgeContent={23}
+            color="primary"
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarImage
+                alt="User with messages"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
+              />
+              <AvatarFallback>23M</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            badgeContent={99}
+            color="success"
+            max={99}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarImage
+                alt="User with tasks"
+                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face"
+              />
+              <AvatarFallback>99T</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            badgeContent={150}
+            color="warning"
+            max={99}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>150</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+        </div>
+      </div>
+      <div>
+        <h4 className="mb-3 text-sm font-medium">Text Badges</h4>
+        <div className="flex items-center space-x-4">
+          <OverlayBadge
+            badgeContent="New"
+            color="success"
+            overlap="circular"
+            variant="standard"
+          >
+            <Avatar {...args}>
+              <AvatarImage alt="New user" src="https://github.com/shadcn.png" />
+              <AvatarFallback>NU</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            badgeContent="VIP"
+            color="warning"
+            overlap="circular"
+            variant="standard"
+          >
+            <Avatar {...args}>
+              <AvatarImage
+                alt="VIP user"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
+              />
+              <AvatarFallback>VIP</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            badgeContent="Pro"
+            color="info"
+            overlap="circular"
+            variant="standard"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>PR</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+        </div>
+      </div>
+      <div>
+        <h4 className="mb-3 text-sm font-medium">Badge Positions</h4>
+        <div className="flex items-center space-x-4">
+          <OverlayBadge
+            anchorOrigin="top-left"
+            badgeContent={1}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>TL</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="top-right"
+            badgeContent={2}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>TR</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-left"
+            badgeContent={3}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>BL</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+          <OverlayBadge
+            anchorOrigin="bottom-right"
+            badgeContent={4}
+            overlap="circular"
+            variant="count"
+          >
+            <Avatar {...args}>
+              <AvatarFallback>BR</AvatarFallback>
+            </Avatar>
+          </OverlayBadge>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates badge functionality including count badges, text badges, and different positions using explicit OverlayBadge composition.',
+      },
+    },
+  },
+};
+
 export const AccessibilityDemo: Story = {
   render: (args) => (
     <div className="space-y-4">
@@ -381,19 +661,22 @@ export const AccessibilityDemo: Story = {
         <p>• Meaningful fallback text (initials or abbreviations)</p>
         <p>• Keyboard navigation support for interactive avatars</p>
         <p>• Screen reader friendly role attributes</p>
+        <p>• Badge content properly positioned and accessible</p>
       </div>
       <div className="flex items-center space-x-4 pt-2">
-        <Avatar {...args}>
-          <AvatarImage
-            alt="Profile picture of John Doe, Software Engineer"
-            src="https://github.com/shadcn.png"
-          />
-          <AvatarFallback aria-label="John Doe initials">JD</AvatarFallback>
-        </Avatar>
+        <OverlayBadge color="online" overlap="circular" variant="dot">
+          <Avatar {...args}>
+            <AvatarImage
+              alt="Profile picture of John Doe, Software Engineer"
+              src="https://github.com/shadcn.png"
+            />
+            <AvatarFallback aria-label="John Doe initials">JD</AvatarFallback>
+          </Avatar>
+        </OverlayBadge>
         <div className="space-y-1">
           <p className="text-sm font-medium">John Doe</p>
           <p className="text-muted-foreground text-xs">
-            Descriptive alt text example
+            Descriptive alt text example with status indicator
           </p>
         </div>
       </div>
@@ -403,7 +686,7 @@ export const AccessibilityDemo: Story = {
     docs: {
       description: {
         story:
-          'Demonstrates accessibility features including descriptive alt text, meaningful fallback content, and proper ARIA labels.',
+          'Demonstrates accessibility features including descriptive alt text, meaningful fallback content, proper ARIA labels, and accessible badge positioning using OverlayBadge.',
       },
     },
   },

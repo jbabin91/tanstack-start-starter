@@ -132,7 +132,7 @@ export const InButtons: Story = {
         <Spinner className="mr-2" size="small" {...args} />
         Loading
       </Button>
-      <Button disabled size="icon">
+      <Button disabled aria-label="Loading" size="icon">
         <Spinner size="small" {...args} />
       </Button>
     </div>
