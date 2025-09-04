@@ -21,16 +21,16 @@ function getActivityIcon(activityType: string) {
   switch (activityType) {
     case 'sign_in':
     case 'sign_out': {
-      return <Icons.shield className="h-4 w-4" />;
+      return <Icons.shield className="size-4" />;
     }
     case 'api_request': {
-      return <Icons.globe className="h-4 w-4" />;
+      return <Icons.globe className="size-4" />;
     }
     case 'security_event': {
-      return <Icons.alertCircle className="h-4 w-4" />;
+      return <Icons.alertCircle className="size-4" />;
     }
     default: {
-      return <Icons.activity className="h-4 w-4" />;
+      return <Icons.activity className="size-4" />;
     }
   }
 }
@@ -64,7 +64,7 @@ export function SessionActivity({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Icons.clock className="h-5 w-5" />
+            <Icons.clock className="size-5" />
             Activity Log
           </CardTitle>
           <CardDescription>Loading activity...</CardDescription>
@@ -78,7 +78,7 @@ export function SessionActivity({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Icons.clock className="h-5 w-5" />
+            <Icons.clock className="size-5" />
             Activity Log
           </CardTitle>
           <CardDescription>No activity recorded yet</CardDescription>
@@ -91,7 +91,7 @@ export function SessionActivity({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Icons.clock className="h-5 w-5" />
+          <Icons.clock className="size-5" />
           Activity Log
         </CardTitle>
         <CardDescription>Recent activity for this session</CardDescription>

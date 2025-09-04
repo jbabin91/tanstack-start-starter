@@ -65,13 +65,13 @@ function RouteComponent() {
           <h2 className="mb-4 text-2xl font-semibold">Color Swatches</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg border p-4">
-              <div className="bg-primary mb-2 h-12 w-full rounded"></div>
+              <div className="bg-primary mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-primary font-semibold">Primary</h3>
               <p className="text-muted-foreground text-sm">Brand color</p>
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-secondary mb-2 h-12 w-full rounded"></div>
+              <div className="bg-secondary mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-secondary-foreground font-semibold">
                 Secondary
               </h3>
@@ -79,25 +79,25 @@ function RouteComponent() {
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-success mb-2 h-12 w-full rounded"></div>
+              <div className="bg-success mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-success font-semibold">Success</h3>
               <p className="text-muted-foreground text-sm">Positive actions</p>
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-warning mb-2 h-12 w-full rounded"></div>
+              <div className="bg-warning mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-warning font-semibold">Warning</h3>
               <p className="text-muted-foreground text-sm">Caution messages</p>
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-error mb-2 h-12 w-full rounded"></div>
+              <div className="bg-error mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-error font-semibold">Error</h3>
               <p className="text-muted-foreground text-sm">Errors & dangers</p>
             </div>
 
             <div className="rounded-lg border p-4">
-              <div className="bg-info mb-2 h-12 w-full rounded"></div>
+              <div className="bg-info mb-2 h-12 w-full rounded-sm"></div>
               <h3 className="text-info font-semibold">Info</h3>
               <p className="text-muted-foreground text-sm">Information</p>
             </div>
@@ -118,19 +118,19 @@ function RouteComponent() {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className="bg-success h-3 w-3 rounded-full"></div>
+                <div className="bg-success size-3 rounded-full"></div>
                 <span className="text-success">Online</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-warning h-3 w-3 rounded-full"></div>
+                <div className="bg-warning size-3 rounded-full"></div>
                 <span className="text-warning">Away</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-error h-3 w-3 rounded-full"></div>
+                <div className="bg-error size-3 rounded-full"></div>
                 <span className="text-error">Offline</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-info h-3 w-3 rounded-full"></div>
+                <div className="bg-info size-3 rounded-full"></div>
                 <span className="text-info">Busy</span>
               </div>
             </div>

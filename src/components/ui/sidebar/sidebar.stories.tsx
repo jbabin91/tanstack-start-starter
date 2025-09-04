@@ -127,7 +127,7 @@ export const Default: Story = {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
-              <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="bg-primary flex size-8 items-center justify-center rounded-lg">
                 <span className="text-primary-foreground text-sm font-bold">
                   A
                 </span>
@@ -274,7 +274,7 @@ export const CollapsibleExample: Story = {
                       className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                       size="lg"
                     >
-                      <Avatar className="h-8 w-8 rounded-lg">
+                      <Avatar className="size-8 rounded-lg">
                         <AvatarImage
                           alt="User Avatar"
                           src="https://github.com/shadcn.png"
@@ -300,7 +300,7 @@ export const CollapsibleExample: Story = {
                   >
                     <DropdownMenuLabel className="p-0 font-normal">
                       <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                        <Avatar className="h-8 w-8 rounded-lg">
+                        <Avatar className="size-8 rounded-lg">
                           <AvatarImage
                             alt="User Avatar"
                             src="https://github.com/shadcn.png"
@@ -396,7 +396,7 @@ export const WithNestedMenus: Story = {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
-              <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="bg-primary flex size-8 items-center justify-center rounded-lg">
                 <span className="text-primary-foreground text-sm font-bold">
                   D
                 </span>
@@ -543,7 +543,7 @@ export const WithSearch: Story = {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
-              <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="bg-primary flex size-8 items-center justify-center rounded-lg">
                 <span className="text-primary-foreground text-sm font-bold">
                   S
                 </span>
@@ -627,7 +627,7 @@ export const LoadingState: Story = {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="size-8 rounded-lg" />
               <div className="space-y-1">
                 <Skeleton className="h-3 w-20" />
                 <Skeleton className="h-2 w-16" />
@@ -713,7 +713,7 @@ export const Controlled: Story = {
             <Sidebar>
               <SidebarHeader>
                 <div className="flex items-center gap-2 px-2">
-                  <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+                  <div className="bg-primary flex size-8 items-center justify-center rounded-lg">
                     <span className="text-primary-foreground text-sm font-bold">
                       C
                     </span>

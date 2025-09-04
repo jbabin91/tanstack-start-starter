@@ -335,7 +335,7 @@ export const CustomSize: Story = {
         <ScrollArea className="h-96 w-64 rounded-md border p-4">
           <div className="space-y-2">
             {tags.map((tag, index) => (
-              <div key={tag} className="rounded border p-2">
+              <div key={tag} className="rounded-sm border p-2">
                 <div className="text-sm font-medium">{tag}</div>
                 <div className="text-muted-foreground text-xs">
                   Technology #{index + 1}

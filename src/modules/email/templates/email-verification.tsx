@@ -81,7 +81,7 @@ export function EmailVerification({ url, userName }: EmailVerificationProps) {
                   link into your browser:
                 </Text>
 
-                <Text className="rounded border border-gray-200 bg-gray-100 px-3 py-2 text-sm break-all text-gray-600">
+                <Text className="rounded-sm border border-gray-200 bg-gray-100 px-3 py-2 text-sm break-all text-gray-600">
                   {url}
                 </Text>
 
@@ -92,7 +92,7 @@ export function EmailVerification({ url, userName }: EmailVerificationProps) {
               </Section>
 
               {/* Footer */}
-              <Section className="rounded-b-lg border-t border-gray-200 bg-gray-100 px-6 py-6 text-center">
+              <Section className="rounded-b-lg border-t border-gray-200 bg-gray-100 p-6 text-center">
                 <Text className="mb-2 text-sm text-gray-600">
                   If you didn&apos;t create an account, you can safely ignore
                   this email.

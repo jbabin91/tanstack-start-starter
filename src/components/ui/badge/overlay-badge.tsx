@@ -104,11 +104,11 @@ const overlayBadgeVariants = cva(
   {
     variants: {
       variant: {
-        dot: 'h-2.5 w-2.5 p-0 rounded-full ring-2 ring-background',
+        dot: 'size-2.5 p-0 rounded-full ring-2 ring-background',
         count:
           'min-h-4 min-w-4 px-1 rounded-full ring-2 ring-background text-xs leading-none',
         standard:
-          'inline-block h-5 px-1.5 py-0.5 rounded ring-1 ring-background text-xs leading-tight max-w-14 overflow-hidden text-ellipsis whitespace-nowrap text-center',
+          'inline-block h-5 px-1.5 py-0.5 rounded-sm ring-1 ring-background text-xs leading-tight max-w-14 truncate text-center',
       },
       color: {
         primary: 'bg-primary text-primary-foreground',

@@ -163,25 +163,25 @@ export const CountBadges: Story = {
     <div className="flex items-center space-x-8">
       <OverlayBadge badgeContent={5} color="error">
         <Button variant="outlined">
-          <Icons.bell className="h-4 w-4" />
+          <Icons.bell className="size-4" />
           Notifications
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={23} color="primary">
         <Button variant="outlined">
-          <Icons.mail className="h-4 w-4" />
+          <Icons.mail className="size-4" />
           Messages
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={99} color="success" max={99}>
         <Button variant="outlined">
-          <Icons.checkCircle className="h-4 w-4" />
+          <Icons.checkCircle className="size-4" />
           Completed
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={150} color="warning" max={99}>
         <Button variant="outlined">
-          <Icons.alertTriangle className="h-4 w-4" />
+          <Icons.alertTriangle className="size-4" />
           Warnings
         </Button>
       </OverlayBadge>
@@ -203,7 +203,7 @@ export const NestedAvatars: Story = {
       <OverlayBadge
         anchorOrigin="bottom-right"
         badgeContent={
-          <Avatar className="border-background h-4 w-4 border">
+          <Avatar className="border-background size-4 border">
             <AvatarImage
               alt="Badge user"
               src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=16&h=16&fit=crop&crop=face"
@@ -214,7 +214,7 @@ export const NestedAvatars: Story = {
         overlap="circular"
         variant="standard"
       >
-        <Avatar className="h-12 w-12">
+        <Avatar className="size-12">
           <AvatarImage alt="Main user" src="https://github.com/shadcn.png" />
           <AvatarFallback>MU</AvatarFallback>
         </Avatar>
@@ -228,7 +228,7 @@ export const NestedAvatars: Story = {
         overlap="circular"
         variant="standard"
       >
-        <Avatar className="h-12 w-12">
+        <Avatar className="size-12">
           <AvatarImage
             alt="New user"
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop&crop=face"
@@ -299,7 +299,7 @@ export const Positions: Story = {
             badgeContent={1}
             overlap="circular"
           >
-            <Avatar className="h-16 w-16">
+            <Avatar className="size-16">
               <AvatarFallback className="text-lg">TL</AvatarFallback>
             </Avatar>
           </OverlayBadge>
@@ -308,7 +308,7 @@ export const Positions: Story = {
             badgeContent={2}
             overlap="circular"
           >
-            <Avatar className="h-16 w-16">
+            <Avatar className="size-16">
               <AvatarFallback className="text-lg">TR</AvatarFallback>
             </Avatar>
           </OverlayBadge>
@@ -317,7 +317,7 @@ export const Positions: Story = {
             badgeContent={3}
             overlap="circular"
           >
-            <Avatar className="h-16 w-16">
+            <Avatar className="size-16">
               <AvatarFallback className="text-lg">BL</AvatarFallback>
             </Avatar>
           </OverlayBadge>
@@ -326,7 +326,7 @@ export const Positions: Story = {
             badgeContent={4}
             overlap="circular"
           >
-            <Avatar className="h-16 w-16">
+            <Avatar className="size-16">
               <AvatarFallback className="text-lg">BR</AvatarFallback>
             </Avatar>
           </OverlayBadge>
@@ -928,7 +928,7 @@ export const RealWorldExamples: Story = {
             srLabel="12 unread messages"
           >
             <Button variant="outlined">
-              <Icons.mail className="mr-2 h-4 w-4" />
+              <Icons.mail className="mr-2 size-4" />
               Messages
             </Button>
           </OverlayBadge>
@@ -938,7 +938,7 @@ export const RealWorldExamples: Story = {
             srLabel="3 notifications"
           >
             <Button aria-label="View notifications" size="icon" variant="ghost">
-              <Icons.bell className="h-4 w-4" />
+              <Icons.bell className="size-4" />
             </Button>
           </OverlayBadge>
         </div>

@@ -295,7 +295,7 @@ export const WithIndicators: Story = {
             <button
               key={`indicator-${index}`}
               aria-label={`Go to slide ${index + 1}`}
-              className={`h-2 w-2 rounded-full transition-colors ${
+              className={`size-2 rounded-full transition-colors ${
                 index === current - 1 ? 'bg-primary' : 'bg-muted'
               }`}
               type="button"

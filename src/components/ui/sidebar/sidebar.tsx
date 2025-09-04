@@ -140,7 +140,7 @@ function SidebarProvider({
       <TooltipProvider delayDuration={0}>
         <div
           className={cn(
-            'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex h-full min-h-0 w-full',
+            'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex size-full min-h-0',
             className,
           )}
           data-slot="sidebar-wrapper"
@@ -210,7 +210,7 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex size-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
     );
@@ -255,7 +255,7 @@ function Sidebar({
       >
         <div
           className={cn(
-            'bg-sidebar group-data-[variant=floating]:border-sidebar-border flex w-full flex-col group-data-[variant=floating]:mt-1 group-data-[variant=floating]:mb-1 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm',
+            'bg-sidebar group-data-[variant=floating]:border-sidebar-border flex w-full flex-col group-data-[variant=floating]:my-1 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm',
             className,
           )}
           data-sidebar="sidebar"

@@ -16,7 +16,7 @@ export function AccountDashboard() {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <Icons.user className="text-muted-foreground mx-auto h-12 w-12" />
+          <Icons.user className="text-muted-foreground mx-auto size-12" />
           <h3 className="mt-4 text-lg font-semibold">No user data</h3>
           <p className="text-muted-foreground">
             Unable to load user information.
@@ -38,7 +38,7 @@ export function AccountDashboard() {
         </div>
         <Button>
           <Link className="flex items-center" to="/account/sessions">
-            <Icons.settings className="mr-2 h-4 w-4" />
+            <Icons.settings className="mr-2 size-4" />
             Manage Account
           </Link>
         </Button>
@@ -49,13 +49,13 @@ export function AccountDashboard() {
         <Card className="md:col-span-2 lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Icons.user className="h-5 w-5" />
+              <Icons.user className="size-5" />
               Profile
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
+              <Avatar className="size-16">
                 <AvatarImage alt={user.name} src={user.image ?? undefined} />
                 <AvatarFallback className="text-lg">
                   {user.name
@@ -109,27 +109,27 @@ export function AccountDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Icons.mail className="h-5 w-5" />
+              <Icons.mail className="size-5" />
               Contact Info
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
-                <Icons.mail className="text-muted-foreground h-4 w-4" />
+                <Icons.mail className="text-muted-foreground size-4" />
                 <span>{user.email}</span>
               </div>
 
               {user.phone && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Icons.phone className="text-muted-foreground h-4 w-4" />
+                  <Icons.phone className="text-muted-foreground size-4" />
                   <span>{user.phone}</span>
                 </div>
               )}
 
               {user.website && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Icons.globe className="text-muted-foreground h-4 w-4" />
+                  <Icons.globe className="text-muted-foreground size-4" />
                   <a
                     className="text-primary hover:underline"
                     href={user.website}
@@ -143,7 +143,7 @@ export function AccountDashboard() {
 
               {user.address && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Icons.mapPin className="text-muted-foreground h-4 w-4" />
+                  <Icons.mapPin className="text-muted-foreground size-4" />
                   <span>{user.address}</span>
                 </div>
               )}
@@ -154,7 +154,7 @@ export function AccountDashboard() {
                 <Separator />
                 <Button className="w-full" size="sm" variant="outlined">
                   <Link className="flex items-center" to="/dashboard">
-                    <Icons.edit className="mr-2 h-4 w-4" />
+                    <Icons.edit className="mr-2 size-4" />
                     Complete Profile
                   </Link>
                 </Button>
@@ -167,28 +167,28 @@ export function AccountDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Icons.zap className="h-5 w-5" />
+              <Icons.zap className="size-5" />
               Quick Actions
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/dashboard">
-                <Icons.edit className="mr-2 h-4 w-4" />
+                <Icons.edit className="mr-2 size-4" />
                 Edit Profile
               </Link>
             </Button>
 
             <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/account/sessions">
-                <Icons.shield className="mr-2 h-4 w-4" />
+                <Icons.shield className="mr-2 size-4" />
                 Security Settings
               </Link>
             </Button>
 
             <Button className="w-full" variant="outlined">
               <Link className="flex items-center" to="/users">
-                <Icons.users className="mr-2 h-4 w-4" />
+                <Icons.users className="mr-2 size-4" />
                 Browse Users
               </Link>
             </Button>
@@ -199,7 +199,7 @@ export function AccountDashboard() {
                 params={{ userId: user.id }}
                 to="/users/$userId/posts"
               >
-                <Icons.fileText className="mr-2 h-4 w-4" />
+                <Icons.fileText className="mr-2 size-4" />
                 My Posts
               </Link>
             </Button>
@@ -212,7 +212,7 @@ export function AccountDashboard() {
         <Card className="border-error bg-error/5">
           <CardHeader>
             <CardTitle className="text-error flex items-center gap-2">
-              <Icons.alertTriangle className="h-5 w-5" />
+              <Icons.alertTriangle className="size-5" />
               Account Status
             </CardTitle>
           </CardHeader>
@@ -220,7 +220,7 @@ export function AccountDashboard() {
             {user.banned && (
               <div className="border-error/20 bg-error/10 rounded-md border p-3">
                 <div className="flex items-center gap-2">
-                  <Icons.ban className="text-error h-4 w-4" />
+                  <Icons.ban className="text-error size-4" />
                   <span className="text-error font-medium">
                     Account Suspended
                   </span>
@@ -241,7 +241,7 @@ export function AccountDashboard() {
             {!user.emailVerified && (
               <div className="border-warning/20 bg-warning/10 rounded-md border p-3">
                 <div className="flex items-center gap-2">
-                  <Icons.mail className="text-warning h-4 w-4" />
+                  <Icons.mail className="text-warning size-4" />
                   <span className="text-warning font-medium">
                     Email Not Verified
                   </span>

@@ -307,15 +307,15 @@ export const LoadingStates: Story = {
           <Spinner size="small" {...args} />
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <div className="rounded bg-gray-50 p-4 text-center">
+          <div className="rounded-sm bg-gray-50 p-4 text-center">
             <Spinner size="small" {...args} />
             <p className="text-muted-foreground mt-2 text-xs">Users</p>
           </div>
-          <div className="rounded bg-gray-50 p-4 text-center">
+          <div className="rounded-sm bg-gray-50 p-4 text-center">
             <Spinner size="small" {...args} />
             <p className="text-muted-foreground mt-2 text-xs">Revenue</p>
           </div>
-          <div className="rounded bg-gray-50 p-4 text-center">
+          <div className="rounded-sm bg-gray-50 p-4 text-center">
             <Spinner size="small" {...args} />
             <p className="text-muted-foreground mt-2 text-xs">Orders</p>
           </div>

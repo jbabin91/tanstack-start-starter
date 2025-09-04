@@ -324,7 +324,7 @@ export const CustomStyling: Story = {
           onClick={() =>
             toast(
               <div className="flex items-center gap-2">
-                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                <CheckCircleIcon className="size-5 text-green-600" />
                 <div>
                   <div className="font-medium">Task completed!</div>
                   <div className="text-muted-foreground text-sm">
@@ -657,9 +657,9 @@ export const Positioning: Story = {
         </Button>
       </div>
       <div className="text-muted-foreground rounded-lg border p-4 text-xs">
-        <InfoIcon className="mr-2 inline h-4 w-4" />
+        <InfoIcon className="mr-2 inline size-4" />
         In a real application, you would configure the Toaster position prop:
-        <code className="ml-2 rounded bg-gray-100 px-1">
+        <code className="ml-2 rounded-sm bg-gray-100 px-1">
           &lt;Toaster position=&quot;bottom-right&quot; /&gt;
         </code>
       </div>

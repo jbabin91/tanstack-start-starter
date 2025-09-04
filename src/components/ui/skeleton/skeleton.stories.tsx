@@ -63,7 +63,7 @@ export const Sizes: Story = {
 export const Shapes: Story = {
   render: (args) => (
     <div className="flex items-center space-x-4">
-      <Skeleton className="h-12 w-12 rounded-full" {...args} />
+      <Skeleton className="size-12 rounded-full" {...args} />
       <Skeleton className="h-12 w-32 rounded-lg" {...args} />
       <Skeleton className="h-12 w-24 rounded-none" {...args} />
       <Skeleton className="h-12 w-16 rounded-sm" {...args} />
@@ -103,7 +103,7 @@ export const CardLayout: Story = {
   render: (args) => (
     <div className="w-80 space-y-4 rounded-lg border p-6">
       <div className="flex items-center space-x-4">
-        <Skeleton className="h-12 w-12 rounded-full" {...args} />
+        <Skeleton className="size-12 rounded-full" {...args} />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" {...args} />
           <Skeleton className="h-3 w-1/2" {...args} />
@@ -137,7 +137,7 @@ export const ListItems: Story = {
           key={`skeleton-list-item-${i}`}
           className="flex items-center space-x-3"
         >
-          <Skeleton className="h-10 w-10 rounded-full" {...args} />
+          <Skeleton className="size-10 rounded-full" {...args} />
           <div className="flex-1 space-y-1">
             <Skeleton className="h-3 w-3/4" {...args} />
             <Skeleton className="h-3 w-1/2" {...args} />
@@ -254,7 +254,7 @@ export const DashboardCards: Story = {
         >
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-24" {...args} />
-            <Skeleton className="h-6 w-6 rounded-full" {...args} />
+            <Skeleton className="size-6 rounded-full" {...args} />
           </div>
           <Skeleton className="h-8 w-20" {...args} />
           <div className="flex items-center space-x-2">
@@ -282,7 +282,7 @@ export const NavigationMenu: Story = {
           key={`skeleton-nav-item-${i}`}
           className="flex items-center space-x-3 p-2"
         >
-          <Skeleton className="h-5 w-5 rounded-sm" {...args} />
+          <Skeleton className="size-5 rounded-sm" {...args} />
           <Skeleton className="h-4 flex-1" {...args} />
         </div>
       ))}
@@ -294,7 +294,7 @@ export const NavigationMenu: Story = {
           key={`skeleton-nav-item-bottom-${i}`}
           className="flex items-center space-x-3 p-2"
         >
-          <Skeleton className="h-5 w-5 rounded-sm" {...args} />
+          <Skeleton className="size-5 rounded-sm" {...args} />
           <Skeleton className="h-4 flex-1" {...args} />
         </div>
       ))}
@@ -312,7 +312,7 @@ export const NavigationMenu: Story = {
 export const ProfileHeader: Story = {
   render: (args) => (
     <div className="flex flex-col items-center space-y-4">
-      <Skeleton className="h-24 w-24 rounded-full" {...args} />
+      <Skeleton className="size-24 rounded-full" {...args} />
       <div className="space-y-2 text-center">
         <Skeleton className="h-6 w-40" {...args} />
         <Skeleton className="h-4 w-32" {...args} />
@@ -383,7 +383,7 @@ export const InteractiveSkeleton: Story = {
   render: (args) => (
     <div className="w-full max-w-sm space-y-3">
       <div className="flex items-center space-x-3">
-        <Skeleton className="h-10 w-10 rounded-full" {...args} />
+        <Skeleton className="size-10 rounded-full" {...args} />
         <div className="flex-1 space-y-1">
           <Skeleton className="h-4 w-3/4" {...args} />
           <Skeleton className="h-3 w-1/2" {...args} />

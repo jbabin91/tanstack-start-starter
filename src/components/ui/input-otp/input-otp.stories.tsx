@@ -107,7 +107,7 @@ export const AuthenticationFlow: Story = {
         <div className="space-y-4 text-center">
           <div className="flex justify-center">
             <div className="rounded-full bg-green-100 p-3">
-              <Icons.checkCircle className="h-6 w-6 text-green-600" />
+              <Icons.checkCircle className="size-6 text-green-600" />
             </div>
           </div>
           <div>
@@ -153,7 +153,7 @@ export const AuthenticationFlow: Story = {
 
           {isVerifying && (
             <div className="text-muted-foreground flex items-center justify-center space-x-2 text-sm">
-              <Icons.spinner className="h-4 w-4 animate-spin" />
+              <Icons.spinner className="size-4 animate-spin" />
               <span>Verifying code...</span>
             </div>
           )}
@@ -208,7 +208,7 @@ export const LoginVerification: Story = {
         <div className="mx-auto max-w-sm space-y-4 text-center">
           <div className="flex justify-center">
             <div className="rounded-full bg-green-100 p-4">
-              <Icons.checkCircle className="h-8 w-8 text-green-600" />
+              <Icons.checkCircle className="size-8 text-green-600" />
             </div>
           </div>
           <div>
@@ -255,7 +255,7 @@ export const LoginVerification: Story = {
             >
               {isVerifying ? (
                 <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  <Icons.spinner className="mr-2 size-4 animate-spin" />
                   Verifying...
                 </>
               ) : (
@@ -320,7 +320,7 @@ export const LoginVerification: Story = {
           >
             {isSending ? (
               <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner className="mr-2 size-4 animate-spin" />
                 Sending code...
               </>
             ) : (
@@ -402,14 +402,14 @@ export const WithValidation: Story = {
               className="flex items-center space-x-2 text-sm text-red-600"
               id="otp-error"
             >
-              <Icons.xCircle className="h-4 w-4" />
+              <Icons.xCircle className="size-4" />
               <span>{error}</span>
             </div>
           )}
 
           {isSubmitting && (
             <div className="text-muted-foreground flex items-center justify-center space-x-2 text-sm">
-              <Icons.spinner className="h-4 w-4 animate-spin" />
+              <Icons.spinner className="size-4 animate-spin" />
               <span>Validating...</span>
             </div>
           )}

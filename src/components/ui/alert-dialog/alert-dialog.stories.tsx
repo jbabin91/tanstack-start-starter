@@ -300,7 +300,7 @@ export const WithIcons: Story = {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
+          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
             <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
           </div>
           <AlertDialogTitle>Warning</AlertDialogTitle>

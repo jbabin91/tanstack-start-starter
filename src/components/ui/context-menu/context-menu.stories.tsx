@@ -37,7 +37,7 @@ const meta: Meta<typeof ContextMenu> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div className="flex h-96 w-96 items-center justify-center">
+      <div className="flex size-96 items-center justify-center">
         <Story />
       </div>
     ),
@@ -51,7 +51,7 @@ type Story = StoryObj<typeof ContextMenu>;
 export const Default: Story = {
   render: () => (
     <ContextMenu>
-      <ContextMenuTrigger className="border-border hover:bg-muted flex h-32 w-32 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm">
+      <ContextMenuTrigger className="border-border hover:bg-muted flex size-32 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm">
         Right click me
       </ContextMenuTrigger>
       <ContextMenuContent>
@@ -339,11 +339,11 @@ export const FileExplorer: Story = {
           {files.map((file, index) => (
             <ContextMenu key={`file-${index}`}>
               <ContextMenuTrigger
-                className={`hover:bg-muted flex w-full cursor-pointer items-center gap-2 rounded p-2 text-left text-sm ${
+                className={`hover:bg-muted flex w-full cursor-pointer items-center gap-2 rounded-sm p-2 text-left text-sm ${
                   selectedFile === file.name ? 'bg-muted' : ''
                 }`}
               >
-                <file.icon className="h-4 w-4" />
+                <file.icon className="size-4" />
                 {file.name}
               </ContextMenuTrigger>
               <ContextMenuContent>
@@ -388,7 +388,7 @@ export const FileExplorer: Story = {
           ))}
         </div>
         {selectedFile && (
-          <div className="border-border bg-muted/50 rounded border p-2">
+          <div className="border-border bg-muted/50 rounded-sm border p-2">
             <p className="text-sm">Selected: {selectedFile}</p>
           </div>
         )}
@@ -420,7 +420,7 @@ export const ImageEditor: Story = {
 
     return (
       <ContextMenu>
-        <ContextMenuTrigger className="border-border hover:bg-muted flex h-48 w-48 cursor-pointer items-center justify-center rounded-lg border bg-gradient-to-br from-blue-100 to-purple-100 text-sm font-medium dark:from-blue-900 dark:to-purple-900">
+        <ContextMenuTrigger className="border-border hover:bg-muted flex size-48 cursor-pointer items-center justify-center rounded-lg border bg-gradient-to-br from-blue-100 to-purple-100 text-sm font-medium dark:from-blue-900 dark:to-purple-900">
           🖼️ Sample Image
           <br />
           <span className="text-xs opacity-60">Right click to edit</span>
@@ -528,7 +528,7 @@ export const TableCell: Story = {
         <p className="text-muted-foreground text-sm">
           Right-click any table cell:
         </p>
-        <table className="border-border w-full border-collapse rounded border">
+        <table className="border-border w-full border-collapse rounded-sm border">
           <thead>
             {data.map((row, rowIndex) => {
               if (rowIndex === 0) {
@@ -622,7 +622,7 @@ export const TableCell: Story = {
           </tbody>
         </table>
         {selectedCells.length > 0 && (
-          <div className="border-border bg-muted/50 rounded border p-2">
+          <div className="border-border bg-muted/50 rounded-sm border p-2">
             <p className="text-sm">
               Selected cells: {selectedCells.join(', ')}
             </p>
@@ -715,14 +715,14 @@ export const Interactive: Story = {
         </div>
 
         {lastAction && (
-          <div className="border-border bg-muted/50 rounded border p-3">
+          <div className="border-border bg-muted/50 rounded-sm border p-3">
             <p className="text-sm">
               Last action: <strong>{lastAction}</strong>
             </p>
           </div>
         )}
 
-        <div className="border-border bg-muted/30 rounded border p-3">
+        <div className="border-border bg-muted/30 rounded-sm border p-3">
           <h4 className="mb-2 text-sm font-medium">Settings:</h4>
           <div className="space-y-1">
             <p className="text-sm">

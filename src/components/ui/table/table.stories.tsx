@@ -336,14 +336,14 @@ export const WithActions: Story = {
                   size="icon"
                   variant="ghost"
                 >
-                  <Icons.edit className="h-4 w-4" />
+                  <Icons.edit className="size-4" />
                 </Button>
                 <Button
                   aria-label={`Delete invoice ${invoice.id}`}
                   size="icon"
                   variant="ghost"
                 >
-                  <Icons.ban className="h-4 w-4" />
+                  <Icons.ban className="size-4" />
                 </Button>
               </div>
             </TableCell>
@@ -418,7 +418,7 @@ export const Sortable: Story = {
         {children}
         {sortField === field && (
           <Icons.chevronDown
-            className={`ml-1 h-3 w-3 transition-transform ${
+            className={`ml-1 size-3 transition-transform ${
               sortDirection === 'desc' ? 'rotate-180' : ''
             }`}
           />
@@ -511,7 +511,7 @@ export const EmptyState: Story = {
             colSpan={4}
           >
             <div className="flex flex-col items-center gap-2">
-              <Icons.fileText className="h-8 w-8" />
+              <Icons.fileText className="size-8" />
               <div>No invoices found</div>
               <div className="text-xs">
                 Create your first invoice to get started

@@ -10,7 +10,7 @@ export function NavBar() {
   const { handleSignOut } = useAuth();
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 flex items-center justify-between border-b px-4 py-3 backdrop-blur">
+    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 flex items-center justify-between border-b px-4 py-3 backdrop-blur-sm">
       <nav aria-label="Main navigation" className="flex items-center gap-4">
         <Link
           activeOptions={{ exact: true }}

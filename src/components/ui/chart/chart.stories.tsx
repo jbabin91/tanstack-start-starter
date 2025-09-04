@@ -227,7 +227,7 @@ export const PieChart_: Story = {
   name: 'Pie Chart',
   render: () => (
     <div className="flex justify-center">
-      <ChartContainer className="h-[250px] w-[250px]" config={pieChartConfig}>
+      <ChartContainer className="size-[250px]" config={pieChartConfig}>
         <PieChart>
           <ChartTooltip
             content={<ChartTooltipContent nameKey="visitors" />}

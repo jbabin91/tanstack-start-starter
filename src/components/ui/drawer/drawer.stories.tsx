@@ -34,7 +34,7 @@ const meta: Meta<typeof Drawer> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div className="flex h-96 w-96 items-center justify-center">
+      <div className="flex size-96 items-center justify-center">
         <Story />
       </div>
     ),
@@ -104,7 +104,7 @@ export const WithForm: Story = {
       <Drawer>
         <DrawerTrigger asChild>
           <Button>
-            <Icons.plus className="mr-2 h-4 w-4" />
+            <Icons.plus className="mr-2 size-4" />
             Add Contact
           </Button>
         </DrawerTrigger>
@@ -148,7 +148,7 @@ export const WithForm: Story = {
           </form>
           <DrawerFooter>
             <Button type="submit" onClick={handleSubmit}>
-              <Icons.plus className="mr-2 h-4 w-4" />
+              <Icons.plus className="mr-2 size-4" />
               Add Contact
             </Button>
             <DrawerClose asChild>
@@ -225,7 +225,7 @@ export const FromLeft: Story = {
     <Drawer direction="left">
       <DrawerTrigger asChild>
         <Button variant="outlined">
-          <Icons.panelLeft className="mr-2 h-4 w-4" />
+          <Icons.panelLeft className="mr-2 size-4" />
           Open Sidebar
         </Button>
       </DrawerTrigger>
@@ -240,35 +240,35 @@ export const FromLeft: Story = {
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/dashboard"
             >
-              <Icons.home className="h-4 w-4" />
+              <Icons.home className="size-4" />
               Dashboard
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/team"
             >
-              <Icons.users className="h-4 w-4" />
+              <Icons.users className="size-4" />
               Team
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/projects"
             >
-              <Icons.folder className="h-4 w-4" />
+              <Icons.folder className="size-4" />
               Projects
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/calendar"
             >
-              <Icons.calendar className="h-4 w-4" />
+              <Icons.calendar className="size-4" />
               Calendar
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/settings"
             >
-              <Icons.settings className="h-4 w-4" />
+              <Icons.settings className="size-4" />
               Settings
             </a>
           </nav>
@@ -295,7 +295,7 @@ export const FromRight: Story = {
     <Drawer direction="right">
       <DrawerTrigger asChild>
         <Button variant="outlined">
-          <Icons.settings className="mr-2 h-4 w-4" />
+          <Icons.settings className="mr-2 size-4" />
           Settings Panel
         </Button>
       </DrawerTrigger>
@@ -378,7 +378,7 @@ export const WithActions: Story = {
         <Drawer>
           <DrawerTrigger asChild>
             <Button>
-              <Icons.moreVertical className="mr-2 h-4 w-4" />
+              <Icons.moreVertical className="mr-2 size-4" />
               Document Actions
             </Button>
           </DrawerTrigger>
@@ -398,7 +398,7 @@ export const WithActions: Story = {
                     variant="ghost"
                     onClick={() => setSelectedAction(action.label)}
                   >
-                    <action.icon className="mr-3 h-4 w-4" />
+                    <action.icon className="mr-3 size-4" />
                     {action.label}
                   </Button>
                 ))}
@@ -413,7 +413,7 @@ export const WithActions: Story = {
         </Drawer>
 
         {selectedAction && (
-          <div className="border-border bg-muted/50 rounded border p-3">
+          <div className="border-border bg-muted/50 rounded-sm border p-3">
             <p className="text-sm">
               Selected action: <strong>{selectedAction}</strong>
             </p>
@@ -462,7 +462,7 @@ export const NestedContent: Story = {
             <span className="text-muted-foreground text-sm line-through">
               $249.99
             </span>
-            <span className="bg-primary text-primary-foreground rounded px-2 py-1 text-xs">
+            <span className="bg-primary text-primary-foreground rounded-sm px-2 py-1 text-xs">
               20% OFF
             </span>
           </div>
@@ -618,7 +618,7 @@ export const Interactive: Story = {
           </DrawerContent>
         </Drawer>
 
-        <div className="border-border bg-muted/30 rounded border p-3">
+        <div className="border-border bg-muted/30 rounded-sm border p-3">
           <p className="text-sm">Drawer state: {isOpen ? 'Open' : 'Closed'}</p>
           <p className="text-sm">Form data: {JSON.stringify(formData)}</p>
         </div>

@@ -156,11 +156,11 @@ export const ThreeTabs: Story = {
             Get an overview of your project performance and key metrics.
           </p>
           <div className="mt-4 grid grid-cols-2 gap-4">
-            <div className="rounded border p-3">
+            <div className="rounded-sm border p-3">
               <div className="text-2xl font-bold">1,234</div>
               <div className="text-muted-foreground text-sm">Total Users</div>
             </div>
-            <div className="rounded border p-3">
+            <div className="rounded-sm border p-3">
               <div className="text-2xl font-bold">$12,345</div>
               <div className="text-muted-foreground text-sm">Revenue</div>
             </div>
@@ -174,10 +174,10 @@ export const ThreeTabs: Story = {
             Detailed analytics and insights about user behavior.
           </p>
           <div className="mt-4">
-            <div className="rounded border p-4">
+            <div className="rounded-sm border p-4">
               <div className="mb-2 text-sm font-medium">Page Views</div>
-              <div className="bg-muted h-2 w-full rounded">
-                <div className="bg-primary h-2 w-3/4 rounded"></div>
+              <div className="bg-muted h-2 w-full rounded-sm">
+                <div className="bg-primary h-2 w-3/4 rounded-sm"></div>
               </div>
             </div>
           </div>

@@ -97,7 +97,7 @@ export const WithDialog: Story = {
       <>
         <p className="text-muted-foreground text-sm">
           Press{' '}
-          <kbd className="bg-muted text-muted-foreground pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
+          <kbd className="bg-muted text-muted-foreground pointer-events-none inline-flex h-5 items-center gap-1 rounded-sm border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
             <span className="text-xs">⌘</span>J
           </kbd>
         </p>
@@ -397,7 +397,7 @@ export const WithLoading: Story = {
           <CommandList>
             {loading ? (
               <div className="flex items-center justify-center py-6">
-                <Icons.loader className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.loader className="mr-2 size-4 animate-spin" />
                 <span className="text-muted-foreground text-sm">
                   Searching...
                 </span>
@@ -437,7 +437,7 @@ export const CustomStyling: Story = {
       />
       <CommandList className="max-h-[400px]">
         <CommandEmpty className="py-8 text-center">
-          <Icons.search className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
+          <Icons.search className="text-muted-foreground mx-auto mb-2 size-8" />
           <p className="text-muted-foreground">No commands found</p>
         </CommandEmpty>
         <CommandGroup heading="Recent">
@@ -481,19 +481,19 @@ export const CompactMode: Story = {
         <CommandEmpty>No results.</CommandEmpty>
         <CommandGroup>
           <CommandItem className="py-1">
-            <Icons.file className="mr-2 h-3 w-3" />
+            <Icons.file className="mr-2 size-3" />
             <span className="text-xs">index.js</span>
           </CommandItem>
           <CommandItem className="py-1">
-            <Icons.folder className="mr-2 h-3 w-3" />
+            <Icons.folder className="mr-2 size-3" />
             <span className="text-xs">components</span>
           </CommandItem>
           <CommandItem className="py-1">
-            <Icons.image className="mr-2 h-3 w-3" />
+            <Icons.image className="mr-2 size-3" />
             <span className="text-xs">logo.png</span>
           </CommandItem>
           <CommandItem className="py-1">
-            <Icons.fileText className="mr-2 h-3 w-3" />
+            <Icons.fileText className="mr-2 size-3" />
             <span className="text-xs">README.md</span>
           </CommandItem>
         </CommandGroup>

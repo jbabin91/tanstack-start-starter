@@ -245,8 +245,8 @@ export const UserProfileMenu: Story = {
     <div className="flex justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="relative h-8 w-8 rounded-full p-0" variant="ghost">
-            <Avatar className="h-8 w-8">
+          <Button className="relative size-8 rounded-full p-0" variant="ghost">
+            <Avatar className="size-8">
               <AvatarImage alt="@johndoe" src="https://github.com/shadcn.png" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>

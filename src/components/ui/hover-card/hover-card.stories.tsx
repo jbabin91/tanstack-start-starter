@@ -43,7 +43,7 @@ export const Default: Story = {
               The React framework – created and maintained by @vercel.
             </p>
             <div className="flex items-center pt-2">
-              <Icons.calendar className="mr-2 h-4 w-4 opacity-70" />
+              <Icons.calendar className="mr-2 size-4 opacity-70" />
               <span className="text-muted-foreground text-xs">
                 Joined December 2021
               </span>
@@ -71,7 +71,7 @@ export const UserProfile: Story = {
         </HoverCardTrigger>
         <HoverCardContent className="w-80">
           <div className="flex justify-between space-x-4">
-            <Avatar className="h-12 w-12">
+            <Avatar className="size-12">
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                 JC
               </AvatarFallback>
@@ -84,13 +84,13 @@ export const UserProfile: Story = {
               </p>
               <div className="flex items-center space-x-4 pt-2">
                 <div className="flex items-center">
-                  <Icons.users className="mr-1 h-3 w-3 opacity-70" />
+                  <Icons.users className="mr-1 size-3 opacity-70" />
                   <span className="text-muted-foreground text-xs">
                     1.2k followers
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <Icons.calendar className="mr-1 h-3 w-3 opacity-70" />
+                  <Icons.calendar className="mr-1 size-3 opacity-70" />
                   <span className="text-muted-foreground text-xs">
                     Joined March 2019
                   </span>
@@ -112,7 +112,7 @@ export const ProductCard: Story = {
         <HoverCard>
           <HoverCardTrigger asChild>
             <button
-              className="hover:bg-accent/50 w-full rounded p-2 text-left"
+              className="hover:bg-accent/50 w-full rounded-sm p-2 text-left"
               type="button"
             >
               <div className="font-medium">Next.js 14</div>
@@ -124,7 +124,7 @@ export const ProductCard: Story = {
           <HoverCardContent className="w-96">
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Avatar className="h-12 w-12">
+                <Avatar className="size-12">
                   <AvatarFallback className="bg-black text-lg font-bold text-white">
                     N
                   </AvatarFallback>
@@ -142,15 +142,15 @@ export const ProductCard: Story = {
               </p>
               <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                 <div className="flex items-center">
-                  <Icons.activity className="mr-1 h-3 w-3" />
+                  <Icons.activity className="mr-1 size-3" />
                   118k stars
                 </div>
                 <div className="flex items-center">
-                  <Icons.users className="mr-1 h-3 w-3" />
+                  <Icons.users className="mr-1 size-3" />
                   2.5k contributors
                 </div>
                 <div className="flex items-center">
-                  <Icons.circle className="mr-1 h-3 w-3 fill-yellow-500 text-yellow-500" />
+                  <Icons.circle className="mr-1 size-3 fill-yellow-500 text-yellow-500" />
                   JavaScript
                 </div>
               </div>
@@ -161,7 +161,7 @@ export const ProductCard: Story = {
         <HoverCard>
           <HoverCardTrigger asChild>
             <button
-              className="hover:bg-accent/50 w-full rounded p-2 text-left"
+              className="hover:bg-accent/50 w-full rounded-sm p-2 text-left"
               type="button"
             >
               <div className="font-medium">Tailwind CSS</div>
@@ -173,7 +173,7 @@ export const ProductCard: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Avatar className="h-12 w-12">
+                <Avatar className="size-12">
                   <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-lg font-bold text-white">
                     T
                   </AvatarFallback>
@@ -216,7 +216,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.activity className="h-4 w-4" />
+                <Icons.activity className="size-4" />
                 <h4 className="font-semibold">React</h4>
               </div>
               <p className="text-sm">
@@ -244,7 +244,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.zap className="h-4 w-4" />
+                <Icons.zap className="size-4" />
                 <h4 className="font-semibold">Node.js</h4>
               </div>
               <p className="text-sm">
@@ -277,7 +277,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.palette className="h-4 w-4" />
+                <Icons.palette className="size-4" />
                 <h4 className="font-semibold">Tailwind CSS</h4>
               </div>
               <p className="text-sm">
@@ -300,7 +300,7 @@ export const StatCard: Story = {
         <HoverCardTrigger asChild>
           <div className="hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-colors">
             <div className="flex items-center space-x-2">
-              <Icons.users className="h-4 w-4 text-blue-500" />
+              <Icons.users className="size-4 text-blue-500" />
               <span className="text-sm font-medium">Users</span>
             </div>
             <div className="mt-2 text-2xl font-bold">1,234</div>
@@ -334,7 +334,7 @@ export const StatCard: Story = {
         <HoverCardTrigger asChild>
           <div className="hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-colors">
             <div className="flex items-center space-x-2">
-              <Icons.dollarSign className="h-4 w-4 text-green-500" />
+              <Icons.dollarSign className="size-4 text-green-500" />
               <span className="text-sm font-medium">Revenue</span>
             </div>
             <div className="mt-2 text-2xl font-bold">$12.5k</div>
@@ -378,7 +378,7 @@ export const DocumentationLinks: Story = {
             <div>
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded px-1 py-0.5 text-xs">
+                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded-sm px-1 py-0.5 text-xs">
                     useState
                   </code>
                 </HoverCardTrigger>
@@ -392,7 +392,7 @@ export const DocumentationLinks: Story = {
                       initial state argument is the state used during the first
                       render.
                     </p>
-                    <div className="bg-muted rounded p-2 font-mono text-xs">
+                    <div className="bg-muted rounded-sm p-2 font-mono text-xs">
                       const [count, setCount] = useState(0);
                     </div>
                   </div>
@@ -403,7 +403,7 @@ export const DocumentationLinks: Story = {
             <div>
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded px-1 py-0.5 text-xs">
+                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded-sm px-1 py-0.5 text-xs">
                     useEffect
                   </code>
                 </HoverCardTrigger>
@@ -418,7 +418,7 @@ export const DocumentationLinks: Story = {
                       and other side effects are not allowed inside the main
                       body of a function component.
                     </p>
-                    <div className="bg-muted rounded p-2 font-mono text-xs">
+                    <div className="bg-muted rounded-sm p-2 font-mono text-xs">
                       {'useEffect(() => {\n  // effect\n}, [deps]);'}
                     </div>
                   </div>
@@ -429,7 +429,7 @@ export const DocumentationLinks: Story = {
             <div>
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded px-1 py-0.5 text-xs">
+                  <code className="bg-muted hover:bg-muted/80 cursor-pointer rounded-sm px-1 py-0.5 text-xs">
                     useContext
                   </code>
                 </HoverCardTrigger>
@@ -443,7 +443,7 @@ export const DocumentationLinks: Story = {
                       React.createContext) and returns the current context value
                       for that context.
                     </p>
-                    <div className="bg-muted rounded p-2 font-mono text-xs">
+                    <div className="bg-muted rounded-sm p-2 font-mono text-xs">
                       const value = useContext(MyContext);
                     </div>
                   </div>
@@ -486,7 +486,7 @@ export const Interactive: Story = {
             </HoverCardTrigger>
             <HoverCardContent className="w-80">
               <div className="flex justify-between space-x-4">
-                <Avatar className="h-14 w-14">
+                <Avatar className="size-14">
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-lg font-medium text-white">
                     {userData.name
                       .split(' ')
@@ -502,7 +502,7 @@ export const Interactive: Story = {
                   <p className="text-sm">{userData.bio}</p>
                   <div className="flex items-center space-x-4 pt-2">
                     <div className="text-muted-foreground flex items-center text-xs">
-                      <Icons.users className="mr-1 h-3 w-3" />
+                      <Icons.users className="mr-1 size-3" />
                       <span className="font-medium">
                         {userData.followers}
                       </span>{' '}
@@ -515,17 +515,17 @@ export const Interactive: Story = {
                   </div>
                   <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                     <div className="flex items-center">
-                      <Icons.calendar className="mr-1 h-3 w-3" />
+                      <Icons.calendar className="mr-1 size-3" />
                       Joined {userData.joinDate}
                     </div>
                   </div>
                   <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                     <div className="flex items-center">
-                      <Icons.mapPin className="mr-1 h-3 w-3" />
+                      <Icons.mapPin className="mr-1 size-3" />
                       {userData.location}
                     </div>
                     <div className="flex items-center">
-                      <Icons.globe className="mr-1 h-3 w-3" />
+                      <Icons.globe className="mr-1 size-3" />
                       {userData.website}
                     </div>
                   </div>

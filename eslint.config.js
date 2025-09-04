@@ -3,6 +3,7 @@ import pluginReact from '@eslint-react/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 import configPrettier from 'eslint-config-prettier';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
@@ -192,6 +193,31 @@ export default tseslint.config(
       'import-x/no-relative-parent-imports': 'off',
     },
   },
-
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    plugins: {
+      'better-tailwindcss': betterTailwindcss,
+    },
+    rules: {
+      // Disable rules that conflict with Prettier
+      'better-tailwindcss/enforce-consistent-class-order': 'off',
+      'better-tailwindcss/enforce-consistent-important-position': 'off',
+      // Prettier handles this
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+      'better-tailwindcss/enforce-consistent-variable-syntax': 'off',
+      // Core functionality rules that work well with Tailwind v4
+      'better-tailwindcss/enforce-shorthand-classes': 'warn',
+      'better-tailwindcss/no-contradicting-classes': 'off',
+      'better-tailwindcss/no-deprecated-classes': 'warn',
+      'better-tailwindcss/no-duplicate-classes': 'warn',
+      // Disable strict validation rules for custom classes and config issues
+      'better-tailwindcss/no-unregistered-classes': 'off',
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: 'src/styles/app.css',
+      },
+    },
+  },
   configPrettier,
 );

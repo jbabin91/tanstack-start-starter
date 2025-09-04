@@ -80,7 +80,7 @@ export const Default: Story = {
                 {item.description}
               </p>
               <div className="mt-2 flex items-center justify-between">
-                <span className="bg-secondary rounded px-2 py-1 text-xs">
+                <span className="bg-secondary rounded-sm px-2 py-1 text-xs">
                   {item.category}
                 </span>
                 <span className="text-muted-foreground text-xs">
@@ -91,7 +91,7 @@ export const Default: Story = {
           ))}
           {isLoading && (
             <div className="flex items-center justify-center p-4">
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
               <span className="text-muted-foreground text-sm">
                 Loading more...
               </span>
@@ -182,7 +182,7 @@ export const MessageList: Story = {
           <div className="space-y-3 p-3">
             {messages.map((message) => (
               <div key={message.id} className="flex space-x-2">
-                <Avatar className="h-8 w-8">
+                <Avatar className="size-8">
                   <AvatarFallback className="text-xs">
                     {message.user[0]}
                   </AvatarFallback>
@@ -202,7 +202,7 @@ export const MessageList: Story = {
             ))}
             {isLoading && (
               <div className="flex items-center space-x-2 p-2">
-                <Icons.spinner className="h-4 w-4 animate-spin" />
+                <Icons.spinner className="size-4 animate-spin" />
                 <span className="text-muted-foreground text-sm">
                   Loading messages...
                 </span>
@@ -213,7 +213,7 @@ export const MessageList: Story = {
         <div className="border-t p-3">
           <div className="flex space-x-2">
             <input
-              className="flex-1 rounded border px-2 py-1 text-sm"
+              className="flex-1 rounded-sm border px-2 py-1 text-sm"
               placeholder="Type a message..."
             />
             <Button size="sm">Send</Button>
@@ -312,7 +312,7 @@ export const ProductGrid: Story = {
           </div>
           {isLoading && (
             <div className="flex items-center justify-center p-6">
-              <Icons.spinner className="mr-2 h-5 w-5 animate-spin" />
+              <Icons.spinner className="mr-2 size-5 animate-spin" />
               <span className="text-muted-foreground text-sm">
                 Loading products...
               </span>
@@ -407,7 +407,7 @@ export const ReverseChronological: Story = {
         <div className="space-y-4 p-4">
           {isLoading && (
             <div className="flex items-center justify-center rounded-lg border p-4">
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
               <span className="text-muted-foreground text-sm">
                 Loading older posts...
               </span>
@@ -429,11 +429,11 @@ export const ReverseChronological: Story = {
               <p className="text-muted-foreground text-sm">{post.content}</p>
               <div className="mt-3 flex items-center space-x-2">
                 <Button size="sm" variant="ghost">
-                  <Icons.heart className="mr-1 h-3 w-3" />
+                  <Icons.heart className="mr-1 size-3" />
                   Like
                 </Button>
                 <Button size="sm" variant="ghost">
-                  <Icons.messageCircle className="mr-1 h-3 w-3" />
+                  <Icons.messageCircle className="mr-1 size-3" />
                   Comment
                 </Button>
               </div>
@@ -480,7 +480,7 @@ export const WithCustomSentinel: Story = {
             <div key={item.id} className="rounded-lg border p-4">
               <div className="mb-2 flex items-center justify-between">
                 <h4 className="font-semibold">{item.title}</h4>
-                <span className="bg-accent rounded px-2 py-1 text-xs">
+                <span className="bg-accent rounded-sm px-2 py-1 text-xs">
                   {item.category}
                 </span>
               </div>
@@ -490,7 +490,7 @@ export const WithCustomSentinel: Story = {
               <div className="text-muted-foreground mt-3 flex items-center space-x-4 text-xs">
                 <span>{item.timestamp}</span>
                 <Button size="sm" variant="ghost">
-                  <Icons.externalLink className="mr-1 h-3 w-3" />
+                  <Icons.externalLink className="mr-1 size-3" />
                   View
                 </Button>
               </div>
@@ -498,7 +498,7 @@ export const WithCustomSentinel: Story = {
           ))}
           {isLoading && (
             <div className="bg-muted/50 flex items-center justify-center rounded-lg border p-6">
-              <Icons.spinner className="mr-3 h-5 w-5 animate-spin" />
+              <Icons.spinner className="mr-3 size-5 animate-spin" />
               <div className="text-center">
                 <p className="text-sm font-medium">Loading more content...</p>
                 <p className="text-muted-foreground text-xs">
@@ -553,14 +553,14 @@ export const Interactive: Story = {
         </div>
 
         <InfiniteScroll
-          className="h-80 w-80 rounded-lg border"
+          className="size-80 rounded-lg border"
           hasMore={hasMore}
           isLoading={isLoading}
           next={loadMore}
         >
           <div className="space-y-2 p-4">
             {items.map((item, index) => (
-              <div key={item.id} className="rounded border p-3">
+              <div key={item.id} className="rounded-sm border p-3">
                 <h4 className="text-sm font-medium">
                   {item.title} (#{index + 1})
                 </h4>
@@ -568,7 +568,7 @@ export const Interactive: Story = {
                   {item.description}
                 </p>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="bg-secondary rounded px-2 py-0.5 text-xs">
+                  <span className="bg-secondary rounded-sm px-2 py-0.5 text-xs">
                     {item.category}
                   </span>
                   <span className="text-muted-foreground text-xs">
@@ -580,7 +580,7 @@ export const Interactive: Story = {
 
             {isLoading && (
               <div className="flex items-center justify-center p-6">
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner className="mr-2 size-4 animate-spin" />
                 <span className="text-muted-foreground text-sm">
                   Loading...
                 </span>
@@ -588,7 +588,7 @@ export const Interactive: Story = {
             )}
 
             {!hasMore && (
-              <div className="text-muted-foreground rounded border p-4 text-center text-sm">
+              <div className="text-muted-foreground rounded-sm border p-4 text-center text-sm">
                 All items loaded! (Total: {items.length})
               </div>
             )}

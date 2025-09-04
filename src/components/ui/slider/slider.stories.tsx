@@ -320,7 +320,7 @@ export const ControlledExample: Story = {
         <div className="bg-muted/50 rounded-md border p-4">
           <h3 className="font-medium">Preview</h3>
           <div
-            className="mt-2 h-16 w-full rounded bg-gradient-to-r from-blue-500 to-purple-600"
+            className="mt-2 h-16 w-full rounded-sm bg-gradient-to-r from-blue-500 to-purple-600"
             style={{
               filter: `brightness(${brightness[0]}%) contrast(${contrast[0]}%) saturate(${saturation[0]}%)`,
             }}

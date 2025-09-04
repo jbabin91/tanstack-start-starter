@@ -67,13 +67,13 @@ export const WithCustomSeparator: Story = {
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
-          <Icons.chevronRight className="h-4 w-4" />
+          <Icons.chevronRight className="size-4" />
         </BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbLink href="/analytics">Analytics</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
-          <Icons.chevronRight className="h-4 w-4" />
+          <Icons.chevronRight className="size-4" />
         </BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbPage>Reports</BreadcrumbPage>
@@ -169,21 +169,21 @@ export const WithIcons: Story = {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink className="flex items-center gap-2" href="/">
-            <Icons.globe className="h-4 w-4" />
+            <Icons.globe className="size-4" />
             Home
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink className="flex items-center gap-2" href="/settings">
-            <Icons.settings className="h-4 w-4" />
+            <Icons.settings className="size-4" />
             Settings
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbPage className="flex items-center gap-2">
-            <Icons.user className="h-4 w-4" />
+            <Icons.user className="size-4" />
             Profile
           </BreadcrumbPage>
         </BreadcrumbItem>

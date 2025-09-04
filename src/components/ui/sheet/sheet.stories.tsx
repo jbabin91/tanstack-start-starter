@@ -168,7 +168,7 @@ export const FromLeft: Story = {
     <Sheet {...args}>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.panelLeft className="mr-2 h-4 w-4" />
+          <Icons.panelLeft className="mr-2 size-4" />
           Left Sheet
         </Button>
       </SheetTrigger>
@@ -193,7 +193,7 @@ export const FromLeft: Story = {
                 className="w-full justify-start"
                 variant="ghost"
               >
-                <item.icon className="mr-3 h-4 w-4" />
+                <item.icon className="mr-3 size-4" />
                 {item.name}
               </Button>
             ))}
@@ -225,7 +225,7 @@ export const FromTop: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.chevronDown className="mr-2 h-4 w-4" />
+          <Icons.chevronDown className="mr-2 size-4" />
           Top Sheet
         </Button>
       </SheetTrigger>
@@ -258,7 +258,7 @@ export const FromTop: Story = {
               key={index}
               className="hover:bg-accent/50 flex items-start gap-3 rounded-md p-3"
             >
-              <div className="bg-primary mt-2 h-2 w-2 rounded-full" />
+              <div className="bg-primary mt-2 size-2 rounded-full" />
               <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium">{notification.title}</p>
                 <p className="text-muted-foreground text-xs">
@@ -298,7 +298,7 @@ export const FromBottom: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.chevronUp className="mr-2 h-4 w-4" />
+          <Icons.chevronUp className="mr-2 size-4" />
           Bottom Sheet
         </Button>
       </SheetTrigger>
@@ -321,7 +321,7 @@ export const FromBottom: Story = {
               className="flex h-16 flex-col gap-2"
               variant="ghost"
             >
-              <action.icon className="h-5 w-5" />
+              <action.icon className="size-5" />
               <span className="text-xs">{action.name}</span>
             </Button>
           ))}
@@ -420,7 +420,7 @@ export const WithForm: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button>
-          <Icons.edit className="mr-2 h-4 w-4" />
+          <Icons.edit className="mr-2 size-4" />
           Contact Form
         </Button>
       </SheetTrigger>
@@ -501,7 +501,7 @@ export const WithScrollableContent: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.fileText className="mr-2 h-4 w-4" />
+          <Icons.fileText className="mr-2 size-4" />
           Terms & Conditions
         </Button>
       </SheetTrigger>
@@ -529,7 +529,7 @@ export const WithScrollableContent: Story = {
         </div>
         <SheetFooter>
           <div className="flex items-center space-x-2">
-            <input className="rounded" id="agree" type="checkbox" />
+            <input className="rounded-sm" id="agree" type="checkbox" />
             <Label className="text-sm" htmlFor="agree">
               I agree to the terms and conditions
             </Label>

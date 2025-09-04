@@ -135,7 +135,7 @@ function RouteComponent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+              <div className="inline-block size-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
               <p className="text-muted-foreground">
                 Please wait while we verify your email address...
               </p>
@@ -149,7 +149,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <CheckCircleIcon className="text-success h-6 w-6" />
+                <CheckCircleIcon className="text-success size-6" />
                 Email verified successfully!
               </CardTitle>
             </CardHeader>
@@ -171,7 +171,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <XCircleIcon className="text-error h-6 w-6" />
+                <XCircleIcon className="text-error size-6" />
                 Verification failed
               </CardTitle>
             </CardHeader>

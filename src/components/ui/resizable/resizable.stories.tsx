@@ -307,11 +307,11 @@ export const CodeEditorLayout: Story = {
           <ResizablePanel defaultSize={75} minSize={50}>
             <div className="flex h-full flex-col p-3">
               <div className="mb-2 flex items-center gap-2">
-                <div className="bg-muted text-muted-foreground rounded px-2 py-1 text-xs">
+                <div className="bg-muted text-muted-foreground rounded-sm px-2 py-1 text-xs">
                   App.tsx
                 </div>
               </div>
-              <div className="bg-muted/20 flex-1 rounded p-3 font-mono text-xs">
+              <div className="bg-muted/20 flex-1 rounded-sm p-3 font-mono text-xs">
                 <div>import React from &apos;react&apos;;</div>
                 <div>import Button from &apos;./components/Button&apos;;</div>
                 <div className="mt-2">function App() {`{`}</div>

@@ -157,7 +157,7 @@ export const TooltipWithIcons: Story = {
         <TooltipTrigger asChild>
           <Button aria-label="Add new item" size="icon" variant="outlined">
             <svg
-              className="h-4 w-4"
+              className="size-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -181,7 +181,7 @@ export const TooltipWithIcons: Story = {
         <TooltipTrigger asChild>
           <Button aria-label="Delete item" size="icon" variant="outlined">
             <svg
-              className="h-4 w-4"
+              className="size-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -205,7 +205,7 @@ export const TooltipWithIcons: Story = {
         <TooltipTrigger asChild>
           <Button aria-label="Edit item" size="icon" variant="outlined">
             <svg
-              className="h-4 w-4"
+              className="size-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -246,11 +246,11 @@ export const FormFieldTooltips: Story = {
             <TooltipTrigger asChild>
               <button
                 aria-label="Email help"
-                className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border"
+                className="text-muted-foreground hover:text-foreground inline-flex size-4 items-center justify-center rounded-full border"
                 type="button"
               >
                 <svg
-                  className="h-3 w-3"
+                  className="size-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -280,11 +280,11 @@ export const FormFieldTooltips: Story = {
             <TooltipTrigger asChild>
               <button
                 aria-label="Password requirements help"
-                className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border"
+                className="text-muted-foreground hover:text-foreground inline-flex size-4 items-center justify-center rounded-full border"
                 type="button"
               >
                 <svg
-                  className="h-3 w-3"
+                  className="size-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

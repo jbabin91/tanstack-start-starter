@@ -15,7 +15,7 @@ export function SessionsList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Icons.loader className="h-8 w-8 animate-spin" />
+        <Icons.loader className="size-8 animate-spin" />
       </div>
     );
   }

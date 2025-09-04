@@ -202,7 +202,7 @@ export const WithImages: Story = {
           <AspectRatio ratio={16 / 9}>
             <img
               alt="Landscape"
-              className="h-full w-full rounded-md object-cover"
+              className="size-full rounded-md object-cover"
               src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=640&h=360&fit=crop"
             />
           </AspectRatio>
@@ -215,7 +215,7 @@ export const WithImages: Story = {
           <AspectRatio ratio={1}>
             <img
               alt="Square"
-              className="h-full w-full rounded-md object-cover"
+              className="size-full rounded-md object-cover"
               src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop"
             />
           </AspectRatio>
@@ -228,7 +228,7 @@ export const WithImages: Story = {
           <AspectRatio ratio={3 / 4}>
             <img
               alt="Portrait"
-              className="h-full w-full rounded-md object-cover"
+              className="size-full rounded-md object-cover"
               src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=400&fit=crop"
             />
           </AspectRatio>
@@ -241,7 +241,7 @@ export const WithImages: Story = {
           <AspectRatio ratio={21 / 9}>
             <img
               alt="Cinematic"
-              className="h-full w-full rounded-md object-cover"
+              className="size-full rounded-md object-cover"
               src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=840&h=360&fit=crop"
             />
           </AspectRatio>
@@ -322,7 +322,7 @@ export const CardGrid: Story = {
           <AspectRatio ratio={16 / 9}>
             <img
               alt={`Card ${i + 1}`}
-              className="h-full w-full object-cover"
+              className="size-full object-cover"
               src={`https://images.unsplash.com/photo-${
                 [
                   '1506905925346-21bda4d32df4',
@@ -452,7 +452,7 @@ export const AccessibilityDemo: Story = {
       <div className="w-80">
         <AspectRatio ratio={16 / 9}>
           <button
-            className="flex h-full w-full items-center justify-center rounded-md bg-gray-100 text-gray-800 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            className="flex size-full items-center justify-center rounded-md bg-gray-100 text-gray-800 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
             type="button"
           >
             <span className="text-sm">Interactive Content</span>

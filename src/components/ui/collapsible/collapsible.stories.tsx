@@ -46,7 +46,7 @@ export const Default: Story = {
       <CollapsibleTrigger asChild>
         <Button className="justify-between p-0" variant="ghost">
           Can I use this with other UI libraries?
-          <Icons.chevronDown className="h-4 w-4" />
+          <Icons.chevronDown className="size-4" />
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="pt-2">
@@ -75,7 +75,7 @@ export const WithCard: Story = {
           <CardHeader className="hover:bg-muted/50 cursor-pointer">
             <CardTitle className="flex items-center justify-between">
               Account Details
-              <Icons.chevronDown className="h-5 w-5" />
+              <Icons.chevronDown className="size-5" />
             </CardTitle>
           </CardHeader>
         </CollapsibleTrigger>
@@ -140,7 +140,7 @@ export const MultipleItems: Story = {
                 <CardHeader className="hover:bg-muted/50 cursor-pointer">
                   <CardTitle className="flex items-center justify-between text-base">
                     {faq.question}
-                    <Icons.chevronDown className="h-4 w-4 transition-transform duration-200" />
+                    <Icons.chevronDown className="size-4 transition-transform duration-200" />
                   </CardTitle>
                 </CardHeader>
               </CollapsibleTrigger>
@@ -188,7 +188,7 @@ export const ControlledState: Story = {
                 <CardTitle className="flex items-center justify-between">
                   Settings Panel
                   <Icons.chevronDown
-                    className={`h-5 w-5 transition-transform duration-200 ${
+                    className={`size-5 transition-transform duration-200 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   />
@@ -245,7 +245,7 @@ export const WithCustomAnimation: Story = {
                 <span className="text-muted-foreground text-xs font-normal">
                   Click to expand
                 </span>
-                <Icons.chevronDown className="h-4 w-4 transition-transform duration-300" />
+                <Icons.chevronDown className="size-4 transition-transform duration-300" />
               </div>
             </CardTitle>
           </CardHeader>
@@ -294,7 +294,7 @@ export const NestedCollapsible: Story = {
           <CardHeader className="hover:bg-muted/50 cursor-pointer">
             <CardTitle className="flex items-center justify-between">
               Project Structure
-              <Icons.chevronDown className="h-4 w-4" />
+              <Icons.chevronDown className="size-4" />
             </CardTitle>
           </CardHeader>
         </CollapsibleTrigger>
@@ -307,7 +307,7 @@ export const NestedCollapsible: Story = {
                     className="h-8 justify-start p-0 font-normal"
                     variant="ghost"
                   >
-                    <Icons.chevronRight className="mr-2 h-3 w-3" />
+                    <Icons.chevronRight className="mr-2 size-3" />
                     📁 src/
                   </Button>
                 </CollapsibleTrigger>
@@ -329,7 +329,7 @@ export const NestedCollapsible: Story = {
                     className="h-8 justify-start p-0 font-normal"
                     variant="ghost"
                   >
-                    <Icons.chevronRight className="mr-2 h-3 w-3" />
+                    <Icons.chevronRight className="mr-2 size-3" />
                     📁 public/
                   </Button>
                 </CollapsibleTrigger>
@@ -389,12 +389,12 @@ export const WithIcons: Story = {
               <CardHeader className="hover:bg-muted/50 cursor-pointer">
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
-                      <item.icon className="text-primary h-4 w-4" />
+                    <div className="bg-primary/10 flex size-8 items-center justify-center rounded-md">
+                      <item.icon className="text-primary size-4" />
                     </div>
                     {item.title}
                   </div>
-                  <Icons.chevronDown className="h-4 w-4" />
+                  <Icons.chevronDown className="size-4" />
                 </CardTitle>
               </CardHeader>
             </CollapsibleTrigger>
@@ -422,7 +422,7 @@ export const MinimalText: Story = {
     <div className="space-y-4">
       <Collapsible>
         <CollapsibleTrigger className="hover:text-primary flex items-center gap-2 text-sm font-medium">
-          <Icons.chevronRight className="h-3 w-3 transition-transform duration-200" />
+          <Icons.chevronRight className="size-3 transition-transform duration-200" />
           Show more details
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2">
@@ -506,7 +506,7 @@ export const Interactive: Story = {
                     <CardTitle className="flex items-center justify-between text-base">
                       {item}
                       <Icons.chevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${
+                        className={`size-4 transition-transform duration-200 ${
                           openItems.includes(index) ? 'rotate-180' : ''
                         }`}
                       />

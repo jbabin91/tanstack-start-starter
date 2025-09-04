@@ -238,9 +238,9 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
-                          <Icons.eyeOff className="text-muted-foreground h-4 w-4" />
+                          <Icons.eyeOff className="text-muted-foreground size-4" />
                         ) : (
-                          <Icons.eye className="text-muted-foreground h-4 w-4" />
+                          <Icons.eye className="text-muted-foreground size-4" />
                         )}
                       </Button>
                     </div>
@@ -285,9 +285,9 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         onClick={toggleConfirmPasswordVisibility}
                       >
                         {showConfirmPassword ? (
-                          <Icons.eyeOff className="text-muted-foreground h-4 w-4" />
+                          <Icons.eyeOff className="text-muted-foreground size-4" />
                         ) : (
-                          <Icons.eye className="text-muted-foreground h-4 w-4" />
+                          <Icons.eye className="text-muted-foreground size-4" />
                         )}
                       </Button>
                     </div>

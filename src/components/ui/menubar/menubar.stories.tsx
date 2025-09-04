@@ -125,41 +125,41 @@ export const WithIcons: Story = {
     <Menubar {...args}>
       <MenubarMenu>
         <MenubarTrigger>
-          <Icons.file className="mr-2 h-4 w-4" />
+          <Icons.file className="mr-2 size-4" />
           File
         </MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            <Icons.fileText className="h-4 w-4" />
+            <Icons.fileText className="size-4" />
             New Document
           </MenubarItem>
           <MenubarItem>
-            <Icons.folder className="h-4 w-4" />
+            <Icons.folder className="size-4" />
             Open Folder
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.save className="h-4 w-4" />
+            <Icons.save className="size-4" />
             Save
           </MenubarItem>
           <MenubarItem variant="error">
-            <Icons.trash className="h-4 w-4" />
+            <Icons.trash className="size-4" />
             Delete
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
         <MenubarTrigger>
-          <Icons.edit className="mr-2 h-4 w-4" />
+          <Icons.edit className="mr-2 size-4" />
           Edit
         </MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            <Icons.undo className="h-4 w-4" />
+            <Icons.undo className="size-4" />
             Undo
           </MenubarItem>
           <MenubarItem>
-            <Icons.redo className="h-4 w-4" />
+            <Icons.redo className="size-4" />
             Redo
           </MenubarItem>
         </MenubarContent>
@@ -273,12 +273,12 @@ export const ApplicationMenu: Story = {
         <MenubarTrigger>File</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            <Icons.plus className="h-4 w-4" />
+            <Icons.plus className="size-4" />
             New
             <MenubarShortcut>⌘N</MenubarShortcut>
           </MenubarItem>
           <MenubarItem>
-            <Icons.folder className="h-4 w-4" />
+            <Icons.folder className="size-4" />
             Open
             <MenubarShortcut>⌘O</MenubarShortcut>
           </MenubarItem>
@@ -294,7 +294,7 @@ export const ApplicationMenu: Story = {
           </MenubarSub>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.save className="h-4 w-4" />
+            <Icons.save className="size-4" />
             Save
             <MenubarShortcut>⌘S</MenubarShortcut>
           </MenubarItem>
@@ -304,7 +304,7 @@ export const ApplicationMenu: Story = {
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem variant="error">
-            <Icons.x className="h-4 w-4" />
+            <Icons.x className="size-4" />
             Close
             <MenubarShortcut>⌘W</MenubarShortcut>
           </MenubarItem>
@@ -315,34 +315,34 @@ export const ApplicationMenu: Story = {
         <MenubarTrigger>Edit</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            <Icons.undo className="h-4 w-4" />
+            <Icons.undo className="size-4" />
             Undo
             <MenubarShortcut>⌘Z</MenubarShortcut>
           </MenubarItem>
           <MenubarItem>
-            <Icons.redo className="h-4 w-4" />
+            <Icons.redo className="size-4" />
             Redo
             <MenubarShortcut>⌘Y</MenubarShortcut>
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.cut className="h-4 w-4" />
+            <Icons.cut className="size-4" />
             Cut
             <MenubarShortcut>⌘X</MenubarShortcut>
           </MenubarItem>
           <MenubarItem>
-            <Icons.copy className="h-4 w-4" />
+            <Icons.copy className="size-4" />
             Copy
             <MenubarShortcut>⌘C</MenubarShortcut>
           </MenubarItem>
           <MenubarItem>
-            <Icons.clipboard className="h-4 w-4" />
+            <Icons.clipboard className="size-4" />
             Paste
             <MenubarShortcut>⌘V</MenubarShortcut>
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.search className="h-4 w-4" />
+            <Icons.search className="size-4" />
             Find
             <MenubarShortcut>⌘F</MenubarShortcut>
           </MenubarItem>
@@ -353,15 +353,15 @@ export const ApplicationMenu: Story = {
         <MenubarTrigger>View</MenubarTrigger>
         <MenubarContent>
           <MenubarCheckboxItem checked>
-            <Icons.panelLeft className="h-4 w-4" />
+            <Icons.panelLeft className="size-4" />
             Show Sidebar
           </MenubarCheckboxItem>
           <MenubarCheckboxItem>
-            <Icons.terminal className="h-4 w-4" />
+            <Icons.terminal className="size-4" />
             Show Terminal
           </MenubarCheckboxItem>
           <MenubarCheckboxItem checked>
-            <Icons.activity className="h-4 w-4" />
+            <Icons.activity className="size-4" />
             Show Activity Bar
           </MenubarCheckboxItem>
           <MenubarSeparator />
@@ -373,7 +373,7 @@ export const ApplicationMenu: Story = {
           </MenubarRadioGroup>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.maximize className="h-4 w-4" />
+            <Icons.maximize className="size-4" />
             Toggle Fullscreen
             <MenubarShortcut>F11</MenubarShortcut>
           </MenubarItem>
@@ -384,25 +384,25 @@ export const ApplicationMenu: Story = {
         <MenubarTrigger>Help</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            <Icons.help className="h-4 w-4" />
+            <Icons.help className="size-4" />
             Documentation
           </MenubarItem>
           <MenubarItem>
-            <Icons.keyboard className="h-4 w-4" />
+            <Icons.keyboard className="size-4" />
             Keyboard Shortcuts
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.bug className="h-4 w-4" />
+            <Icons.bug className="size-4" />
             Report Bug
           </MenubarItem>
           <MenubarItem>
-            <Icons.messageSquare className="h-4 w-4" />
+            <Icons.messageSquare className="size-4" />
             Send Feedback
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>
-            <Icons.info className="h-4 w-4" />
+            <Icons.info className="size-4" />
             About
           </MenubarItem>
         </MenubarContent>
