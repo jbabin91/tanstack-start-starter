@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import pluginReact from '@eslint-react/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import configPrettier from 'eslint-config-prettier';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
@@ -15,20 +16,18 @@ import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-  {
-    ignores: [
-      'node_modules',
-      '.nitro',
-      '.output',
-      '.tanstack',
-      'coverage',
-      'playwright-report',
-      'test-results',
-      'storybook-static',
-      '**/*.gen.ts',
-    ],
-  },
+export default defineConfig(
+  globalIgnores([
+    'node_modules',
+    '.nitro',
+    '.output',
+    '.tanstack',
+    'coverage',
+    'playwright-report',
+    'test-results',
+    'storybook-static',
+    '**/*.gen.ts',
+  ]),
   {
     languageOptions: {
       ecmaVersion: 'latest',
@@ -73,12 +72,7 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        parser: tseslint.parser,
-        project: [
-          './tsconfig.json',
-          './e2e/tsconfig.json',
-          './.storybook/tsconfig.json',
-        ],
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
