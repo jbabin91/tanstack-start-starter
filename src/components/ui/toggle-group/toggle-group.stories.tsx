@@ -79,21 +79,21 @@ const meta = {
 } satisfies Meta<typeof ToggleGroup>;
 
 export default meta;
-type Story = StoryObj<any>;
+type Story = StoryObj<typeof ToggleGroup>;
 
 export const Single: Story = {
   args: {
     type: 'single',
     onValueChange: fn(),
   },
-  render: (args: any) => (
+  render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value="left">Left</ToggleGroupItem>
       <ToggleGroupItem value="center">Center</ToggleGroupItem>
       <ToggleGroupItem value="right">Right</ToggleGroupItem>
     </ToggleGroup>
   ),
-  play: async ({ args, canvasElement }: any) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Check all buttons exist
@@ -120,14 +120,14 @@ export const Multiple: Story = {
     type: 'multiple',
     onValueChange: fn(),
   },
-  render: (args: any) => (
+  render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
       <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
       <ToggleGroupItem value="underline">Underline</ToggleGroupItem>
     </ToggleGroup>
   ),
-  play: async ({ args, canvasElement }: any) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
     const boldBtn = canvas.getByRole('button', { name: 'Bold' });
@@ -151,7 +151,7 @@ export const WithIcons: Story = {
     type: 'single',
     onValueChange: fn(),
   },
-  render: (args: any) => (
+  render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem aria-label="Align left" value="left">
         <Icons.chevronLeft className="h-4 w-4" />
@@ -164,7 +164,7 @@ export const WithIcons: Story = {
       </ToggleGroupItem>
     </ToggleGroup>
   ),
-  play: ({ canvasElement }: any) => {
+  play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Check buttons with aria-labels
@@ -179,7 +179,7 @@ export const WithIconsAndText: Story = {
     type: 'multiple',
     onValueChange: fn(),
   },
-  render: (args: any) => (
+  render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value="bold">
         <Icons.zap className="h-4 w-4" />
@@ -227,7 +227,7 @@ export const Sizes: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }: any) => {
+  play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Check all three size groups exist
@@ -263,7 +263,7 @@ export const Variants: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }: any) => {
+  play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Check variant labels exist
@@ -287,7 +287,7 @@ export const ControlledSingle: Story = {
         <ToggleGroup
           type="single"
           value={alignment}
-          onValueChange={(value: any) => setAlignment(value ?? '')}
+          onValueChange={(value) => setAlignment(value ?? '')}
         >
           <ToggleGroupItem aria-label="Align left" value="left">
             <Icons.chevronLeft className="h-4 w-4" />
@@ -394,7 +394,7 @@ export const ViewModeSelector: Story = {
           type="single"
           value={viewMode}
           variant="outline"
-          onValueChange={(value: any) => setViewMode(value ?? 'grid')}
+          onValueChange={(value) => setViewMode(value ?? 'grid')}
         >
           <ToggleGroupItem aria-label="List view" value="list">
             <Icons.activity className="h-4 w-4" />
