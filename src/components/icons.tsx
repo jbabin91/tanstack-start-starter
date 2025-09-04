@@ -221,7 +221,6 @@ export const Icons = {
   zap: ZapIcon,
   zoomIn: ZoomInIcon,
   zoomOut: ZoomOutIcon,
-
   // Custom spinner icon
   spinner: (props: IconProps) => (
     <svg
@@ -239,7 +238,6 @@ export const Icons = {
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>
   ),
-
   // Custom logo
   logo: (props: IconProps) => (
     <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -268,7 +266,6 @@ export const Icons = {
       />
     </svg>
   ),
-
   // Social icons
   gitHub: (props: IconProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
@@ -278,7 +275,6 @@ export const Icons = {
       />
     </svg>
   ),
-
   google: (props: IconProps) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path
@@ -287,7 +283,6 @@ export const Icons = {
       />
     </svg>
   ),
-
   // Tech stack icons
   react: (props: IconProps) => (
     <svg viewBox="0 0 24 24" {...props}>
@@ -297,7 +292,6 @@ export const Icons = {
       />
     </svg>
   ),
-
   tailwind: (props: IconProps) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
