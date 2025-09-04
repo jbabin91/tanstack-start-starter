@@ -5,8 +5,10 @@ import {
 } from 'drizzle-arktype';
 import { relations } from 'drizzle-orm';
 import {
+  bigint,
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -39,16 +41,12 @@ export const users = pgTable(
       .$defaultFn(() => false)
       .notNull(),
     image: text(),
-    createdAt: timestamp()
-      .$defaultFn(() => /* @__PURE__ */ new Date())
-      .notNull(),
-    updatedAt: timestamp()
-      .$defaultFn(() => /* @__PURE__ */ new Date())
-      .notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     role: systemRoleEnum().default('user'),
-    banned: boolean(),
+    banned: boolean().default(false),
     banReason: text(),
-    banExpires: timestamp(),
+    banExpires: timestamp({ withTimezone: true }),
     username: text().unique(),
     displayUsername: text(),
     address: text(),
@@ -72,10 +70,13 @@ export const sessions = pgTable(
     id: text()
       .primaryKey()
       .$defaultFn(() => nanoid()),
-    expiresAt: timestamp().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
     token: text().notNull().unique(),
-    createdAt: timestamp().notNull(),
-    updatedAt: timestamp().notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
     ipAddress: text(),
     userAgent: text(),
     userId: text()
@@ -117,8 +118,11 @@ export const accounts = pgTable(
     refreshTokenExpiresAt: timestamp(),
     scope: text(),
     password: text(),
-    createdAt: timestamp().notNull(),
-    updatedAt: timestamp().notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
   },
   (table) => [index('accounts_user_id_idx').on(table.userId)],
 );
@@ -139,9 +143,12 @@ export const verifications = pgTable(
       .$defaultFn(() => nanoid()),
     identifier: text().notNull(),
     value: text().notNull(),
-    expiresAt: timestamp().notNull(),
-    createdAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
-    updatedAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
   },
   (table) => [index('verifications_identifier_idx').on(table.identifier)],
 );
@@ -163,7 +170,7 @@ export const organizations = pgTable(
     name: text().notNull(),
     slug: text().unique(),
     logo: text(),
-    createdAt: timestamp().notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     metadata: text(),
   },
   (table) => [index('organizations_slug_idx').on(table.slug)],
@@ -190,7 +197,7 @@ export const members = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     role: organizationRoleEnum().default('member').notNull(),
-    createdAt: timestamp().notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('members_user_id_idx').on(table.userId),
@@ -218,7 +225,7 @@ export const invitations = pgTable(
     email: text().notNull(),
     role: organizationRoleEnum().default('member'),
     status: text().default('pending').notNull(),
-    expiresAt: timestamp().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
     inviterId: text()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
@@ -236,6 +243,30 @@ export const updateInvitationSchema = createUpdateSchema(invitations);
 export type InsertInvitation = typeof insertInvitationSchema.infer;
 export type Invitation = typeof selectInvitationSchema.infer;
 export type UpdateInvitation = typeof updateInvitationSchema.infer;
+
+export const rateLimits = pgTable(
+  'rate_limits',
+  {
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    key: text(),
+    count: integer(),
+    lastRequest: bigint({ mode: 'number' }),
+  },
+  (table) => [
+    index('rate_limits_key_idx').on(table.key),
+    index('rate_limits_last_request_idx').on(table.lastRequest),
+  ],
+);
+
+export const insertRateLimitSchema = createInsertSchema(rateLimits);
+export const selectRateLimitSchema = createSelectSchema(rateLimits);
+export const updateRateLimitSchema = createUpdateSchema(rateLimits);
+
+export type InsertRateLimit = typeof insertRateLimitSchema.infer;
+export type RateLimit = typeof selectRateLimitSchema.infer;
+export type UpdateRateLimit = typeof updateRateLimitSchema.infer;
 
 // ============================================================================
 // Relations for type-safe joins with Drizzle ORM

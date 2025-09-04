@@ -44,7 +44,7 @@ export const media = pgTable(
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
       .defaultNow()
-      .$onUpdate(() => new Date()),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
   (table) => [
     // Performance indexes for common queries

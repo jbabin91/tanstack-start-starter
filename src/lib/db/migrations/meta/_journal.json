@@ -57,6 +57,20 @@
       "when": 1756920532506,
       "tag": "0007_aspiring_amazoness",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1757005984310,
+      "tag": "0008_warm_tusk",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1757006513875,
+      "tag": "0009_flashy_switch",
+      "breakpoints": true
     }
   ]
 }

@@ -100,7 +100,7 @@ export const sessionMetadata = pgTable(
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
       .defaultNow()
-      .$onUpdate(() => new Date()),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
   (table) => [
     // Performance indexes
@@ -147,7 +147,7 @@ export const trustedDevices = pgTable(
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
       .defaultNow()
-      .$onUpdate(() => new Date()),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
   (table) => [
     // Performance indexes
