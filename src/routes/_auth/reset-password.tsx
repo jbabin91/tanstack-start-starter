@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { type } from 'arktype';
 
+import { authLogger } from '@/lib/logger';
 import { ResetPasswordForm } from '@/modules/auth/components/reset-password-form';
 
 const resetPasswordSearchSchema = type({
@@ -28,7 +29,7 @@ export const Route = createFileRoute('/_auth/reset-password')({
 
 function handleResetError(error: string) {
   // Handle error (could show toast, etc.)
-  console.error('Password reset error:', error);
+  authLogger.error({ err: error }, 'Password reset error');
 }
 
 function RouteComponent() {

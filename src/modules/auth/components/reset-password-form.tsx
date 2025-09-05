@@ -1,6 +1,5 @@
 import { arktypeResolver } from '@hookform/resolvers/arktype';
 import { type } from 'arktype';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { authClient } from '@/lib/auth/client';
+import { useResetPassword } from '@/modules/auth/hooks/use-reset-password';
 
 export const resetPasswordFormSchema = type({
   confirmPassword: 'string',
@@ -36,18 +35,13 @@ type ResetPasswordFormProps = {
   token: string;
 };
 
-/**
- * ResetPasswordForm component allows users to set a new password
- * using a valid reset token received via email.
- * Integrates with better-auth's password reset system.
- */
 export function ResetPasswordForm({
   className,
   onError,
   onSuccess,
   token,
 }: ResetPasswordFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const resetPasswordMutation = useResetPassword();
 
   const form = useForm<ResetPasswordFormData>({
     defaultValues: {
@@ -57,40 +51,29 @@ export function ResetPasswordForm({
     resolver: arktypeResolver(resetPasswordFormSchema),
   });
 
-  const onSubmit = async (data: ResetPasswordFormData) => {
-    setIsLoading(true);
-
-    try {
-      const result = await authClient.resetPassword({
+  const onSubmit = (data: ResetPasswordFormData) => {
+    resetPasswordMutation.mutate(
+      {
         newPassword: data.password,
         token,
-      });
-
-      if (result.error) {
-        const errorMessage =
-          result.error.message ?? 'Failed to reset password. Please try again.';
-        toast.error('Password reset failed', {
-          description: errorMessage,
-        });
-        onError?.(errorMessage);
-        return;
-      }
-
-      toast.success('Password reset successful!', {
-        description: 'You can now sign in with your new password.',
-      });
-
-      onSuccess?.();
-    } catch (error) {
-      console.error('Password reset error:', error);
-      const errorMessage = 'An unexpected error occurred. Please try again.';
-      toast.error('Password reset failed', {
-        description: errorMessage,
-      });
-      onError?.(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success('Password reset successful!', {
+            description: 'You can now sign in with your new password.',
+          });
+          onSuccess?.();
+        },
+        onError: (error) => {
+          const errorMessage =
+            error.message ?? 'Failed to reset password. Please try again.';
+          toast.error('Password reset failed', {
+            description: errorMessage,
+          });
+          onError?.(errorMessage);
+        },
+      },
+    );
   };
 
   return (
@@ -113,7 +96,7 @@ export function ResetPasswordForm({
                     <Input
                       {...field}
                       autoComplete="new-password"
-                      disabled={isLoading}
+                      disabled={resetPasswordMutation.isPending}
                       placeholder="Enter your new password"
                       type="password"
                     />
@@ -122,7 +105,6 @@ export function ResetPasswordForm({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -133,7 +115,7 @@ export function ResetPasswordForm({
                     <Input
                       {...field}
                       autoComplete="new-password"
-                      disabled={isLoading}
+                      disabled={resetPasswordMutation.isPending}
                       placeholder="Confirm your new password"
                       type="password"
                     />
@@ -142,11 +124,10 @@ export function ResetPasswordForm({
                 </FormItem>
               )}
             />
-
             <Button
               className="w-full"
-              disabled={isLoading}
-              loading={isLoading}
+              disabled={resetPasswordMutation.isPending}
+              loading={resetPasswordMutation.isPending}
               loadingText="Resetting password..."
               type="submit"
             >

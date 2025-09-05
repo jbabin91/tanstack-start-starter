@@ -22,8 +22,17 @@ export const Route = createFileRoute('/_auth/register')({
 function RouteComponent() {
   const navigate = useNavigate();
 
-  const handleRegisterSuccess = () => {
-    navigate({ to: '/verify-email' });
+  const handleRegisterSuccess = (
+    verificationMethod: 'email-link' | 'verification-code',
+    email: string,
+  ) => {
+    navigate({
+      to: '/verify-email',
+      search: {
+        email,
+        method: verificationMethod,
+      },
+    });
   };
 
   return (

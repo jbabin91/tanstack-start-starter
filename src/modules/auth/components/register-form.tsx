@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { authClient } from '@/lib/auth/client';
+import { useSignUp } from '@/modules/auth/hooks/use-sign-up';
 
 export const registerFormSchema = type({
   acceptTerms: 'boolean',
@@ -32,19 +32,18 @@ export const registerFormSchema = type({
 type RegisterFormData = typeof registerFormSchema.infer;
 
 type RegisterFormProps = {
-  onSuccess?: () => void;
+  onSuccess?: (
+    verificationMethod: 'email-link' | 'verification-code',
+    email: string,
+  ) => void;
   className?: string;
 };
 
-/**
- * RegisterForm component provides user registration with email verification.
- * Features include username/email/password fields, password confirmation,
- * terms acceptance, and integration with better-auth for secure registration.
- */
 export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const signUpMutation = useSignUp();
 
   const form = useForm<RegisterFormData>({
     defaultValues: {
@@ -66,7 +65,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
     setShowConfirmPassword((prev) => !prev);
   };
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = (data: RegisterFormData) => {
     // Custom validation for password matching and terms acceptance
     if (data.password !== data.confirmPassword) {
       form.setError('confirmPassword', {
@@ -84,48 +83,36 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
       return;
     }
 
-    setIsLoading(true);
+    const signUpData = {
+      displayUsername: `@${data.username}`,
+      email: data.email,
+      name: data.name,
+      password: data.password,
+      username: data.username,
+      // Optional additional fields from auth schema
+      address: '', // Empty strings for optional fields
+      phone: '',
+      website: '',
+    };
 
-    try {
-      const result = await authClient.signUp.email({
-        displayUsername: `@${data.username}`,
-        email: data.email,
-        name: data.name,
-        password: data.password,
-        username: data.username,
-        // Optional additional fields from auth schema
-        address: '', // Empty strings for optional fields
-        phone: '',
-        website: '',
-      });
-
-      if (result.error) {
+    signUpMutation.mutate(signUpData, {
+      onSuccess: () => {
+        toast.success('Account created successfully!', {
+          description:
+            'Please check your email to verify your account before signing in.',
+        });
+        // Reset form on successful registration
+        form.reset();
+        // Call success callback with verification method and email
+        onSuccess?.('email-link', data.email);
+      },
+      onError: (error) => {
         toast.error('Registration failed', {
           description:
-            result.error.message ??
-            'Please check your information and try again.',
+            error.message ?? 'Please check your information and try again.',
         });
-        return;
-      }
-
-      toast.success('Account created successfully!', {
-        description:
-          'Please check your email to verify your account before signing in.',
-      });
-
-      // Reset form on successful registration
-      form.reset();
-
-      // Call success callback if provided
-      onSuccess?.();
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Registration failed', {
-        description: 'An unexpected error occurred. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+      },
+    });
   };
 
   return (
@@ -149,7 +136,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                       {...field}
                       aria-describedby="name-error name-description"
                       autoComplete="name"
-                      disabled={isLoading}
+                      disabled={signUpMutation.isPending}
                       placeholder="John Doe"
                     />
                   </FormControl>
@@ -160,7 +147,6 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="username"
@@ -172,7 +158,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                       {...field}
                       aria-describedby="username-error username-description"
                       autoComplete="username"
-                      disabled={isLoading}
+                      disabled={signUpMutation.isPending}
                       placeholder="johndoe"
                     />
                   </FormControl>
@@ -183,7 +169,6 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="email"
@@ -195,7 +180,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                       {...field}
                       aria-describedby="email-error email-description"
                       autoComplete="email"
-                      disabled={isLoading}
+                      disabled={signUpMutation.isPending}
                       placeholder="name@example.com"
                       type="email"
                     />
@@ -207,7 +192,6 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -221,7 +205,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         aria-describedby="password-error password-description"
                         autoComplete="new-password"
                         className="pr-10"
-                        disabled={isLoading}
+                        disabled={signUpMutation.isPending}
                         placeholder="Create a secure password"
                         type={showPassword ? 'text' : 'password'}
                       />
@@ -230,7 +214,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                           showPassword ? 'Hide password' : 'Show password'
                         }
                         className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                        disabled={isLoading}
+                        disabled={signUpMutation.isPending}
                         size="icon"
                         tabIndex={-1}
                         type="button"
@@ -252,7 +236,6 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -266,7 +249,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                         aria-describedby="confirm-password-error"
                         autoComplete="new-password"
                         className="pr-10"
-                        disabled={isLoading}
+                        disabled={signUpMutation.isPending}
                         placeholder="Confirm your password"
                         type={showConfirmPassword ? 'text' : 'password'}
                       />
@@ -277,7 +260,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                             : 'Show password'
                         }
                         className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                        disabled={isLoading}
+                        disabled={signUpMutation.isPending}
                         size="icon"
                         tabIndex={-1}
                         type="button"
@@ -296,7 +279,6 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="acceptTerms"
@@ -306,7 +288,7 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                     <Checkbox
                       aria-describedby="terms-error"
                       checked={field.value}
-                      disabled={isLoading}
+                      disabled={signUpMutation.isPending}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
@@ -336,11 +318,10 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
                 </FormItem>
               )}
             />
-
             <Button
               className="w-full"
-              disabled={isLoading}
-              loading={isLoading}
+              disabled={signUpMutation.isPending}
+              loading={signUpMutation.isPending}
               loadingText="Creating account..."
               type="submit"
             >

@@ -7,12 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { authClient } from '@/lib/auth/client';
+import { authLogger } from '@/lib/logger';
+import { OTPVerificationForm } from '@/modules/auth/components/otp-verification-form';
+import { useAuthStateHelpers } from '@/modules/auth/hooks/use-auth-state-helpers';
 
-type VerificationState = 'loading' | 'success' | 'error' | 'no-token';
+type VerificationState = 'loading' | 'success' | 'error' | 'no-token' | 'otp';
 
 const searchSchema = type({
   token: 'string?',
   email: 'string?',
+  method: "'email-link' | 'verification-code'?",
 });
 
 export const Route = createFileRoute('/_auth/verify-email')({
@@ -35,21 +39,30 @@ export const Route = createFileRoute('/_auth/verify-email')({
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const { token, email } = Route.useSearch();
+  const { refreshAuthState } = useAuthStateHelpers();
+  const { token, email, method } = Route.useSearch();
 
   const [verificationState, setVerificationState] =
     useState<VerificationState>('loading');
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Handle email verification on mount
+  // Handle email verification on mount with auto-detection
   useEffect(() => {
-    const verifyEmail = async () => {
+    const initializeVerification = async () => {
+      // If user explicitly chose verification-code and no token, go directly to OTP
+      if (method === 'verification-code' && !token) {
+        setVerificationState('otp');
+        return;
+      }
+
+      // If no token at all (regardless of method), show no-token state
       if (!token) {
         setVerificationState('no-token');
         return;
       }
 
+      // If we have a token, attempt email link verification (standard flow)
       try {
         setVerificationState('loading');
 
@@ -71,7 +84,10 @@ function RouteComponent() {
 
           // Small delay before redirect to show success message
           const timeoutId = setTimeout(() => {
-            navigate({ to: '/dashboard' });
+            // Hook handles data/auth state and navigation/UI
+            refreshAuthState().finally(() => {
+              navigate({ to: '/dashboard', replace: true });
+            });
           }, 2000);
 
           return () => {
@@ -79,14 +95,14 @@ function RouteComponent() {
           };
         }
       } catch (error) {
-        console.error('Email verification error:', error);
+        authLogger.error({ err: error }, 'Email verification error');
         setErrorMessage('An unexpected error occurred during verification.');
         setVerificationState('error');
       }
     };
 
-    verifyEmail();
-  }, [token, navigate]);
+    initializeVerification();
+  }, [token, method, navigate]);
 
   const handleResendVerification = async () => {
     if (!email) {
@@ -115,13 +131,68 @@ function RouteComponent() {
         });
       }
     } catch (error) {
-      console.error('Resend verification error:', error);
+      authLogger.error({ err: error }, 'Resend verification error');
       toast.error('Failed to resend verification email', {
         description: 'An unexpected error occurred. Please try again.',
       });
     } finally {
       setIsResending(false);
     }
+  };
+
+  const handleSendOTP = async () => {
+    if (!email) {
+      toast.error('Email address not found', {
+        description: 'Please try signing up again.',
+      });
+      return;
+    }
+
+    setIsResending(true);
+
+    try {
+      const result = await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'email-verification',
+      });
+
+      if (result.error) {
+        toast.error('Failed to send verification code', {
+          description: result.error.message ?? 'Please try again later.',
+        });
+      } else {
+        toast.success('Verification code sent!', {
+          description: 'Please check your email for the verification code.',
+        });
+        setVerificationState('otp');
+      }
+    } catch (error) {
+      authLogger.error({ err: error }, 'Send OTP error');
+      toast.error('Failed to send verification code', {
+        description: 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleOTPSuccess = () => {
+    setVerificationState('success');
+    toast.success('Email verified successfully!', {
+      description: 'You have been automatically signed in.',
+    });
+
+    // Small delay before redirect to show success message
+    setTimeout(() => {
+      // Hook handles data/auth state and navigation/UI
+      refreshAuthState().finally(() => {
+        navigate({ to: '/dashboard', replace: true });
+      });
+    }, 2000);
+  };
+
+  const handleBackToNoToken = () => {
+    setVerificationState('no-token');
   };
 
   function renderContent() {
@@ -204,33 +275,47 @@ function RouteComponent() {
       case 'no-token': {
         return (
           <Card>
-            <CardHeader className="text-center">
+            <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl font-bold">
                 Check your email
               </CardTitle>
+              <p className="text-muted-foreground text-sm">
+                We&apos;ve sent you a verification email
+              </p>
             </CardHeader>
             <CardContent className="space-y-4 text-center">
               <p className="text-muted-foreground">
-                We&apos;ve sent you a verification email. Please check your
-                inbox and click the verification link to complete your account
-                setup.
+                Please check your inbox and click the verification link to
+                complete your account setup.
               </p>
               <p className="text-muted-foreground text-sm">
-                Didn&apos;t receive the email? Check your spam folder or click
-                below to resend.
+                Didn&apos;t receive the email? Check your spam folder or try one
+                of the options below.
               </p>
               {email && (
-                <Button
-                  disabled={isResending}
-                  loading={isResending}
-                  loadingText="Sending..."
-                  variant="outlined"
-                  onClick={handleResendVerification}
-                >
-                  Resend verification email
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    disabled={isResending}
+                    loading={isResending}
+                    loadingText="Sending..."
+                    variant="outlined"
+                    onClick={handleResendVerification}
+                  >
+                    Resend verification email
+                  </Button>
+                  <div className="text-muted-foreground text-sm">or</div>
+                  <Button
+                    disabled={isResending}
+                    loading={isResending}
+                    loadingText="Sending..."
+                    variant="outlined"
+                    onClick={handleSendOTP}
+                  >
+                    Get verification code instead
+                  </Button>
+                </div>
               )}
-              <div className="text-sm">
+              <div className="pt-2 text-sm">
                 <Link
                   className="text-primary font-medium underline-offset-4 hover:underline"
                   to="/login"
@@ -240,6 +325,32 @@ function RouteComponent() {
               </div>
             </CardContent>
           </Card>
+        );
+      }
+
+      case 'otp': {
+        if (!email) {
+          setVerificationState('no-token');
+          return null;
+        }
+
+        return (
+          <div className="space-y-4">
+            <OTPVerificationForm
+              email={email}
+              type="email-verification"
+              onSuccess={handleOTPSuccess}
+            />
+            <div className="text-center">
+              <button
+                className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+                type="button"
+                onClick={handleBackToNoToken}
+              >
+                ← Use email link instead
+              </button>
+            </div>
+          </div>
         );
       }
 

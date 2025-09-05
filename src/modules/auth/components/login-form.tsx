@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
@@ -17,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { authClient } from '@/lib/auth/client';
+import { useSignIn } from '@/modules/auth/hooks/use-sign-in';
 
 export const loginFormSchema = type({
   email: 'string.email>=1',
@@ -32,14 +31,10 @@ type LoginFormProps = {
   className?: string;
 };
 
-/**
- * LoginForm component provides email/password authentication with remember me option.
- * Features include password visibility toggle, form validation, loading states,
- * and integration with better-auth for secure authentication.
- */
 export function LoginForm({ onSuccess, className }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const signInMutation = useSignIn();
 
   const form = useForm<LoginFormData>({
     defaultValues: {
@@ -54,52 +49,29 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
     setShowPassword((prev) => !prev);
   };
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-
-    try {
-      const result = await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-        rememberMe: data.rememberMe,
-      });
-
-      if (result.error) {
+  const onSubmit = (data: LoginFormData) => {
+    signInMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success('Welcome back!', {
+          description: 'You have been successfully logged in.',
+        });
+        // Reset form on successful login
+        form.reset();
+        // Call success callback if provided
+        onSuccess?.();
+      },
+      onError: (error) => {
         toast.error('Login failed', {
           description:
-            result.error.message ??
-            'Please check your credentials and try again.',
+            error.message ?? 'Please check your credentials and try again.',
         });
-        return;
-      }
-
-      toast.success('Welcome back!', {
-        description: 'You have been successfully logged in.',
-      });
-
-      // Reset form on successful login
-      form.reset();
-
-      // Call success callback if provided
-      onSuccess?.();
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Login failed', {
-        description: 'An unexpected error occurred. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+      },
+    });
   };
 
   return (
-    <Card className={className}>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-center text-2xl font-bold">
-          Welcome back
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className={className}>
+      <div className="space-y-4">
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -113,7 +85,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                       {...field}
                       aria-describedby="email-error"
                       autoComplete="email"
-                      disabled={isLoading}
+                      disabled={signInMutation.isPending}
                       placeholder="name@example.com"
                       type="email"
                     />
@@ -122,7 +94,6 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -136,7 +107,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                         aria-describedby="password-error"
                         autoComplete="current-password"
                         className="pr-10"
-                        disabled={isLoading}
+                        disabled={signInMutation.isPending}
                         placeholder="Enter your password"
                         type={showPassword ? 'text' : 'password'}
                       />
@@ -145,7 +116,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                           showPassword ? 'Hide password' : 'Show password'
                         }
                         className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                        disabled={isLoading}
+                        disabled={signInMutation.isPending}
                         size="icon"
                         tabIndex={-1}
                         type="button"
@@ -164,7 +135,6 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="rememberMe"
@@ -174,7 +144,7 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                     <Checkbox
                       aria-describedby="remember-me-description"
                       checked={field.value}
-                      disabled={isLoading}
+                      disabled={signInMutation.isPending}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
@@ -186,19 +156,18 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                 </FormItem>
               )}
             />
-
             <Button
               className="w-full"
-              disabled={isLoading}
-              loading={isLoading}
+              disabled={signInMutation.isPending}
+              loading={signInMutation.isPending}
               loadingText="Signing in..."
               type="submit"
             >
-              Sign in
+              Sign in with password
             </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
