@@ -17,61 +17,9 @@ import { sendEmail } from '@/modules/email/lib/resend';
 export type OTPVerificationProps = {
   otp: string;
   userName?: string;
-  type: 'sign-in' | 'email-verification' | 'forget-password';
 };
 
-function getSubjectByType(type: OTPVerificationProps['type']): string {
-  switch (type) {
-    case 'sign-in': {
-      return 'Your sign-in code - TanStack Start';
-    }
-    case 'email-verification': {
-      return 'Verify your email - TanStack Start';
-    }
-    case 'forget-password': {
-      return 'Reset your password - TanStack Start';
-    }
-    default: {
-      return 'Your verification code - TanStack Start';
-    }
-  }
-}
-
-function getTitleByType(type: OTPVerificationProps['type']): string {
-  switch (type) {
-    case 'sign-in': {
-      return 'Sign in to your account';
-    }
-    case 'email-verification': {
-      return 'Verify your email address';
-    }
-    case 'forget-password': {
-      return 'Reset your password';
-    }
-    default: {
-      return 'Verify your account';
-    }
-  }
-}
-
-function getDescriptionByType(type: OTPVerificationProps['type']): string {
-  switch (type) {
-    case 'sign-in': {
-      return 'Enter this code to sign in to your TanStack Start account.';
-    }
-    case 'email-verification': {
-      return 'Enter this code to verify your email address and complete your registration.';
-    }
-    case 'forget-password': {
-      return 'Enter this code to reset your password.';
-    }
-    default: {
-      return 'Enter this code to verify your account.';
-    }
-  }
-}
-
-export function OTPVerification({ otp, userName, type }: OTPVerificationProps) {
+export function OTPVerification({ otp, userName }: OTPVerificationProps) {
   return (
     <Html>
       <Head>
@@ -97,7 +45,7 @@ export function OTPVerification({ otp, userName, type }: OTPVerificationProps) {
         </style>
       </Head>
       <Preview>
-        Your verification code is {otp} - {getSubjectByType(type)}
+        Your sign-in code is {otp} - Your sign-in code - TanStack Start
       </Preview>
       <Tailwind
         config={{
@@ -129,11 +77,11 @@ export function OTPVerification({ otp, userName, type }: OTPVerificationProps) {
               {/* Content */}
               <Section className="px-6 py-8">
                 <Heading className="mb-4 text-xl font-semibold text-gray-900">
-                  {userName ? `Hi ${userName},` : getTitleByType(type)}
+                  {userName ? `Hi ${userName},` : 'Sign in to your account'}
                 </Heading>
 
                 <Text className="mb-6 text-base leading-6 text-gray-600">
-                  {getDescriptionByType(type)}
+                  Enter this code to sign in to your TanStack Start account.
                 </Text>
 
                 {/* OTP Code */}
@@ -195,21 +143,17 @@ export async function sendOTPVerification({
   to,
   otp,
   userName,
-  type,
 }: {
   to: string;
   otp: string;
   userName?: string;
-  type: OTPVerificationProps['type'];
 }) {
-  const emailComponent = (
-    <OTPVerification otp={otp} type={type} userName={userName} />
-  );
+  const emailComponent = <OTPVerification otp={otp} userName={userName} />;
   const text = await render(emailComponent, { plainText: true });
 
   await sendEmail({
     react: emailComponent,
-    subject: getSubjectByType(type),
+    subject: 'Your sign-in code - TanStack Start',
     text,
     to,
   });

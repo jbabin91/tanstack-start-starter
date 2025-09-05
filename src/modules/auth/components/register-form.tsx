@@ -32,10 +32,7 @@ export const registerFormSchema = type({
 type RegisterFormData = typeof registerFormSchema.infer;
 
 type RegisterFormProps = {
-  onSuccess?: (
-    verificationMethod: 'email-link' | 'verification-code',
-    email: string,
-  ) => void;
+  onSuccess?: (email: string) => void;
   className?: string;
 };
 
@@ -103,8 +100,8 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
         });
         // Reset form on successful registration
         form.reset();
-        // Call success callback with verification method and email
-        onSuccess?.('email-link', data.email);
+        // Call success callback with email
+        onSuccess?.(data.email);
       },
       onError: (error) => {
         toast.error('Registration failed', {

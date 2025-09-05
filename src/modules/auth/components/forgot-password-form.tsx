@@ -3,7 +3,6 @@ import { type } from 'arktype';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -18,9 +17,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { useForgotPassword } from '@/modules/auth/hooks/use-forgot-password';
-import { useSendEmailVerificationOTP } from '@/modules/auth/hooks/use-send-email-verification-otp';
-
-import { OTPVerificationForm } from './otp-verification-form';
 
 export const forgotPasswordFormSchema = type({
   email: 'string.email>=1',
@@ -38,10 +34,8 @@ export function ForgotPasswordForm({
   className,
 }: ForgotPasswordFormProps) {
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
 
   const forgotPasswordMutation = useForgotPassword();
-  const sendOTPMutation = useSendEmailVerificationOTP();
 
   const form = useForm<ForgotPasswordFormData>({
     defaultValues: {
@@ -88,96 +82,8 @@ export function ForgotPasswordForm({
 
   const handleBackToForm = () => {
     setIsEmailSent(false);
-    setShowOTP(false);
     form.reset();
   };
-
-  const handleSendOTP = (email: string) => {
-    sendOTPMutation.mutate(
-      {
-        email,
-        type: 'forget-password',
-      },
-      {
-        onSuccess: () => {
-          toast.success('Reset code sent!', {
-            description: 'Check your email for the password reset code.',
-          });
-          setShowOTP(true);
-        },
-        onError: (error) => {
-          toast.error('Failed to send reset code', {
-            description:
-              error.message ?? 'Please check your email and try again.',
-          });
-        },
-      },
-    );
-  };
-
-  const handleOTPSuccess = (_data?: unknown) => {
-    // OTP verification successful - now send them a password reset email
-    toast.success('Code verified successfully!', {
-      description: 'Sending you a password reset link...',
-    });
-
-    const email = form.getValues('email');
-
-    // Send the password reset email since OTP is verified
-    forgotPasswordMutation.mutate(
-      {
-        email,
-        redirectTo: '/reset-password',
-      },
-      {
-        onSuccess: () => {
-          toast.success('Password reset link sent!', {
-            description: 'Check your email for the password reset link.',
-          });
-          // Show the email sent state
-          setShowOTP(false);
-          setIsEmailSent(true);
-        },
-        onError: (error) => {
-          toast.error('Failed to send reset link', {
-            description: error.message ?? 'Please try again.',
-          });
-        },
-      },
-    );
-  };
-
-  const handleBackToEmail = () => {
-    setShowOTP(false);
-  };
-
-  if (showOTP) {
-    const email = form.getValues('email');
-    if (!email) {
-      setShowOTP(false);
-      return null;
-    }
-
-    return (
-      <div className="space-y-4">
-        <OTPVerificationForm
-          email={email}
-          type="forget-password"
-          onSuccess={handleOTPSuccess}
-        />
-        <div className="text-center">
-          <button
-            className="text-primary text-sm font-medium underline-offset-4 hover:underline"
-            type="button"
-            onClick={handleBackToEmail}
-          >
-            <Icons.chevronLeft className="mr-1 inline size-3" />
-            Use email link instead
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (isEmailSent) {
     return (
@@ -191,44 +97,23 @@ export function ForgotPasswordForm({
             <strong>{form.getValues('email')}</strong>
           </p>
           <p className="text-muted-foreground text-sm">
-            Didn&apos;t receive the email? Check your spam folder or use one of
-            the options below.
+            Didn&apos;t receive the email? Check your spam folder or try
+            resending the email.
           </p>
           <div className="space-y-3">
             <Button
               className="w-full"
-              disabled={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
-              loading={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
+              disabled={forgotPasswordMutation.isPending}
+              loading={forgotPasswordMutation.isPending}
               loadingText="Sending..."
               variant="outlined"
               onClick={handleResendEmail}
             >
               Resend email
             </Button>
-            <div className="text-muted-foreground text-sm">or</div>
             <Button
               className="w-full"
-              disabled={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
-              loading={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
-              loadingText="Sending..."
-              variant="outlined"
-              onClick={() => handleSendOTP(form.getValues('email'))}
-            >
-              Get reset code instead
-            </Button>
-            <Button
-              className="w-full"
-              disabled={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
+              disabled={forgotPasswordMutation.isPending}
               variant="ghost"
               onClick={handleBackToForm}
             >
@@ -261,10 +146,7 @@ export function ForgotPasswordForm({
                       {...field}
                       aria-describedby="email-error email-description"
                       autoComplete="email"
-                      disabled={
-                        forgotPasswordMutation.isPending ||
-                        sendOTPMutation.isPending
-                      }
+                      disabled={forgotPasswordMutation.isPending}
                       placeholder="name@example.com"
                       type="email"
                     />
@@ -279,12 +161,8 @@ export function ForgotPasswordForm({
             />
             <Button
               className="w-full"
-              disabled={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
-              loading={
-                forgotPasswordMutation.isPending || sendOTPMutation.isPending
-              }
+              disabled={forgotPasswordMutation.isPending}
+              loading={forgotPasswordMutation.isPending}
               loadingText="Sending reset link..."
               type="submit"
             >

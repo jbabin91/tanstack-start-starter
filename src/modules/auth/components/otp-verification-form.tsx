@@ -20,10 +20,8 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { toast } from '@/components/ui/sonner';
-import { authClient } from '@/lib/auth/client';
-import { authLogger } from '@/lib/logger';
+import { useSendSignInOTP } from '@/modules/auth/hooks/use-send-sign-in-otp';
 import { useSignInWithOTP } from '@/modules/auth/hooks/use-sign-in-with-otp';
-import { useVerifyEmailWithOTP } from '@/modules/auth/hooks/use-verify-email-with-otp';
 
 export const otpVerificationFormSchema = type({
   otp: 'string>=6',
@@ -31,11 +29,8 @@ export const otpVerificationFormSchema = type({
 
 type OTPVerificationFormData = typeof otpVerificationFormSchema.infer;
 
-type OTPVerificationType = 'sign-in' | 'email-verification' | 'forget-password';
-
 type OTPVerificationFormProps = {
   email: string;
-  type: OTPVerificationType;
   onSuccess?: (data?: unknown) => void;
   onResend?: () => void;
   className?: string;
@@ -44,50 +39,19 @@ type OTPVerificationFormProps = {
   variant?: 'card' | 'inline';
 };
 
-function getDefaultTitle(type: OTPVerificationType): string {
-  switch (type) {
-    case 'sign-in': {
-      return 'Enter your sign-in code';
-    }
-    case 'email-verification': {
-      return 'Verify your email';
-    }
-    case 'forget-password': {
-      return 'Enter reset code';
-    }
-    default: {
-      return 'Enter verification code';
-    }
-  }
+function getDefaultTitle(): string {
+  return 'Enter your sign-in code';
 }
 
-function getDefaultDescription(
-  type: OTPVerificationType,
-  email: string,
-): string {
-  switch (type) {
-    case 'sign-in': {
-      return `We've sent a sign-in code to ${email}. Enter the code below to continue.`;
-    }
-    case 'email-verification': {
-      return `We've sent a verification code to ${email}. Enter the code below to verify your email address.`;
-    }
-    case 'forget-password': {
-      return `We've sent a password reset code to ${email}. Enter the code below to continue.`;
-    }
-    default: {
-      return `We've sent a verification code to ${email}. Enter the code below to continue.`;
-    }
-  }
+function getDefaultDescription(email: string): string {
+  return `We've sent a sign-in code to ${email}. Enter the code below to continue.`;
 }
 
 /**
- * OTPVerificationForm component provides OTP verification functionality.
- * Supports different types of OTP verification: sign-in, email verification, and password reset.
+ * OTPVerificationForm component provides OTP verification functionality for sign-in.
  */
 export function OTPVerificationForm({
   email,
-  type,
   onSuccess,
   onResend,
   className,
@@ -95,12 +59,11 @@ export function OTPVerificationForm({
   description,
   variant = 'card',
 }: OTPVerificationFormProps) {
-  const [isResending, setIsResending] = useState(false);
   const [canResend, setCanResend] = useState(true);
   const [countdown, setCountdown] = useState(0);
 
   const signInWithOTPMutation = useSignInWithOTP();
-  const verifyEmailWithOTPMutation = useVerifyEmailWithOTP();
+  const sendOTPMutation = useSendSignInOTP();
 
   const form = useForm<OTPVerificationFormData>({
     defaultValues: {
@@ -111,107 +74,33 @@ export function OTPVerificationForm({
 
   const onSubmit = useCallback(
     (data: OTPVerificationFormData) => {
-      switch (type) {
-        case 'sign-in': {
-          signInWithOTPMutation.mutate(
-            {
-              email,
-              otp: data.otp,
-            },
-            {
-              onSuccess: (result) => {
-                form.reset();
-                onSuccess?.(result);
-              },
-              onError: (error) => {
-                toast.error('Verification failed', {
-                  description:
-                    error.message ?? 'Invalid code. Please try again.',
-                });
-                form.setFocus('otp');
-              },
-            },
-          );
-          break;
-        }
-        case 'email-verification': {
-          verifyEmailWithOTPMutation.mutate(
-            {
-              email,
-              otp: data.otp,
-            },
-            {
-              onSuccess: (result) => {
-                form.reset();
-                onSuccess?.(result);
-              },
-              onError: (error) => {
-                toast.error('Verification failed', {
-                  description:
-                    error.message ?? 'Invalid code. Please try again.',
-                });
-                form.setFocus('otp');
-              },
-            },
-          );
-          break;
-        }
-        case 'forget-password': {
-          // For forget-password, we still need to use direct authClient call
-          // since we don't have a dedicated hook for this specific verification
-          const verifyForgetPasswordOTP = async () => {
-            try {
-              const result = await authClient.emailOtp.checkVerificationOtp({
-                email,
-                otp: data.otp,
-                type: 'forget-password',
-              });
-
-              if (result.error) {
-                toast.error('Verification failed', {
-                  description:
-                    result.error.message ?? 'Invalid code. Please try again.',
-                });
-                form.setFocus('otp');
-                return;
-              }
-
-              form.reset();
-              onSuccess?.(result.data);
-            } catch (error) {
-              authLogger.error({ err: error }, 'OTP verification error');
-              toast.error('Verification failed', {
-                description: 'An unexpected error occurred. Please try again.',
-              });
-              form.setFocus('otp');
-            }
-          };
-
-          verifyForgetPasswordOTP();
-          break;
-        }
-        default: {
-          toast.error('Verification failed', {
-            description: 'Invalid OTP type.',
-          });
-        }
-      }
+      // Only sign-in type is supported
+      signInWithOTPMutation.mutate(
+        {
+          email,
+          otp: data.otp,
+        },
+        {
+          onSuccess: (result) => {
+            form.reset();
+            onSuccess?.(result);
+          },
+          onError: (error) => {
+            toast.error('Verification failed', {
+              description: error.message ?? 'Invalid code. Please try again.',
+            });
+            form.setFocus('otp');
+          },
+        },
+      );
     },
-    [
-      email,
-      type,
-      form,
-      onSuccess,
-      signInWithOTPMutation,
-      verifyEmailWithOTPMutation,
-    ],
+    [email, form, onSuccess, signInWithOTPMutation],
   );
 
   // Auto-submit when OTP is complete and valid
   const handleAutoSubmit = useCallback(
     (otpValue: string) => {
-      const isLoading =
-        signInWithOTPMutation.isPending || verifyEmailWithOTPMutation.isPending;
+      const isLoading = signInWithOTPMutation.isPending;
 
       if (otpValue.length === 6 && !isLoading) {
         // Small delay to ensure user sees the complete input
@@ -222,12 +111,7 @@ export function OTPVerificationForm({
         return () => clearTimeout(timeoutId);
       }
     },
-    [
-      form,
-      onSubmit,
-      signInWithOTPMutation.isPending,
-      verifyEmailWithOTPMutation.isPending,
-    ],
+    [form, onSubmit, signInWithOTPMutation.isPending],
   );
 
   // Watch for OTP changes and trigger auto-submit
@@ -254,37 +138,32 @@ export function OTPVerificationForm({
     }, 1000);
   }, []);
 
-  const handleResend = async () => {
+  const handleResend = () => {
     if (onResend) {
       onResend();
       startCountdown();
     } else {
-      // If no custom resend handler, use the default
-      setIsResending(true);
-      try {
-        const result = await authClient.emailOtp.sendVerificationOtp({
+      // Use the hook for sending OTP
+      sendOTPMutation.mutate(
+        {
           email,
-          type,
-        });
-
-        if (result.error) {
-          toast.error('Failed to resend code', {
-            description: result.error.message ?? 'Please try again later.',
-          });
-        } else {
-          toast.success('Code sent!', {
-            description: 'A new verification code has been sent to your email.',
-          });
-          startCountdown();
-        }
-      } catch (error) {
-        authLogger.error({ err: error }, 'Resend OTP error');
-        toast.error('Failed to resend code', {
-          description: 'An unexpected error occurred. Please try again.',
-        });
-      } finally {
-        setIsResending(false);
-      }
+          type: 'sign-in',
+        },
+        {
+          onSuccess: () => {
+            toast.success('Code sent!', {
+              description:
+                'A new verification code has been sent to your email.',
+            });
+            startCountdown();
+          },
+          onError: (error) => {
+            toast.error('Failed to resend code', {
+              description: error.message ?? 'Please try again later.',
+            });
+          },
+        },
+      );
     }
   };
 
@@ -292,7 +171,7 @@ export function OTPVerificationForm({
   const formContent = (
     <div className="space-y-4">
       <p className="text-muted-foreground text-center text-sm">
-        {description ?? getDefaultDescription(type, email)}
+        {description ?? getDefaultDescription(email)}
       </p>
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -307,10 +186,7 @@ export function OTPVerificationForm({
                     <InputOTP
                       maxLength={6}
                       {...field}
-                      disabled={
-                        signInWithOTPMutation.isPending ||
-                        verifyEmailWithOTPMutation.isPending
-                      }
+                      disabled={signInWithOTPMutation.isPending}
                     >
                       <InputOTPGroup>
                         <InputOTPSlot index={0} />
@@ -330,10 +206,7 @@ export function OTPVerificationForm({
           <Button
             className="w-full"
             disabled={!form.watch('otp') || form.watch('otp').length !== 6}
-            loading={
-              signInWithOTPMutation.isPending ||
-              verifyEmailWithOTPMutation.isPending
-            }
+            loading={signInWithOTPMutation.isPending}
             loadingText="Verifying..."
             type="submit"
           >
@@ -347,11 +220,11 @@ export function OTPVerificationForm({
           Didn&apos;t receive the code?{' '}
           <button
             className="text-primary font-medium underline-offset-4 hover:underline disabled:opacity-50"
-            disabled={isResending || !canResend}
+            disabled={sendOTPMutation.isPending || !canResend}
             type="button"
             onClick={handleResend}
           >
-            {isResending
+            {sendOTPMutation.isPending
               ? 'Sending...'
               : canResend
                 ? 'Resend code'
@@ -373,7 +246,7 @@ export function OTPVerificationForm({
     <Card className={className}>
       <CardHeader className="space-y-1">
         <CardTitle className="text-center text-2xl font-bold">
-          {title ?? getDefaultTitle(type)}
+          {title ?? getDefaultTitle()}
         </CardTitle>
       </CardHeader>
       <CardContent>{formContent}</CardContent>

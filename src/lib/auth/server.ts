@@ -198,12 +198,11 @@ const options = {
     emailOTP({
       allowedAttempts: 3, // 3 attempts before OTP becomes invalid
       expiresIn: 300, // 5 minutes (300 seconds)
-      async sendVerificationOTP({ email, otp, type }) {
+      async sendVerificationOTP({ email, otp }) {
         // Send OTP via email using our template
         await sendOTPVerification({
           to: email,
           otp,
-          type: type,
         });
       },
     }),

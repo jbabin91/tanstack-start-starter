@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { useSendEmailVerificationOTP } from '@/modules/auth/hooks/use-send-email-verification-otp';
+import { useSendSignInOTP } from '@/modules/auth/hooks/use-send-sign-in-otp';
 
 import { OTPVerificationForm } from './otp-verification-form';
 
@@ -36,7 +36,7 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
   const [step, setStep] = useState<LoginOTPStep>('email');
   const [email, setEmail] = useState('');
 
-  const sendOTPMutation = useSendEmailVerificationOTP();
+  const sendOTPMutation = useSendSignInOTP();
 
   const form = useForm<LoginOTPFormData>({
     defaultValues: {
@@ -113,7 +113,6 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
         <OTPVerificationForm
           className={className}
           email={email}
-          type="sign-in"
           variant="inline"
           onResend={handleResendOTP}
           onSuccess={handleOTPSuccess}
