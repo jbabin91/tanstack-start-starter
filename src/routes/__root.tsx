@@ -69,14 +69,14 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning className="h-full" lang="en">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="flex h-full flex-col">
         <Providers>
           <NavBar />
-          <main>{children}</main>
+          <main className="flex-1 overflow-auto">{children}</main>
           <Toaster />
         </Providers>
         <TanStackRouterDevtools />
