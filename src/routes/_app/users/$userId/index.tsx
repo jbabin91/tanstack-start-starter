@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { type } from 'arktype';
 
 import {
   postQueries,
@@ -7,6 +8,15 @@ import {
 import { UserErrorComponent } from '@/modules/users/components/user-error';
 import { UserNotFoundComponent } from '@/modules/users/components/user-not-found';
 import { userQueries, useUser } from '@/modules/users/hooks/use-queries';
+
+// Schema for validating parsed address JSON
+const AddressSchema = type({
+  'street?': 'string',
+  'city?': 'string',
+  'state?': 'string',
+  'postalCode?': 'string',
+  'country?': 'string',
+});
 
 export const Route = createFileRoute('/_app/users/$userId/')({
   component: RouteComponent,
@@ -54,8 +64,20 @@ function RouteComponent() {
             {user.address
               ? (() => {
                   try {
-                    const addr = JSON.parse(user.address);
-                    return `${addr.street}, ${addr.city}, ${addr.state} ${addr.postalCode}, ${addr.country}`;
+                    const rawAddr = JSON.parse(user.address);
+                    const addr = AddressSchema(rawAddr);
+                    if (addr instanceof type.errors) {
+                      return 'N/A';
+                    }
+                    const parts = [
+                      addr.street,
+                      addr.city,
+                      addr.state && addr.postalCode
+                        ? `${addr.state} ${addr.postalCode}`
+                        : (addr.state ?? addr.postalCode),
+                      addr.country,
+                    ].filter(Boolean);
+                    return parts.length > 0 ? parts.join(', ') : 'N/A';
                   } catch {
                     return 'N/A';
                   }

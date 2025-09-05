@@ -5,9 +5,25 @@
  * for session metadata using MaxMind GeoLite2 database.
  */
 
+import { type } from 'arktype';
 import maxmind, { type CityResponse, type Reader } from 'maxmind';
 
 import { authLogger } from '@/lib/logger';
+
+// Arktype schemas for external API responses
+const CloudflareVisitorSchema = type({
+  'scheme?': 'string',
+});
+
+const IPApiResponseSchema = type({
+  'error?': 'boolean',
+  'reason?': 'string',
+  'city?': 'string',
+  'region?': 'string',
+  'country_code?': 'string',
+  'timezone?': 'string',
+  'org?': 'string',
+});
 
 export type IPExtractionResult = {
   ipAddress: string | null;
@@ -214,8 +230,14 @@ function extractCloudflareLocationData(
   const cfVisitor = request.headers.get('cf-visitor');
   if (cfVisitor) {
     try {
-      const visitor = JSON.parse(cfVisitor);
-      if (visitor.scheme === 'https') {
+      const rawVisitor = JSON.parse(cfVisitor);
+      const visitor = CloudflareVisitorSchema(rawVisitor);
+      if (visitor instanceof type.errors) {
+        // Invalid data, fall back to string check
+        if (cfVisitor.includes('https')) {
+          result.isSecureConnection = true;
+        }
+      } else if (visitor.scheme === 'https') {
         result.isSecureConnection = true;
       }
     } catch {
@@ -337,11 +359,16 @@ async function getDetailedLocationDataAPI(
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const rawData = await response.json();
+    const data = IPApiResponseSchema(rawData);
+
+    if (data instanceof type.errors) {
+      throw new TypeError(`Invalid API response: ${data.summary}`);
+    }
 
     // Handle API error responses
     if (data.error) {
-      throw new Error(`API Error: ${data.reason ?? data.error}`);
+      throw new Error(`API Error: ${data.reason ?? 'Unknown error'}`);
     }
 
     return {
@@ -350,7 +377,7 @@ async function getDetailedLocationDataAPI(
       countryCode: data.country_code ?? null,
       timezone: data.timezone ?? null,
       ispName: data.org ?? null, // Organization/ISP name
-      connectionType: inferConnectionType(data.org),
+      connectionType: inferConnectionType(data.org ?? null),
     };
   } catch (error) {
     authLogger.error({ err: error }, 'IP geolocation API failed');
