@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
+import { emailLogger } from '@/lib/logger';
 import { sendDemoEmailFn } from '@/modules/email/api/send-demo-email';
 
 export const formDemoSchema = type({
@@ -42,7 +43,7 @@ export function EmailDemoForm() {
         });
       })
       .catch((error) => {
-        console.error('Error sending email:', error);
+        emailLogger.error({ err: error }, 'Error sending email');
         toast.error('Failed to send email. Please try again later.');
         return;
       });

@@ -48,7 +48,7 @@ export default defineConfig(
       'import-x/newline-after-import': 'error',
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'import-x/no-relative-parent-imports': 'error',
-      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+      'no-console': 'warn',
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
       'unicorn/filename-case': [
@@ -216,6 +216,7 @@ export default defineConfig(
   },
   {
     files: [
+      'src/configs/env.ts',
       'src/lib/db/seed/**/*',
       'src/lib/db/reset.ts',
       '**/*.stories.*',

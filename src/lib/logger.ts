@@ -32,7 +32,7 @@ const baseOptions: pino.LoggerOptions = {
   }),
 };
 
-// Configure transport for development
+// Configure transport for development (server-side only)
 const devTransport: pino.TransportSingleOptions = {
   target: 'pino-pretty',
   options: {
@@ -49,11 +49,73 @@ const devTransport: pino.TransportSingleOptions = {
 // Configure transport for production (structured JSON logs)
 const prodTransport = undefined; // Use default stdout for production
 
+// Check if we're in a browser environment
+const isBrowser = globalThis.window !== undefined;
+
+// Browser-specific logger configuration
+const browserOptions: pino.LoggerOptions = {
+  ...baseOptions,
+  // Use browser-friendly configuration
+  browser: {
+    asObject: isDev, // Pretty objects in dev, strings in prod
+    write: {
+      /* eslint-disable no-console */
+      // Custom write function for better browser formatting
+      info: (o: unknown) => {
+        if (isDev) {
+          console.info('🔵', o);
+        } else {
+          console.info(o);
+        }
+      },
+      warn: (o: unknown) => {
+        if (isDev) {
+          console.warn('🟡', o);
+        } else {
+          console.warn(o);
+        }
+      },
+      error: (o: unknown) => {
+        if (isDev) {
+          console.error('🔴', o);
+        } else {
+          console.error(o);
+        }
+      },
+      debug: (o: unknown) => {
+        if (isDev) {
+          console.debug('🟢', o);
+        } else {
+          console.debug(o);
+        }
+      },
+      trace: (o: unknown) => {
+        if (isDev) {
+          console.trace('🔍', o);
+        } else {
+          console.trace(o);
+        }
+      },
+      fatal: (o: unknown) => {
+        if (isDev) {
+          console.error('💀', o);
+        } else {
+          console.error(o);
+        }
+      },
+      /* eslint-enable no-console */
+    },
+  },
+};
+
 // Create the logger instance
-export const logger: Logger = pino(
-  baseOptions,
-  isDev && !isTest ? pino.transport(devTransport) : prodTransport,
-);
+export const logger: Logger = isBrowser
+  ? pino(browserOptions)
+  : pino(
+      baseOptions,
+      // Only use transport in Node.js environment (server-side)
+      isDev && !isTest ? pino.transport(devTransport) : prodTransport,
+    );
 
 // Create child loggers for different modules
 export const createModuleLogger = (module: string): Logger =>

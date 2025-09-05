@@ -9,6 +9,7 @@ import {
 
 import { CenteredLayout } from '@/components/layouts/centered-layout';
 import { Button } from '@/components/ui/button';
+import { logError } from '@/lib/logger';
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
@@ -17,7 +18,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
     strict: false,
   });
 
-  console.error(error);
+  logError(error, 'Unhandled application error caught by boundary');
 
   return (
     <CenteredLayout>

@@ -7,6 +7,8 @@
 
 import maxmind, { type CityResponse, type Reader } from 'maxmind';
 
+import { authLogger } from '@/lib/logger';
+
 export type IPExtractionResult = {
   ipAddress: string | null;
   source:
@@ -163,7 +165,7 @@ export async function resolveLocationAndIP(
       },
     };
   } catch (error) {
-    console.error('Failed to resolve location:', error);
+    authLogger.error({ err: error }, 'Failed to resolve location');
 
     return {
       ipAddress,
@@ -257,7 +259,7 @@ async function initializeGeoIPReader(): Promise<Reader<CityResponse>> {
 
     return geoIPReader;
   } catch (error) {
-    console.error('Failed to initialize MaxMind database:', error);
+    authLogger.error({ err: error }, 'Failed to initialize MaxMind database');
     throw new Error('Could not load GeoLite2 database');
   }
 }
@@ -302,9 +304,9 @@ async function getDetailedLocationData(
       connectionType: 'unknown', // Not available in City database
     };
   } catch (error) {
-    console.error(
-      'MaxMind geolocation lookup failed, falling back to API:',
-      error,
+    authLogger.error(
+      { err: error },
+      'MaxMind geolocation lookup failed, falling back to API',
     );
 
     // Fallback to API approach
@@ -351,7 +353,7 @@ async function getDetailedLocationDataAPI(
       connectionType: inferConnectionType(data.org),
     };
   } catch (error) {
-    console.error('IP geolocation API failed:', error);
+    authLogger.error({ err: error }, 'IP geolocation API failed');
     throw error;
   }
 }
