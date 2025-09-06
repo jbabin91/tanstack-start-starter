@@ -382,7 +382,7 @@ export const Sortable: Story = {
       }
     };
 
-    const sortedInvoices = [...sampleInvoices].sort((a, b) => {
+    const sortedInvoices = [...sampleInvoices].toSorted((a, b) => {
       if (!sortField) return 0;
 
       const aVal = a[sortField as keyof typeof a];
@@ -445,7 +445,7 @@ export const Sortable: Story = {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedInvoices.map((invoice) => (
+          {sortedInvoices.map((invoice: (typeof sampleInvoices)[0]) => (
             <TableRow key={invoice.id}>
               <TableCell>{invoice.id}</TableCell>
               <TableCell>{invoice.customer}</TableCell>
