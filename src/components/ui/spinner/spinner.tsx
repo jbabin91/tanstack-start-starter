@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Loader2Icon } from 'lucide-react';
 import React from 'react';
 
+import { Icons } from '@/components/icons';
 import { cn } from '@/utils/cn';
 
 const spinnerVariants = cva('flex-col items-center justify-center', {
@@ -47,7 +47,7 @@ export function Spinner({
       className={spinnerVariants({ show })}
       role="status"
     >
-      <Loader2Icon className={cn(loaderVariants({ size }), className)} />
+      <Icons.loader className={cn(loaderVariants({ size }), className)} />
       {children}
     </span>
   );

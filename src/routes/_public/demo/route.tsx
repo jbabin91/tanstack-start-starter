@@ -5,8 +5,8 @@ import {
   Outlet,
   redirect,
 } from '@tanstack/react-router';
-import { MailIcon, PaletteIcon } from 'lucide-react';
 
+import { Icons } from '@/components/icons';
 import {
   Sidebar,
   SidebarContent,
@@ -35,8 +35,8 @@ export const Route = createFileRoute('/_public/demo')({
 });
 
 const demoLinks = linkOptions([
-  { to: '/demo/email', label: 'Email', icon: MailIcon },
-  { to: '/demo/colors', label: 'Colors', icon: PaletteIcon },
+  { to: '/demo/email', label: 'Email', icon: Icons.mail },
+  { to: '/demo/colors', label: 'Colors', icon: Icons.palette },
 ]);
 
 function RouteComponent() {

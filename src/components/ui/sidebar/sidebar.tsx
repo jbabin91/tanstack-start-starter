@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
 import { Slot } from 'radix-ui';
 import React, {
   createContext,
@@ -10,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 
+import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -288,7 +288,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <Icons.panelLeft />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

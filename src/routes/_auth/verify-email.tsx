@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { type } from 'arktype';
-import { CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
@@ -143,7 +143,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <CheckCircleIcon className="text-success size-6" />
+                <Icons.checkCircle className="text-success size-6" />
                 Email verified successfully!
               </CardTitle>
             </CardHeader>
@@ -165,7 +165,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <XCircleIcon className="text-error size-6" />
+                <Icons.xCircle className="text-error size-6" />
                 Verification failed
               </CardTitle>
             </CardHeader>

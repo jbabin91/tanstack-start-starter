@@ -1,9 +1,9 @@
 'use client';
 
-import { CheckIcon } from 'lucide-react';
 import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 import * as React from 'react';
 
+import { Icons } from '@/components/icons';
 import { cn } from '@/utils/cn';
 
 function Checkbox({
@@ -23,7 +23,7 @@ function Checkbox({
         className="flex items-center justify-center text-current transition-none"
         data-slot="checkbox-indicator"
       >
-        <CheckIcon className="size-3.5" />
+        <Icons.check className="size-3.5" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );

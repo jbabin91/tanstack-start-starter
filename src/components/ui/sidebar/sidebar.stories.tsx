@@ -1,21 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
-import {
-  CalendarIcon,
-  ChevronDownIcon,
-  ChevronsUpDownIcon,
-  FolderIcon,
-  HomeIcon,
-  InboxIcon,
-  LogOutIcon,
-  MoreHorizontalIcon,
-  PlusIcon,
-  SearchIcon,
-  SettingsIcon,
-  UserIcon,
-} from 'lucide-react';
 import { useState } from 'react';
 
+import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -103,17 +90,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultNavItems = [
-  { title: 'Home', icon: HomeIcon, url: '#' },
-  { title: 'Inbox', icon: InboxIcon, url: '#', badge: '12' },
-  { title: 'Calendar', icon: CalendarIcon, url: '#' },
-  { title: 'Search', icon: SearchIcon, url: '#' },
-  { title: 'Settings', icon: SettingsIcon, url: '#' },
+  { title: 'Home', icon: Icons.home, url: '#' },
+  { title: 'Inbox', icon: Icons.inbox, url: '#', badge: '12' },
+  { title: 'Calendar', icon: Icons.calendar, url: '#' },
+  { title: 'Search', icon: Icons.search, url: '#' },
+  { title: 'Settings', icon: Icons.settings, url: '#' },
 ];
 
 const projectItems = [
-  { title: 'Design System', icon: FolderIcon, url: '#' },
-  { title: 'Website Redesign', icon: FolderIcon, url: '#' },
-  { title: 'Mobile App', icon: FolderIcon, url: '#' },
+  { title: 'Design System', icon: Icons.folder, url: '#' },
+  { title: 'Website Redesign', icon: Icons.folder, url: '#' },
+  { title: 'Mobile App', icon: Icons.folder, url: '#' },
 ];
 
 export const Default: Story = {
@@ -244,7 +231,7 @@ export const CollapsibleExample: Story = {
             <SidebarGroup>
               <SidebarGroupLabel>Projects</SidebarGroupLabel>
               <SidebarGroupAction>
-                <PlusIcon />
+                <Icons.plus />
                 <span className="sr-only">Add Project</span>
               </SidebarGroupAction>
               <SidebarGroupContent>
@@ -256,7 +243,7 @@ export const CollapsibleExample: Story = {
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                       <SidebarMenuAction showOnHover>
-                        <MoreHorizontalIcon />
+                        <Icons.moreHorizontal />
                         <span className="sr-only">More</span>
                       </SidebarMenuAction>
                     </SidebarMenuItem>
@@ -289,7 +276,7 @@ export const CollapsibleExample: Story = {
                           m@example.com
                         </span>
                       </div>
-                      <ChevronsUpDownIcon className="ml-auto size-4" />
+                      <Icons.chevronsUpDown className="ml-auto size-4" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -319,16 +306,16 @@ export const CollapsibleExample: Story = {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <UserIcon />
+                      <Icons.user />
                       Account
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <SettingsIcon />
+                      <Icons.settings />
                       Settings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <LogOutIcon />
+                      <Icons.logOut />
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -414,7 +401,7 @@ export const WithNestedMenus: Story = {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton>
-                      <HomeIcon />
+                      <Icons.home />
                       <span>Dashboard</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -422,9 +409,9 @@ export const WithNestedMenus: Story = {
                     <Collapsible defaultOpen>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton>
-                          <UserIcon />
+                          <Icons.user />
                           <span>Users</span>
-                          <ChevronDownIcon className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          <Icons.chevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
@@ -452,9 +439,9 @@ export const WithNestedMenus: Story = {
                     <Collapsible>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton>
-                          <FolderIcon />
+                          <Icons.folder />
                           <span>Content</span>
-                          <ChevronDownIcon className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          <Icons.chevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
@@ -480,7 +467,7 @@ export const WithNestedMenus: Story = {
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton>
-                      <SettingsIcon />
+                      <Icons.settings />
                       <span>Settings</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

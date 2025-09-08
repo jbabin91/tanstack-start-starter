@@ -1,8 +1,3 @@
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import {
   type DayButton,
@@ -10,6 +5,7 @@ import {
   getDefaultClassNames,
 } from 'react-day-picker';
 
+import { Icons } from '@/components/icons';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/utils/cn';
 
@@ -119,24 +115,29 @@ function Calendar({
       }}
       components={{
         Chevron: ({ className, orientation, ...props }) => {
+          // Calendar passes numeric size, but we want consistent calendar icon size
+          const { size: _calendarSize, ...iconProps } = props;
+
+          type ChevronIconProps = typeof iconProps & {
+            size: 'sm';
+            className: string | undefined;
+          };
+
+          const chevronProps: ChevronIconProps = {
+            size: 'sm', // Explicit size for calendar chevrons
+            className,
+            ...iconProps,
+          };
+
           if (orientation === 'left') {
-            return (
-              <ChevronLeftIcon className={cn('size-4', className)} {...props} />
-            );
+            return <Icons.chevronLeft {...chevronProps} />;
           }
 
           if (orientation === 'right') {
-            return (
-              <ChevronRightIcon
-                className={cn('size-4', className)}
-                {...props}
-              />
-            );
+            return <Icons.chevronRight {...chevronProps} />;
           }
 
-          return (
-            <ChevronDownIcon className={cn('size-4', className)} {...props} />
-          );
+          return <Icons.chevronDown {...chevronProps} />;
         },
         DayButton: CalendarDayButton,
         Root: ({ className, rootRef, ...props }) => {

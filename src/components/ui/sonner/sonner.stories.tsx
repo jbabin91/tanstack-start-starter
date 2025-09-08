@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from '@storybook/test';
-import { CheckCircleIcon, InfoIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -324,7 +324,7 @@ export const CustomStyling: Story = {
           onClick={() =>
             toast(
               <div className="flex items-center gap-2">
-                <CheckCircleIcon className="size-5 text-green-600" />
+                <Icons.checkCircle className="size-5 text-green-600" />
                 <div>
                   <div className="font-medium">Task completed!</div>
                   <div className="text-muted-foreground text-sm">
@@ -657,7 +657,7 @@ export const Positioning: Story = {
         </Button>
       </div>
       <div className="text-muted-foreground rounded-lg border p-4 text-xs">
-        <InfoIcon className="mr-2 inline size-4" />
+        <Icons.info className="mr-2 inline size-4" />
         In a real application, you would configure the Toaster position prop:
         <code className="ml-2 rounded-sm bg-gray-100 px-1">
           &lt;Toaster position=&quot;bottom-right&quot; /&gt;

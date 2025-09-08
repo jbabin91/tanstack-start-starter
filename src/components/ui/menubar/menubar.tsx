@@ -1,7 +1,7 @@
-import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
 import { Menubar as MenubarPrimitive } from 'radix-ui';
 import * as React from 'react';
 
+import { Icons } from '@/components/icons';
 import { cn } from '@/utils/cn';
 
 function Menubar({
@@ -127,7 +127,7 @@ function MenubarCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <Icons.check className="size-4" />
         </MenubarPrimitive.ItemIndicator>
       </span>
       {children}
@@ -151,7 +151,7 @@ function MenubarRadioItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
-          <CircleIcon className="size-2 fill-current" />
+          <Icons.circle className="size-2 fill-current" />
         </MenubarPrimitive.ItemIndicator>
       </span>
       {children}
@@ -233,7 +233,7 @@ function MenubarSubTrigger({
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto size-4" />
+      <Icons.chevronRight className="ml-auto size-4" />
     </MenubarPrimitive.SubTrigger>
   );
 }
