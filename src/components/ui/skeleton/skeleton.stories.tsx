@@ -414,8 +414,7 @@ export const InteractiveSkeleton: Story = {
     // Check specific skeleton shapes
     const avatarSkeleton = skeletons[0];
     expect(avatarSkeleton).toHaveClass('rounded-full');
-    expect(avatarSkeleton).toHaveClass('h-10');
-    expect(avatarSkeleton).toHaveClass('w-10');
+    expect(avatarSkeleton).toHaveClass('size-10');
 
     const contentSkeleton = skeletons[3];
     expect(contentSkeleton).toHaveClass('h-20');

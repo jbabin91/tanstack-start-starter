@@ -235,10 +235,10 @@ export const StatusIndicator: Story = {
     },
   },
   play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Status indicators are now badges, so we look for badge elements
-    const badges = canvas.getAllByTestId('overlay-badge');
+    // Status indicators are now badges, use querySelector for data-slot
+    const badges = canvasElement.querySelectorAll(
+      '[data-slot="overlay-badge"]',
+    );
     expect(badges).toHaveLength(4);
 
     // Verify all badges are visible

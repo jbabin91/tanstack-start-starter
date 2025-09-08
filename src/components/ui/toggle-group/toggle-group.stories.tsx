@@ -97,9 +97,9 @@ export const Single: Story = {
     const canvas = within(canvasElement);
 
     // Check all buttons exist
-    const leftBtn = canvas.getByRole('button', { name: 'Left' });
-    const centerBtn = canvas.getByRole('button', { name: 'Center' });
-    const rightBtn = canvas.getByRole('button', { name: 'Right' });
+    const leftBtn = canvas.getByRole('radio', { name: 'Left' });
+    const centerBtn = canvas.getByRole('radio', { name: 'Center' });
+    const rightBtn = canvas.getByRole('radio', { name: 'Right' });
 
     expect(leftBtn).toBeVisible();
     expect(centerBtn).toBeVisible();
@@ -167,10 +167,10 @@ export const WithIcons: Story = {
   play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Check buttons with aria-labels
-    expect(canvas.getByRole('button', { name: 'Align left' })).toBeVisible();
-    expect(canvas.getByRole('button', { name: 'Align center' })).toBeVisible();
-    expect(canvas.getByRole('button', { name: 'Align right' })).toBeVisible();
+    // Check radio buttons with aria-labels (single type uses radio role)
+    expect(canvas.getByRole('radio', { name: 'Align left' })).toBeVisible();
+    expect(canvas.getByRole('radio', { name: 'Align center' })).toBeVisible();
+    expect(canvas.getByRole('radio', { name: 'Align right' })).toBeVisible();
   },
 };
 
@@ -309,12 +309,12 @@ export const ControlledSingle: Story = {
     expect(canvas.getByText('Current alignment: center')).toBeVisible();
 
     // Click left alignment
-    const leftBtn = canvas.getByRole('button', { name: 'Align left' });
+    const leftBtn = canvas.getByRole('radio', { name: 'Align left' });
     await userEvent.click(leftBtn);
     expect(canvas.getByText('Current alignment: left')).toBeVisible();
 
     // Click center again
-    const centerBtn = canvas.getByRole('button', { name: 'Align center' });
+    const centerBtn = canvas.getByRole('radio', { name: 'Align center' });
     await userEvent.click(centerBtn);
     expect(canvas.getByText('Current alignment: center')).toBeVisible();
   },
@@ -416,12 +416,12 @@ export const ViewModeSelector: Story = {
     expect(canvas.getByText('Current view: grid')).toBeVisible();
 
     // Switch to list view
-    const listBtn = canvas.getByRole('button', { name: 'List view' });
+    const listBtn = canvas.getByRole('radio', { name: 'List view' });
     await userEvent.click(listBtn);
     expect(canvas.getByText('Current view: list')).toBeVisible();
 
     // Switch to card view
-    const cardBtn = canvas.getByRole('button', { name: 'Card view' });
+    const cardBtn = canvas.getByRole('radio', { name: 'Card view' });
     await userEvent.click(cardBtn);
     expect(canvas.getByText('Current view: card')).toBeVisible();
   },

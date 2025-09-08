@@ -513,8 +513,10 @@ export const WithNestedMenus: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Check main navigation
-    expect(canvas.getByText('Dashboard')).toBeVisible();
+    // Check main navigation - use getAllByText since there are multiple Dashboard elements
+    const dashboardElements = canvas.getAllByText('Dashboard');
+    expect(dashboardElements.length).toBeGreaterThan(0);
+    expect(dashboardElements[0]).toBeVisible();
     expect(canvas.getByText('Users')).toBeVisible();
     expect(canvas.getByText('Content')).toBeVisible();
     expect(canvas.getByText('Settings')).toBeVisible();
