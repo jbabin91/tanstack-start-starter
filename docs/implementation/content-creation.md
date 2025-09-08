@@ -1093,7 +1093,7 @@ export function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
           <div className="flex gap-4">
             <Button type="submit" disabled={updatePost.isPending}>
               {updatePost.isPending && (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner className="mr-2 size-4 animate-spin" />
               )}
               Save Changes
             </Button>
@@ -1243,7 +1243,7 @@ function PostEditor({ postId, initialData, onSave }: PostEditorProps) {
         <div>
           {isSaving ? (
             <span className="flex items-center">
-              <Icons.spinner className="mr-1 h-3 w-3 animate-spin" />
+              <Icons.spinner className="mr-1 size-3 animate-spin" />
               Saving...
             </span>
           ) : lastSaved ? (

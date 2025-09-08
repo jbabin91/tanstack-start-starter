@@ -1145,15 +1145,15 @@ export function FollowButton({
       variant={isFollowing ? 'outline' : variant}
       className={className}
     >
-      {isPending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+      {isPending && <Icons.spinner className="mr-2 size-4 animate-spin" />}
       {isFollowing ? (
         <>
-          <Icons.userCheck className="mr-2 h-4 w-4" />
+          <Icons.userCheck className="mr-2 size-4" />
           Following
         </>
       ) : (
         <>
-          <Icons.userPlus className="mr-2 h-4 w-4" />
+          <Icons.userPlus className="mr-2 size-4" />
           Follow
         </>
       )}
@@ -1214,7 +1214,7 @@ export function ActivityFeed({
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <Icons.alertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+          <Icons.alertCircle className="size-8 mx-auto mb-2 text-muted-foreground" />
           <p className="text-muted-foreground">Failed to load activity feed</p>
         </CardContent>
       </Card>
@@ -1227,7 +1227,7 @@ export function ActivityFeed({
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <Icons.rss className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+          <Icons.rss className="size-8 mx-auto mb-2 text-muted-foreground" />
           <p className="text-muted-foreground">
             No recent activity from people you follow
           </p>
@@ -1251,7 +1251,7 @@ export function ActivityFeed({
                     <img
                       src={post.author.avatar}
                       alt={post.author.name}
-                      className="h-8 w-8 rounded-full"
+                      className="size-8 rounded-full"
                     />
                   )}
                   <div>
@@ -1263,7 +1263,7 @@ export function ActivityFeed({
                     </div>
                     {post.organization && (
                       <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                        <Icons.building className="h-3 w-3" />
+                        <Icons.building className="size-3" />
                         <span>{post.organization.name}</span>
                       </div>
                     )}
@@ -1287,15 +1287,15 @@ export function ActivityFeed({
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
-                    <Icons.eye className="h-4 w-4 mr-1" />
+                    <Icons.eye className="size-4 mr-1" />
                     {post.viewCount || 0}
                   </div>
                   <div className="flex items-center">
-                    <Icons.heart className="h-4 w-4 mr-1" />
+                    <Icons.heart className="size-4 mr-1" />
                     {post.likeCount || 0}
                   </div>
                   <div className="flex items-center">
-                    <Icons.messageCircle className="h-4 w-4 mr-1" />
+                    <Icons.messageCircle className="size-4 mr-1" />
                     {post.commentCount || 0}
                   </div>
                   <Badge variant="secondary">
@@ -1320,7 +1320,7 @@ export function ActivityFeed({
             variant="outline"
           >
             {isFetchingNextPage && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
             )}
             Load more posts
           </Button>
@@ -1365,7 +1365,7 @@ export function UserRecommendations({
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex items-center space-x-3 animate-pulse">
-                <div className="h-10 w-10 bg-muted rounded-full" />
+                <div className="size-10 bg-muted rounded-full" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-muted rounded w-3/4" />
                   <div className="h-3 bg-muted rounded w-1/2" />
@@ -1400,7 +1400,7 @@ export function UserRecommendations({
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <Icons.users className="h-5 w-5 mr-2" />
+          <Icons.users className="size-5 mr-2" />
           Who to follow
         </CardTitle>
       </CardHeader>
@@ -1416,7 +1416,7 @@ export function UserRecommendations({
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="h-10 w-10 rounded-full flex-shrink-0"
+                    className="size-10 rounded-full flex-shrink-0"
                   />
                 )}
                 <div className="min-w-0 flex-1">

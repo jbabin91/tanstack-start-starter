@@ -168,7 +168,7 @@ function PostCard({ post, onEdit }: PostCardProps) {
       </CardHeader>
       <CardContent>
         {/* Use Icons component for all icons */}
-        <Icons.user className="h-4 w-4" />
+        <Icons.user className="size-4" />
         <p>{post.content}</p>
       </CardContent>
     </Card>
@@ -211,8 +211,8 @@ function MyComponent({ className }: { className?: string }) {
 import { Icons } from '@/components/icons';
 
 // DO: Use centralized Icons component
-<Icons.settings className="h-4 w-4" />
-<Icons.user className="h-5 w-5 text-muted-foreground" />
+<Icons.settings className="size-4" />
+<Icons.user className="size-5 text-muted-foreground" />
 
 // DON'T: Import directly from lucide-react
 // ❌ import { Settings } from 'lucide-react';
@@ -285,7 +285,7 @@ function CreatePostForm() {
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? (
             <>
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
               Submitting...
             </>
           ) : (

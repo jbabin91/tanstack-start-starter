@@ -579,7 +579,7 @@ export function UserProfileCard({ userId, className }: UserProfileCardProps) {
             <img
               src={user.avatar}
               alt={user.name}
-              className="h-16 w-16 rounded-full"
+              className="size-16 rounded-full"
             />
           )}
           <div>
@@ -594,7 +594,7 @@ export function UserProfileCard({ userId, className }: UserProfileCardProps) {
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
           {user.location && (
             <div className="flex items-center">
-              <Icons.mapPin className="h-4 w-4 mr-1" />
+              <Icons.mapPin className="size-4 mr-1" />
               {user.location}
             </div>
           )}
@@ -605,7 +605,7 @@ export function UserProfileCard({ userId, className }: UserProfileCardProps) {
               rel="noopener noreferrer"
               className="flex items-center hover:text-foreground"
             >
-              <Icons.externalLink className="h-4 w-4 mr-1" />
+              <Icons.externalLink className="size-4 mr-1" />
               Website
             </a>
           )}
@@ -752,7 +752,7 @@ export function EditProfileForm({ initialData, onSuccess }: EditProfileFormProps
           className="w-full"
         >
           {updateProfile.isPending && (
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            <Icons.spinner className="mr-2 size-4 animate-spin" />
           )}
           Update Profile
         </Button>

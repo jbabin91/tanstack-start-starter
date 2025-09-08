@@ -154,7 +154,7 @@ Use `render` for complex compositions or multiple components:
 export const WithIcon: Story = {
   render: (args) => (
     <Button {...args}>
-      <Icons.plus className="mr-2 h-4 w-4" />
+      <Icons.plus className="mr-2 size-4" />
       Add Item
     </Button>
   ),

@@ -140,14 +140,14 @@ function PostsList() {
             size="sm"
             onClick={() => navigate({ search: (prev) => ({ ...prev, view: 'list' }) })}
           >
-            <Icons.list className="h-4 w-4" />
+            <Icons.list className="size-4" />
           </Button>
           <Button
             variant={search.view === 'grid' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => navigate({ search: (prev) => ({ ...prev, view: 'grid' }) })}
           >
-            <Icons.grid className="h-4 w-4" />
+            <Icons.grid className="size-4" />
           </Button>
         </div>
       </div>
@@ -253,7 +253,7 @@ function PostEditor({ draftId }: { draftId?: string }) {
             {/* Auto-save indicator - NOT used for button states */}
             {isSaving && (
               <>
-                <Icons.spinner className="h-3 w-3 animate-spin" />
+                <Icons.spinner className="size-3 animate-spin" />
                 <span>Saving...</span>
               </>
             )}
@@ -320,13 +320,13 @@ function PostEditor({ draftId }: { draftId?: string }) {
                       <SelectContent>
                         <SelectItem value="draft">
                           <div className="flex items-center">
-                            <Icons.fileText className="mr-2 h-4 w-4" />
+                            <Icons.fileText className="mr-2 size-4" />
                             Draft
                           </div>
                         </SelectItem>
                         <SelectItem value="published">
                           <div className="flex items-center">
-                            <Icons.checkCircle className="mr-2 h-4 w-4" />
+                            <Icons.checkCircle className="mr-2 size-4" />
                             Published
                           </div>
                         </SelectItem>
@@ -408,7 +408,7 @@ function TagsEditor() {
               size="sm"
               onClick={() => remove(index)}
             >
-              <Icons.x className="h-4 w-4" />
+              <Icons.x className="size-4" />
             </Button>
           </div>
         ))}
@@ -419,7 +419,7 @@ function TagsEditor() {
           onClick={() => append({ name: '' })}
           className="w-full"
         >
-          <Icons.plus className="mr-2 h-4 w-4" />
+          <Icons.plus className="mr-2 size-4" />
           Add Tag
         </Button>
       </div>
@@ -474,7 +474,7 @@ function ContentEditor({ postId }: { postId: string }) {
       <div className="text-sm text-muted-foreground">
         {isSaving && (
           <span className="flex items-center">
-            <Icons.spinner className="mr-1 h-3 w-3 animate-spin" />
+            <Icons.spinner className="mr-1 size-3 animate-spin" />
             Saving draft...
           </span>
         )}
@@ -879,19 +879,19 @@ function ProductionContentEditor({ postId }: { postId: string }) {
             {/* Enhanced auto-save status with offline support */}
             {!autoSave.isOnline && (
               <div className="flex items-center text-amber-600">
-                <Icons.wifiOff className="h-3 w-3 mr-1" />
+                <Icons.wifiOff className="size-3 mr-1" />
                 <span>Offline</span>
               </div>
             )}
             {autoSave.isSaving && autoSave.isOnline && (
               <div className="flex items-center text-blue-600">
-                <Icons.spinner className="h-3 w-3 animate-spin mr-1" />
+                <Icons.spinner className="size-3 animate-spin mr-1" />
                 <span>Auto-saving...</span>
               </div>
             )}
             {autoSave.lastSaved && !autoSave.isSaving && autoSave.isOnline && (
               <div className="flex items-center text-green-600">
-                <Icons.check className="h-3 w-3 mr-1" />
+                <Icons.check className="size-3 mr-1" />
                 <span>
                   Saved {formatDistanceToNow(autoSave.lastSaved)} ago
                 </span>
@@ -899,7 +899,7 @@ function ProductionContentEditor({ postId }: { postId: string }) {
             )}
             {autoSave.retryCount > 0 && (
               <div className="flex items-center text-amber-600">
-                <Icons.refreshCw className="h-3 w-3 mr-1" />
+                <Icons.refreshCw className="size-3 mr-1" />
                 <span>Retrying... ({autoSave.retryCount}/3)</span>
               </div>
             )}
@@ -910,7 +910,7 @@ function ProductionContentEditor({ postId }: { postId: string }) {
         {/* Offline alert */}
         {!autoSave.isOnline && (
           <Alert className="mb-6">
-            <Icons.wifiOff className="h-4 w-4" />
+            <Icons.wifiOff className="size-4" />
             <AlertDescription>
               You&apos;re currently offline. Your changes are being saved locally and will sync when your connection is restored.
             </AlertDescription>
@@ -959,7 +959,7 @@ function ProductionContentEditor({ postId }: { postId: string }) {
                   onClick={() => autoSave.saveNow()}
                   disabled={autoSave.isSaving || !autoSave.isOnline}
                 >
-                  <Icons.save className="h-4 w-4 mr-2" />
+                  <Icons.save className="size-4 mr-2" />
                   Save Draft Now
                 </Button>
 
@@ -981,7 +981,7 @@ function ProductionContentEditor({ postId }: { postId: string }) {
                 loadingText="Publishing..."
                 disabled={!autoSave.isOnline}
               >
-                <Icons.upload className="h-4 w-4 mr-2" />
+                <Icons.upload className="size-4 mr-2" />
                 Publish Post
               </Button>
             </div>
@@ -1317,16 +1317,16 @@ function PostActionsMenu({ post }: { post: Post }) {
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm">
-            <Icons.moreHorizontal className="h-4 w-4" />
+            <Icons.moreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => handleEdit(post)}>
-            <Icons.edit className="mr-2 h-4 w-4" />
+            <Icons.edit className="mr-2 size-4" />
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
-            <Icons.trash className="mr-2 h-4 w-4" />
+            <Icons.trash className="mr-2 size-4" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -1400,7 +1400,7 @@ function PostEditor() {
             size="sm"
             onClick={() => dispatch({ type: 'SET_MODE', mode: 'write' })}
           >
-            <Icons.edit className="mr-2 h-4 w-4" />
+            <Icons.edit className="mr-2 size-4" />
             Write
           </Button>
           <Button
@@ -1408,7 +1408,7 @@ function PostEditor() {
             size="sm"
             onClick={() => dispatch({ type: 'SET_MODE', mode: 'preview' })}
           >
-            <Icons.eye className="mr-2 h-4 w-4" />
+            <Icons.eye className="mr-2 size-4" />
             Preview
           </Button>
           <Button
@@ -1416,7 +1416,7 @@ function PostEditor() {
             size="sm"
             onClick={() => dispatch({ type: 'SET_MODE', mode: 'split' })}
           >
-            <Icons.columns className="mr-2 h-4 w-4" />
+            <Icons.columns className="mr-2 size-4" />
             Split
           </Button>
         </div>
@@ -1431,9 +1431,9 @@ function PostEditor() {
             onClick={() => dispatch({ type: 'TOGGLE_FULLSCREEN' })}
           >
             {editorState.isFullscreen ? (
-              <Icons.minimize className="h-4 w-4" />
+              <Icons.minimize className="size-4" />
             ) : (
-              <Icons.maximize className="h-4 w-4" />
+              <Icons.maximize className="size-4" />
             )}
           </Button>
         </div>
@@ -1512,7 +1512,7 @@ function UserProfile() {
       <CardContent className="space-y-4">
         {user.role === 'admin' && (
           <Badge variant="secondary">
-            <Icons.shield className="mr-1 h-3 w-3" />
+            <Icons.shield className="mr-1 size-3" />
             Administrator
           </Badge>
         )}
@@ -1558,7 +1558,7 @@ function OrganizationSwitcher({
         <SelectContent>
           <SelectItem value="">
             <div className="flex items-center">
-              <Icons.user className="mr-2 h-4 w-4" />
+              <Icons.user className="mr-2 size-4" />
               Personal
             </div>
           </SelectItem>
@@ -1566,7 +1566,7 @@ function OrganizationSwitcher({
             <SelectItem key={organization.id} value={organization.id}>
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
-                  <Icons.users className="mr-2 h-4 w-4" />
+                  <Icons.users className="mr-2 size-4" />
                   {organization.name}
                 </div>
                 <Badge variant="outline" className="ml-2 text-xs">

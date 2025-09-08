@@ -1611,7 +1611,7 @@ export function AdvancedSearch({ onResults, className }: AdvancedSearchProps) {
       {/* Search Input */}
       <div className="relative mb-6">
         <div className="relative">
-          <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Icons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search for posts, users, or organizations..."
@@ -1625,7 +1625,7 @@ export function AdvancedSearch({ onResults, className }: AdvancedSearchProps) {
             className="pl-10 pr-4 py-3 text-lg"
           />
           {isSearching && (
-            <Icons.spinner className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin" />
+            <Icons.spinner className="absolute right-3 top-1/2 transform -translate-y-1/2 size-4 animate-spin" />
           )}
         </div>
 
@@ -1819,7 +1819,7 @@ export function AdvancedSearch({ onResults, className }: AdvancedSearchProps) {
                 variant="outline"
               >
                 {isFetchingNextPage && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  <Icons.spinner className="mr-2 size-4 animate-spin" />
                 )}
                 Load more results
               </Button>
@@ -1829,7 +1829,7 @@ export function AdvancedSearch({ onResults, className }: AdvancedSearchProps) {
           {debouncedQuery && !isSearching && results.length === 0 && (
             <Card>
               <CardContent className="p-8 text-center">
-                <Icons.search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <Icons.search className="size-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-semibold mb-2">No results found</h3>
                 <p className="text-muted-foreground mb-4">
                   Try adjusting your search terms or filters

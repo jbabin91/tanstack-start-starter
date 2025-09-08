@@ -570,7 +570,7 @@ export function SessionCard({ session, onRevoke }: SessionCardProps) {
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Icons.monitor className="h-4 w-4" />
+            <Icons.monitor className="size-4" />
             <span className="font-medium">
               {session.metadata?.browser} on {session.metadata?.os}
             </span>
@@ -584,7 +584,7 @@ export function SessionCard({ session, onRevoke }: SessionCardProps) {
 
           <div className="text-sm text-muted-foreground space-y-1">
             <div className="flex items-center gap-2">
-              <Icons.mapPin className="h-3 w-3" />
+              <Icons.mapPin className="size-3" />
               <span>
                 {session.metadata?.city && session.metadata?.country
                   ? `${session.metadata.city}, ${session.metadata.country}`
@@ -592,11 +592,11 @@ export function SessionCard({ session, onRevoke }: SessionCardProps) {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Icons.globe className="h-3 w-3" />
+              <Icons.globe className="size-3" />
               <span>{session.ipAddress}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Icons.clock className="h-3 w-3" />
+              <Icons.clock className="size-3" />
               <span>Last activity {formatLastActivity(session.updatedAt)}</span>
             </div>
           </div>
@@ -623,7 +623,7 @@ export function SessionCard({ session, onRevoke }: SessionCardProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
-                <Icons.moreHorizontal className="h-4 w-4" />
+                <Icons.moreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -631,7 +631,7 @@ export function SessionCard({ session, onRevoke }: SessionCardProps) {
                 onClick={() => onRevoke(session.id, 'Manual revocation')}
                 className="text-destructive"
               >
-                <Icons.logOut className="h-4 w-4 mr-2" />
+                <Icons.logOut className="size-4 mr-2" />
                 Revoke Session
               </DropdownMenuItem>
             </DropdownMenuContent>

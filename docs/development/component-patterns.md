@@ -19,9 +19,9 @@ The project uses a centralized Icons component instead of importing directly fro
 import { Icons } from '@/components/icons';
 
 // ✅ CORRECT: Use Icons component
-<Icons.settings className="h-4 w-4" />
-<Icons.user className="h-5 w-5 text-muted-foreground" />
-<Icons.search className="h-6 w-6" />
+<Icons.settings className="size-4" />
+<Icons.user className="size-5 text-muted-foreground" />
+<Icons.search className="size-6" />
 
 // ❌ INCORRECT: Don't import directly from lucide-react
 import { Settings, User, Search } from 'lucide-react';
@@ -119,7 +119,7 @@ export const Icons = {
 };
 
 // 3. Use in components
-<Icons.newIcon className="h-4 w-4" />
+<Icons.newIcon className="size-4" />
 ```
 
 ## ShadCN/UI Components
@@ -187,7 +187,7 @@ import { Button } from '@/components/ui/button';
 
 // With icons
 <Button>
-  <Icons.plus className="h-4 w-4 mr-2" />
+  <Icons.plus className="size-4 mr-2" />
   Add Post
 </Button>
 ```
@@ -407,7 +407,7 @@ function MyForm() {
           loading={form.formState.isSubmitting}
           loadingText="Saving..."
         >
-          <Icons.save className="h-4 w-4 mr-2" />
+          <Icons.save className="size-4 mr-2" />
           Save
         </Button>
       </form>
@@ -453,7 +453,7 @@ function MyForm() {
   aria-label="Delete post"
   aria-describedby="delete-help"
 >
-  <Icons.trash className="h-4 w-4" />
+  <Icons.trash className="size-4" />
 </Button>
 
 // Use semantic HTML
@@ -509,7 +509,7 @@ import { Button } from '@/components/ui/button';
 test('renders button with icon', () => {
   render(
     <Button>
-      <Icons.plus className="h-4 w-4 mr-2" />
+      <Icons.plus className="size-4 mr-2" />
       Add Item
     </Button>
   );
