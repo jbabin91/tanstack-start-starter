@@ -3,12 +3,12 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
 import { posts as postsTable } from '@/lib/db/schemas/posts';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 
 export const fetchPostById = createServerFn()
   .validator((d: string) => d)
   .handler(async ({ data }) => {
-    logger.info(`Fetching post with id ${data}...`);
+    apiLogger.info(`Fetching post with id ${data}...`);
 
     const posts = await db
       .select()

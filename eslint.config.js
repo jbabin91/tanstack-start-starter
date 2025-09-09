@@ -219,6 +219,7 @@ export default defineConfig(
       'src/configs/env.ts',
       'src/lib/db/seed/**/*',
       'src/lib/db/reset.ts',
+      'src/lib/logger.ts',
       '**/*.stories.*',
       '**/*.test.*',
       '**/*.spec.*',

@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db';
 import { sessionActivityLog, sessions } from '@/lib/db/schemas';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 import { nanoid } from '@/lib/nanoid';
 
 const revokeSessionSchema = type({
@@ -24,7 +24,7 @@ export const revokeSession = createServerFn()
     }
 
     const { sessionId } = data;
-    logger.info(
+    apiLogger.info(
       `User ${session.user.id} attempting to revoke session ${sessionId}...`,
     );
 
@@ -76,7 +76,7 @@ export const revokeSession = createServerFn()
         createdAt: now,
       });
 
-      logger.info(
+      apiLogger.info(
         `Successfully revoked session ${sessionId} for user ${session.user.id}`,
       );
 
@@ -86,7 +86,7 @@ export const revokeSession = createServerFn()
         revokedSessionId: sessionId,
       };
     } catch (error) {
-      logger.error(error, `Error revoking session ${sessionId}`);
+      apiLogger.error(error, `Error revoking session ${sessionId}`);
 
       if (error instanceof Error) {
         throw error;

@@ -86,6 +86,11 @@ export default defineConfig({
     hookTimeout: 10_000,
     projects: [
       {
+        plugins: [
+          tsconfigPaths({
+            projects: ['./tsconfig.json'],
+          }),
+        ],
         test: {
           environment: 'jsdom',
           exclude: [
@@ -106,6 +111,9 @@ export default defineConfig({
       {
         extends: true,
         plugins: [
+          tsconfigPaths({
+            projects: ['./tsconfig.json'],
+          }),
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
           }),

@@ -10,6 +10,7 @@ import {
   trustedDevices as trustedDevicesTable,
 } from '@/lib/db/schemas/session-metadata';
 import type { SessionData } from '@/lib/db/seed/generators/session-generator';
+import { dbLogger } from '@/lib/logger';
 
 type UserInsert = typeof usersTable.$inferInsert;
 type PostInsert = typeof postsTable.$inferInsert;
@@ -47,13 +48,13 @@ export async function insertSessionData(
   // Insert sessions
   if (sessions.length > 0) {
     await db.insert(sessionsTable).values(sessions);
-    console.log(`📱 Created ${sessions.length} sessions`);
+    dbLogger.info(`📱 Created ${sessions.length} sessions`);
   }
 
   // Insert session metadata
   if (sessionMetadata.length > 0) {
     await db.insert(sessionMetadataTable).values(sessionMetadata);
-    console.log(
+    dbLogger.info(
       `🔍 Created ${sessionMetadata.length} session metadata records`,
     );
   }
@@ -61,12 +62,12 @@ export async function insertSessionData(
   // Insert trusted devices
   if (trustedDevices.length > 0) {
     await db.insert(trustedDevicesTable).values(trustedDevices);
-    console.log(`🛡️ Created ${trustedDevices.length} trusted devices`);
+    dbLogger.info(`🛡️ Created ${trustedDevices.length} trusted devices`);
   }
 
   // Insert activity logs
   if (activityLogs.length > 0) {
     await db.insert(sessionActivityLogTable).values(activityLogs);
-    console.log(`📊 Created ${activityLogs.length} activity log entries`);
+    dbLogger.info(`📊 Created ${activityLogs.length} activity log entries`);
   }
 }

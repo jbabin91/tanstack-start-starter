@@ -10,7 +10,7 @@ import {
   sessions,
   trustedDevices,
 } from '@/lib/db/schemas';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 import type { SessionWithDetails } from '@/modules/accounts/api/get-sessions';
 
 export const fetchCurrentSession = createServerFn().handler(async () => {
@@ -21,7 +21,7 @@ export const fetchCurrentSession = createServerFn().handler(async () => {
     throw new Error('Unauthorized: No active session');
   }
 
-  logger.info(
+  apiLogger.info(
     `Fetching current session ${session.session.id} for user ${session.user.id}...`,
   );
 
@@ -76,10 +76,12 @@ export const fetchCurrentSession = createServerFn().handler(async () => {
       isCurrentSession: true,
     };
 
-    logger.info(`Successfully fetched current session ${session.session.id}`);
+    apiLogger.info(
+      `Successfully fetched current session ${session.session.id}`,
+    );
     return sessionWithDetails;
   } catch (error) {
-    logger.error(error, 'Error fetching current session');
+    apiLogger.error(error, 'Error fetching current session');
     throw new Error('Failed to fetch current session');
   }
 });

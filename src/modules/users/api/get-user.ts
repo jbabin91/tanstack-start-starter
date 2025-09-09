@@ -3,12 +3,12 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db';
 import { users as usersTable } from '@/lib/db/schemas/auth';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 
 export const fetchUser = createServerFn()
   .validator((d: string) => d)
   .handler(async ({ data }) => {
-    logger.info(`Fetching user with id ${data}...`);
+    apiLogger.info(`Fetching user with id ${data}...`);
 
     const users = await db
       .select()

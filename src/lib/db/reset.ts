@@ -5,6 +5,7 @@ import { reset } from 'drizzle-seed';
 
 import { db } from '@/lib/db';
 import * as schema from '@/lib/db/schemas';
+import { dbLogger } from '@/lib/logger';
 
 function main() {
   const rl = readline.createInterface({
@@ -19,15 +20,15 @@ function main() {
       if (answer.trim().toLowerCase() === 'yes') {
         reset(db, schema)
           .then(() => {
-            console.log('✅ Database reset complete.');
+            dbLogger.info('✅ Database reset complete.');
             process.exit(0);
           })
           .catch((error) => {
-            console.error('❌ Database reset failed:', error);
+            dbLogger.error(error, '❌ Database reset failed');
             process.exit(1);
           });
       } else {
-        console.log('❌ Database reset aborted.');
+        dbLogger.info('❌ Database reset aborted.');
         process.exit(0);
       }
     },

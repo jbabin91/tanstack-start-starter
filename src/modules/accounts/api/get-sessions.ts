@@ -17,7 +17,7 @@ import {
   type SessionMetadata,
   type TrustedDevice,
 } from '@/lib/db/schemas/session-metadata';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 
 // Enhanced activity details with discriminated union (for type-safe access)
 export type ActivityDetails =
@@ -45,10 +45,11 @@ export const fetchSessions = createServerFn().handler(async () => {
   const session = await auth.api.getSession({ headers });
 
   if (!session?.user) {
+    apiLogger.warn('Unauthorized session fetch attempt');
     throw new Error('Unauthorized: No active session');
   }
 
-  logger.info(`Fetching sessions for user ${session.user.id}...`);
+  apiLogger.info({ userId: session.user.id }, 'Starting session fetch');
 
   try {
     // Get all active (non-expired) sessions for the user
@@ -116,12 +117,13 @@ export const fetchSessions = createServerFn().handler(async () => {
       };
     });
 
-    logger.info(
-      `Successfully fetched ${sessionsWithDetails.length} sessions for user ${session.user.id}`,
+    apiLogger.info(
+      { userId: session.user.id },
+      `Successfully fetched ${sessionsWithDetails.length} sessions with full details`,
     );
     return sessionsWithDetails;
   } catch (error) {
-    logger.error(error, 'Error fetching sessions');
+    apiLogger.error({ err: error }, 'Error fetching sessions');
     throw new Error('Failed to fetch sessions');
   }
 });

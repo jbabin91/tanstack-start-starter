@@ -6,7 +6,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db';
 import { sessionActivityLog, sessions } from '@/lib/db/schemas';
-import { logger } from '@/lib/logger';
+import { apiLogger } from '@/lib/logger';
 
 const sessionActivitySchema = type({
   sessionId: 'string>=1',
@@ -42,7 +42,7 @@ export const fetchSessionActivity = createServerFn()
     }
 
     const { sessionId, limit } = data;
-    logger.info(
+    apiLogger.info(
       `Fetching activity for session ${sessionId} (limit: ${limit}) by user ${session.user.id}...`,
     );
 
@@ -68,7 +68,7 @@ export const fetchSessionActivity = createServerFn()
         .orderBy(desc(sessionActivityLog.createdAt))
         .limit(limit);
 
-      logger.info(
+      apiLogger.info(
         `Successfully fetched ${activities.length} activity logs for session ${sessionId}`,
       );
 
@@ -82,7 +82,10 @@ export const fetchSessionActivity = createServerFn()
         hasMore: activities.length === limit, // Simple indication if there might be more
       };
     } catch (error) {
-      logger.error(error, `Error fetching activity for session ${sessionId}`);
+      apiLogger.error(
+        error,
+        `Error fetching activity for session ${sessionId}`,
+      );
 
       if (error instanceof Error) {
         throw error;
