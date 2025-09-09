@@ -63,7 +63,7 @@ This is a CRITICAL step that must NEVER be skipped when working on any code-rela
 
 ## Core Stack & Dependencies
 
-**Framework:** TanStack Start v1.87+ (React 19 + TypeScript + Vite)
+**Framework:** TanStack Start (React 19 + TypeScript + Vite)
 **Database:** PostgreSQL with Drizzle ORM, Arktype validation
 **Authentication:** better-auth with multi-session, organization plugins
 **UI:** shadcn/ui components + TailwindCSS v4
@@ -161,10 +161,10 @@ import { utils } from '@/lib/utils'; // Don't create this
 import * as schema from '@/lib/db/schemas'; // Needed for drizzle({ schema })
 ```
 
-**TanStack Start v1.87+ (CRITICAL):**
+**TanStack Start (CRITICAL):**
 
 ```typescript
-// CORRECT - TanStack Start v1.87+
+// CORRECT - TanStack Start
 import { createServerFn } from '@tanstack/react-start';
 import { getWebRequest } from '@tanstack/react-start/server';
 

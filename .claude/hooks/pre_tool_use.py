@@ -73,6 +73,28 @@ def is_env_file_access(tool_name, tool_input):
     
     return False
 
+def remind_coding_standards(tool_name, tool_input):
+    """Remind about coding standards for code-related operations"""
+    code_tools = ['Edit', 'MultiEdit', 'Write']
+    
+    if tool_name in code_tools:
+        file_path = tool_input.get('file_path', '')
+        
+        # Check if this is a TypeScript/JavaScript file
+        if file_path.endswith(('.ts', '.tsx', '.js', '.jsx')):
+            print("📝 CODING STANDARDS REMINDER:", file=sys.stderr)
+            print("   • FUNCTION DECLARATIONS: Use function name() {} (not arrow functions)", file=sys.stderr)
+            print("   • TYPE over interface: Use type MyType = {} (except declaration merging)", file=sys.stderr)
+            print("   • @/ IMPORTS ONLY: Never use relative imports (../ or ./)", file=sys.stderr)
+            print("   • ICONS COMPONENT: Use <Icons.activity /> (not direct lucide imports)", file=sys.stderr)
+            print("   • CUSTOM HOOKS: Use object parameters: usePost({ id })", file=sys.stderr)
+            print("   • TANSTACK START: Use createServerFn() and getWebRequest() patterns", file=sys.stderr)
+            print("   • DATABASE: Use modern pgTable array syntax: (table) => [...]", file=sys.stderr)
+            print("   • QUALITY: Run pnpm typecheck && pnpm lint && pnpm format", file=sys.stderr)
+            print("   • REFERENCE: See CLAUDE.md for complete standards", file=sys.stderr)
+            print("", file=sys.stderr)  # Empty line for readability
+
+
 def main():
     """Main hook entry point using cchooks"""
     try:
@@ -84,6 +106,9 @@ def main():
             print("❌ Invalid context - expected PreToolUse", file=sys.stderr)
             context.output.exit_success()
             return
+        
+        # Remind about coding standards for code operations
+        remind_coding_standards(context.tool_name, context.tool_input)
         
         # Check for .env file access (blocks access to sensitive environment files)
         if is_env_file_access(context.tool_name, context.tool_input):
