@@ -320,7 +320,7 @@ export const LoginVerification: Story = {
           >
             {isSending ? (
               <>
-                <Icons.spinner className="mr-2 size-4 animate-spin" />
+                <Icons.spinner className="mr-2 animate-spin" />
                 Sending code...
               </>
             ) : (

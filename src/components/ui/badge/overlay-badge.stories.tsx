@@ -163,25 +163,25 @@ export const CountBadges: Story = {
     <div className="flex items-center space-x-8">
       <OverlayBadge badgeContent={5} color="error">
         <Button variant="outlined">
-          <Icons.bell className="size-4" />
+          <Icons.bell />
           Notifications
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={23} color="primary">
         <Button variant="outlined">
-          <Icons.mail className="size-4" />
+          <Icons.mail />
           Messages
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={99} color="success" max={99}>
         <Button variant="outlined">
-          <Icons.checkCircle className="size-4" />
+          <Icons.checkCircle />
           Completed
         </Button>
       </OverlayBadge>
       <OverlayBadge badgeContent={150} color="warning" max={99}>
         <Button variant="outlined">
-          <Icons.alertTriangle className="size-4" />
+          <Icons.alertTriangle />
           Warnings
         </Button>
       </OverlayBadge>
@@ -876,7 +876,7 @@ export const RealWorldExamples: Story = {
         >
           <Avatar className="size-9 rounded-sm">
             <AvatarFallback className="rounded-sm">
-              <Icons.shoppingCart className="size-5" />
+              <Icons.shoppingCart size="lg" />
             </AvatarFallback>
           </Avatar>
         </OverlayBadge>
@@ -928,7 +928,7 @@ export const RealWorldExamples: Story = {
             srLabel="12 unread messages"
           >
             <Button variant="outlined">
-              <Icons.mail className="mr-2 size-4" />
+              <Icons.mail className="mr-2" />
               Messages
             </Button>
           </OverlayBadge>
@@ -938,7 +938,7 @@ export const RealWorldExamples: Story = {
             srLabel="3 notifications"
           >
             <Button aria-label="View notifications" size="icon" variant="ghost">
-              <Icons.bell className="size-4" />
+              <Icons.bell />
             </Button>
           </OverlayBadge>
         </div>

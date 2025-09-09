@@ -79,7 +79,7 @@ export const Number: Story = {
 export const Search: Story = {
   render: () => (
     <div className="relative">
-      <Icons.search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+      <Icons.search className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
       <Input className="pl-9" placeholder="Search..." type="search" />
     </div>
   ),
@@ -88,7 +88,7 @@ export const Search: Story = {
 export const WithIcon: Story = {
   render: () => (
     <div className="relative">
-      <Icons.mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+      <Icons.mail className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
       <Input className="pl-9" placeholder="Enter your email" type="email" />
     </div>
   ),

@@ -91,7 +91,7 @@ export const Default: Story = {
           ))}
           {isLoading && (
             <div className="flex items-center justify-center p-4">
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
+              <Icons.spinner className="mr-2 animate-spin" />
               <span className="text-muted-foreground text-sm">
                 Loading more...
               </span>
@@ -202,7 +202,7 @@ export const MessageList: Story = {
             ))}
             {isLoading && (
               <div className="flex items-center space-x-2 p-2">
-                <Icons.spinner className="size-4 animate-spin" />
+                <Icons.spinner className="animate-spin" />
                 <span className="text-muted-foreground text-sm">
                   Loading messages...
                 </span>
@@ -312,7 +312,7 @@ export const ProductGrid: Story = {
           </div>
           {isLoading && (
             <div className="flex items-center justify-center p-6">
-              <Icons.spinner className="mr-2 size-5 animate-spin" />
+              <Icons.spinner className="mr-2 animate-spin" size="lg" />
               <span className="text-muted-foreground text-sm">
                 Loading products...
               </span>
@@ -407,7 +407,7 @@ export const ReverseChronological: Story = {
         <div className="space-y-4 p-4">
           {isLoading && (
             <div className="flex items-center justify-center rounded-lg border p-4">
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
+              <Icons.spinner className="mr-2 animate-spin" />
               <span className="text-muted-foreground text-sm">
                 Loading older posts...
               </span>
@@ -429,11 +429,11 @@ export const ReverseChronological: Story = {
               <p className="text-muted-foreground text-sm">{post.content}</p>
               <div className="mt-3 flex items-center space-x-2">
                 <Button size="sm" variant="ghost">
-                  <Icons.heart className="mr-1 size-3" />
+                  <Icons.heart className="mr-1" size="sm" />
                   Like
                 </Button>
                 <Button size="sm" variant="ghost">
-                  <Icons.messageCircle className="mr-1 size-3" />
+                  <Icons.messageCircle className="mr-1" size="sm" />
                   Comment
                 </Button>
               </div>
@@ -490,7 +490,7 @@ export const WithCustomSentinel: Story = {
               <div className="text-muted-foreground mt-3 flex items-center space-x-4 text-xs">
                 <span>{item.timestamp}</span>
                 <Button size="sm" variant="ghost">
-                  <Icons.externalLink className="mr-1 size-3" />
+                  <Icons.externalLink className="mr-1" size="sm" />
                   View
                 </Button>
               </div>
@@ -498,7 +498,7 @@ export const WithCustomSentinel: Story = {
           ))}
           {isLoading && (
             <div className="bg-muted/50 flex items-center justify-center rounded-lg border p-6">
-              <Icons.spinner className="mr-3 size-5 animate-spin" />
+              <Icons.spinner className="mr-3 animate-spin" size="lg" />
               <div className="text-center">
                 <p className="text-sm font-medium">Loading more content...</p>
                 <p className="text-muted-foreground text-xs">
@@ -580,7 +580,7 @@ export const Interactive: Story = {
 
             {isLoading && (
               <div className="flex items-center justify-center p-6">
-                <Icons.spinner className="mr-2 size-4 animate-spin" />
+                <Icons.spinner className="mr-2 animate-spin" />
                 <span className="text-muted-foreground text-sm">
                   Loading...
                 </span>

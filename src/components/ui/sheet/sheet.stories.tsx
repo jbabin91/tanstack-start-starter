@@ -168,7 +168,7 @@ export const FromLeft: Story = {
     <Sheet {...args}>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.panelLeft className="mr-2 size-4" />
+          <Icons.panelLeft className="mr-2" />
           Left Sheet
         </Button>
       </SheetTrigger>
@@ -225,7 +225,7 @@ export const FromTop: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.chevronDown className="mr-2 size-4" />
+          <Icons.chevronDown className="mr-2" />
           Top Sheet
         </Button>
       </SheetTrigger>
@@ -298,7 +298,7 @@ export const FromBottom: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.chevronUp className="mr-2 size-4" />
+          <Icons.chevronUp className="mr-2" />
           Bottom Sheet
         </Button>
       </SheetTrigger>
@@ -420,7 +420,7 @@ export const WithForm: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button>
-          <Icons.edit className="mr-2 size-4" />
+          <Icons.edit className="mr-2" />
           Contact Form
         </Button>
       </SheetTrigger>
@@ -501,7 +501,7 @@ export const WithScrollableContent: Story = {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost">
-          <Icons.fileText className="mr-2 size-4" />
+          <Icons.fileText className="mr-2" />
           Terms & Conditions
         </Button>
       </SheetTrigger>

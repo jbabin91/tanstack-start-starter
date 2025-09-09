@@ -104,7 +104,7 @@ export const WithForm: Story = {
       <Drawer>
         <DrawerTrigger asChild>
           <Button>
-            <Icons.plus className="mr-2 size-4" />
+            <Icons.plus className="mr-2" />
             Add Contact
           </Button>
         </DrawerTrigger>
@@ -148,7 +148,7 @@ export const WithForm: Story = {
           </form>
           <DrawerFooter>
             <Button type="submit" onClick={handleSubmit}>
-              <Icons.plus className="mr-2 size-4" />
+              <Icons.plus className="mr-2" />
               Add Contact
             </Button>
             <DrawerClose asChild>
@@ -225,7 +225,7 @@ export const FromLeft: Story = {
     <Drawer direction="left">
       <DrawerTrigger asChild>
         <Button variant="outlined">
-          <Icons.panelLeft className="mr-2 size-4" />
+          <Icons.panelLeft className="mr-2" />
           Open Sidebar
         </Button>
       </DrawerTrigger>
@@ -240,35 +240,35 @@ export const FromLeft: Story = {
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/dashboard"
             >
-              <Icons.home className="size-4" />
+              <Icons.home />
               Dashboard
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/team"
             >
-              <Icons.users className="size-4" />
+              <Icons.users />
               Team
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/projects"
             >
-              <Icons.folder className="size-4" />
+              <Icons.folder />
               Projects
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/calendar"
             >
-              <Icons.calendar className="size-4" />
+              <Icons.calendar />
               Calendar
             </a>
             <a
               className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
               href="/settings"
             >
-              <Icons.settings className="size-4" />
+              <Icons.settings />
               Settings
             </a>
           </nav>
@@ -295,7 +295,7 @@ export const FromRight: Story = {
     <Drawer direction="right">
       <DrawerTrigger asChild>
         <Button variant="outlined">
-          <Icons.settings className="mr-2 size-4" />
+          <Icons.settings className="mr-2" />
           Settings Panel
         </Button>
       </DrawerTrigger>
@@ -378,7 +378,7 @@ export const WithActions: Story = {
         <Drawer>
           <DrawerTrigger asChild>
             <Button>
-              <Icons.moreVertical className="mr-2 size-4" />
+              <Icons.moreVertical className="mr-2" />
               Document Actions
             </Button>
           </DrawerTrigger>
@@ -398,7 +398,7 @@ export const WithActions: Story = {
                     variant="ghost"
                     onClick={() => setSelectedAction(action.label)}
                   >
-                    <action.icon className="mr-3 size-4" />
+                    <action.icon className="mr-3" />
                     {action.label}
                   </Button>
                 ))}

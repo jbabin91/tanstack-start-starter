@@ -338,14 +338,14 @@ export const WithActions: Story = {
                   size="icon"
                   variant="ghost"
                 >
-                  <Icons.edit className="size-4" />
+                  <Icons.edit />
                 </Button>
                 <Button
                   aria-label={`Delete invoice ${invoice.id}`}
                   size="icon"
                   variant="ghost"
                 >
-                  <Icons.ban className="size-4" />
+                  <Icons.ban />
                 </Button>
               </div>
             </TableCell>
@@ -514,7 +514,7 @@ export const EmptyState: Story = {
             colSpan={4}
           >
             <div className="flex flex-col items-center gap-2">
-              <Icons.fileText className="size-8" />
+              <Icons.fileText size="2xl" />
               <div>No invoices found</div>
               <div className="text-xs">
                 Create your first invoice to get started

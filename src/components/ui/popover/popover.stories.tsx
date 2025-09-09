@@ -116,7 +116,7 @@ export const WithForm: Story = {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost">
-          <Icons.settings className="mr-2 size-4" />
+          <Icons.settings className="mr-2" />
           User Settings
         </Button>
       </PopoverTrigger>
@@ -414,7 +414,7 @@ export const HelpPopover: Story = {
         <Popover>
           <PopoverTrigger asChild>
             <Button aria-label="Username help" size="sm" variant="ghost">
-              <Icons.info className="size-4" />
+              <Icons.info />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80">
@@ -437,7 +437,7 @@ export const HelpPopover: Story = {
         <Popover>
           <PopoverTrigger asChild>
             <Button aria-label="Password help" size="sm" variant="ghost">
-              <Icons.info className="size-4" />
+              <Icons.info />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80">

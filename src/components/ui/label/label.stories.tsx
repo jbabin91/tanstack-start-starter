@@ -106,7 +106,7 @@ export const WithIcon: Story = {
   render: (args) => (
     <div className="space-y-2">
       <Label {...args} className="flex items-center gap-2">
-        <Icons.user className="size-4" />
+        <Icons.user />
         Username
       </Label>
       <Input placeholder="Enter username" />

@@ -96,11 +96,11 @@ export const ProfileCard: Story = {
       <CardContent>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
-            <Icons.mapPin className="mr-1 size-3" />
+            <Icons.mapPin className="mr-1" size="sm" />
             San Francisco, CA
           </div>
           <div className="flex items-center">
-            <Icons.calendar className="mr-1 size-3" />
+            <Icons.calendar className="mr-1" size="sm" />
             Joined March 2023
           </div>
         </div>
@@ -121,7 +121,7 @@ export const StatsCard: Story = {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-          <Icons.dollarSign className="text-muted-foreground size-4" />
+          <Icons.dollarSign className="text-muted-foreground" />
         </div>
       </CardHeader>
       <CardContent>
@@ -136,7 +136,7 @@ export const EmptyState: Story = {
   render: () => (
     <Card className="w-[350px]">
       <CardContent className="flex flex-col items-center justify-center py-12">
-        <Icons.fileText className="text-muted-foreground size-10" />
+        <Icons.fileText className="text-muted-foreground" size="3xl" />
         <CardTitle className="mt-4">No documents found</CardTitle>
         <CardDescription className="mt-2 text-center">
           You haven&apos;t created any documents yet. Get started by creating

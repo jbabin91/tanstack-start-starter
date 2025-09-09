@@ -154,13 +154,13 @@ export const WithIcons: Story = {
   render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem aria-label="Align left" value="left">
-        <Icons.chevronLeft className="size-4" />
+        <Icons.chevronLeft />
       </ToggleGroupItem>
       <ToggleGroupItem aria-label="Align center" value="center">
-        <Icons.activity className="size-4" />
+        <Icons.activity />
       </ToggleGroupItem>
       <ToggleGroupItem aria-label="Align right" value="right">
-        <Icons.chevronRight className="size-4" />
+        <Icons.chevronRight />
       </ToggleGroupItem>
     </ToggleGroup>
   ),
@@ -182,15 +182,15 @@ export const WithIconsAndText: Story = {
   render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value="bold">
-        <Icons.zap className="size-4" />
+        <Icons.zap />
         Bold
       </ToggleGroupItem>
       <ToggleGroupItem value="italic">
-        <Icons.activity className="size-4" />
+        <Icons.activity />
         Italic
       </ToggleGroupItem>
       <ToggleGroupItem value="underline">
-        <Icons.minus className="size-4" />
+        <Icons.minus />
         Underline
       </ToggleGroupItem>
     </ToggleGroup>
@@ -290,13 +290,13 @@ export const ControlledSingle: Story = {
           onValueChange={(value) => setAlignment(value ?? '')}
         >
           <ToggleGroupItem aria-label="Align left" value="left">
-            <Icons.chevronLeft className="size-4" />
+            <Icons.chevronLeft />
           </ToggleGroupItem>
           <ToggleGroupItem aria-label="Align center" value="center">
-            <Icons.activity className="size-4" />
+            <Icons.activity />
           </ToggleGroupItem>
           <ToggleGroupItem aria-label="Align right" value="right">
-            <Icons.chevronRight className="size-4" />
+            <Icons.chevronRight />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
@@ -337,15 +337,15 @@ export const ControlledMultiple: Story = {
           onValueChange={setFormatting}
         >
           <ToggleGroupItem value="bold">
-            <Icons.zap className="size-4" />
+            <Icons.zap />
             Bold
           </ToggleGroupItem>
           <ToggleGroupItem value="italic">
-            <Icons.activity className="size-4" />
+            <Icons.activity />
             Italic
           </ToggleGroupItem>
           <ToggleGroupItem value="underline">
-            <Icons.minus className="size-4" />
+            <Icons.minus />
             Underline
           </ToggleGroupItem>
         </ToggleGroup>
@@ -397,13 +397,13 @@ export const ViewModeSelector: Story = {
           onValueChange={(value) => setViewMode(value ?? 'grid')}
         >
           <ToggleGroupItem aria-label="List view" value="list">
-            <Icons.activity className="size-4" />
+            <Icons.activity />
           </ToggleGroupItem>
           <ToggleGroupItem aria-label="Grid view" value="grid">
-            <Icons.circle className="size-4" />
+            <Icons.circle />
           </ToggleGroupItem>
           <ToggleGroupItem aria-label="Card view" value="card">
-            <Icons.file className="size-4" />
+            <Icons.file />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>

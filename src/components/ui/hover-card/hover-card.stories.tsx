@@ -43,7 +43,7 @@ export const Default: Story = {
               The React framework – created and maintained by @vercel.
             </p>
             <div className="flex items-center pt-2">
-              <Icons.calendar className="mr-2 size-4 opacity-70" />
+              <Icons.calendar className="mr-2 opacity-70" />
               <span className="text-muted-foreground text-xs">
                 Joined December 2021
               </span>
@@ -84,13 +84,13 @@ export const UserProfile: Story = {
               </p>
               <div className="flex items-center space-x-4 pt-2">
                 <div className="flex items-center">
-                  <Icons.users className="mr-1 size-3 opacity-70" />
+                  <Icons.users className="mr-1 opacity-70" size="sm" />
                   <span className="text-muted-foreground text-xs">
                     1.2k followers
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <Icons.calendar className="mr-1 size-3 opacity-70" />
+                  <Icons.calendar className="mr-1 opacity-70" size="sm" />
                   <span className="text-muted-foreground text-xs">
                     Joined March 2019
                   </span>
@@ -142,15 +142,18 @@ export const ProductCard: Story = {
               </p>
               <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                 <div className="flex items-center">
-                  <Icons.activity className="mr-1 size-3" />
+                  <Icons.activity className="mr-1" size="sm" />
                   118k stars
                 </div>
                 <div className="flex items-center">
-                  <Icons.users className="mr-1 size-3" />
+                  <Icons.users className="mr-1" size="sm" />
                   2.5k contributors
                 </div>
                 <div className="flex items-center">
-                  <Icons.circle className="mr-1 size-3 fill-yellow-500 text-yellow-500" />
+                  <Icons.circle
+                    className="mr-1 fill-yellow-500 text-yellow-500"
+                    size="sm"
+                  />
                   JavaScript
                 </div>
               </div>
@@ -216,7 +219,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.activity className="size-4" />
+                <Icons.activity className="" />
                 <h4 className="font-semibold">React</h4>
               </div>
               <p className="text-sm">
@@ -244,7 +247,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.zap className="size-4" />
+                <Icons.zap className="" />
                 <h4 className="font-semibold">Node.js</h4>
               </div>
               <p className="text-sm">
@@ -277,7 +280,7 @@ export const LinkPreview: Story = {
           <HoverCardContent className="w-80">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Icons.palette className="size-4" />
+                <Icons.palette className="" />
                 <h4 className="font-semibold">Tailwind CSS</h4>
               </div>
               <p className="text-sm">
@@ -300,7 +303,7 @@ export const StatCard: Story = {
         <HoverCardTrigger asChild>
           <div className="hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-colors">
             <div className="flex items-center space-x-2">
-              <Icons.users className="size-4 text-blue-500" />
+              <Icons.users className="text-blue-500" />
               <span className="text-sm font-medium">Users</span>
             </div>
             <div className="mt-2 text-2xl font-bold">1,234</div>
@@ -334,7 +337,7 @@ export const StatCard: Story = {
         <HoverCardTrigger asChild>
           <div className="hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-colors">
             <div className="flex items-center space-x-2">
-              <Icons.dollarSign className="size-4 text-green-500" />
+              <Icons.dollarSign className="text-green-500" />
               <span className="text-sm font-medium">Revenue</span>
             </div>
             <div className="mt-2 text-2xl font-bold">$12.5k</div>
@@ -502,7 +505,7 @@ export const Interactive: Story = {
                   <p className="text-sm">{userData.bio}</p>
                   <div className="flex items-center space-x-4 pt-2">
                     <div className="text-muted-foreground flex items-center text-xs">
-                      <Icons.users className="mr-1 size-3" />
+                      <Icons.users className="mr-1" size="sm" />
                       <span className="font-medium">
                         {userData.followers}
                       </span>{' '}
@@ -515,17 +518,17 @@ export const Interactive: Story = {
                   </div>
                   <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                     <div className="flex items-center">
-                      <Icons.calendar className="mr-1 size-3" />
+                      <Icons.calendar className="mr-1" size="sm" />
                       Joined {userData.joinDate}
                     </div>
                   </div>
                   <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                     <div className="flex items-center">
-                      <Icons.mapPin className="mr-1 size-3" />
+                      <Icons.mapPin className="mr-1" size="sm" />
                       {userData.location}
                     </div>
                     <div className="flex items-center">
-                      <Icons.globe className="mr-1 size-3" />
+                      <Icons.globe className="mr-1" size="sm" />
                       {userData.website}
                     </div>
                   </div>

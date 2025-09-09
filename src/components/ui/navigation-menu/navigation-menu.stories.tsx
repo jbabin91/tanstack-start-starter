@@ -46,7 +46,7 @@ export const Default: Story = {
                     className="from-muted/50 to-muted flex size-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
                     href="/"
                   >
-                    <Icons.logo className="size-6" />
+                    <Icons.logo size="xl" />
                     <div className="mt-4 mb-2 text-lg font-medium">
                       shadcn/ui
                     </div>
@@ -160,25 +160,25 @@ export const WithIcons: Story = {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>
-            <Icons.home className="mr-2 size-4" />
+            <Icons.home className="mr-2" />
             Home
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-6 md:w-[500px] md:grid-cols-2">
               <ListItem href="/dashboard" title="Dashboard">
-                <Icons.activity className="size-4" />
+                <Icons.activity />
                 View your activity and analytics.
               </ListItem>
               <ListItem href="/analytics" title="Analytics">
-                <Icons.barChart className="size-4" />
+                <Icons.barChart />
                 Detailed insights and reports.
               </ListItem>
               <ListItem href="/settings" title="Settings">
-                <Icons.settings className="size-4" />
+                <Icons.settings />
                 Configure your preferences.
               </ListItem>
               <ListItem href="/profile" title="Profile">
-                <Icons.user className="size-4" />
+                <Icons.user />
                 Manage your account information.
               </ListItem>
             </ul>
@@ -186,21 +186,21 @@ export const WithIcons: Story = {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>
-            <Icons.package className="mr-2 size-4" />
+            <Icons.package className="mr-2" />
             Products
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[600px] gap-3 p-6 md:grid-cols-3">
               <ListItem href="/web" title="Web Platform">
-                <Icons.globe className="size-4" />
+                <Icons.globe />
                 Build for the web with modern tools.
               </ListItem>
               <ListItem href="/mobile" title="Mobile SDK">
-                <Icons.smartphone className="size-4" />
+                <Icons.smartphone />
                 Native mobile development kit.
               </ListItem>
               <ListItem href="/api" title="API Services">
-                <Icons.server className="size-4" />
+                <Icons.server />
                 RESTful and GraphQL APIs.
               </ListItem>
             </ul>
@@ -208,7 +208,7 @@ export const WithIcons: Story = {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-            <Icons.book className="mr-2 size-4" />
+            <Icons.book className="mr-2" />
             Docs
           </NavigationMenuLink>
         </NavigationMenuItem>
@@ -307,7 +307,7 @@ export const EcommerceNavigation: Story = {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>
-            <Icons.shirt className="mr-2 size-4" />
+            <Icons.shirt className="mr-2" />
             Clothing
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -343,7 +343,7 @@ export const EcommerceNavigation: Story = {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>
-            <Icons.shoe className="mr-2 size-4" />
+            <Icons.shoe className="mr-2" />
             Shoes
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -365,7 +365,7 @@ export const EcommerceNavigation: Story = {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-            <Icons.tag className="mr-2 size-4" />
+            <Icons.tag className="mr-2" />
             Sale
           </NavigationMenuLink>
         </NavigationMenuItem>

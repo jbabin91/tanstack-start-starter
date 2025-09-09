@@ -276,7 +276,7 @@ export const CollapsibleExample: Story = {
                           m@example.com
                         </span>
                       </div>
-                      <Icons.chevronsUpDown className="ml-auto size-4" />
+                      <Icons.chevronsUpDown className="ml-auto" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent

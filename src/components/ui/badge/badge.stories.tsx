@@ -120,7 +120,7 @@ export const StatusBadges: Story = {
 export const NotificationBadge: Story = {
   render: () => (
     <div className="relative inline-flex">
-      <Icons.bell className="size-6" />
+      <Icons.bell size="xl" />
       <Badge className="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs">
         3
       </Badge>
