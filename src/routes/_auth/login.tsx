@@ -54,11 +54,11 @@ function RouteComponent() {
           <Tabs className="w-full" defaultValue="password">
             <TabsList className="mb-6 grid w-full grid-cols-2">
               <TabsTrigger className="flex items-center gap-2" value="password">
-                <Icons.shield className="size-4" />
+                <Icons.shield />
                 Password
               </TabsTrigger>
               <TabsTrigger className="flex items-center gap-2" value="otp">
-                <Icons.mail className="size-4" />
+                <Icons.mail />
                 Email Code
               </TabsTrigger>
             </TabsList>

@@ -71,7 +71,7 @@ export function SessionsManager() {
               <CardTitle className="text-sm font-medium">
                 Total Sessions
               </CardTitle>
-              <Icons.shield className="text-muted-foreground size-4" />
+              <Icons.shield className="text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{securityStats.total}</div>
@@ -86,7 +86,7 @@ export function SessionsManager() {
               <CardTitle className="text-sm font-medium">
                 Secure Sessions
               </CardTitle>
-              <Icons.checkCircle className="size-4 text-green-600 dark:text-green-400" />
+              <Icons.checkCircle className="text-green-600 dark:text-green-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
@@ -103,7 +103,7 @@ export function SessionsManager() {
               <CardTitle className="text-sm font-medium">
                 Trusted Devices
               </CardTitle>
-              <Icons.shield className="size-4 text-blue-600 dark:text-blue-400" />
+              <Icons.shield className="text-blue-600 dark:text-blue-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
@@ -118,7 +118,7 @@ export function SessionsManager() {
               <CardTitle className="text-sm font-medium">
                 Security Alerts
               </CardTitle>
-              <Icons.alertTriangle className="size-4 text-orange-600 dark:text-orange-400" />
+              <Icons.alertTriangle className="text-orange-600 dark:text-orange-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
@@ -135,11 +135,11 @@ export function SessionsManager() {
       <Tabs className="space-y-4" defaultValue="sessions">
         <TabsList>
           <TabsTrigger className="flex items-center gap-2" value="sessions">
-            <Icons.shield className="size-4" />
+            <Icons.shield />
             Active Sessions
           </TabsTrigger>
           <TabsTrigger className="flex items-center gap-2" value="activity">
-            <Icons.activity className="size-4" />
+            <Icons.activity />
             Activity Log
           </TabsTrigger>
         </TabsList>

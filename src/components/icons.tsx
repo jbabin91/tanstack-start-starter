@@ -117,15 +117,19 @@ import { cn } from '@/utils/cn';
 const iconVariants = cva('', {
   variants: {
     size: {
-      xs: 'size-3',
-      sm: 'size-4',
-      md: 'size-5',
-      lg: 'size-6',
-      xl: 'size-8',
+      '2xs': 'size-2',
+      xs: 'size-2.5',
+      sm: 'size-3',
+      md: 'size-4',
+      lg: 'size-5',
+      xl: 'size-6',
+      '2xl': 'size-8',
+      '3xl': 'size-10',
+      '4xl': 'size-12',
     },
   },
   defaultVariants: {
-    size: 'sm',
+    size: 'md',
   },
 });
 

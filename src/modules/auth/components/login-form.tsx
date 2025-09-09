@@ -124,9 +124,9 @@ export function LoginForm({ onSuccess, className }: LoginFormProps) {
                         onClick={togglePasswordVisibility}
                       >
                         {showPassword ? (
-                          <Icons.eyeOff className="text-muted-foreground size-4" />
+                          <Icons.eyeOff className="text-muted-foreground" />
                         ) : (
-                          <Icons.eye className="text-muted-foreground size-4" />
+                          <Icons.eye className="text-muted-foreground" />
                         )}
                       </Button>
                     </div>

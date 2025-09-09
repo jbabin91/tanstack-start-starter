@@ -171,7 +171,7 @@ export function SessionCard({
                 <div>
                   <p className="text-muted-foreground">Privacy</p>
                   <p className="flex items-center gap-1 font-medium">
-                    <Icons.shield className="size-3" />
+                    <Icons.shield size="sm" />
                     Cloudflare WARP
                   </p>
                 </div>
@@ -202,7 +202,7 @@ export function SessionCard({
         {riskIndicators.length > 0 && (
           <div className="border-destructive bg-destructive/10 space-y-2 rounded-md border-l-4 p-3">
             <p className="text-destructive-foreground flex items-center gap-1 text-sm font-medium">
-              <Icons.alertTriangle className="size-4" />
+              <Icons.alertTriangle />
               Security Alerts
             </p>
             <ul className="text-muted-foreground space-y-1 text-xs">

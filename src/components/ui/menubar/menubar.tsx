@@ -127,7 +127,7 @@ function MenubarCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
-          <Icons.check className="size-4" />
+          <Icons.check />
         </MenubarPrimitive.ItemIndicator>
       </span>
       {children}
@@ -151,7 +151,7 @@ function MenubarRadioItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
-          <Icons.circle className="size-2 fill-current" />
+          <Icons.circle className="fill-current" size="2xs" />
         </MenubarPrimitive.ItemIndicator>
       </span>
       {children}
@@ -233,7 +233,7 @@ function MenubarSubTrigger({
       {...props}
     >
       {children}
-      <Icons.chevronRight className="ml-auto size-4" />
+      <Icons.chevronRight className="ml-auto" />
     </MenubarPrimitive.SubTrigger>
   );
 }

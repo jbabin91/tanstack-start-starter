@@ -123,7 +123,7 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
             type="button"
             onClick={handleBackToEmail}
           >
-            <Icons.chevronLeft className="mr-1 inline size-3" />
+            <Icons.chevronLeft className="mr-1 inline" size="sm" />
             Use a different email
           </button>
         </div>
@@ -165,7 +165,7 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
               loadingText="Sending code..."
               type="submit"
             >
-              <Icons.mail className="mr-2 size-4" />
+              <Icons.mail className="mr-2" />
               Send sign-in code
             </Button>
           </form>

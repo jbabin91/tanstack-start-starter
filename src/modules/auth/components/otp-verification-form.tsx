@@ -210,7 +210,7 @@ export function OTPVerificationForm({
             loadingText="Verifying..."
             type="submit"
           >
-            <Icons.check className="mr-2 size-4" />
+            <Icons.check className="mr-2" />
             Verify Code
           </Button>
         </form>

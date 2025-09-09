@@ -16,16 +16,16 @@ export type RiskIndicator = {
 export function getDeviceIcon(deviceType?: string) {
   switch (deviceType?.toLowerCase()) {
     case 'mobile': {
-      return <Icons.smartphone className="size-6" />;
+      return <Icons.smartphone size="xl" />;
     }
     case 'tablet': {
-      return <Icons.tablet className="size-6" />;
+      return <Icons.tablet size="xl" />;
     }
     case 'desktop': {
-      return <Icons.monitor className="size-6" />;
+      return <Icons.monitor size="xl" />;
     }
     default: {
-      return <Icons.globe className="size-6" />;
+      return <Icons.globe size="xl" />;
     }
   }
 }
@@ -68,7 +68,7 @@ export function getSecurityBadge(score?: number) {
   if (score >= 80) {
     return (
       <Badge className="flex items-center gap-1" variant="default">
-        <Icons.shield className="size-3" />
+        <Icons.shield size="sm" />
         Secure
       </Badge>
     );
@@ -77,7 +77,7 @@ export function getSecurityBadge(score?: number) {
   if (score >= 60) {
     return (
       <Badge className="flex items-center gap-1" variant="secondary">
-        <Icons.shield className="size-3" />
+        <Icons.shield size="sm" />
         Moderate
       </Badge>
     );
@@ -85,7 +85,7 @@ export function getSecurityBadge(score?: number) {
 
   return (
     <Badge className="flex items-center gap-1" variant="error">
-      <Icons.alertCircle className="size-3" />
+      <Icons.alertCircle size="sm" />
       Low Security
     </Badge>
   );
@@ -104,7 +104,7 @@ export function getRiskIndicators(
   // Security score based risks
   if (metadata.securityScore && metadata.securityScore < 40) {
     risks.push({
-      icon: <Icons.alertTriangle className="size-3" />,
+      icon: <Icons.alertTriangle size="sm" />,
       text: 'Very low security score',
       severity: 'high',
     });
@@ -116,7 +116,7 @@ export function getRiskIndicators(
     metadata.suspiciousActivityCount > 0
   ) {
     risks.push({
-      icon: <Icons.ban className="size-3" />,
+      icon: <Icons.ban size="sm" />,
       text: `${metadata.suspiciousActivityCount} suspicious ${metadata.suspiciousActivityCount === 1 ? 'activity' : 'activities'}`,
       severity: 'high',
     });
@@ -125,7 +125,7 @@ export function getRiskIndicators(
   // Non-secure connection
   if (metadata.isSecureConnection === false) {
     risks.push({
-      icon: <Icons.alertCircle className="size-3" />,
+      icon: <Icons.alertCircle size="sm" />,
       text: 'Insecure HTTP connection',
       severity: 'medium',
     });
@@ -140,7 +140,7 @@ export function getRiskIndicators(
 
     if (daysSinceActivity > 30) {
       risks.push({
-        icon: <Icons.clock className="size-3" />,
+        icon: <Icons.clock size="sm" />,
         text: `Inactive for ${daysSinceActivity} days`,
         severity: 'low',
       });

@@ -143,7 +143,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <Icons.checkCircle className="text-success size-6" />
+                <Icons.checkCircle className="text-success" size="xl" />
                 Email verified successfully!
               </CardTitle>
             </CardHeader>
@@ -165,7 +165,7 @@ function RouteComponent() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
-                <Icons.xCircle className="text-error size-6" />
+                <Icons.xCircle className="text-error" size="xl" />
                 Verification failed
               </CardTitle>
             </CardHeader>
