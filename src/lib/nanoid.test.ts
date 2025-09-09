@@ -1,10 +1,22 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('nanoid utility', () => {
+  afterEach(() => {
+    // Reset modules after each test to ensure clean state
+    vi.resetModules();
+  });
+
+  it('should use the mocked version by default', async () => {
+    // This test verifies the global mock is working
+    const { nanoid } = await import('@/lib/nanoid');
+    const id = nanoid();
+    expect(id).toBe('test-id'); // Should return the mocked value
+  });
+
   it('should generate a string ID', async () => {
     // Use actual implementation for this test
-    vi.doUnmock('./nanoid');
-    const { nanoid } = await import('./nanoid');
+    vi.doUnmock('@/lib/nanoid');
+    const { nanoid } = await import('@/lib/nanoid');
     const id = nanoid();
     expect(typeof id).toBe('string');
     expect(id.length).toBeGreaterThan(0);
@@ -12,8 +24,8 @@ describe('nanoid utility', () => {
 
   it('should generate unique IDs', async () => {
     // Use actual implementation for this test
-    vi.doUnmock('./nanoid');
-    const { nanoid } = await import('./nanoid');
+    vi.doUnmock('@/lib/nanoid');
+    const { nanoid } = await import('@/lib/nanoid');
     const id1 = nanoid();
     const id2 = nanoid();
     expect(id1).not.toBe(id2);
@@ -21,8 +33,8 @@ describe('nanoid utility', () => {
 
   it('should only contain allowed characters', async () => {
     // Use actual implementation for this test
-    vi.doUnmock('./nanoid');
-    const { nanoid } = await import('./nanoid');
+    vi.doUnmock('@/lib/nanoid');
+    const { nanoid } = await import('@/lib/nanoid');
     const id = nanoid();
     // Custom alphabet from actual implementation: ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789
     const allowedChars =

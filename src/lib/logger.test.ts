@@ -50,7 +50,7 @@ beforeEach(() => {
 describe('Logger', () => {
   describe('Basic Logging Functionality', () => {
     it('should create module loggers with proper configuration', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const authLogger = createModuleLogger('auth');
 
@@ -72,7 +72,7 @@ describe('Logger', () => {
     });
 
     it('should log messages with proper context', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -89,7 +89,7 @@ describe('Logger', () => {
     });
 
     it('should handle different log levels', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -129,7 +129,7 @@ describe('Logger', () => {
 
   describe('Timing Methods', () => {
     it('should time synchronous operations', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -156,7 +156,7 @@ describe('Logger', () => {
     });
 
     it('should time asynchronous operations', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -182,7 +182,7 @@ describe('Logger', () => {
     });
 
     it('should log warnings for slow operations', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -217,7 +217,7 @@ describe('Logger', () => {
     });
 
     it('should handle errors in timed operations', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
 
@@ -243,7 +243,7 @@ describe('Logger', () => {
 
   describe('Sampling Functionality', () => {
     it('should create sampled logger with appropriate rate', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
       const sampledLogger = logger.sample(0.1);
@@ -255,7 +255,7 @@ describe('Logger', () => {
     });
 
     it('should always log errors regardless of sampling', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       // Mock Math.random to always return > sample rate
       vi.spyOn(Math, 'random').mockReturnValue(0.9); // > 0.1 sample rate
@@ -278,7 +278,7 @@ describe('Logger', () => {
     });
 
     it('should add sampling indicator to sampled logs', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       // Mock Math.random to always allow sampling
       vi.spyOn(Math, 'random').mockReturnValue(0.05); // < 0.1 sample rate
@@ -299,7 +299,7 @@ describe('Logger', () => {
 
   describe('Request Context', () => {
     it('should create request context with nanoid', async () => {
-      const { createRequestContext } = await import('./logger');
+      const { createRequestContext } = await import('@/lib/logger');
 
       const context = createRequestContext('user-123');
 
@@ -311,7 +311,7 @@ describe('Logger', () => {
     });
 
     it('should create request context without userId', async () => {
-      const { createRequestContext } = await import('./logger');
+      const { createRequestContext } = await import('@/lib/logger');
 
       const context = createRequestContext();
 
@@ -323,7 +323,7 @@ describe('Logger', () => {
     });
 
     it('should create request-scoped logger', async () => {
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       const logger = createModuleLogger('test');
       const requestLogger = logger.forRequest('user-456');
@@ -359,7 +359,7 @@ describe('Logger', () => {
 
       // Re-import to trigger environment detection
       vi.resetModules();
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       createModuleLogger('test');
 
@@ -381,7 +381,7 @@ describe('Logger', () => {
 
       // Re-import to trigger environment detection
       vi.resetModules();
-      const { createModuleLogger } = await import('./logger');
+      const { createModuleLogger } = await import('@/lib/logger');
 
       createModuleLogger('test');
 
@@ -398,7 +398,7 @@ describe('Logger', () => {
   describe('Pre-configured Loggers', () => {
     it('should export specialized loggers', async () => {
       const { authLogger, dbLogger, apiLogger, emailLogger, uiLogger } =
-        await import('./logger');
+        await import('@/lib/logger');
 
       // Test that all loggers exist and have the expected methods
       expect(typeof authLogger.info).toBe('function');
@@ -422,7 +422,7 @@ describe('Logger', () => {
   describe('Context Execution', () => {
     it('should execute functions with request context', async () => {
       const { runWithRequestContext, createRequestContext } = await import(
-        './logger'
+        '@/lib/logger'
       );
 
       const context = createRequestContext('user-789');
@@ -436,7 +436,7 @@ describe('Logger', () => {
 
     it('should execute async functions with request context', async () => {
       const { runWithRequestContextAsync, createRequestContext } = await import(
-        './logger'
+        '@/lib/logger'
       );
 
       const context = createRequestContext('user-abc');
