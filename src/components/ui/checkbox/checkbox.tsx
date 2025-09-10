@@ -1,5 +1,3 @@
-'use client';
-
 import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 import * as React from 'react';
 

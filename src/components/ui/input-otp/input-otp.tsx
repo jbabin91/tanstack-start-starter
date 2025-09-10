@@ -1,5 +1,3 @@
-'use client';
-
 import { OTPInput, OTPInputContext } from 'input-otp';
 import { use } from 'react';
 
