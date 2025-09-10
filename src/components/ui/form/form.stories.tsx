@@ -191,6 +191,13 @@ function ProfileSettingsForm() {
     },
   });
 
+  // Could also be from a query or constant.
+  const roleItems = [
+    { value: 'user', label: 'User' },
+    { value: 'admin', label: 'Admin' },
+    { value: 'moderator', label: 'Moderator' },
+  ];
+
   function onSubmit(values: typeof profileFormSchema.infer) {
     console.log('Profile updated:', values);
   }
@@ -288,6 +295,7 @@ function ProfileSettingsForm() {
                   <FormLabel>Role</FormLabel>
                   <Select
                     defaultValue={field.value}
+                    items={roleItems}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
@@ -296,9 +304,11 @@ function ProfileSettingsForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="moderator">Moderator</SelectItem>
+                      {roleItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormDescription>

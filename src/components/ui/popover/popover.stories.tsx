@@ -63,7 +63,7 @@ export const Default: Story = {
   },
   render: (args) => (
     <Popover {...args}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger>
         <Button variant="ghost">Open Popover</Button>
       </PopoverTrigger>
       <PopoverContent>
@@ -114,7 +114,7 @@ export const Default: Story = {
 export const WithForm: Story = {
   render: () => (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger>
         <Button variant="ghost">
           <Icons.settings className="mr-2" />
           User Settings
@@ -211,7 +211,7 @@ export const Controlled: Story = {
           </Button>
         </div>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button>Toggle Popover</Button>
           </PopoverTrigger>
           <PopoverContent>
@@ -270,7 +270,7 @@ export const Positioning: Story = {
       <div className="space-y-2">
         <div className="text-sm font-medium">Top</div>
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button size="sm">Top</Button>
           </PopoverTrigger>
           <PopoverContent side="top">
@@ -282,7 +282,7 @@ export const Positioning: Story = {
       <div className="space-y-2">
         <div className="text-sm font-medium">Bottom (Default)</div>
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button size="sm">Bottom</Button>
           </PopoverTrigger>
           <PopoverContent>
@@ -294,7 +294,7 @@ export const Positioning: Story = {
       <div className="space-y-2">
         <div className="text-sm font-medium">Right</div>
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button size="sm">Right</Button>
           </PopoverTrigger>
           <PopoverContent side="right">
@@ -341,7 +341,7 @@ export const WithCustomWidth: Story = {
   render: () => (
     <div className="space-y-4">
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger>
           <Button variant="ghost">Narrow Popover</Button>
         </PopoverTrigger>
         <PopoverContent className="w-40">
@@ -355,7 +355,7 @@ export const WithCustomWidth: Story = {
       </Popover>
 
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger>
           <Button variant="ghost">Wide Popover</Button>
         </PopoverTrigger>
         <PopoverContent className="w-96">
@@ -412,7 +412,7 @@ export const HelpPopover: Story = {
       <div className="flex items-center gap-2">
         <Label htmlFor="username">Username</Label>
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button aria-label="Username help" size="sm" variant="ghost">
               <Icons.info />
             </Button>
@@ -435,7 +435,7 @@ export const HelpPopover: Story = {
       <div className="flex items-center gap-2">
         <Label htmlFor="password">Password</Label>
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button aria-label="Password help" size="sm" variant="ghost">
               <Icons.info />
             </Button>
@@ -479,6 +479,73 @@ export const HelpPopover: Story = {
     await waitFor(() => {
       expect(screen.getByText('Password Requirements')).toBeVisible();
       expect(screen.getByText('At least 8 characters long')).toBeVisible();
+    });
+  },
+};
+
+export const WithArrow: Story = {
+  render: () => (
+    <div className="flex flex-col items-center gap-8">
+      <div className="space-y-2 text-center">
+        <div className="text-sm font-medium">Bottom Arrow (Default)</div>
+        <Popover>
+          <PopoverTrigger>
+            <Button variant="outlined">Bottom Arrow</Button>
+          </PopoverTrigger>
+          <PopoverContent showArrow>
+            <div className="space-y-2">
+              <h4 className="font-medium">With Arrow</h4>
+              <p className="text-muted-foreground text-sm">
+                This popover has an arrow pointing to the trigger.
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <div className="space-y-2 text-center">
+        <div className="text-sm font-medium">Top Arrow</div>
+        <Popover>
+          <PopoverTrigger>
+            <Button variant="outlined">Top Arrow</Button>
+          </PopoverTrigger>
+          <PopoverContent showArrow side="top">
+            <div className="space-y-2">
+              <h4 className="font-medium">Arrow Above</h4>
+              <p className="text-muted-foreground text-sm">
+                Arrow points downward when popover is above trigger.
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Test bottom arrow
+    const bottomButton = canvas.getByRole('button', { name: 'Bottom Arrow' });
+    await userEvent.click(bottomButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('With Arrow')).toBeVisible();
+    });
+
+    // Close bottom popover
+    await userEvent.click(document.body);
+
+    await waitFor(() => {
+      expect(screen.queryByText('With Arrow')).not.toBeInTheDocument();
+    });
+
+    // Test top arrow
+    const topButton = canvas.getByRole('button', { name: 'Top Arrow' });
+    await userEvent.click(topButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Arrow Above')).toBeVisible();
     });
   },
 };

@@ -83,6 +83,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     defaultValue: 'apple',
+    items: [
+      { value: 'apple', label: 'Apple' },
+      { value: 'banana', label: 'Banana' },
+      { value: 'blueberry', label: 'Blueberry' },
+      { value: 'grapes', label: 'Grapes' },
+      { value: 'pineapple', label: 'Pineapple' },
+    ],
   },
   render: (args) => (
     <Select {...args}>
@@ -90,11 +97,13 @@ export const Default: Story = {
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="apple">Apple</SelectItem>
-        <SelectItem value="banana">Banana</SelectItem>
-        <SelectItem value="blueberry">Blueberry</SelectItem>
-        <SelectItem value="grapes">Grapes</SelectItem>
-        <SelectItem value="pineapple">Pineapple</SelectItem>
+        {(args.items as { value: string; label: string }[] | undefined)?.map(
+          (item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ),
+        )}
       </SelectContent>
     </Select>
   ),
@@ -102,137 +111,213 @@ export const Default: Story = {
 
 // With placeholder
 export const WithPlaceholder: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger aria-label="Select an option" className="w-[200px]">
-        <SelectValue placeholder="Select an option..." />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="option1">Option 1</SelectItem>
-        <SelectItem value="option2">Option 2</SelectItem>
-        <SelectItem value="option3">Option 3</SelectItem>
-      </SelectContent>
-    </Select>
-  ),
+  render: () => {
+    const items = [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+      { value: 'option3', label: 'Option 3' },
+    ];
+
+    return (
+      <Select items={items}>
+        <SelectTrigger aria-label="Select an option" className="w-[200px]">
+          <SelectValue placeholder="Select an option..." />
+        </SelectTrigger>
+        <SelectContent>
+          {items.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // With groups and labels
 export const WithGroups: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger aria-label="Select a timezone" className="w-[280px]">
-        <SelectValue placeholder="Select a timezone..." />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>North America</SelectLabel>
-          <SelectItem value="est">Eastern Standard Time (EST)</SelectItem>
-          <SelectItem value="cst">Central Standard Time (CST)</SelectItem>
-          <SelectItem value="mst">Mountain Standard Time (MST)</SelectItem>
-          <SelectItem value="pst">Pacific Standard Time (PST)</SelectItem>
-        </SelectGroup>
-        <SelectSeparator />
-        <SelectGroup>
-          <SelectLabel>Europe & Africa</SelectLabel>
-          <SelectItem value="gmt">Greenwich Mean Time (GMT)</SelectItem>
-          <SelectItem value="cet">Central European Time (CET)</SelectItem>
-          <SelectItem value="eet">Eastern European Time (EET)</SelectItem>
-        </SelectGroup>
-        <SelectSeparator />
-        <SelectGroup>
-          <SelectLabel>Asia</SelectLabel>
-          <SelectItem value="msk">Moscow Time (MSK)</SelectItem>
-          <SelectItem value="ist">India Standard Time (IST)</SelectItem>
-          <SelectItem value="cst_china">China Standard Time (CST)</SelectItem>
-          <SelectItem value="jst">Japan Standard Time (JST)</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-  ),
+  render: () => {
+    const timezoneGroups = [
+      {
+        label: 'North America',
+        items: [
+          { value: 'est', label: 'Eastern Standard Time (EST)' },
+          { value: 'cst', label: 'Central Standard Time (CST)' },
+          { value: 'mst', label: 'Mountain Standard Time (MST)' },
+          { value: 'pst', label: 'Pacific Standard Time (PST)' },
+        ],
+      },
+      {
+        label: 'Europe & Africa',
+        items: [
+          { value: 'gmt', label: 'Greenwich Mean Time (GMT)' },
+          { value: 'cet', label: 'Central European Time (CET)' },
+          { value: 'eet', label: 'Eastern European Time (EET)' },
+        ],
+      },
+      {
+        label: 'Asia',
+        items: [
+          { value: 'msk', label: 'Moscow Time (MSK)' },
+          { value: 'ist', label: 'India Standard Time (IST)' },
+          { value: 'cst_china', label: 'China Standard Time (CST)' },
+          { value: 'jst', label: 'Japan Standard Time (JST)' },
+        ],
+      },
+    ];
+
+    const allItems = timezoneGroups.flatMap((group) => group.items);
+
+    return (
+      <Select items={allItems}>
+        <SelectTrigger aria-label="Select a timezone" className="w-[280px]">
+          <SelectValue placeholder="Select a timezone..." />
+        </SelectTrigger>
+        <SelectContent>
+          {timezoneGroups.map((group, groupIndex) => (
+            <div key={group.label}>
+              <SelectGroup>
+                <SelectLabel>{group.label}</SelectLabel>
+                {group.items.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+              {groupIndex < timezoneGroups.length - 1 && <SelectSeparator />}
+            </div>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // Different sizes
 export const Sizes: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <span className="w-20 text-sm">Small:</span>
-        <Select defaultValue="small">
-          <SelectTrigger
-            aria-label="Small select"
-            className="w-[180px]"
-            size="sm"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="small">Small Size</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-          </SelectContent>
-        </Select>
+  render: () => {
+    const smallItems = [
+      { value: 'small', label: 'Small Size' },
+      { value: 'option2', label: 'Option 2' },
+    ];
+    const defaultItems = [
+      { value: 'default', label: 'Default Size' },
+      { value: 'option2', label: 'Option 2' },
+    ];
+
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <span className="w-20 text-sm">Small:</span>
+          <Select defaultValue="small" items={smallItems}>
+            <SelectTrigger
+              aria-label="Small select"
+              className="w-[180px]"
+              size="sm"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {smallItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-20 text-sm">Default:</span>
+          <Select defaultValue="default" items={defaultItems}>
+            <SelectTrigger aria-label="Default select" className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {defaultItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="w-20 text-sm">Default:</span>
-        <Select defaultValue="default">
-          <SelectTrigger aria-label="Default select" className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="default">Default Size</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  ),
+    );
+  },
 };
 
 // Disabled state
 export const Disabled: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4">
-      <Select disabled defaultValue="disabled">
-        <SelectTrigger aria-label="Disabled select" className="w-[200px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="disabled">Disabled Select</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select>
-        <SelectTrigger
-          aria-label="Select with disabled items"
-          className="w-[200px]"
-        >
-          <SelectValue placeholder="With disabled items" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="active">Active Item</SelectItem>
-          <SelectItem disabled value="disabled">
-            Disabled Item
-          </SelectItem>
-          <SelectItem value="another">Another Item</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  ),
+  render: () => {
+    const disabledItems = [{ value: 'disabled', label: 'Disabled Select' }];
+    const mixedItems = [
+      { value: 'active', label: 'Active Item', disabled: false },
+      { value: 'disabled', label: 'Disabled Item', disabled: true },
+      { value: 'another', label: 'Another Item', disabled: false },
+    ];
+
+    return (
+      <div className="flex flex-col gap-4">
+        <Select disabled defaultValue="disabled" items={disabledItems}>
+          <SelectTrigger aria-label="Disabled select" className="w-[200px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {disabledItems.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select items={mixedItems}>
+          <SelectTrigger
+            aria-label="Select with disabled items"
+            className="w-[200px]"
+          >
+            <SelectValue placeholder="With disabled items" />
+          </SelectTrigger>
+          <SelectContent>
+            {mixedItems.map((item) => (
+              <SelectItem
+                key={item.value}
+                disabled={item.disabled}
+                value={item.value}
+              >
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  },
 };
 
 // Component for controlled example
 function ControlledSelect() {
   const [value, setValue] = useState('');
 
+  const colorItems = [
+    { value: 'red', label: 'Red' },
+    { value: 'green', label: 'Green' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'yellow', label: 'Yellow' },
+  ];
+
   return (
     <div className="flex flex-col gap-4">
-      <Select value={value} onValueChange={setValue}>
+      <Select items={colorItems} value={value} onValueChange={setValue}>
         <SelectTrigger aria-label="Select a color" className="w-[200px]">
           <SelectValue placeholder="Select a color..." />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="red">Red</SelectItem>
-          <SelectItem value="green">Green</SelectItem>
-          <SelectItem value="blue">Blue</SelectItem>
-          <SelectItem value="yellow">Yellow</SelectItem>
+          {colorItems.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       <p className="text-muted-foreground text-sm">
@@ -256,123 +341,175 @@ export const Controlled: Story = {
 
 // With icons
 export const WithIcons: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger aria-label="Select a status" className="w-[250px]">
-        <SelectValue placeholder="Select a status..." />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="pending">
-          <Icons.clock className="text-warning" />
-          <span>Pending</span>
-        </SelectItem>
-        <SelectItem value="processing">
-          <Icons.loader className="text-info animate-spin" />
-          <span>Processing</span>
-        </SelectItem>
-        <SelectItem value="success">
-          <Icons.checkCircle className="text-success" />
-          <span>Success</span>
-        </SelectItem>
-        <SelectItem value="failed">
-          <Icons.xCircle className="text-error" />
-          <span>Failed</span>
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  ),
+  render: () => {
+    const statusItems = [
+      {
+        value: 'pending',
+        label: 'Pending',
+        icon: 'clock' as const,
+        className: 'text-warning',
+      },
+      {
+        value: 'processing',
+        label: 'Processing',
+        icon: 'loader' as const,
+        className: 'text-info animate-spin',
+      },
+      {
+        value: 'success',
+        label: 'Success',
+        icon: 'checkCircle' as const,
+        className: 'text-success',
+      },
+      {
+        value: 'failed',
+        label: 'Failed',
+        icon: 'xCircle' as const,
+        className: 'text-error',
+      },
+    ];
+
+    return (
+      <Select items={statusItems}>
+        <SelectTrigger aria-label="Select a status" className="w-[250px]">
+          <SelectValue placeholder="Select a status..." />
+        </SelectTrigger>
+        <SelectContent>
+          {statusItems.map((item) => {
+            const IconComponent = Icons[item.icon];
+            return (
+              <SelectItem key={item.value} value={item.value}>
+                <IconComponent className={item.className} />
+                <span>{item.label}</span>
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // Long list with scroll
 export const LongList: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger aria-label="Select a country" className="w-[200px]">
-        <SelectValue placeholder="Select a country..." />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="us">United States</SelectItem>
-        <SelectItem value="ca">Canada</SelectItem>
-        <SelectItem value="mx">Mexico</SelectItem>
-        <SelectItem value="gb">United Kingdom</SelectItem>
-        <SelectItem value="fr">France</SelectItem>
-        <SelectItem value="de">Germany</SelectItem>
-        <SelectItem value="it">Italy</SelectItem>
-        <SelectItem value="es">Spain</SelectItem>
-        <SelectItem value="pt">Portugal</SelectItem>
-        <SelectItem value="nl">Netherlands</SelectItem>
-        <SelectItem value="be">Belgium</SelectItem>
-        <SelectItem value="ch">Switzerland</SelectItem>
-        <SelectItem value="at">Austria</SelectItem>
-        <SelectItem value="pl">Poland</SelectItem>
-        <SelectItem value="ru">Russia</SelectItem>
-        <SelectItem value="jp">Japan</SelectItem>
-        <SelectItem value="cn">China</SelectItem>
-        <SelectItem value="kr">South Korea</SelectItem>
-        <SelectItem value="in">India</SelectItem>
-        <SelectItem value="au">Australia</SelectItem>
-        <SelectItem value="nz">New Zealand</SelectItem>
-        <SelectItem value="br">Brazil</SelectItem>
-        <SelectItem value="ar">Argentina</SelectItem>
-        <SelectItem value="za">South Africa</SelectItem>
-        <SelectItem value="eg">Egypt</SelectItem>
-      </SelectContent>
-    </Select>
-  ),
+  render: () => {
+    const countries = [
+      { value: 'us', label: 'United States' },
+      { value: 'ca', label: 'Canada' },
+      { value: 'mx', label: 'Mexico' },
+      { value: 'gb', label: 'United Kingdom' },
+      { value: 'fr', label: 'France' },
+      { value: 'de', label: 'Germany' },
+      { value: 'it', label: 'Italy' },
+      { value: 'es', label: 'Spain' },
+      { value: 'pt', label: 'Portugal' },
+      { value: 'nl', label: 'Netherlands' },
+      { value: 'be', label: 'Belgium' },
+      { value: 'ch', label: 'Switzerland' },
+      { value: 'at', label: 'Austria' },
+      { value: 'pl', label: 'Poland' },
+      { value: 'ru', label: 'Russia' },
+      { value: 'jp', label: 'Japan' },
+      { value: 'cn', label: 'China' },
+      { value: 'kr', label: 'South Korea' },
+      { value: 'in', label: 'India' },
+      { value: 'au', label: 'Australia' },
+      { value: 'nz', label: 'New Zealand' },
+      { value: 'br', label: 'Brazil' },
+      { value: 'ar', label: 'Argentina' },
+      { value: 'za', label: 'South Africa' },
+      { value: 'eg', label: 'Egypt' },
+    ];
+
+    return (
+      <Select items={countries}>
+        <SelectTrigger aria-label="Select a country" className="w-[200px]">
+          <SelectValue placeholder="Select a country..." />
+        </SelectTrigger>
+        <SelectContent>
+          {countries.map((country) => (
+            <SelectItem key={country.value} value={country.value}>
+              {country.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // Form example
 export const InForm: Story = {
-  render: () => (
-    <form
-      className="flex flex-col gap-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const country = formData.get('country');
-        alert(`Submitted: ${typeof country === 'string' ? country : 'none'}`);
-      }}
-    >
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium" htmlFor="country">
-          Country
-        </label>
-        <Select required name="country">
-          <SelectTrigger className="w-[240px]" id="country">
-            <SelectValue placeholder="Select your country..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="us">United States</SelectItem>
-            <SelectItem value="ca">Canada</SelectItem>
-            <SelectItem value="uk">United Kingdom</SelectItem>
-            <SelectItem value="au">Australia</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <button
-        className="bg-primary text-primary-foreground w-fit rounded-md px-4 py-2 text-sm"
-        type="submit"
+  render: () => {
+    const formCountries = [
+      { value: 'us', label: 'United States' },
+      { value: 'ca', label: 'Canada' },
+      { value: 'uk', label: 'United Kingdom' },
+      { value: 'au', label: 'Australia' },
+    ];
+
+    return (
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const country = formData.get('country');
+          alert(`Submitted: ${typeof country === 'string' ? country : 'none'}`);
+        }}
       >
-        Submit
-      </button>
-    </form>
-  ),
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium" htmlFor="country">
+            Country
+          </label>
+          <Select required items={formCountries} name="country">
+            <SelectTrigger className="w-[240px]" id="country">
+              <SelectValue placeholder="Select your country..." />
+            </SelectTrigger>
+            <SelectContent>
+              {formCountries.map((country) => (
+                <SelectItem key={country.value} value={country.value}>
+                  {country.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <button
+          className="bg-primary text-primary-foreground w-fit rounded-md px-4 py-2 text-sm"
+          type="submit"
+        >
+          Submit
+        </button>
+      </form>
+    );
+  },
 };
 
 // Interactive test
 export const Interactive: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger aria-label="Interactive select" className="w-[200px]">
-        <SelectValue placeholder="Click to open..." />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="first">First Option</SelectItem>
-        <SelectItem value="second">Second Option</SelectItem>
-        <SelectItem value="third">Third Option</SelectItem>
-      </SelectContent>
-    </Select>
-  ),
+  render: () => {
+    const interactiveItems = [
+      { value: 'first', label: 'First Option' },
+      { value: 'second', label: 'Second Option' },
+      { value: 'third', label: 'Third Option' },
+    ];
+
+    return (
+      <Select items={interactiveItems}>
+        <SelectTrigger aria-label="Interactive select" className="w-[200px]">
+          <SelectValue placeholder="Click to open..." />
+        </SelectTrigger>
+        <SelectContent>
+          {interactiveItems.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -402,66 +539,84 @@ export const Interactive: Story = {
 
 // Custom styling
 export const CustomStyling: Story = {
-  render: () => (
-    <Select>
-      <SelectTrigger
-        aria-label="Custom styled select"
-        className="border-primary bg-primary/5 text-primary hover:bg-primary/10 data-[placeholder]:text-primary/80 w-[250px] border-2"
-      >
-        <SelectValue placeholder="Custom styled select..." />
-      </SelectTrigger>
-      <SelectContent className="border-primary bg-primary/5">
-        <SelectItem
-          className="text-primary hover:bg-primary/20"
-          value="option1"
+  render: () => {
+    const styledItems = [
+      { value: 'option1', label: 'Primary Option' },
+      { value: 'option2', label: 'Info Option' },
+      { value: 'option3', label: 'Success Option' },
+    ];
+
+    return (
+      <Select items={styledItems}>
+        <SelectTrigger
+          aria-label="Custom styled select"
+          className="border-primary bg-primary/5 text-primary hover:bg-primary/10 data-[placeholder]:text-primary/80 w-[250px] border-2"
         >
-          Primary Option
-        </SelectItem>
-        <SelectItem className="text-info hover:bg-info/20" value="option2">
-          Info Option
-        </SelectItem>
-        <SelectItem
-          className="text-success hover:bg-success/20"
-          value="option3"
-        >
-          Success Option
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  ),
+          <SelectValue placeholder="Custom styled select..." />
+        </SelectTrigger>
+        <SelectContent className="border-primary bg-primary/5">
+          <SelectItem
+            className="text-primary hover:bg-primary/20"
+            value="option1"
+          >
+            Primary Option
+          </SelectItem>
+          <SelectItem className="text-info hover:bg-info/20" value="option2">
+            Info Option
+          </SelectItem>
+          <SelectItem
+            className="text-success hover:bg-success/20"
+            value="option3"
+          >
+            Success Option
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // Error state example
 export const ErrorState: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-error text-sm font-medium"
-          htmlFor="error-select"
-        >
-          Required Field *
-        </label>
-        <Select>
-          <SelectTrigger
-            aria-describedby="select-error-message"
-            aria-invalid="true"
-            aria-label="Required field"
-            className="border-error focus-visible:ring-error/50 w-[240px]"
-            id="error-select"
+  render: () => {
+    const errorItems = [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+      { value: 'option3', label: 'Option 3' },
+    ];
+
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label
+            className="text-error text-sm font-medium"
+            htmlFor="error-select"
           >
-            <SelectValue placeholder="Please select an option..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-            <SelectItem value="option3">Option 3</SelectItem>
-          </SelectContent>
-        </Select>
-        <p className="text-error text-sm" id="select-error-message">
-          This field is required
-        </p>
+            Required Field *
+          </label>
+          <Select items={errorItems}>
+            <SelectTrigger
+              aria-describedby="select-error-message"
+              aria-invalid="true"
+              aria-label="Required field"
+              className="border-error focus-visible:ring-error/50 w-[240px]"
+              id="error-select"
+            >
+              <SelectValue placeholder="Please select an option..." />
+            </SelectTrigger>
+            <SelectContent>
+              {errorItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-error text-sm" id="select-error-message">
+            This field is required
+          </p>
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 };

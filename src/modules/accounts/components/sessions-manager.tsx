@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import {
@@ -31,6 +31,17 @@ export function SessionsManager() {
   const { data: activityData } = useSessionActivity({
     sessionId: selectedSessionId ?? '',
   });
+
+  const sessionItems = useMemo(() => {
+    return (
+      sessions?.map((session) => ({
+        value: session.id,
+        label: `${session.metadata?.deviceName ?? 'Unknown Device'}${
+          session.isCurrentSession ? ' (Current)' : ''
+        }${session.metadata?.city ? ` - ${session.metadata.city}` : ''}`,
+      })) ?? []
+    );
+  }, [sessions]);
 
   // Calculate security statistics
   const securityStats = sessions
@@ -158,20 +169,21 @@ export function SessionsManager() {
             </CardHeader>
             <CardContent>
               <Select
+                items={sessionItems}
                 value={selectedSessionId ?? ''}
                 onValueChange={setSelectedSessionId}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a session to view activity" />
+                  <SelectValue>
+                    {selectedSessionId
+                      ? 'Session selected'
+                      : 'Select a session to view activity'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {sessions?.map((session) => (
-                    <SelectItem key={session.id} value={session.id}>
-                      {session.metadata?.deviceName ?? 'Unknown Device'} -
-                      {session.isCurrentSession ? ' (Current)' : ''}
-                      {session.metadata?.city
-                        ? ` - ${session.metadata.city}`
-                        : ''}
+                  {sessionItems.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

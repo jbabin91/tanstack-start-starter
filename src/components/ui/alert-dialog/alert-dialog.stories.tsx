@@ -36,7 +36,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button variant="outlined">Show Dialog</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -66,7 +66,7 @@ export const Default: Story = {
 export const DestructiveAction: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button color="error">Delete Account</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -98,7 +98,7 @@ export const DestructiveAction: Story = {
 export const CustomStyling: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Custom Dialog</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-md">
@@ -130,7 +130,7 @@ export const CustomStyling: Story = {
 export const ConfirmationDialog: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Save Changes</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -160,7 +160,7 @@ export const ConfirmationDialog: Story = {
 export const LongContent: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button variant="outlined">Terms & Conditions</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-h-[80vh]">
@@ -214,7 +214,7 @@ export const LongContent: Story = {
 export const SingleAction: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Show Info</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -244,7 +244,7 @@ export const MultipleTriggers: Story = {
   render: () => (
     <div className="flex space-x-4">
       <AlertDialog>
-        <AlertDialogTrigger asChild>
+        <AlertDialogTrigger>
           <Button color="error">Delete</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -264,7 +264,7 @@ export const MultipleTriggers: Story = {
       </AlertDialog>
 
       <AlertDialog>
-        <AlertDialogTrigger asChild>
+        <AlertDialogTrigger>
           <Button>Archive</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -295,7 +295,7 @@ export const MultipleTriggers: Story = {
 export const WithIcons: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Show Warning</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -330,7 +330,7 @@ export const WithIcons: Story = {
 export const ResponsiveDialog: Story = {
   render: () => (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Mobile Responsive</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-md">
@@ -370,7 +370,7 @@ export const InteractiveDialog: Story = {
   },
   render: (args) => (
     <AlertDialog {...args}>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button>Test Interactions</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -464,7 +464,7 @@ export const AccessibilityDemo: Story = {
         <p>• Background click and Escape key to close</p>
       </div>
       <AlertDialog>
-        <AlertDialogTrigger asChild>
+        <AlertDialogTrigger>
           <Button>Test Accessibility</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

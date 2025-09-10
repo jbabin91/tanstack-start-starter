@@ -218,7 +218,7 @@ export function SessionCard({
 
         {!isCurrentSession && (
           <AlertDialog>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger>
               <Button className="w-full" color="error" size="sm">
                 Revoke Session
               </Button>

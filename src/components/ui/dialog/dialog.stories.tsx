@@ -71,7 +71,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="contained">Open Dialog</Button>
       </DialogTrigger>
       <DialogContent>
@@ -100,7 +100,7 @@ export const Default: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button type="button" variant="outlined">
               Cancel
             </Button>
@@ -118,7 +118,7 @@ export const Default: Story = {
 export const Confirmation: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button color="error" variant="contained">
           Delete Account
         </Button>
@@ -132,10 +132,10 @@ export const Confirmation: Story = {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="outlined">Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose>
             <Button color="error" variant="contained">
               Delete Account
             </Button>
@@ -150,7 +150,7 @@ export const Confirmation: Story = {
 export const WithoutCloseButton: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="outlined">Open Modal Dialog</Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
@@ -162,7 +162,7 @@ export const WithoutCloseButton: Story = {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="contained">Close</Button>
           </DialogClose>
         </DialogFooter>
@@ -175,7 +175,7 @@ export const WithoutCloseButton: Story = {
 export const Information: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button color="info" variant="contained">
           Show Info
         </Button>
@@ -200,10 +200,10 @@ export const Information: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="outlined">Later</Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose>
             <Button color="info" variant="contained">
               Update Now
             </Button>
@@ -236,7 +236,7 @@ function FormDialogExample() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button color="success" variant="contained">
           Create Account
         </Button>
@@ -294,7 +294,7 @@ function FormDialogExample() {
             </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
+            <DialogClose>
               <Button type="button" variant="outlined">
                 Cancel
               </Button>
@@ -321,7 +321,7 @@ function ControlledDialogExample() {
   return (
     <div className="flex flex-col gap-4">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger>
           <Button variant="outlined">Open Controlled Dialog</Button>
         </DialogTrigger>
         <DialogContent>
@@ -376,7 +376,7 @@ export const Controlled: Story = {
 export const LargeContent: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="contained">View Terms</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] max-w-3xl overflow-y-auto">
@@ -441,10 +441,10 @@ export const LargeContent: Story = {
           </section>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="outlined">Decline</Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="contained">Accept</Button>
           </DialogClose>
         </DialogFooter>
@@ -457,7 +457,7 @@ export const LargeContent: Story = {
 export const Interactive: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="contained">Test Dialog</Button>
       </DialogTrigger>
       <DialogContent>
@@ -471,7 +471,7 @@ export const Interactive: Story = {
           <p>Use ESC key or click outside to close.</p>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="contained">Close</Button>
           </DialogClose>
         </DialogFooter>
@@ -593,7 +593,7 @@ export const Interactive: Story = {
 export const CustomStyling: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button color="warning" variant="contained">
           Warning Dialog
         </Button>
@@ -614,10 +614,10 @@ export const CustomStyling: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button variant="outlined">Remind Later</Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose>
             <Button color="warning" variant="contained">
               Renew Now
             </Button>
