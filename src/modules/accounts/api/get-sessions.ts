@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getWebRequest } from '@tanstack/react-start/server';
+import { getRequestHeaders } from '@tanstack/react-start/server';
 import { and, desc, eq, gt, inArray } from 'drizzle-orm';
 
 import { auth } from '@/lib/auth/server';
@@ -41,7 +41,7 @@ export type SessionWithDetails = Session & {
 };
 
 export const fetchSessions = createServerFn().handler(async () => {
-  const { headers } = getWebRequest();
+  const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
 
   if (!session?.user) {

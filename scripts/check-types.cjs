@@ -28,18 +28,31 @@ if (tsFiles.length === 0) {
 }
 
 // Create a temporary tsconfig for just these files
+// Make paths absolute since temp config is in a subdirectory
+const absoluteTsFiles = tsFiles.map((file) => path.resolve(file));
+
 const tempConfig = {
-  extends: './tsconfig.json',
-  include: tsFiles,
+  extends: path.join(process.cwd(), 'tsconfig.json'),
+  include: absoluteTsFiles,
   compilerOptions: {
     noEmit: true,
     skipLibCheck: true,
   },
 };
 
-const tempConfigPath = path.join(process.cwd(), '.tsconfig.temp.json');
+// Create temp config in node_modules/.cache (create directory if needed)
+const cacheDir = path.join(
+  process.cwd(),
+  'node_modules',
+  '.cache',
+  'typescript',
+);
+const tempConfigPath = path.join(cacheDir, 'tsconfig.temp.json');
 
 try {
+  // Ensure cache directory exists
+  fs.mkdirSync(cacheDir, { recursive: true });
+
   // Write temporary config
   fs.writeFileSync(tempConfigPath, JSON.stringify(tempConfig, null, 2));
 
@@ -50,7 +63,6 @@ try {
   });
 
   console.log('✓ TypeScript check passed');
-  process.exit(0);
 } catch (error) {
   console.error('✗ TypeScript check failed');
   process.exit(error.status || 1);

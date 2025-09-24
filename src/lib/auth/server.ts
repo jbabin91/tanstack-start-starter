@@ -1,4 +1,4 @@
-import { serverOnly } from '@tanstack/react-start';
+import { createServerOnlyFn } from '@tanstack/react-start';
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
@@ -301,7 +301,7 @@ const options = {
   telemetry: { enabled: false },
 } satisfies BetterAuthOptions;
 
-const getAuthConfig = serverOnly(() =>
+const getAuthConfig = createServerOnlyFn(() =>
   betterAuth({
     ...options,
     plugins: [

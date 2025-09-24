@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
-import { getWebRequest } from '@tanstack/react-start/server';
+import { getRequest } from '@tanstack/react-start/server';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { resolveLocationAndIP } from '@/lib/auth/utils/location-resolver';
 
 const debugIPHeaders = createServerFn({ method: 'GET' }).handler(async () => {
-  const request = getWebRequest();
+  const request = getRequest();
 
   // All headers we use for IP tracking and location resolution
   const TRACKED_HEADERS = [

@@ -1,7 +1,6 @@
 /// <reference types="vitest/config" />
+/// <reference types="@vitest/browser/providers/playwright" />
 // Skip environment validation for development tools like VS Code extensions
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
@@ -15,11 +14,6 @@ if (process.env.SKIP_ENV_VALIDATION !== 'true') {
   import('./src/configs/env');
 }
 
-const dirname =
-  typeof __dirname === 'undefined'
-    ? path.dirname(fileURLToPath(import.meta.url))
-    : __dirname;
-
 // https://vite.dev/config/
 export default defineConfig({
   optimizeDeps: {
@@ -31,8 +25,7 @@ export default defineConfig({
     }),
     tailwindcss(),
     tanstackStart({
-      customViteReactPlugin: true,
-      tsr: {
+      router: {
         quoteStyle: 'single',
         semicolons: true,
       },
@@ -47,8 +40,6 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'dist/',
-        '.output/',
-        '.tanstack/',
         'build/',
         'coverage/',
         'playwright-report/',
@@ -96,7 +87,6 @@ export default defineConfig({
           exclude: [
             'node_modules',
             'dist',
-            '.next',
             '.vercel',
             'src/stories/**',
             '**/*.stories.@(js|jsx|ts|tsx)',
@@ -115,7 +105,7 @@ export default defineConfig({
             projects: ['./tsconfig.json'],
           }),
           storybookTest({
-            configDir: path.join(dirname, '.storybook'),
+            configDir: '.storybook',
           }),
         ],
         test: {

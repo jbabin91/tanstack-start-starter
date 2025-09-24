@@ -8,6 +8,8 @@ pre-commit:
 
     lint:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
+      exclude:
+        - '**/*.gen.ts'
       run: pnpm eslint {staged_files} --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache
       stage_fixed: true # Auto-stage ESLint fixes!
 

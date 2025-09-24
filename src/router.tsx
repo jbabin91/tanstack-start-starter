@@ -1,12 +1,12 @@
 import { QueryClient } from '@tanstack/react-query';
-import { createRouter as createTanStackRouter } from '@tanstack/react-router';
-import { routerWithQueryClient } from '@tanstack/react-router-with-query';
+import { createRouter } from '@tanstack/react-router';
+import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
 import { NotFound } from '@/components/errors/not-found';
 import { routeTree } from '@/routeTree.gen';
 
-export function createRouter() {
+export function getRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -16,26 +16,30 @@ export function createRouter() {
     },
   });
 
-  return routerWithQueryClient(
-    createTanStackRouter({
-      context: { queryClient, user: null },
-      defaultErrorComponent: DefaultCatchBoundary,
-      defaultNotFoundComponent: () => <NotFound />,
-      defaultPreload: 'intent',
-      // react-query will handle data fetching & caching
-      // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
-      defaultPreloadStaleTime: 0,
-      scrollRestoration: true,
-      defaultStructuralSharing: true,
-      routeTree,
-    }),
+  const router = createRouter({
+    context: { queryClient, user: null },
+    defaultErrorComponent: DefaultCatchBoundary,
+    defaultNotFoundComponent: () => <NotFound />,
+    defaultPreload: 'intent',
+    // react-query will handle data fetching & caching
+    // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
+    defaultPreloadStaleTime: 0,
+    scrollRestoration: true,
+    defaultStructuralSharing: true,
+    routeTree,
+  });
+
+  setupRouterSsrQueryIntegration({
+    router,
     queryClient,
-  );
+  });
+
+  return router;
 }
 
 declare module '@tanstack/react-router' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Register {
-    router: ReturnType<typeof createRouter>;
+    router: ReturnType<typeof getRouter>;
   }
 }

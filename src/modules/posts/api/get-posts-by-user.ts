@@ -6,7 +6,7 @@ import { posts as postsTable } from '@/lib/db/schemas/posts';
 import { apiLogger } from '@/lib/logger';
 
 export const fetchPostsByUserId = createServerFn()
-  .validator((d: string) => d)
+  .inputValidator((d: string) => d)
   .handler(async ({ data }) => {
     apiLogger.info(`Fetching posts for user with id ${data}...`);
 

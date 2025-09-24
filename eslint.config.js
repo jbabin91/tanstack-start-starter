@@ -19,9 +19,7 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   globalIgnores([
     'node_modules',
-    '.nitro',
-    '.output',
-    '.tanstack',
+    'dist',
     'coverage',
     'playwright-report',
     'test-results',

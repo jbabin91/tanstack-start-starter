@@ -6,15 +6,12 @@ bun.lock
 
 # misc
 *.gen.ts
-.tanstack/
-.nitro/
 migrations/
 drizzle/
 .drizzle/
 
 # build outputs
 .vercel
-.output
 .wrangler
 .netlify
 dist

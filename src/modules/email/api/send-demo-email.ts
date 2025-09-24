@@ -5,7 +5,7 @@ import { formDemoSchema } from '@/modules/email/components/email-demo-form';
 import { sendDemoEmail } from '@/modules/email/templates/demo-email';
 
 export const sendDemoEmailFn = createServerFn()
-  .validator((data: unknown) => {
+  .inputValidator((data: unknown) => {
     const result = formDemoSchema(data);
     if (result instanceof type.errors) throw new Error(result.summary);
     return result;

@@ -6,7 +6,7 @@ import { users as usersTable } from '@/lib/db/schemas/auth';
 import { apiLogger } from '@/lib/logger';
 
 export const fetchUser = createServerFn()
-  .validator((d: string) => d)
+  .inputValidator((d: string) => d)
   .handler(async ({ data }) => {
     apiLogger.info(`Fetching user with id ${data}...`);
 

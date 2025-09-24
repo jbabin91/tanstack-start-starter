@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getWebRequest } from '@tanstack/react-start/server';
+import { getRequestHeaders } from '@tanstack/react-start/server';
 import { type } from 'arktype';
 import { and, eq } from 'drizzle-orm';
 
@@ -14,9 +14,9 @@ const revokeSessionSchema = type({
 });
 
 export const revokeSession = createServerFn()
-  .validator(revokeSessionSchema)
+  .inputValidator(revokeSessionSchema)
   .handler(async ({ data }) => {
-    const { headers } = getWebRequest();
+    const headers = getRequestHeaders();
     const session = await auth.api.getSession({ headers });
 
     if (!session?.user) {

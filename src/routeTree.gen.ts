@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server';
-
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as AuthRouteRouteImport } from './routes/_auth/route';
 import { Route as AppRouteRouteImport } from './routes/_app/route';
@@ -25,15 +23,13 @@ import { Route as AppAccountRouteRouteImport } from './routes/_app/account/route
 import { Route as PublicDemoIndexRouteImport } from './routes/_public/demo/index';
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index';
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index';
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$';
 import { Route as PublicDemoEmailRouteImport } from './routes/_public/demo/email';
 import { Route as PublicDemoColorsRouteImport } from './routes/_public/demo/colors';
 import { Route as AppUsersUserIdIndexRouteImport } from './routes/_app/users/$userId/index';
 import { Route as AppAccountSessionsIndexRouteImport } from './routes/_app/account/sessions/index';
 import { Route as AppUsersUserIdPostsRouteRouteImport } from './routes/_app/users/$userId/posts/route';
 import { Route as AppUsersUserIdPostsPostIdRouteImport } from './routes/_app/users/$userId/posts/$postId';
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$';
-
-const rootServerRouteImport = createServerRootRoute();
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
@@ -103,6 +99,11 @@ const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => AppRouteRoute,
 } as any);
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any);
 const PublicDemoEmailRoute = PublicDemoEmailRouteImport.update({
   id: '/email',
   path: '/email',
@@ -135,11 +136,6 @@ const AppUsersUserIdPostsPostIdRoute =
     path: '/$postId',
     getParentRoute: () => AppUsersUserIdPostsRouteRoute,
   } as any);
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any);
 
 export interface FileRoutesByFullPath {
   '/account': typeof AppAccountRouteRouteWithChildren;
@@ -153,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
   '/demo/email': typeof PublicDemoEmailRoute;
+  '/api/auth/$': typeof ApiAuthSplatRoute;
   '/dashboard': typeof AppDashboardIndexRoute;
   '/users/': typeof AppUsersIndexRoute;
   '/demo/': typeof PublicDemoIndexRoute;
@@ -171,6 +168,7 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute;
   '/demo/colors': typeof PublicDemoColorsRoute;
   '/demo/email': typeof PublicDemoEmailRoute;
+  '/api/auth/$': typeof ApiAuthSplatRoute;
   '/dashboard': typeof AppDashboardIndexRoute;
   '/users': typeof AppUsersIndexRoute;
   '/demo': typeof PublicDemoIndexRoute;
@@ -194,6 +192,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute;
   '/_public/demo/colors': typeof PublicDemoColorsRoute;
   '/_public/demo/email': typeof PublicDemoEmailRoute;
+  '/api/auth/$': typeof ApiAuthSplatRoute;
   '/_app/dashboard/': typeof AppDashboardIndexRoute;
   '/_app/users/': typeof AppUsersIndexRoute;
   '/_public/demo/': typeof PublicDemoIndexRoute;
@@ -216,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/colors'
     | '/demo/email'
+    | '/api/auth/$'
     | '/dashboard'
     | '/users/'
     | '/demo/'
@@ -234,6 +234,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/colors'
     | '/demo/email'
+    | '/api/auth/$'
     | '/dashboard'
     | '/users'
     | '/demo'
@@ -256,6 +257,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_public/demo/colors'
     | '/_public/demo/email'
+    | '/api/auth/$'
     | '/_app/dashboard/'
     | '/_app/users/'
     | '/_public/demo/'
@@ -270,27 +272,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren;
   PublicDemoRouteRoute: typeof PublicDemoRouteRouteWithChildren;
   PublicIndexRoute: typeof PublicIndexRoute;
-}
-export interface FileServerRoutesByFullPath {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute;
-}
-export interface FileServerRoutesByTo {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute;
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport;
-  '/api/auth/$': typeof ApiAuthSplatServerRoute;
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath;
-  fullPaths: '/api/auth/$';
-  fileServerRoutesByTo: FileServerRoutesByTo;
-  to: '/api/auth/$';
-  id: '__root__' | '/api/auth/$';
-  fileServerRoutesById: FileServerRoutesById;
-}
-export interface RootServerRouteChildren {
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute;
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute;
 }
 
 declare module '@tanstack/react-router' {
@@ -393,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexRouteImport;
       parentRoute: typeof AppRouteRoute;
     };
+    '/api/auth/$': {
+      id: '/api/auth/$';
+      path: '/api/auth/$';
+      fullPath: '/api/auth/$';
+      preLoaderRoute: typeof ApiAuthSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_public/demo/email': {
       id: '/_public/demo/email';
       path: '/email';
@@ -434,17 +423,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/$userId/posts/$postId';
       preLoaderRoute: typeof AppUsersUserIdPostsPostIdRouteImport;
       parentRoute: typeof AppUsersUserIdPostsRouteRoute;
-    };
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/auth/$': {
-      id: '/api/auth/$';
-      path: '/api/auth/$';
-      fullPath: '/api/auth/$';
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport;
-      parentRoute: typeof rootServerRouteImport;
     };
   }
 }
@@ -548,13 +526,16 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   PublicDemoRouteRoute: PublicDemoRouteRouteWithChildren,
   PublicIndexRoute: PublicIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>();
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-};
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>();
+
+import type { getRouter } from './router.tsx';
+import type { createStart } from '@tanstack/react-start';
+declare module '@tanstack/react-start' {
+  interface Register {
+    router: Awaited<ReturnType<typeof getRouter>>;
+  }
+}
