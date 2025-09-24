@@ -36,10 +36,3 @@ export function getRouter() {
 
   return router;
 }
-
-declare module '@tanstack/react-router' {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Register {
-    router: ReturnType<typeof getRouter>;
-  }
-}
