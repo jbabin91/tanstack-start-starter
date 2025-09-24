@@ -5,21 +5,19 @@ pre-commit:
     typecheck:
       glob: '*.{ts,tsx}'
       run: node scripts/check-types.cjs {staged_files}
-
     lint:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
       exclude:
         - '**/*.gen.ts'
       run: pnpm eslint {staged_files} --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache
       stage_fixed: true # Auto-stage ESLint fixes!
-
     lint-md:
       glob: '*.{md,mdx}'
-      run: pnpm markdownlint-cli2 {staged_files}
-
+      run: pnpm lint:md {staged_files}
     format:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs,json,md,mdx}'
-      run: pnpm prettier -uc {staged_files}
+      run: pnpm prettier -uwl {staged_files}
+      stage_fixed: true # Auto-stage Prettier fixes!
 
 commit-msg:
   commands:
