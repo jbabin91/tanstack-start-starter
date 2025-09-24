@@ -20,6 +20,9 @@ export default defineConfig(
   globalIgnores([
     'node_modules',
     'dist',
+    '.nitro',
+    '.output',
+    '.tanstack',
     'coverage',
     'playwright-report',
     'test-results',
