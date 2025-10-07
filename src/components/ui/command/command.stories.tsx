@@ -4,8 +4,6 @@ import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { isElementVisible } from '@/test/utils';
-
 import {
   Command,
   CommandDialog,
@@ -16,11 +14,18 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from './command';
+} from '@/components/ui/command/command';
+import { isElementVisible } from '@/test/utils';
 
 const meta: Meta<typeof Command> = {
-  title: 'UI/Navigation/Command',
   component: Command,
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-md">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -31,13 +36,7 @@ const meta: Meta<typeof Command> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-md">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Navigation/Command',
 };
 
 export default meta;
@@ -45,6 +44,14 @@ export default meta;
 type Story = StoryObj<typeof Command>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic command menu with groups, icons, and keyboard shortcuts.',
+      },
+    },
+  },
   render: () => (
     <Command>
       <CommandInput placeholder="Type a command or search..." />
@@ -80,16 +87,17 @@ export const Default: Story = {
       </CommandList>
     </Command>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic command menu with groups, icons, and keyboard shortcuts.',
-      },
-    },
-  },
 };
 
 export const WithDialog: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Command menu in a dialog with keyboard shortcuts.',
+      },
+    },
+  },
   render: function WithDialogStory() {
     const [open, setOpen] = useState(false);
 
@@ -147,26 +155,27 @@ export const WithDialog: Story = {
       </>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Command menu in a dialog with keyboard shortcuts.',
-      },
-    },
-  },
 };
 
 export const SearchableItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Command menu with searchable items organized by categories.',
+      },
+    },
+  },
   render: () => {
     const items = [
-      { icon: Icons.file, name: 'README.md', category: 'Files' },
-      { icon: Icons.folder, name: 'src', category: 'Folders' },
-      { icon: Icons.folder, name: 'components', category: 'Folders' },
-      { icon: Icons.file, name: 'package.json', category: 'Files' },
-      { icon: Icons.git, name: 'Git Status', category: 'Commands' },
-      { icon: Icons.terminal, name: 'Terminal', category: 'Commands' },
-      { icon: Icons.search, name: 'Search Files', category: 'Commands' },
-      { icon: Icons.settings, name: 'Settings', category: 'Commands' },
+      { category: 'Files', icon: Icons.file, name: 'README.md' },
+      { category: 'Folders', icon: Icons.folder, name: 'src' },
+      { category: 'Folders', icon: Icons.folder, name: 'components' },
+      { category: 'Files', icon: Icons.file, name: 'package.json' },
+      { category: 'Commands', icon: Icons.git, name: 'Git Status' },
+      { category: 'Commands', icon: Icons.terminal, name: 'Terminal' },
+      { category: 'Commands', icon: Icons.search, name: 'Search Files' },
+      { category: 'Commands', icon: Icons.settings, name: 'Settings' },
     ];
 
     const groupedItems = items.reduce<Record<string, typeof items>>(
@@ -199,48 +208,49 @@ export const SearchableItems: Story = {
       </Command>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Command menu with searchable items organized by categories.',
-      },
-    },
-  },
 };
 
 export const WithActions: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Command menu with selectable actions and descriptions.',
+      },
+    },
+  },
   render: function WithActionsStory() {
     const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
     const actions = [
       {
+        description: 'Copy to clipboard',
         icon: Icons.copy,
         name: 'Copy',
-        description: 'Copy to clipboard',
         shortcut: '⌘C',
       },
       {
+        description: 'Cut to clipboard',
         icon: Icons.scissors,
         name: 'Cut',
-        description: 'Cut to clipboard',
         shortcut: '⌘X',
       },
       {
+        description: 'Paste from clipboard',
         icon: Icons.clipboard,
         name: 'Paste',
-        description: 'Paste from clipboard',
         shortcut: '⌘V',
       },
       {
+        description: 'Undo last action',
         icon: Icons.undo,
         name: 'Undo',
-        description: 'Undo last action',
         shortcut: '⌘Z',
       },
       {
+        description: 'Redo last action',
         icon: Icons.redo,
         name: 'Redo',
-        description: 'Redo last action',
         shortcut: '⌘⇧Z',
       },
     ];
@@ -281,16 +291,17 @@ export const WithActions: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Command menu with selectable actions and descriptions.',
-      },
-    },
-  },
 };
 
 export const MultiLevel: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Multi-level command menu with organized groups and separators.',
+      },
+    },
+  },
   render: () => (
     <Command>
       <CommandInput placeholder="Navigate through options..." />
@@ -368,16 +379,17 @@ export const MultiLevel: Story = {
       </CommandList>
     </Command>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Multi-level command menu with organized groups and separators.',
-      },
-    },
-  },
 };
 
 export const WithLoading: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Command menu with loading state and dynamic results.',
+      },
+    },
+  },
   render: function WithLoadingStory() {
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<string[]>([]);
@@ -419,16 +431,17 @@ export const WithLoading: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Command menu with loading state and dynamic results.',
-      },
-    },
-  },
 };
 
 export const CustomStyling: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Command menu with custom styling and visual enhancements.',
+      },
+    },
+  },
   render: () => (
     <Command className="border">
       <CommandInput
@@ -467,16 +480,17 @@ export const CustomStyling: Story = {
       </CommandList>
     </Command>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Command menu with custom styling and visual enhancements.',
-      },
-    },
-  },
 };
 
 export const CompactMode: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Compact command menu optimized for smaller spaces.',
+      },
+    },
+  },
   render: () => (
     <Command className="w-80">
       <CommandInput className="h-8 text-xs" placeholder="Quick search..." />
@@ -503,79 +517,17 @@ export const CompactMode: Story = {
       </CommandList>
     </Command>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Compact command menu optimized for smaller spaces.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
-  render: function InteractiveStory() {
-    const [open, setOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<string | null>(null);
-
-    const handleSelect = (value: string) => {
-      setSelectedItem(value);
-      setOpen(false);
-    };
-
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setOpen(true)}>Open Command Palette</Button>
-          {selectedItem && (
-            <span className="text-muted-foreground text-sm">
-              Last selected: {selectedItem}
-            </span>
-          )}
-        </div>
-
-        <CommandDialog open={open} onOpenChange={setOpen}>
-          <CommandInput placeholder="Type to search commands..." />
-          <CommandList>
-            <CommandEmpty>No commands found.</CommandEmpty>
-            <CommandGroup heading="Navigation">
-              <CommandItem value="dashboard" onSelect={handleSelect}>
-                <Icons.home className="mr-2" />
-                <span>Dashboard</span>
-                <CommandShortcut>⌘D</CommandShortcut>
-              </CommandItem>
-              <CommandItem value="projects" onSelect={handleSelect}>
-                <Icons.folder className="mr-2" />
-                <span>Projects</span>
-                <CommandShortcut>⌘P</CommandShortcut>
-              </CommandItem>
-              <CommandItem value="settings" onSelect={handleSelect}>
-                <Icons.settings className="mr-2" />
-                <span>Settings</span>
-                <CommandShortcut>⌘S</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Actions">
-              <CommandItem value="create" onSelect={handleSelect}>
-                <Icons.plus className="mr-2" />
-                <span>Create New</span>
-                <CommandShortcut>⌘N</CommandShortcut>
-              </CommandItem>
-              <CommandItem value="search" onSelect={handleSelect}>
-                <Icons.search className="mr-2" />
-                <span>Search</span>
-                <CommandShortcut>⌘K</CommandShortcut>
-              </CommandItem>
-              <CommandItem value="help" onSelect={handleSelect}>
-                <Icons.helpCircle className="mr-2" />
-                <span>Help</span>
-                <CommandShortcut>⌘?</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </CommandDialog>
-      </div>
-    );
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive command palette with search, selection, and keyboard navigation.',
+      },
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -659,12 +611,68 @@ export const Interactive: Story = {
       );
     });
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive command palette with search, selection, and keyboard navigation.',
-      },
-    },
+  render: function InteractiveStory() {
+    const [open, setOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+    const handleSelect = (value: string) => {
+      setSelectedItem(value);
+      setOpen(false);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setOpen(true)}>Open Command Palette</Button>
+          {selectedItem && (
+            <span className="text-muted-foreground text-sm">
+              Last selected: {selectedItem}
+            </span>
+          )}
+        </div>
+
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type to search commands..." />
+          <CommandList>
+            <CommandEmpty>No commands found.</CommandEmpty>
+            <CommandGroup heading="Navigation">
+              <CommandItem value="dashboard" onSelect={handleSelect}>
+                <Icons.home className="mr-2" />
+                <span>Dashboard</span>
+                <CommandShortcut>⌘D</CommandShortcut>
+              </CommandItem>
+              <CommandItem value="projects" onSelect={handleSelect}>
+                <Icons.folder className="mr-2" />
+                <span>Projects</span>
+                <CommandShortcut>⌘P</CommandShortcut>
+              </CommandItem>
+              <CommandItem value="settings" onSelect={handleSelect}>
+                <Icons.settings className="mr-2" />
+                <span>Settings</span>
+                <CommandShortcut>⌘S</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Actions">
+              <CommandItem value="create" onSelect={handleSelect}>
+                <Icons.plus className="mr-2" />
+                <span>Create New</span>
+                <CommandShortcut>⌘N</CommandShortcut>
+              </CommandItem>
+              <CommandItem value="search" onSelect={handleSelect}>
+                <Icons.search className="mr-2" />
+                <span>Search</span>
+                <CommandShortcut>⌘K</CommandShortcut>
+              </CommandItem>
+              <CommandItem value="help" onSelect={handleSelect}>
+                <Icons.helpCircle className="mr-2" />
+                <span>Help</span>
+                <CommandShortcut>⌘?</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
+      </div>
+    );
   },
 };

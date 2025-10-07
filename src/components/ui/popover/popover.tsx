@@ -1,18 +1,22 @@
-import { Popover as BasePopover } from '@base-ui-components/react/popover';
+'use client';
+
+import { Popover as PopoverPrimitive } from '@base-ui-components/react/popover';
 import * as React from 'react';
 
 import { cn } from '@/utils/cn';
 
-function Popover({ ...props }: React.ComponentProps<typeof BasePopover.Root>) {
-  return <BasePopover.Root data-slot="popover" {...props} />;
+function Popover({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
+  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 }
 
 function PopoverTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof BasePopover.Trigger>) {
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return (
-    <BasePopover.Trigger
+    <PopoverPrimitive.Trigger
       className={cn('relative', className)}
       data-slot="popover-trigger"
       {...props}
@@ -37,8 +41,8 @@ function PopoverContent({
   positionMethod,
   trackAnchor,
   ...popupProps
-}: React.ComponentProps<typeof BasePopover.Popup> &
-  React.ComponentProps<typeof BasePopover.Positioner> & {
+}: React.ComponentProps<typeof PopoverPrimitive.Popup> &
+  React.ComponentProps<typeof PopoverPrimitive.Positioner> & {
     showArrow?: boolean;
   }) {
   const adjustedSideOffset = showArrow
@@ -48,27 +52,27 @@ function PopoverContent({
     : sideOffset;
 
   const positionerProps = {
-    collisionAvoidance,
     align,
     alignOffset,
-    side,
-    sideOffset: adjustedSideOffset,
-    arrowPadding,
     anchor,
+    arrowPadding,
+    collisionAvoidance,
     collisionBoundary,
     collisionPadding,
-    sticky,
     positionMethod,
+    side,
+    sideOffset: adjustedSideOffset,
+    sticky,
     trackAnchor,
   };
 
   return (
-    <BasePopover.Portal>
-      <BasePopover.Positioner
+    <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Positioner
         {...positionerProps}
         data-slot="popover-positioner"
       >
-        <BasePopover.Popup
+        <PopoverPrimitive.Popup
           className={cn(
             'bg-popover text-popover-foreground data-[open]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[open]:fade-in-0 data-[closed]:zoom-out-95 data-[open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--transform-origin) rounded-md border p-4 shadow-md outline-hidden',
             className,
@@ -78,18 +82,18 @@ function PopoverContent({
         >
           {showArrow && <PopoverArrow />}
           {children}
-        </BasePopover.Popup>
-      </BasePopover.Positioner>
-    </BasePopover.Portal>
+        </PopoverPrimitive.Popup>
+      </PopoverPrimitive.Positioner>
+    </PopoverPrimitive.Portal>
   );
 }
 
 function PopoverArrow({
   className,
   ...props
-}: React.ComponentProps<typeof BasePopover.Arrow>) {
+}: React.ComponentProps<typeof PopoverPrimitive.Arrow>) {
   return (
-    <BasePopover.Arrow
+    <PopoverPrimitive.Arrow
       className={cn(
         'data-[side=bottom]:top-[-6px] data-[side=left]:right-[-11px] data-[side=right]:left-[-11px] data-[side=top]:bottom-[-6px]',
         'data-[side=left]:rotate-90 data-[side=right]:-rotate-90 data-[side=top]:rotate-180',
@@ -114,7 +118,7 @@ function PopoverArrow({
            - 6.97318C16.5936 7.63423 17.5468 8 18.5349 8H20V9H18.5349C17.2998 9 16.1083 8.54278 15.1901 7.71648L10.3333 3.34539Z"
         />
       </svg>
-    </BasePopover.Arrow>
+    </PopoverPrimitive.Arrow>
   );
 }
 

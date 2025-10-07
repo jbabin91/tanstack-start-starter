@@ -81,14 +81,13 @@ export function RegisterForm({ onSuccess, className }: RegisterFormProps) {
     }
 
     const signUpData = {
+      address: '',
       displayUsername: `@${data.username}`,
       email: data.email,
       name: data.name,
       password: data.password,
-      username: data.username,
-      // Optional additional fields from auth schema
-      address: '', // Empty strings for optional fields
       phone: '',
+      username: data.username,
       website: '',
     };
 

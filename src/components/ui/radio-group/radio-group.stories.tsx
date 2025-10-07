@@ -1,10 +1,70 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { RadioGroup, RadioGroupItem } from './radio-group';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@/components/ui/radio-group/radio-group';
 
 const meta: Meta<typeof RadioGroup> = {
-  title: 'UI/Forms/RadioGroup',
+  args: {
+    onValueChange: fn(),
+  },
+  argTypes: {
+    defaultValue: {
+      control: { type: 'text' },
+      description: 'The default value when uncontrolled.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Whether the entire radio group is disabled.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    name: {
+      control: { type: 'text' },
+      description: 'The name attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onValueChange: {
+      action: 'onValueChange',
+      description: 'Callback fired when the value changes.',
+      table: {
+        type: { summary: '(value: string) => void' },
+      },
+    },
+    orientation: {
+      control: { type: 'select' },
+      description: 'The orientation of the radio group.',
+      options: ['horizontal', 'vertical'],
+      table: {
+        type: { summary: '"horizontal" | "vertical"' },
+        defaultValue: { summary: '"vertical"' },
+      },
+    },
+    required: {
+      control: { type: 'boolean' },
+      description: 'Whether the radio group is required in a form.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    value: {
+      control: { type: 'text' },
+      description: 'The controlled value of the radio group.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: RadioGroup,
   parameters: {
     layout: 'centered',
@@ -16,70 +76,21 @@ const meta: Meta<typeof RadioGroup> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    value: {
-      description: 'The controlled value of the radio group.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    defaultValue: {
-      description: 'The default value when uncontrolled.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    disabled: {
-      description: 'Whether the entire radio group is disabled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    required: {
-      description: 'Whether the radio group is required in a form.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    name: {
-      description: 'The name attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    orientation: {
-      description: 'The orientation of the radio group.',
-      control: { type: 'select' },
-      options: ['horizontal', 'vertical'],
-      table: {
-        type: { summary: '"horizontal" | "vertical"' },
-        defaultValue: { summary: '"vertical"' },
-      },
-    },
-    onValueChange: {
-      description: 'Callback fired when the value changes.',
-      action: 'onValueChange',
-      table: {
-        type: { summary: '(value: string) => void' },
-      },
-    },
-  },
-  args: {
-    onValueChange: fn(),
-  },
+  title: 'UI/Forms/RadioGroup',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultRadioGroup: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Default radio group with three options in vertical layout.',
+      },
+    },
+  },
   render: (args) => (
     <RadioGroup {...args}>
       <div className="flex items-center space-x-2">
@@ -111,17 +122,19 @@ export const DefaultRadioGroup: Story = {
       </div>
     </RadioGroup>
   ),
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'Default radio group with three options in vertical layout.',
-      },
-    },
-  },
 };
 
 export const WithDefaultValue: Story = {
+  args: {
+    defaultValue: 'option2',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Radio group with option 2 selected by default.',
+      },
+    },
+  },
   render: (args) => (
     <RadioGroup {...args}>
       <div className="flex items-center space-x-2">
@@ -153,19 +166,20 @@ export const WithDefaultValue: Story = {
       </div>
     </RadioGroup>
   ),
+};
+
+export const DisabledRadioGroup: Story = {
   args: {
-    defaultValue: 'option2',
+    disabled: true,
+    defaultValue: 'option1',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Radio group with option 2 selected by default.',
+        story: 'Disabled radio group where no options can be selected.',
       },
     },
   },
-};
-
-export const DisabledRadioGroup: Story = {
   render: (args) => (
     <RadioGroup {...args}>
       <div className="flex items-center space-x-2">
@@ -188,20 +202,17 @@ export const DisabledRadioGroup: Story = {
       </div>
     </RadioGroup>
   ),
-  args: {
-    disabled: true,
-    defaultValue: 'option1',
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Disabled radio group where no options can be selected.',
-      },
-    },
-  },
 };
 
 export const IndividualDisabledItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Radio group with one individually disabled option.',
+      },
+    },
+  },
   render: (args) => (
     <RadioGroup {...args}>
       <div className="flex items-center space-x-2">
@@ -233,17 +244,20 @@ export const IndividualDisabledItems: Story = {
       </div>
     </RadioGroup>
   ),
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'Radio group with one individually disabled option.',
-      },
-    },
-  },
 };
 
 export const HorizontalRadioGroup: Story = {
+  args: {
+    orientation: 'horizontal',
+    defaultValue: 'medium',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Radio group arranged horizontally for size selection.',
+      },
+    },
+  },
   render: (args) => (
     <RadioGroup className="flex space-x-6" {...args}>
       <div className="flex items-center space-x-2">
@@ -275,20 +289,20 @@ export const HorizontalRadioGroup: Story = {
       </div>
     </RadioGroup>
   ),
+};
+
+export const WithDescriptions: Story = {
   args: {
-    orientation: 'horizontal',
-    defaultValue: 'medium',
+    defaultValue: 'pro',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Radio group arranged horizontally for size selection.',
+        story:
+          'Radio group with detailed descriptions for each option, useful for plan selection.',
       },
     },
   },
-};
-
-export const WithDescriptions: Story = {
   render: (args) => (
     <RadioGroup {...args}>
       <div className="flex items-start space-x-2">
@@ -339,20 +353,21 @@ export const WithDescriptions: Story = {
       </div>
     </RadioGroup>
   ),
+};
+
+export const FormIntegration: Story = {
   args: {
-    defaultValue: 'pro',
+    required: true,
+    defaultValue: 'email',
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Radio group with detailed descriptions for each option, useful for plan selection.',
+          'Radio group integrated into a form with fieldset, legend, and proper name attribute for submission.',
       },
     },
   },
-};
-
-export const FormIntegration: Story = {
   render: (args) => (
     <form className="space-y-6">
       <fieldset className="space-y-3">
@@ -389,55 +404,12 @@ export const FormIntegration: Story = {
       </fieldset>
     </form>
   ),
-  args: {
-    required: true,
-    defaultValue: 'email',
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Radio group integrated into a form with fieldset, legend, and proper name attribute for submission.',
-      },
-    },
-  },
 };
 
 export const InteractiveRadioGroup: Story = {
   args: {
     onValueChange: fn(),
   },
-  render: (args) => (
-    <RadioGroup {...args}>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem id="interactive-red" value="red" />
-        <label
-          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          htmlFor="interactive-red"
-        >
-          Red
-        </label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem id="interactive-green" value="green" />
-        <label
-          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          htmlFor="interactive-green"
-        >
-          Green
-        </label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem id="interactive-blue" value="blue" />
-        <label
-          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          htmlFor="interactive-blue"
-        >
-          Blue
-        </label>
-      </div>
-    </RadioGroup>
-  ),
   parameters: {
     docs: {
       description: {
@@ -488,4 +460,35 @@ export const InteractiveRadioGroup: Story = {
     expect(greenRadio).not.toBeChecked();
     expect(args.onValueChange).toHaveBeenCalledWith('blue');
   },
+  render: (args) => (
+    <RadioGroup {...args}>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem id="interactive-red" value="red" />
+        <label
+          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor="interactive-red"
+        >
+          Red
+        </label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem id="interactive-green" value="green" />
+        <label
+          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor="interactive-green"
+        >
+          Green
+        </label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem id="interactive-blue" value="blue" />
+        <label
+          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor="interactive-blue"
+        >
+          Blue
+        </label>
+      </div>
+    </RadioGroup>
+  ),
 };

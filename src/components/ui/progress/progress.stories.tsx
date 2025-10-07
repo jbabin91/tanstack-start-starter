@@ -3,12 +3,33 @@ import { expect, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-
-import { Progress } from './progress';
+import { Progress } from '@/components/ui/progress/progress';
 
 const meta = {
-  title: 'UI/Feedback/Progress',
+  argTypes: {
+    value: {
+      control: { max: 100, min: 0, step: 1, type: 'range' },
+      description: 'The progress value (0-100)',
+      table: {
+        type: { summary: 'number | null | undefined' },
+      },
+    },
+    className: {
+      control: 'text',
+      description: 'Additional CSS classes',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Progress,
+  decorators: [
+    (Story) => (
+      <div className="w-[400px] space-y-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -19,29 +40,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="w-[400px] space-y-4">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    value: {
-      description: 'The progress value (0-100)',
-      control: { type: 'range', min: 0, max: 100, step: 1 },
-      table: {
-        type: { summary: 'number | null | undefined' },
-      },
-    },
-    className: {
-      description: 'Additional CSS classes',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Feedback/Progress',
 } satisfies Meta<typeof Progress>;
 
 export default meta;
@@ -79,6 +78,21 @@ export const WithCustomStyling: Story = {
 };
 
 export const InteractiveDemo: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify initial state
+    const progressBar = canvas.getByRole('progressbar');
+    expect(progressBar).toBeVisible();
+
+    // Test button interaction
+    const startButton = canvas.getByRole('button', { name: 'Start Upload' });
+    expect(startButton).toBeVisible();
+
+    // Verify accessibility label
+    expect(progressBar).toHaveAttribute('aria-label', 'Upload progress: 0%');
+  },
   render: () => {
     const [progress, setProgress] = useState(0);
 
@@ -113,23 +127,30 @@ export const InteractiveDemo: Story = {
       </div>
     );
   },
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify initial state
-    const progressBar = canvas.getByRole('progressbar');
-    expect(progressBar).toBeVisible();
-
-    // Test button interaction
-    const startButton = canvas.getByRole('button', { name: 'Start Upload' });
-    expect(startButton).toBeVisible();
-
-    // Verify accessibility label
-    expect(progressBar).toHaveAttribute('aria-label', 'Upload progress: 0%');
-  },
 };
 
 export const WithLabels: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify multiple progress bars are rendered
+    const progressBars = canvas.getAllByRole('progressbar');
+    expect(progressBars).toHaveLength(2);
+
+    // Verify accessibility labels
+    expect(progressBars[0]).toHaveAttribute('aria-label', 'Storage usage: 65%');
+    expect(progressBars[1]).toHaveAttribute(
+      'aria-label',
+      'Download progress: 33%',
+    );
+
+    // Verify descriptive text
+    expect(canvas.getByText('8.5 GB of 13 GB used')).toBeVisible();
+    expect(
+      canvas.getByText('Downloading update... (2.1 MB of 6.3 MB)'),
+    ).toBeVisible();
+  },
   render: () => (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -153,24 +174,4 @@ export const WithLabels: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify multiple progress bars are rendered
-    const progressBars = canvas.getAllByRole('progressbar');
-    expect(progressBars).toHaveLength(2);
-
-    // Verify accessibility labels
-    expect(progressBars[0]).toHaveAttribute('aria-label', 'Storage usage: 65%');
-    expect(progressBars[1]).toHaveAttribute(
-      'aria-label',
-      'Download progress: 33%',
-    );
-
-    // Verify descriptive text
-    expect(canvas.getByText('8.5 GB of 13 GB used')).toBeVisible();
-    expect(
-      canvas.getByText('Downloading update... (2.1 MB of 6.3 MB)'),
-    ).toBeVisible();
-  },
 };

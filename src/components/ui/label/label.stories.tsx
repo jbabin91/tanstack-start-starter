@@ -4,13 +4,12 @@ import { expect, fn, userEvent, within } from '@storybook/test';
 import { Icons } from '@/components/icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/label/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 const meta = {
-  title: 'UI/Inputs/Label',
   component: Label,
   parameters: {
     layout: 'centered',
@@ -22,12 +21,14 @@ const meta = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Inputs/Label',
 } satisfies Meta<typeof Label>;
 
 export default meta;
 type Story = StoryObj<typeof Label>;
 
 export const Default: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-2">
       <Label {...args}>Email address</Label>
@@ -37,6 +38,7 @@ export const Default: Story = {
 };
 
 export const WithInput: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-2">
       <Label {...args} htmlFor="email-input">
@@ -48,6 +50,7 @@ export const WithInput: Story = {
 };
 
 export const WithCheckbox: Story = {
+  args: {},
   render: (args) => (
     <div className="flex items-center space-x-2">
       <Checkbox id="terms" />
@@ -59,6 +62,7 @@ export const WithCheckbox: Story = {
 };
 
 export const WithRadioGroup: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-4">
       <Label {...args}>Choose your subscription plan</Label>
@@ -81,6 +85,7 @@ export const WithRadioGroup: Story = {
 };
 
 export const WithSwitch: Story = {
+  args: {},
   render: (args) => (
     <div className="flex items-center space-x-2">
       <Switch id="notifications" />
@@ -92,6 +97,7 @@ export const WithSwitch: Story = {
 };
 
 export const WithTextarea: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-2">
       <Label {...args} htmlFor="message">
@@ -103,6 +109,7 @@ export const WithTextarea: Story = {
 };
 
 export const WithIcon: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-2">
       <Label {...args} className="flex items-center gap-2">
@@ -115,6 +122,7 @@ export const WithIcon: Story = {
 };
 
 export const Required: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-2">
       <Label {...args}>
@@ -127,6 +135,7 @@ export const Required: Story = {
 };
 
 export const DisabledField: Story = {
+  args: {},
   render: (args) => (
     <div className="group space-y-2" data-disabled="true">
       <Label {...args} htmlFor="disabled-input">
@@ -142,6 +151,7 @@ export const DisabledField: Story = {
 };
 
 export const MultipleLabels: Story = {
+  args: {},
   render: (args) => (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -172,47 +182,6 @@ export const Interactive: Story = {
   args: {
     onClick: fn(),
   },
-  render: (args) => (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label {...args} htmlFor="interactive-input">
-          Click me to focus the input
-        </Label>
-        <Input
-          id="interactive-input"
-          placeholder="Focus me when label is clicked"
-        />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Checkbox id="interactive-checkbox" />
-        <Label {...args} htmlFor="interactive-checkbox">
-          Click to toggle checkbox
-        </Label>
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Switch id="interactive-switch" />
-        <Label {...args} htmlFor="interactive-switch">
-          Click to toggle switch
-        </Label>
-      </div>
-
-      <div className="space-y-2">
-        <Label {...args}>Choose an option</Label>
-        <RadioGroup className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem id="option1" value="option1" />
-            <Label htmlFor="option1">Option 1</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem id="option2" value="option2" />
-            <Label htmlFor="option2">Option 2</Label>
-          </div>
-        </RadioGroup>
-      </div>
-    </div>
-  ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -258,4 +227,45 @@ export const Interactive: Story = {
     const labels = canvasElement.querySelectorAll('[data-slot="label"]');
     expect(labels.length).toBeGreaterThan(0);
   },
+  render: (args) => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label {...args} htmlFor="interactive-input">
+          Click me to focus the input
+        </Label>
+        <Input
+          id="interactive-input"
+          placeholder="Focus me when label is clicked"
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Checkbox id="interactive-checkbox" />
+        <Label {...args} htmlFor="interactive-checkbox">
+          Click to toggle checkbox
+        </Label>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch id="interactive-switch" />
+        <Label {...args} htmlFor="interactive-switch">
+          Click to toggle switch
+        </Label>
+      </div>
+
+      <div className="space-y-2">
+        <Label {...args}>Choose an option</Label>
+        <RadioGroup className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem id="option1" value="option1" />
+            <Label htmlFor="option1">Option 1</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem id="option2" value="option2" />
+            <Label htmlFor="option2">Option 2</Label>
+          </div>
+        </RadioGroup>
+      </div>
+    </div>
+  ),
 };

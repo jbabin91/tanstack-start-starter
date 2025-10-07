@@ -11,23 +11,23 @@ const badgeVariants = cva(
       variant: {
         default:
           'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
-        secondary:
-          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
         error:
           'border-error/20 bg-error/10 text-error-text [a&]:hover:bg-error/15 [a&]:hover:border-error/30 focus-visible:ring-error/20 dark:focus-visible:ring-error/40 dark:bg-error/10 dark:border-error/30 dark:text-error-text',
-        success:
-          'border-success/20 bg-success/10 text-success-text [a&]:hover:bg-success/15 [a&]:hover:border-success/30 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 dark:bg-success/10 dark:border-success/30 dark:text-success-text',
-        warning:
-          'border-warning/20 bg-warning/10 text-warning-text [a&]:hover:bg-warning/15 [a&]:hover:border-warning/30 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 dark:bg-warning/10 dark:border-warning/30 dark:text-warning-text',
-        info: 'border-info/20 bg-info/10 text-info-text [a&]:hover:bg-info/15 [a&]:hover:border-info/30 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 dark:bg-info/10 dark:border-info/30 dark:text-info-text',
-        'success-solid':
-          'border-transparent bg-success-emphasis text-success-emphasis-foreground [a&]:hover:bg-success-emphasis/90 focus-visible:ring-success-emphasis/20 dark:focus-visible:ring-success-emphasis/40',
-        'warning-solid':
-          'border-transparent bg-warning-emphasis text-warning-emphasis-foreground [a&]:hover:bg-warning-emphasis/90 focus-visible:ring-warning-emphasis/20 dark:focus-visible:ring-warning-emphasis/40',
         'error-solid':
           'border-transparent bg-error-emphasis text-error-emphasis-foreground [a&]:hover:bg-error-emphasis/90 focus-visible:ring-error-emphasis/20 dark:focus-visible:ring-error-emphasis/40',
+        info: 'border-info/20 bg-info/10 text-info-text [a&]:hover:bg-info/15 [a&]:hover:border-info/30 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 dark:bg-info/10 dark:border-info/30 dark:text-info-text',
         outline:
           'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+        secondary:
+          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
+        success:
+          'border-success/20 bg-success/10 text-success-text [a&]:hover:bg-success/15 [a&]:hover:border-success/30 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 dark:bg-success/10 dark:border-success/30 dark:text-success-text',
+        'success-solid':
+          'border-transparent bg-success-emphasis text-success-emphasis-foreground [a&]:hover:bg-success-emphasis/90 focus-visible:ring-success-emphasis/20 dark:focus-visible:ring-success-emphasis/40',
+        warning:
+          'border-warning/20 bg-warning/10 text-warning-text [a&]:hover:bg-warning/15 [a&]:hover:border-warning/30 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 dark:bg-warning/10 dark:border-warning/30 dark:text-warning-text',
+        'warning-solid':
+          'border-transparent bg-warning-emphasis text-warning-emphasis-foreground [a&]:hover:bg-warning-emphasis/90 focus-visible:ring-warning-emphasis/20 dark:focus-visible:ring-warning-emphasis/40',
       },
     },
     defaultVariants: {

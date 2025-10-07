@@ -6,7 +6,15 @@ import { OverlayBadge } from '@/components/ui/badge/overlay-badge';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 const meta: Meta<typeof Avatar> = {
-  title: 'UI/Data Display/Avatar',
+  argTypes: {
+    className: {
+      control: { type: 'text' },
+      description: 'Additional CSS classes for the avatar container.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Avatar,
   parameters: {
     layout: 'centered',
@@ -18,27 +26,14 @@ const meta: Meta<typeof Avatar> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    className: {
-      description: 'Additional CSS classes for the avatar container.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Data Display/Avatar',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => (
-    <Avatar {...args}>
-      <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
-      <AvatarFallback>CN</AvatarFallback>
-    </Avatar>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -46,15 +41,16 @@ export const Default: Story = {
       },
     },
   },
+  render: (args) => (
+    <Avatar {...args}>
+      <AvatarImage alt="@shadcn" src="https://github.com/shadcn.png" />
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+  ),
 };
 
 export const WithFallback: Story = {
-  render: (args) => (
-    <Avatar {...args}>
-      <AvatarImage alt="@user" src="https://invalid-url.com/nonexistent.jpg" />
-      <AvatarFallback>JD</AvatarFallback>
-    </Avatar>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -63,14 +59,16 @@ export const WithFallback: Story = {
       },
     },
   },
+  render: (args) => (
+    <Avatar {...args}>
+      <AvatarImage alt="@user" src="https://invalid-url.com/nonexistent.jpg" />
+      <AvatarFallback>JD</AvatarFallback>
+    </Avatar>
+  ),
 };
 
 export const FallbackOnly: Story = {
-  render: (args) => (
-    <Avatar {...args}>
-      <AvatarFallback>AB</AvatarFallback>
-    </Avatar>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -78,16 +76,15 @@ export const FallbackOnly: Story = {
       },
     },
   },
+  render: (args) => (
+    <Avatar {...args}>
+      <AvatarFallback>AB</AvatarFallback>
+    </Avatar>
+  ),
 };
 
 export const CustomFallback: Story = {
-  render: (args) => (
-    <Avatar {...args}>
-      <AvatarFallback className="bg-blue-500 font-bold text-white">
-        👤
-      </AvatarFallback>
-    </Avatar>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -95,9 +92,25 @@ export const CustomFallback: Story = {
       },
     },
   },
+  render: (args) => (
+    <Avatar {...args}>
+      <AvatarFallback className="bg-blue-500 font-bold text-white">
+        👤
+      </AvatarFallback>
+    </Avatar>
+  ),
 };
 
 export const Sizes: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Different avatar sizes using size classes: size-6 (24px), default size-8 (32px), size-12 (48px), and size-16 (64px).',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-4">
       <Avatar className="size-6" {...args}>
@@ -118,17 +131,18 @@ export const Sizes: Story = {
       </Avatar>
     </div>
   ),
+};
+
+export const AvatarGroup: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Different avatar sizes using size classes: size-6 (24px), default size-8 (32px), size-12 (48px), and size-16 (64px).',
+          'Group of overlapping avatars with borders, commonly used to show multiple users or team members.',
       },
     },
   },
-};
-
-export const AvatarGroup: Story = {
   render: (args) => (
     <div className="flex -space-x-2">
       <Avatar className="border-background border-2" {...args}>
@@ -154,17 +168,17 @@ export const AvatarGroup: Story = {
       </Avatar>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Group of overlapping avatars with borders, commonly used to show multiple users or team members.',
-      },
-    },
-  },
 };
 
 export const ProfileCard: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Avatar integrated into a profile card with user information.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-4">
       <Avatar className="size-16" {...args}>
@@ -183,16 +197,30 @@ export const ProfileCard: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Avatar integrated into a profile card with user information.',
-      },
-    },
-  },
 };
 
 export const StatusIndicator: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Avatars with integrated status indicators showing online (green), away (yellow), offline (gray), and busy (red) states. Now using the OverlayBadge component for better positioning.',
+      },
+    },
+  },
+  play: ({ canvasElement }) => {
+    // Status indicators are now badges, use querySelector for data-slot
+    const badges = canvasElement.querySelectorAll(
+      '[data-slot="overlay-badge"]',
+    );
+    expect(badges).toHaveLength(4);
+
+    // Verify all badges are visible
+    for (const badge of badges) {
+      expect(badge).toBeVisible();
+    }
+  },
   render: (args) => (
     <div className="flex items-center space-x-6">
       <OverlayBadge color="online" overlap="circular" variant="dot">
@@ -226,29 +254,18 @@ export const StatusIndicator: Story = {
       </OverlayBadge>
     </div>
   ),
+};
+
+export const StatusVariations: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Avatars with integrated status indicators showing online (green), away (yellow), offline (gray), and busy (red) states. Now using the OverlayBadge component for better positioning.',
+          "Demonstrates automatic edge positioning using the autoPosition prop. The OverlayBadge dynamically calculates optimal positioning based on the wrapped element's dimensions, ensuring perfect edge placement across all avatar sizes.",
       },
     },
   },
-  play: ({ canvasElement }) => {
-    // Status indicators are now badges, use querySelector for data-slot
-    const badges = canvasElement.querySelectorAll(
-      '[data-slot="overlay-badge"]',
-    );
-    expect(badges).toHaveLength(4);
-
-    // Verify all badges are visible
-    for (const badge of badges) {
-      expect(badge).toBeVisible();
-    }
-  },
-};
-
-export const StatusVariations: Story = {
   render: (args) => (
     <div className="space-y-6">
       <div>
@@ -343,17 +360,18 @@ export const StatusVariations: Story = {
       </div>
     </div>
   ),
+};
+
+export const SquareAvatar: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          "Demonstrates automatic edge positioning using the autoPosition prop. The OverlayBadge dynamically calculates optimal positioning based on the wrapped element's dimensions, ensuring perfect edge placement across all avatar sizes.",
+          'Non-circular avatar variations using different border radius values.',
       },
     },
   },
-};
-
-export const SquareAvatar: Story = {
   render: (args) => (
     <div className="flex items-center space-x-4">
       <Avatar className="rounded-lg" {...args}>
@@ -366,17 +384,17 @@ export const SquareAvatar: Story = {
       </Avatar>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Non-circular avatar variations using different border radius values.',
-      },
-    },
-  },
 };
 
 export const LoadingStates: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Avatar showing loading states with pulse animation effects.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-4">
       <Avatar {...args}>
@@ -393,16 +411,18 @@ export const LoadingStates: Story = {
       </Avatar>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Avatar showing loading states with pulse animation effects.',
-      },
-    },
-  },
 };
 
 export const ColorVariants: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Avatar fallbacks with different color schemes that work in both light and dark themes.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-4">
       <Avatar {...args}>
@@ -432,34 +452,12 @@ export const ColorVariants: Story = {
       </Avatar>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Avatar fallbacks with different color schemes that work in both light and dark themes.',
-      },
-    },
-  },
 };
 
 export const InteractiveAvatar: Story = {
   args: {
     onClick: fn(),
   },
-  render: (args) => (
-    <Avatar
-      className="hover:ring-ring cursor-pointer transition-all hover:ring-2 hover:ring-offset-2"
-      role="button"
-      tabIndex={0}
-      {...args}
-    >
-      <AvatarImage
-        alt="Interactive avatar"
-        src="https://github.com/shadcn.png"
-      />
-      <AvatarFallback>IA</AvatarFallback>
-    </Avatar>
-  ),
   parameters: {
     docs: {
       description: {
@@ -491,9 +489,32 @@ export const InteractiveAvatar: Story = {
     expect(avatar).toHaveAttribute('tabindex', '0');
     expect(avatar).toHaveAttribute('role', 'button');
   },
+  render: (args) => (
+    <Avatar
+      className="hover:ring-ring cursor-pointer transition-all hover:ring-2 hover:ring-offset-2"
+      role="button"
+      tabIndex={0}
+      {...args}
+    >
+      <AvatarImage
+        alt="Interactive avatar"
+        src="https://github.com/shadcn.png"
+      />
+      <AvatarFallback>IA</AvatarFallback>
+    </Avatar>
+  ),
 };
 
 export const BadgeVariations: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates badge functionality including count badges, text badges, and different positions using explicit OverlayBadge composition.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-6">
       <div>
@@ -642,17 +663,18 @@ export const BadgeVariations: Story = {
       </div>
     </div>
   ),
+};
+
+export const AccessibilityDemo: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Demonstrates badge functionality including count badges, text badges, and different positions using explicit OverlayBadge composition.',
+          'Demonstrates accessibility features including descriptive alt text, meaningful fallback content, proper ARIA labels, and accessible badge positioning using OverlayBadge.',
       },
     },
   },
-};
-
-export const AccessibilityDemo: Story = {
   render: (args) => (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Accessibility Features</h4>
@@ -682,12 +704,4 @@ export const AccessibilityDemo: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates accessibility features including descriptive alt text, meaningful fallback content, proper ARIA labels, and accessible badge positioning using OverlayBadge.',
-      },
-    },
-  },
 };

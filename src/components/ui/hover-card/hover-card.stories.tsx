@@ -4,12 +4,14 @@ import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card/hover-card';
 import { isElementVisible } from '@/test/utils';
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from './hover-card';
-
 const meta: Meta<typeof HoverCard> = {
-  title: 'UI/Overlays/Hover Card',
   component: HoverCard,
   parameters: {
     layout: 'centered',
@@ -21,12 +23,14 @@ const meta: Meta<typeof HoverCard> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Overlays/Hover Card',
 };
 
 export default meta;
 type Story = StoryObj<typeof HoverCard>;
 
 export const Default: Story = {
+  args: {},
   render: () => (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -55,6 +59,7 @@ export const Default: Story = {
 };
 
 export const UserProfile: Story = {
+  args: {},
   render: () => (
     <div className="flex items-center space-x-4">
       <span className="text-muted-foreground text-sm">Designed by</span>
@@ -104,6 +109,7 @@ export const UserProfile: Story = {
 };
 
 export const ProductCard: Story = {
+  args: {},
   render: () => (
     <div className="max-w-md rounded-lg border p-4">
       <h3 className="mb-2 font-semibold">Featured Products</h3>
@@ -201,6 +207,7 @@ export const ProductCard: Story = {
 };
 
 export const LinkPreview: Story = {
+  args: {},
   render: () => (
     <div className="max-w-lg space-y-4 text-sm leading-relaxed">
       <p>
@@ -296,6 +303,7 @@ export const LinkPreview: Story = {
 };
 
 export const StatCard: Story = {
+  args: {},
   render: () => (
     <div className="grid max-w-md grid-cols-2 gap-4">
       <HoverCard>
@@ -370,6 +378,7 @@ export const StatCard: Story = {
 };
 
 export const DocumentationLinks: Story = {
+  args: {},
   render: () => (
     <div className="max-w-2xl space-y-6">
       <h2 className="text-lg font-semibold">API Reference</h2>
@@ -464,89 +473,6 @@ export const Interactive: Story = {
   args: {
     onOpenChange: fn(),
   },
-  render: (args) => {
-    const userData = {
-      name: 'Alice Johnson',
-      handle: '@alice_codes',
-      bio: 'Full-stack developer passionate about React, TypeScript, and accessible design.',
-      followers: 1847,
-      following: 329,
-      joinDate: 'March 2020',
-      location: 'San Francisco, CA',
-      website: 'alice-codes.dev',
-    };
-
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <span className="text-muted-foreground text-sm">Meet our team:</span>
-          <HoverCard onOpenChange={args.onOpenChange}>
-            <HoverCardTrigger asChild>
-              <Button className="h-auto p-0 font-semibold" variant="link">
-                {userData.handle}
-              </Button>
-            </HoverCardTrigger>
-            <HoverCardContent className="w-80">
-              <div className="flex justify-between space-x-4">
-                <Avatar className="size-14">
-                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-lg font-medium text-white">
-                    {userData.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <h4 className="text-sm font-semibold">{userData.name}</h4>
-                  <p className="text-muted-foreground text-sm">
-                    {userData.handle}
-                  </p>
-                  <p className="text-sm">{userData.bio}</p>
-                  <div className="flex items-center space-x-4 pt-2">
-                    <div className="text-muted-foreground flex items-center text-xs">
-                      <Icons.users className="mr-1" size="sm" />
-                      <span className="font-medium">
-                        {userData.followers}
-                      </span>{' '}
-                      followers
-                    </div>
-                    <div className="text-muted-foreground flex items-center text-xs">
-                      <span className="font-medium">{userData.following}</span>{' '}
-                      following
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground flex items-center space-x-4 text-xs">
-                    <div className="flex items-center">
-                      <Icons.calendar className="mr-1" size="sm" />
-                      Joined {userData.joinDate}
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground flex items-center space-x-4 text-xs">
-                    <div className="flex items-center">
-                      <Icons.mapPin className="mr-1" size="sm" />
-                      {userData.location}
-                    </div>
-                    <div className="flex items-center">
-                      <Icons.globe className="mr-1" size="sm" />
-                      {userData.website}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </HoverCardContent>
-          </HoverCard>
-        </div>
-
-        <div className="text-muted-foreground text-sm">
-          <p>Hover over the username above to see the profile card.</p>
-          <p>
-            The card will appear after a short delay and disappear when you stop
-            hovering.
-          </p>
-        </div>
-      </div>
-    );
-  },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -623,9 +549,93 @@ export const Interactive: Story = {
     expect(args.onOpenChange).toHaveBeenCalledWith(true);
     expect(args.onOpenChange).toHaveBeenCalledWith(false);
   },
+  render: (args) => {
+    const userData = {
+      bio: 'Full-stack developer passionate about React, TypeScript, and accessible design.',
+      followers: 1847,
+      following: 329,
+      handle: '@alice_codes',
+      joinDate: 'March 2020',
+      location: 'San Francisco, CA',
+      name: 'Alice Johnson',
+      website: 'alice-codes.dev',
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center space-x-4">
+          <span className="text-muted-foreground text-sm">Meet our team:</span>
+          <HoverCard onOpenChange={args.onOpenChange}>
+            <HoverCardTrigger asChild>
+              <Button className="h-auto p-0 font-semibold" variant="link">
+                {userData.handle}
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="flex justify-between space-x-4">
+                <Avatar className="size-14">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-lg font-medium text-white">
+                    {userData.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                  <h4 className="text-sm font-semibold">{userData.name}</h4>
+                  <p className="text-muted-foreground text-sm">
+                    {userData.handle}
+                  </p>
+                  <p className="text-sm">{userData.bio}</p>
+                  <div className="flex items-center space-x-4 pt-2">
+                    <div className="text-muted-foreground flex items-center text-xs">
+                      <Icons.users className="mr-1" size="sm" />
+                      <span className="font-medium">
+                        {userData.followers}
+                      </span>{' '}
+                      followers
+                    </div>
+                    <div className="text-muted-foreground flex items-center text-xs">
+                      <span className="font-medium">{userData.following}</span>{' '}
+                      following
+                    </div>
+                  </div>
+                  <div className="text-muted-foreground flex items-center space-x-4 text-xs">
+                    <div className="flex items-center">
+                      <Icons.calendar className="mr-1" size="sm" />
+                      Joined {userData.joinDate}
+                    </div>
+                  </div>
+                  <div className="text-muted-foreground flex items-center space-x-4 text-xs">
+                    <div className="flex items-center">
+                      <Icons.mapPin className="mr-1" size="sm" />
+                      {userData.location}
+                    </div>
+                    <div className="flex items-center">
+                      <Icons.globe className="mr-1" size="sm" />
+                      {userData.website}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+
+        <div className="text-muted-foreground text-sm">
+          <p>Hover over the username above to see the profile card.</p>
+          <p>
+            The card will appear after a short delay and disappear when you stop
+            hovering.
+          </p>
+        </div>
+      </div>
+    );
+  },
 };
 
 export const TriggerVariations: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {

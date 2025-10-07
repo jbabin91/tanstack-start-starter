@@ -6,12 +6,44 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover/popover';
 
 const meta = {
-  title: 'UI/Overlays/Popover',
+  argTypes: {
+    defaultOpen: {
+      control: 'boolean',
+      description: 'Default open state (uncontrolled)',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    onOpenChange: {
+      action: 'openChange',
+      description: 'Callback when open state changes',
+      table: {
+        type: { summary: '(open: boolean) => void' },
+      },
+    },
+    open: {
+      control: 'boolean',
+      description: 'Controlled open state',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+  },
   component: Popover,
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -22,36 +54,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    open: {
-      description: 'Controlled open state',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    defaultOpen: {
-      description: 'Default open state (uncontrolled)',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    onOpenChange: {
-      description: 'Callback when open state changes',
-      action: 'openChange',
-      table: {
-        type: { summary: '(open: boolean) => void' },
-      },
-    },
-  },
+  title: 'UI/Overlays/Popover',
 } satisfies Meta<typeof Popover>;
 
 export default meta;
@@ -61,24 +64,6 @@ export const Default: Story = {
   args: {
     onOpenChange: fn(),
   },
-  render: (args) => (
-    <Popover {...args}>
-      <PopoverTrigger>
-        <Button variant="ghost">Open Popover</Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <div className="space-y-2">
-          <h4 className="leading-none font-medium">Settings</h4>
-          <p className="text-muted-foreground text-sm">
-            Configure your preferences here.
-          </p>
-          <div className="pt-2">
-            <Button size="sm">Save Changes</Button>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -109,9 +94,58 @@ export const Default: Story = {
       expect(args.onOpenChange).toHaveBeenCalledWith(false);
     });
   },
+  render: (args) => (
+    <Popover {...args}>
+      <PopoverTrigger>
+        <Button variant="ghost">Open Popover</Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <div className="space-y-2">
+          <h4 className="leading-none font-medium">Settings</h4>
+          <p className="text-muted-foreground text-sm">
+            Configure your preferences here.
+          </p>
+          <div className="pt-2">
+            <Button size="sm">Save Changes</Button>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  ),
 };
 
 export const WithForm: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Open popover
+    const trigger = canvas.getByRole('button', { name: 'User Settings' });
+    await userEvent.click(trigger);
+
+    // Check form elements in popover
+    await waitFor(() => {
+      expect(screen.getByText('Profile Settings')).toBeVisible();
+    });
+
+    const nameInput = screen.getByLabelText('Name');
+    const emailInput = screen.getByLabelText('Email');
+    const roleInput = screen.getByLabelText('Role');
+
+    expect(nameInput).toHaveValue('John Doe');
+    expect(emailInput).toHaveValue('john@example.com');
+    expect(roleInput).toHaveValue('Developer');
+
+    // Test form interaction
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Jane Smith');
+    expect(nameInput).toHaveValue('Jane Smith');
+
+    // Check action buttons
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeVisible();
+  },
   render: () => (
     <Popover>
       <PopoverTrigger>
@@ -164,39 +198,39 @@ export const WithForm: Story = {
       </PopoverContent>
     </Popover>
   ),
+};
+
+export const Controlled: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Open popover
-    const trigger = canvas.getByRole('button', { name: 'User Settings' });
-    await userEvent.click(trigger);
+    // Check initial state
+    expect(canvas.getByText('Popover is closed')).toBeVisible();
 
-    // Check form elements in popover
+    // Open via manual button
+    const manualButton = canvas.getByRole('button', { name: 'Open Manually' });
+    await userEvent.click(manualButton);
+
+    expect(canvas.getByText('Popover is open')).toBeVisible();
+
     await waitFor(() => {
-      expect(screen.getByText('Profile Settings')).toBeVisible();
+      expect(screen.getByText('Controlled Popover')).toBeVisible();
     });
 
-    const nameInput = screen.getByLabelText('Name');
-    const emailInput = screen.getByLabelText('Email');
-    const roleInput = screen.getByLabelText('Role');
+    // Close from inside popover
+    const closeButton = screen.getByRole('button', {
+      name: 'Close from Inside',
+    });
+    await userEvent.click(closeButton);
 
-    expect(nameInput).toHaveValue('John Doe');
-    expect(emailInput).toHaveValue('john@example.com');
-    expect(roleInput).toHaveValue('Developer');
+    expect(canvas.getByText('Popover is closed')).toBeVisible();
 
-    // Test form interaction
-    await userEvent.clear(nameInput);
-    await userEvent.type(nameInput, 'Jane Smith');
-    expect(nameInput).toHaveValue('Jane Smith');
-
-    // Check action buttons
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeVisible();
+    await waitFor(() => {
+      expect(screen.queryByText('Controlled Popover')).not.toBeInTheDocument();
+    });
   },
-};
-
-export const Controlled: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -233,38 +267,41 @@ export const Controlled: Story = {
       </div>
     );
   },
+};
+
+export const Positioning: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Check initial state
-    expect(canvas.getByText('Popover is closed')).toBeVisible();
-
-    // Open via manual button
-    const manualButton = canvas.getByRole('button', { name: 'Open Manually' });
-    await userEvent.click(manualButton);
-
-    expect(canvas.getByText('Popover is open')).toBeVisible();
+    // Test top positioning
+    const topButton = canvas.getByRole('button', { name: 'Top' });
+    await userEvent.click(topButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Controlled Popover')).toBeVisible();
+      expect(screen.getByText('Positioned above the trigger')).toBeVisible();
     });
 
-    // Close from inside popover
-    const closeButton = screen.getByRole('button', {
-      name: 'Close from Inside',
-    });
-    await userEvent.click(closeButton);
-
-    expect(canvas.getByText('Popover is closed')).toBeVisible();
+    // Close by clicking outside
+    await userEvent.click(document.body);
 
     await waitFor(() => {
-      expect(screen.queryByText('Controlled Popover')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Positioned above the trigger'),
+      ).not.toBeInTheDocument();
+    });
+
+    // Test right positioning
+    const rightButton = canvas.getByRole('button', { name: 'Right' });
+    await userEvent.click(rightButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Positioned to the right of trigger'),
+      ).toBeVisible();
     });
   },
-};
-
-export const Positioning: Story = {
   render: () => (
     <div className="grid grid-cols-3 gap-4">
       <div className="space-y-2">
@@ -304,40 +341,37 @@ export const Positioning: Story = {
       </div>
     </div>
   ),
+};
+
+export const WithCustomWidth: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test top positioning
-    const topButton = canvas.getByRole('button', { name: 'Top' });
-    await userEvent.click(topButton);
+    // Test narrow popover
+    const narrowButton = canvas.getByRole('button', { name: 'Narrow Popover' });
+    await userEvent.click(narrowButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Positioned above the trigger')).toBeVisible();
+      expect(screen.getByText('Narrow')).toBeVisible();
     });
 
-    // Close by clicking outside
+    // Close it
     await userEvent.click(document.body);
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Positioned above the trigger'),
-      ).not.toBeInTheDocument();
-    });
-
-    // Test right positioning
-    const rightButton = canvas.getByRole('button', { name: 'Right' });
-    await userEvent.click(rightButton);
+    // Test wide popover
+    const wideButton = canvas.getByRole('button', { name: 'Wide Popover' });
+    await userEvent.click(wideButton);
 
     await waitFor(() => {
       expect(
-        screen.getByText('Positioned to the right of trigger'),
+        screen.getByRole('heading', { name: 'Wide Popover' }),
       ).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Confirm' })).toBeVisible();
     });
   },
-};
-
-export const WithCustomWidth: Story = {
   render: () => (
     <div className="space-y-4">
       <Popover>
@@ -377,36 +411,34 @@ export const WithCustomWidth: Story = {
       </Popover>
     </div>
   ),
+};
+
+export const HelpPopover: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test narrow popover
-    const narrowButton = canvas.getByRole('button', { name: 'Narrow Popover' });
-    await userEvent.click(narrowButton);
+    // Test username help
+    const usernameHelp = canvas.getByRole('button', { name: 'Username help' });
+    await userEvent.click(usernameHelp);
 
     await waitFor(() => {
-      expect(screen.getByText('Narrow')).toBeVisible();
+      expect(screen.getByText('Username Guidelines')).toBeVisible();
+      expect(screen.getByText('Must be 3-20 characters long')).toBeVisible();
     });
 
-    // Close it
+    // Close and test password help
     await userEvent.click(document.body);
 
-    // Test wide popover
-    const wideButton = canvas.getByRole('button', { name: 'Wide Popover' });
-    await userEvent.click(wideButton);
+    const passwordHelp = canvas.getByRole('button', { name: 'Password help' });
+    await userEvent.click(passwordHelp);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: 'Wide Popover' }),
-      ).toBeVisible();
-      expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
-      expect(screen.getByRole('button', { name: 'Confirm' })).toBeVisible();
+      expect(screen.getByText('Password Requirements')).toBeVisible();
+      expect(screen.getByText('At least 8 characters long')).toBeVisible();
     });
   },
-};
-
-export const HelpPopover: Story = {
   render: () => (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -457,33 +489,37 @@ export const HelpPopover: Story = {
       <Input id="password" placeholder="Enter password" type="password" />
     </div>
   ),
+};
+
+export const WithArrow: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test username help
-    const usernameHelp = canvas.getByRole('button', { name: 'Username help' });
-    await userEvent.click(usernameHelp);
+    // Test bottom arrow
+    const bottomButton = canvas.getByRole('button', { name: 'Bottom Arrow' });
+    await userEvent.click(bottomButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Username Guidelines')).toBeVisible();
-      expect(screen.getByText('Must be 3-20 characters long')).toBeVisible();
+      expect(screen.getByText('With Arrow')).toBeVisible();
     });
 
-    // Close and test password help
+    // Close bottom popover
     await userEvent.click(document.body);
 
-    const passwordHelp = canvas.getByRole('button', { name: 'Password help' });
-    await userEvent.click(passwordHelp);
+    await waitFor(() => {
+      expect(screen.queryByText('With Arrow')).not.toBeInTheDocument();
+    });
+
+    // Test top arrow
+    const topButton = canvas.getByRole('button', { name: 'Top Arrow' });
+    await userEvent.click(topButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Password Requirements')).toBeVisible();
-      expect(screen.getByText('At least 8 characters long')).toBeVisible();
+      expect(screen.getByText('Arrow Above')).toBeVisible();
     });
   },
-};
-
-export const WithArrow: Story = {
   render: () => (
     <div className="flex flex-col items-center gap-8">
       <div className="space-y-2 text-center">
@@ -521,31 +557,4 @@ export const WithArrow: Story = {
       </div>
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const screen = within(document.body);
-
-    // Test bottom arrow
-    const bottomButton = canvas.getByRole('button', { name: 'Bottom Arrow' });
-    await userEvent.click(bottomButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('With Arrow')).toBeVisible();
-    });
-
-    // Close bottom popover
-    await userEvent.click(document.body);
-
-    await waitFor(() => {
-      expect(screen.queryByText('With Arrow')).not.toBeInTheDocument();
-    });
-
-    // Test top arrow
-    const topButton = canvas.getByRole('button', { name: 'Top Arrow' });
-    await userEvent.click(topButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Arrow Above')).toBeVisible();
-    });
-  },
 };

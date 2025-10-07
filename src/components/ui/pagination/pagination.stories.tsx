@@ -9,10 +9,19 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from './pagination';
+} from '@/components/ui/pagination/pagination';
 
 const meta: Meta<typeof Pagination> = {
-  title: 'UI/Navigation/Pagination',
+  argTypes: {
+    className: {
+      control: 'text',
+      description:
+        'Additional CSS classes to apply to the pagination container.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Pagination,
   parameters: {
     layout: 'centered',
@@ -24,22 +33,21 @@ const meta: Meta<typeof Pagination> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    className: {
-      description:
-        'Additional CSS classes to apply to the pagination container.',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Navigation/Pagination',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicPagination: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic pagination with previous, next, and numbered page links.',
+      },
+    },
+  },
   render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
@@ -63,16 +71,17 @@ export const BasicPagination: Story = {
       </PaginationContent>
     </Pagination>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic pagination with previous, next, and numbered page links.',
-      },
-    },
-  },
 };
 
 export const PaginationWithEllipsis: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Pagination with ellipsis to indicate skipped pages.',
+      },
+    },
+  },
   render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
@@ -102,16 +111,17 @@ export const PaginationWithEllipsis: Story = {
       </PaginationContent>
     </Pagination>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Pagination with ellipsis to indicate skipped pages.',
-      },
-    },
-  },
 };
 
 export const LargePagination: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Pagination for large datasets with ellipsis on both sides.',
+      },
+    },
+  },
   render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
@@ -147,16 +157,17 @@ export const LargePagination: Story = {
       </PaginationContent>
     </Pagination>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Pagination for large datasets with ellipsis on both sides.',
-      },
-    },
-  },
 };
 
 export const MinimalPagination: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Minimal pagination with only previous and next buttons.',
+      },
+    },
+  },
   render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
@@ -169,16 +180,17 @@ export const MinimalPagination: Story = {
       </PaginationContent>
     </Pagination>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Minimal pagination with only previous and next buttons.',
-      },
-    },
-  },
 };
 
 export const SinglePage: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Pagination when there&apos;s only one page available.',
+      },
+    },
+  },
   render: (args) => (
     <Pagination {...args}>
       <PaginationContent>
@@ -190,13 +202,6 @@ export const SinglePage: Story = {
       </PaginationContent>
     </Pagination>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Pagination when there&apos;s only one page available.',
-      },
-    },
-  },
 };
 
 // Interactive pagination component with mock handlers
@@ -285,7 +290,6 @@ export const InteractivePagination: StoryObj<
   args: {
     onPageChange: fn(),
   },
-  render: (args) => <InteractivePaginationComponent {...args} />,
   parameters: {
     docs: {
       description: {
@@ -335,9 +339,18 @@ export const InteractivePagination: StoryObj<
       expect(ellipsis.tagName).toBe('SPAN');
     });
   },
+  render: (args) => <InteractivePaginationComponent {...args} />,
 };
 
 export const EdgeCases: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Edge cases including two pages and disabled states.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-8">
       {/* Two pages only */}
@@ -379,9 +392,9 @@ export const EdgeCases: Story = {
               <PaginationPrevious
                 href="#"
                 style={{
+                  cursor: 'not-allowed',
                   opacity: 0.5,
                   pointerEvents: 'none',
-                  cursor: 'not-allowed',
                 }}
               />
             </PaginationItem>
@@ -401,9 +414,9 @@ export const EdgeCases: Story = {
               <PaginationNext
                 href="#"
                 style={{
+                  cursor: 'not-allowed',
                   opacity: 0.5,
                   pointerEvents: 'none',
-                  cursor: 'not-allowed',
                 }}
               />
             </PaginationItem>
@@ -412,11 +425,4 @@ export const EdgeCases: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Edge cases including two pages and disabled states.',
-      },
-    },
-  },
 };

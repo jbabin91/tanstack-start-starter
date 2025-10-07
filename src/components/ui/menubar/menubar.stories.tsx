@@ -17,10 +17,9 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from '@/components/ui/menubar';
+} from '@/components/ui/menubar/menubar';
 
 const meta = {
-  title: 'UI/Navigation/Menubar',
   component: Menubar,
   parameters: {
     layout: 'centered',
@@ -32,12 +31,14 @@ const meta = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Navigation/Menubar',
 } satisfies Meta<typeof Menubar>;
 
 export default meta;
 type Story = StoryObj<typeof Menubar>;
 
 export const Default: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -66,6 +67,7 @@ export const Default: Story = {
 };
 
 export const WithShortcuts: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -121,6 +123,7 @@ export const WithShortcuts: Story = {
 };
 
 export const WithIcons: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -169,6 +172,7 @@ export const WithIcons: Story = {
 };
 
 export const WithCheckboxes: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -189,6 +193,7 @@ export const WithCheckboxes: Story = {
 };
 
 export const WithRadioGroup: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -214,6 +219,7 @@ export const WithRadioGroup: Story = {
 };
 
 export const WithSubmenus: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -267,6 +273,7 @@ export const WithSubmenus: Story = {
 };
 
 export const ApplicationMenu: Story = {
+  args: {},
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>
@@ -415,61 +422,6 @@ export const Interactive: Story = {
   args: {
     onValueChange: fn(),
   },
-  render: (args) => (
-    <Menubar {...args}>
-      <MenubarMenu>
-        <MenubarTrigger>File</MenubarTrigger>
-        <MenubarContent>
-          <MenubarItem onSelect={fn()}>
-            New File
-            <MenubarShortcut>⌘N</MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem onSelect={fn()}>
-            Open File
-            <MenubarShortcut>⌘O</MenubarShortcut>
-          </MenubarItem>
-          <MenubarSeparator />
-          <MenubarItem onSelect={fn()}>
-            Save
-            <MenubarShortcut>⌘S</MenubarShortcut>
-          </MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
-
-      <MenubarMenu>
-        <MenubarTrigger>View</MenubarTrigger>
-        <MenubarContent>
-          <MenubarCheckboxItem checked onCheckedChange={fn()}>
-            Show Sidebar
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem onCheckedChange={fn()}>
-            Show Status Bar
-          </MenubarCheckboxItem>
-          <MenubarSeparator />
-          <MenubarRadioGroup value="grid" onValueChange={fn()}>
-            <MenubarRadioItem value="list">List View</MenubarRadioItem>
-            <MenubarRadioItem value="grid">Grid View</MenubarRadioItem>
-          </MenubarRadioGroup>
-        </MenubarContent>
-      </MenubarMenu>
-
-      <MenubarMenu>
-        <MenubarTrigger>Tools</MenubarTrigger>
-        <MenubarContent>
-          <MenubarSub>
-            <MenubarSubTrigger>Export</MenubarSubTrigger>
-            <MenubarSubContent>
-              <MenubarItem onSelect={fn()}>Export as PDF</MenubarItem>
-              <MenubarItem onSelect={fn()}>Export as HTML</MenubarItem>
-            </MenubarSubContent>
-          </MenubarSub>
-          <MenubarItem variant="error" onSelect={fn()}>
-            Clear All Data
-          </MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
-    </Menubar>
-  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -554,4 +506,59 @@ export const Interactive: Story = {
     );
     expect(triggers.length).toBe(3);
   },
+  render: (args) => (
+    <Menubar {...args}>
+      <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onSelect={fn()}>
+            New File
+            <MenubarShortcut>⌘N</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem onSelect={fn()}>
+            Open File
+            <MenubarShortcut>⌘O</MenubarShortcut>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={fn()}>
+            Save
+            <MenubarShortcut>⌘S</MenubarShortcut>
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+
+      <MenubarMenu>
+        <MenubarTrigger>View</MenubarTrigger>
+        <MenubarContent>
+          <MenubarCheckboxItem checked onCheckedChange={fn()}>
+            Show Sidebar
+          </MenubarCheckboxItem>
+          <MenubarCheckboxItem onCheckedChange={fn()}>
+            Show Status Bar
+          </MenubarCheckboxItem>
+          <MenubarSeparator />
+          <MenubarRadioGroup value="grid" onValueChange={fn()}>
+            <MenubarRadioItem value="list">List View</MenubarRadioItem>
+            <MenubarRadioItem value="grid">Grid View</MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarContent>
+      </MenubarMenu>
+
+      <MenubarMenu>
+        <MenubarTrigger>Tools</MenubarTrigger>
+        <MenubarContent>
+          <MenubarSub>
+            <MenubarSubTrigger>Export</MenubarSubTrigger>
+            <MenubarSubContent>
+              <MenubarItem onSelect={fn()}>Export as PDF</MenubarItem>
+              <MenubarItem onSelect={fn()}>Export as HTML</MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
+          <MenubarItem variant="error" onSelect={fn()}>
+            Clear All Data
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+    </Menubar>
+  ),
 };

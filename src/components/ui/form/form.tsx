@@ -1,5 +1,7 @@
+'use client';
+
 import { type Label as LabelPrimitive, Slot } from 'radix-ui';
-import { createContext, use, useId, useMemo } from 'react';
+import * as React from 'react';
 import {
   Controller,
   type ControllerProps,
@@ -22,7 +24,7 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = createContext<FormFieldContextValue>(
+const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 );
 
@@ -30,7 +32,10 @@ function FormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({ ...props }: ControllerProps<TFieldValues, TName>) {
-  const contextValue = useMemo(() => ({ name: props.name }), [props.name]);
+  const contextValue = React.useMemo(
+    () => ({ name: props.name }),
+    [props.name],
+  );
   return (
     <FormFieldContext.Provider value={contextValue}>
       <Controller {...props} />
@@ -39,8 +44,8 @@ function FormField<
 }
 
 function useFormField() {
-  const fieldContext = use(FormFieldContext);
-  const itemContext = use(FormItemContext);
+  const fieldContext = React.use(FormFieldContext);
+  const itemContext = React.use(FormItemContext);
   const { getFieldState } = useFormContext();
   const formState = useFormState({ name: fieldContext.name });
   const fieldState = getFieldState(fieldContext.name, formState);
@@ -65,14 +70,13 @@ type FormItemContextValue = {
   id: string;
 };
 
-const FormItemContext = createContext<FormItemContextValue>(
+const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
 
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
-  const id = useId();
-
-  const contextValue = useMemo(() => ({ id }), [id]);
+  const id = React.useId();
+  const contextValue = React.useMemo(() => ({ id }), [id]);
 
   return (
     <FormItemContext.Provider value={contextValue}>

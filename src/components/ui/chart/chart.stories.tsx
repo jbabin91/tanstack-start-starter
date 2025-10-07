@@ -14,7 +14,6 @@ import {
 } from 'recharts';
 
 import { Icons } from '@/components/icons';
-
 import {
   type ChartConfig,
   ChartContainer,
@@ -22,11 +21,17 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from './chart';
+} from '@/components/ui/chart/chart';
 
 const meta: Meta<typeof ChartContainer> = {
-  title: 'UI/Data Display/Chart',
   component: ChartContainer,
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-4xl p-6">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -37,41 +42,34 @@ const meta: Meta<typeof ChartContainer> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-4xl p-6">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Data Display/Chart',
 };
 
 export default meta;
-
 type Story = StoryObj<typeof ChartContainer>;
 
 // Sample data for charts
 const sampleData = [
-  { month: 'Jan', desktop: 186, mobile: 80 },
-  { month: 'Feb', desktop: 305, mobile: 200 },
-  { month: 'Mar', desktop: 237, mobile: 120 },
-  { month: 'Apr', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'Jun', desktop: 214, mobile: 140 },
-  { month: 'Jul', desktop: 186, mobile: 180 },
-  { month: 'Aug', desktop: 305, mobile: 220 },
-  { month: 'Sep', desktop: 237, mobile: 160 },
-  { month: 'Oct', desktop: 273, mobile: 290 },
-  { month: 'Nov', desktop: 209, mobile: 230 },
-  { month: 'Dec', desktop: 314, mobile: 340 },
+  { desktop: 186, mobile: 80, month: 'Jan' },
+  { desktop: 305, mobile: 200, month: 'Feb' },
+  { desktop: 237, mobile: 120, month: 'Mar' },
+  { desktop: 73, mobile: 190, month: 'Apr' },
+  { desktop: 209, mobile: 130, month: 'May' },
+  { desktop: 214, mobile: 140, month: 'Jun' },
+  { desktop: 186, mobile: 180, month: 'Jul' },
+  { desktop: 305, mobile: 220, month: 'Aug' },
+  { desktop: 237, mobile: 160, month: 'Sep' },
+  { desktop: 273, mobile: 290, month: 'Oct' },
+  { desktop: 209, mobile: 230, month: 'Nov' },
+  { desktop: 314, mobile: 340, month: 'Dec' },
 ];
 
 const pieData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
+  { browser: 'chrome', fill: 'var(--color-chrome)', visitors: 275 },
+  { browser: 'safari', fill: 'var(--color-safari)', visitors: 200 },
+  { browser: 'firefox', fill: 'var(--color-firefox)', visitors: 187 },
+  { browser: 'edge', fill: 'var(--color-edge)', visitors: 173 },
+  { browser: 'other', fill: 'var(--color-other)', visitors: 90 },
 ];
 
 const chartConfig = {
@@ -86,33 +84,41 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const pieChartConfig = {
-  visitors: {
-    label: 'Visitors',
-  },
   chrome: {
     label: 'Chrome',
     color: 'var(--chart-1)',
-  },
-  safari: {
-    label: 'Safari',
-    color: 'var(--chart-2)',
-  },
-  firefox: {
-    label: 'Firefox',
-    color: 'var(--chart-3)',
   },
   edge: {
     label: 'Edge',
     color: 'var(--chart-4)',
   },
+  firefox: {
+    label: 'Firefox',
+    color: 'var(--chart-3)',
+  },
   other: {
     label: 'Other',
     color: 'var(--chart-5)',
   },
+  safari: {
+    label: 'Safari',
+    color: 'var(--chart-2)',
+  },
+  visitors: {
+    label: 'Visitors',
+  },
 } satisfies ChartConfig;
 
 export const LineChart_: Story = {
+  args: {},
   name: 'Line Chart',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Line chart showing desktop vs mobile traffic over time.',
+      },
+    },
+  },
   render: () => (
     <ChartContainer className="h-[200px] w-full" config={chartConfig}>
       <LineChart accessibilityLayer data={sampleData}>
@@ -142,17 +148,18 @@ export const LineChart_: Story = {
       </LineChart>
     </ChartContainer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Line chart showing desktop vs mobile traffic over time.',
-      },
-    },
-  },
 };
 
 export const BarChart_: Story = {
+  args: {},
   name: 'Bar Chart',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Bar chart comparing desktop and mobile usage by month.',
+      },
+    },
+  },
   render: () => (
     <ChartContainer className="h-[200px] w-full" config={chartConfig}>
       <BarChart accessibilityLayer data={sampleData}>
@@ -170,17 +177,18 @@ export const BarChart_: Story = {
       </BarChart>
     </ChartContainer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Bar chart comparing desktop and mobile usage by month.',
-      },
-    },
-  },
 };
 
 export const AreaChart_: Story = {
+  args: {},
   name: 'Area Chart',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Stacked area chart showing cumulative usage trends.',
+      },
+    },
+  },
   render: () => (
     <ChartContainer className="h-[200px] w-full" config={chartConfig}>
       <AreaChart accessibilityLayer data={sampleData}>
@@ -214,17 +222,18 @@ export const AreaChart_: Story = {
       </AreaChart>
     </ChartContainer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Stacked area chart showing cumulative usage trends.',
-      },
-    },
-  },
 };
 
 export const PieChart_: Story = {
+  args: {},
   name: 'Pie Chart',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Pie chart displaying browser usage distribution.',
+      },
+    },
+  },
   render: () => (
     <div className="flex justify-center">
       <ChartContainer className="size-[250px]" config={pieChartConfig}>
@@ -247,16 +256,18 @@ export const PieChart_: Story = {
       </ChartContainer>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Pie chart displaying browser usage distribution.',
-      },
-    },
-  },
 };
 
 export const WithLegend: Story = {
+  args: {},
+  name: 'With Legend',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Bar chart with legend showing desktop vs mobile data.',
+      },
+    },
+  },
   render: () => (
     <ChartContainer className="h-[300px] w-full" config={chartConfig}>
       <BarChart accessibilityLayer data={sampleData} margin={{ bottom: 50 }}>
@@ -275,27 +286,29 @@ export const WithLegend: Story = {
       </BarChart>
     </ChartContainer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Bar chart with legend showing desktop vs mobile data.',
-      },
-    },
-  },
 };
 
 export const WithIcons: Story = {
+  args: {},
+  name: 'With Icons',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Chart with custom icons in legend and tooltip.',
+      },
+    },
+  },
   render: () => {
     const configWithIcons = {
       desktop: {
-        label: 'Desktop',
         color: 'var(--chart-1)',
         icon: Icons.monitor,
+        label: 'Desktop',
       },
       mobile: {
-        label: 'Mobile',
         color: 'var(--chart-2)',
         icon: Icons.smartphone,
+        label: 'Mobile',
       },
     } satisfies ChartConfig;
 
@@ -318,16 +331,18 @@ export const WithIcons: Story = {
       </ChartContainer>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Chart with custom icons in legend and tooltip.',
-      },
-    },
-  },
 };
 
 export const CustomTooltip: Story = {
+  args: {},
+  name: 'Custom Tooltip',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Chart with custom tooltip formatting and styling.',
+      },
+    },
+  },
   render: () => (
     <ChartContainer className="h-[200px] w-full" config={chartConfig}>
       <LineChart accessibilityLayer data={sampleData}>
@@ -375,24 +390,26 @@ export const CustomTooltip: Story = {
       </LineChart>
     </ChartContainer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Chart with custom tooltip formatting and styling.',
-      },
-    },
-  },
 };
 
 export const MultipleDataSets: Story = {
+  args: {},
+  name: 'Multiple Data Sets',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Area chart with three data sets: desktop, mobile, and tablet.',
+      },
+    },
+  },
   render: () => {
     const multiData = [
-      { month: 'Jan', desktop: 186, mobile: 80, tablet: 120 },
-      { month: 'Feb', desktop: 305, mobile: 200, tablet: 180 },
-      { month: 'Mar', desktop: 237, mobile: 120, tablet: 150 },
-      { month: 'Apr', desktop: 73, mobile: 190, tablet: 100 },
-      { month: 'May', desktop: 209, mobile: 130, tablet: 160 },
-      { month: 'Jun', desktop: 214, mobile: 140, tablet: 170 },
+      { desktop: 186, mobile: 80, month: 'Jan', tablet: 120 },
+      { desktop: 305, mobile: 200, month: 'Feb', tablet: 180 },
+      { desktop: 237, mobile: 120, month: 'Mar', tablet: 150 },
+      { desktop: 73, mobile: 190, month: 'Apr', tablet: 100 },
+      { desktop: 209, mobile: 130, month: 'May', tablet: 160 },
+      { desktop: 214, mobile: 140, month: 'Jun', tablet: 170 },
     ];
 
     const multiConfig = {
@@ -454,16 +471,18 @@ export const MultipleDataSets: Story = {
       </ChartContainer>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Area chart with three data sets: desktop, mobile, and tablet.',
-      },
-    },
-  },
 };
 
 export const SmallChart: Story = {
+  args: {},
+  name: 'Small Chart',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Small charts for dashboard widgets and KPI cards.',
+      },
+    },
+  },
   render: () => (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <div className="space-y-2">
@@ -476,7 +495,7 @@ export const SmallChart: Story = {
         >
           <AreaChart
             data={sampleData.slice(0, 6)}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ bottom: 5, left: 5, right: 5, top: 5 }}
           >
             <Area
               dataKey="desktop"
@@ -501,7 +520,7 @@ export const SmallChart: Story = {
         >
           <AreaChart
             data={sampleData.slice(0, 6)}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ bottom: 5, left: 5, right: 5, top: 5 }}
           >
             <Area
               dataKey="mobile"
@@ -529,7 +548,7 @@ export const SmallChart: Story = {
               month: item.month,
               revenue: item.desktop + item.mobile,
             }))}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ bottom: 5, left: 5, right: 5, top: 5 }}
           >
             <Line
               dataKey="revenue"
@@ -556,7 +575,7 @@ export const SmallChart: Story = {
               month: item.month,
               conversion: 2.5 + index * 0.2,
             }))}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ bottom: 5, left: 5, right: 5, top: 5 }}
           >
             <Bar dataKey="conversion" fill="var(--color-conversion)" />
           </BarChart>
@@ -565,16 +584,44 @@ export const SmallChart: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Small charts for dashboard widgets and KPI cards.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
+  args: {},
+  name: 'Interactive Dashboard',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive dashboard showcasing multiple chart types with tooltips and legends.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify chart container is present
+    const chartContainer = canvasElement.querySelector('[data-slot="chart"]');
+    expect(chartContainer).toBeInTheDocument();
+
+    // Verify multiple charts are rendered
+    const charts = canvasElement.querySelectorAll('[data-slot="chart"]');
+    expect(charts.length).toBeGreaterThan(1);
+
+    // Verify chart titles
+    expect(canvas.getByText('Analytics Dashboard')).toBeInTheDocument();
+    expect(canvas.getByText('Browser Usage')).toBeInTheDocument();
+    expect(canvas.getByText('Monthly Comparison')).toBeInTheDocument();
+
+    // Test tooltip interaction by finding a chart area and hovering
+    const chartAreas = canvasElement.querySelectorAll('svg');
+    expect(chartAreas.length).toBeGreaterThan(0);
+
+    // Test basic chart structure
+    if (chartAreas[0]) {
+      await userEvent.hover(chartAreas[0]);
+    }
+  },
   render: () => (
     <div className="space-y-6">
       <div>
@@ -660,37 +707,4 @@ export const Interactive: Story = {
       </div>
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify chart container is present
-    const chartContainer = canvasElement.querySelector('[data-slot="chart"]');
-    expect(chartContainer).toBeInTheDocument();
-
-    // Verify multiple charts are rendered
-    const charts = canvasElement.querySelectorAll('[data-slot="chart"]');
-    expect(charts.length).toBeGreaterThan(1);
-
-    // Verify chart titles
-    expect(canvas.getByText('Analytics Dashboard')).toBeInTheDocument();
-    expect(canvas.getByText('Browser Usage')).toBeInTheDocument();
-    expect(canvas.getByText('Monthly Comparison')).toBeInTheDocument();
-
-    // Test tooltip interaction by finding a chart area and hovering
-    const chartAreas = canvasElement.querySelectorAll('svg');
-    expect(chartAreas.length).toBeGreaterThan(0);
-
-    // Test basic chart structure
-    if (chartAreas[0]) {
-      await userEvent.hover(chartAreas[0]);
-    }
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive dashboard showcasing multiple chart types with tooltips and legends.',
-      },
-    },
-  },
 };

@@ -4,13 +4,18 @@ import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area/scroll-area';
 import { Separator } from '@/components/ui/separator';
 
-import { ScrollArea, ScrollBar } from './scroll-area';
-
 const meta = {
-  title: 'UI/Layout/Scroll Area',
   component: ScrollArea,
+  decorators: [
+    (Story) => (
+      <div className="h-[300px] w-[400px]">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -21,13 +26,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="h-[300px] w-[400px]">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Layout/Scroll Area',
 } satisfies Meta<typeof ScrollArea>;
 
 export default meta;
@@ -69,17 +68,7 @@ const tags = [
 ];
 
 export const Default: Story = {
-  render: () => (
-    <ScrollArea className="h-72 w-48 rounded-md border p-4">
-      <h4 className="mb-4 text-sm leading-none font-medium">Tags</h4>
-      {tags.map((tag) => (
-        <React.Fragment key={tag}>
-          <div className="text-sm">{tag}</div>
-          <Separator className="my-2" />
-        </React.Fragment>
-      ))}
-    </ScrollArea>
-  ),
+  args: {},
   play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -95,9 +84,28 @@ export const Default: Story = {
     const scrollArea = canvasElement.querySelector('[data-slot="scroll-area"]');
     expect(scrollArea).toBeVisible();
   },
+  render: () => (
+    <ScrollArea className="h-72 w-48 rounded-md border p-4">
+      <h4 className="mb-4 text-sm leading-none font-medium">Tags</h4>
+      {tags.map((tag) => (
+        <React.Fragment key={tag}>
+          <div className="text-sm">{tag}</div>
+          <Separator className="my-2" />
+        </React.Fragment>
+      ))}
+    </ScrollArea>
+  ),
 };
 
 export const WithLongText: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check heading and content
+    expect(canvas.getByText('Lorem Ipsum Content')).toBeVisible();
+    expect(canvas.getByText(/Lorem ipsum dolor sit amet/)).toBeVisible();
+  },
   render: () => (
     <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
       <h4 className="mb-4 text-sm leading-none font-medium">
@@ -108,16 +116,21 @@ export const WithLongText: Story = {
       </p>
     </ScrollArea>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check heading and content
-    expect(canvas.getByText('Lorem Ipsum Content')).toBeVisible();
-    expect(canvas.getByText(/Lorem ipsum dolor sit amet/)).toBeVisible();
-  },
 };
 
 export const HorizontalScrolling: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check some badges are visible
+    expect(canvas.getByText('React')).toBeVisible();
+    expect(canvas.getByText('Next.js')).toBeVisible();
+
+    // Verify horizontal scrollability
+    const scrollArea = canvasElement.querySelector('[data-slot="scroll-area"]');
+    expect(scrollArea).toBeVisible();
+  },
   render: () => (
     <ScrollArea className="w-96 rounded-md border whitespace-nowrap">
       <div className="flex w-max space-x-4 p-4">
@@ -130,20 +143,18 @@ export const HorizontalScrolling: Story = {
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check some badges are visible
-    expect(canvas.getByText('React')).toBeVisible();
-    expect(canvas.getByText('Next.js')).toBeVisible();
-
-    // Verify horizontal scrollability
-    const scrollArea = canvasElement.querySelector('[data-slot="scroll-area"]');
-    expect(scrollArea).toBeVisible();
-  },
 };
 
 export const BothDirections: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check heading and some rows
+    expect(canvas.getByText('Two-way Scrolling')).toBeVisible();
+    expect(canvas.getByText('Row 1:')).toBeVisible();
+    expect(canvas.getByText('Row 2:')).toBeVisible();
+  },
   render: () => (
     <ScrollArea className="h-72 w-80 rounded-md border">
       <div className="p-4">
@@ -169,48 +180,54 @@ export const BothDirections: Story = {
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check heading and some rows
-    expect(canvas.getByText('Two-way Scrolling')).toBeVisible();
-    expect(canvas.getByText('Row 1:')).toBeVisible();
-    expect(canvas.getByText('Row 2:')).toBeVisible();
-  },
 };
 
 export const WithCustomContent: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check file structure
+    expect(canvas.getByText('Project Files')).toBeVisible();
+    expect(canvas.getByText('package.json')).toBeVisible();
+    expect(canvas.getByText('src/')).toBeVisible();
+    expect(canvas.getByText('Button.tsx')).toBeVisible();
+
+    // Check file sizes
+    expect(canvas.getByText('2.1 KB')).toBeVisible();
+    expect(canvas.getByText('4.3 KB')).toBeVisible();
+  },
   render: () => (
     <ScrollArea className="h-80 w-72 rounded-md border">
       <div className="p-4">
         <h4 className="mb-4 text-sm leading-none font-medium">Project Files</h4>
         <div className="space-y-2">
           {[
-            { name: 'package.json', type: 'file', size: '2.1 KB' },
+            { name: 'package.json', size: '2.1 KB', type: 'file' },
             { name: 'src/', type: 'folder' },
             { name: 'components/', type: 'folder' },
-            { name: 'Button.tsx', type: 'file', size: '4.3 KB', indent: true },
-            { name: 'Input.tsx', type: 'file', size: '3.2 KB', indent: true },
-            { name: 'Select.tsx', type: 'file', size: '5.8 KB', indent: true },
+            { indent: true, name: 'Button.tsx', size: '4.3 KB', type: 'file' },
+            { indent: true, name: 'Input.tsx', size: '3.2 KB', type: 'file' },
+            { indent: true, name: 'Select.tsx', size: '5.8 KB', type: 'file' },
             { name: 'utils/', type: 'folder' },
-            { name: 'cn.ts', type: 'file', size: '0.3 KB', indent: true },
-            { name: 'format.ts', type: 'file', size: '1.2 KB', indent: true },
+            { indent: true, name: 'cn.ts', size: '0.3 KB', type: 'file' },
+            { indent: true, name: 'format.ts', size: '1.2 KB', type: 'file' },
             { name: 'lib/', type: 'folder' },
-            { name: 'auth.ts', type: 'file', size: '2.7 KB', indent: true },
-            { name: 'database.ts', type: 'file', size: '4.1 KB', indent: true },
+            { indent: true, name: 'auth.ts', size: '2.7 KB', type: 'file' },
+            { indent: true, name: 'database.ts', size: '4.1 KB', type: 'file' },
             { name: 'public/', type: 'folder' },
             {
-              name: 'favicon.ico',
-              type: 'file',
-              size: '15.1 KB',
               indent: true,
+              name: 'favicon.ico',
+              size: '15.1 KB',
+              type: 'file',
             },
-            { name: 'logo.svg', type: 'file', size: '2.3 KB', indent: true },
+            { indent: true, name: 'logo.svg', size: '2.3 KB', type: 'file' },
             { name: 'styles/', type: 'folder' },
-            { name: 'globals.css', type: 'file', size: '1.8 KB', indent: true },
-            { name: 'README.md', type: 'file', size: '3.4 KB' },
-            { name: 'tsconfig.json', type: 'file', size: '0.8 KB' },
-            { name: 'tailwind.config.js', type: 'file', size: '1.1 KB' },
+            { indent: true, name: 'globals.css', size: '1.8 KB', type: 'file' },
+            { name: 'README.md', size: '3.4 KB', type: 'file' },
+            { name: 'tsconfig.json', size: '0.8 KB', type: 'file' },
+            { name: 'tailwind.config.js', size: '1.1 KB', type: 'file' },
           ].map((item, index) => (
             <div
               key={index}
@@ -238,22 +255,28 @@ export const WithCustomContent: Story = {
       </div>
     </ScrollArea>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check file structure
-    expect(canvas.getByText('Project Files')).toBeVisible();
-    expect(canvas.getByText('package.json')).toBeVisible();
-    expect(canvas.getByText('src/')).toBeVisible();
-    expect(canvas.getByText('Button.tsx')).toBeVisible();
-
-    // Check file sizes
-    expect(canvas.getByText('2.1 KB')).toBeVisible();
-    expect(canvas.getByText('4.3 KB')).toBeVisible();
-  },
 };
 
 export const InteractiveList: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check interactive elements
+    expect(canvas.getByText('Interactive Actions')).toBeVisible();
+    expect(canvas.getByText('Item 1')).toBeVisible();
+
+    // Test button interactions
+    const editButton = canvas.getByRole('button', { name: 'Edit item 1' });
+    const deleteButton = canvas.getByRole('button', { name: 'Delete item 1' });
+
+    expect(editButton).toBeVisible();
+    expect(deleteButton).toBeVisible();
+
+    // Click buttons to test interaction
+    await userEvent.click(editButton);
+    await userEvent.click(deleteButton);
+  },
   render: () => (
     <ScrollArea className="h-64 w-80 rounded-md border">
       <div className="p-4">
@@ -294,27 +317,21 @@ export const InteractiveList: Story = {
       </div>
     </ScrollArea>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check interactive elements
-    expect(canvas.getByText('Interactive Actions')).toBeVisible();
-    expect(canvas.getByText('Item 1')).toBeVisible();
-
-    // Test button interactions
-    const editButton = canvas.getByRole('button', { name: 'Edit item 1' });
-    const deleteButton = canvas.getByRole('button', { name: 'Delete item 1' });
-
-    expect(editButton).toBeVisible();
-    expect(deleteButton).toBeVisible();
-
-    // Click buttons to test interaction
-    await userEvent.click(editButton);
-    await userEvent.click(deleteButton);
-  },
 };
 
 export const CustomSize: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check both size variants exist
+    expect(canvas.getByText('Small (150px height)')).toBeVisible();
+    expect(canvas.getByText('Large (400px height)')).toBeVisible();
+
+    // Check content in both areas
+    const reactItems = canvas.getAllByText('React');
+    expect(reactItems).not.toHaveLength(0);
+  },
   render: () => (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -347,15 +364,4 @@ export const CustomSize: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check both size variants exist
-    expect(canvas.getByText('Small (150px height)')).toBeVisible();
-    expect(canvas.getByText('Large (400px height)')).toBeVisible();
-
-    // Check content in both areas
-    const reactItems = canvas.getAllByText('React');
-    expect(reactItems).not.toHaveLength(0);
-  },
 };

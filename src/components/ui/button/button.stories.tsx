@@ -1,32 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from '@storybook/test';
 
-import { Button } from './button';
+import { Button } from '@/components/ui/button/button';
 
 const meta = {
-  title: 'UI/Inputs/Button',
+  argTypes: {
+    color: {
+      control: { type: 'select' },
+      description: 'Color theme and semantic meaning of the button',
+      options: ['primary', 'secondary', 'error', 'warning', 'info', 'success'],
+    },
+    size: {
+      control: { type: 'select' },
+      description: 'Size affecting height, padding and font size',
+      options: ['default', 'sm', 'lg', 'icon'],
+    },
+    variant: {
+      control: { type: 'select' },
+      description: 'Visual style variant (filled, outlined, ghost, link)',
+      options: ['contained', 'outlined', 'ghost', 'link'],
+    },
+  },
   component: Button,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {
-    color: {
-      description: 'Color theme and semantic meaning of the button',
-      control: { type: 'select' },
-      options: ['primary', 'secondary', 'error', 'warning', 'info', 'success'],
-    },
-    variant: {
-      description: 'Visual style variant (filled, outlined, ghost, link)',
-      control: { type: 'select' },
-      options: ['contained', 'outlined', 'ghost', 'link'],
-    },
-    size: {
-      description: 'Size affecting height, padding and font size',
-      control: { type: 'select' },
-      options: ['default', 'sm', 'lg', 'icon'],
-    },
-  },
+  title: 'UI/Inputs/Button',
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -81,6 +81,7 @@ export const Link: Story = {
 };
 
 export const VariantColorCombinations: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {

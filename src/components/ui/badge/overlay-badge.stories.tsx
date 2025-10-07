@@ -11,27 +11,15 @@ import { Button } from '@/components/ui/button';
 import { OverlayBadge } from './overlay-badge';
 
 const meta: Meta<typeof OverlayBadge> = {
-  title: 'UI/Data Display/Overlay Badge',
-  component: OverlayBadge,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'An overlay badge component that can wrap any content to display status indicators, counts, or custom content. Similar to MUI Badge component.',
-      },
-    },
-  },
-  tags: ['autodocs'],
   argTypes: {
-    variant: {
-      description: 'Badge variant style',
+    anchorOrigin: {
       control: { type: 'select' },
-      options: ['dot', 'count', 'standard'],
+      description: 'Badge position relative to child',
+      options: ['top-right', 'top-left', 'bottom-right', 'bottom-left'],
     },
     color: {
-      description: 'Badge color theme',
       control: { type: 'select' },
+      description: 'Badge color theme',
       options: [
         'primary',
         'secondary',
@@ -45,17 +33,29 @@ const meta: Meta<typeof OverlayBadge> = {
         'busy',
       ],
     },
-    anchorOrigin: {
-      description: 'Badge position relative to child',
-      control: { type: 'select' },
-      options: ['top-right', 'top-left', 'bottom-right', 'bottom-left'],
-    },
     overlap: {
-      description: 'How badge overlaps with child content',
       control: { type: 'select' },
+      description: 'How badge overlaps with child content',
       options: ['rectangular', 'circular'],
     },
+    variant: {
+      control: { type: 'select' },
+      description: 'Badge variant style',
+      options: ['dot', 'count', 'standard'],
+    },
   },
+  component: OverlayBadge,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'An overlay badge component that can wrap any content to display status indicators, counts, or custom content. Similar to MUI Badge component.',
+      },
+    },
+  },
+  tags: ['autodocs'],
+  title: 'UI/Data Display/Overlay Badge',
 };
 
 export default meta;
@@ -74,9 +74,9 @@ export const Default: Story = {
 
 export const WithAvatar: Story = {
   args: {
+    anchorOrigin: 'top-right',
     badgeContent: 8,
     color: 'error',
-    anchorOrigin: 'top-right',
     overlap: 'circular',
     spacing: 'loose',
   },

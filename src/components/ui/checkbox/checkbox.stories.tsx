@@ -1,10 +1,67 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { Checkbox } from './checkbox';
+import { Checkbox } from '@/components/ui/checkbox/checkbox';
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'UI/Forms/Checkbox',
+  args: {
+    onCheckedChange: fn(),
+  },
+  argTypes: {
+    checked: {
+      control: { type: 'boolean' },
+      description: 'The checked state of the checkbox.',
+      table: {
+        type: { summary: 'boolean | "indeterminate"' },
+        defaultValue: { summary: 'undefined' },
+      },
+    },
+    defaultChecked: {
+      control: { type: 'boolean' },
+      description: 'The default checked state when uncontrolled.',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Whether the checkbox is disabled.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    name: {
+      control: { type: 'text' },
+      description: 'The name attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onCheckedChange: {
+      action: 'onCheckedChange',
+      description: 'Callback fired when the checked state changes.',
+      table: {
+        type: { summary: '(checked: boolean | "indeterminate") => void' },
+      },
+    },
+    required: {
+      control: { type: 'boolean' },
+      description: 'Whether the checkbox is required in a form.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    value: {
+      control: { type: 'text' },
+      description: 'The value attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: '"on"' },
+      },
+    },
+  },
   component: Checkbox,
   parameters: {
     layout: 'centered',
@@ -16,64 +73,7 @@ const meta: Meta<typeof Checkbox> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    checked: {
-      description: 'The checked state of the checkbox.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean | "indeterminate"' },
-        defaultValue: { summary: 'undefined' },
-      },
-    },
-    defaultChecked: {
-      description: 'The default checked state when uncontrolled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    disabled: {
-      description: 'Whether the checkbox is disabled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    required: {
-      description: 'Whether the checkbox is required in a form.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    name: {
-      description: 'The name attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    value: {
-      description: 'The value attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: '"on"' },
-      },
-    },
-    onCheckedChange: {
-      description: 'Callback fired when the checked state changes.',
-      action: 'onCheckedChange',
-      table: {
-        type: { summary: '(checked: boolean | "indeterminate") => void' },
-      },
-    },
-  },
-  args: {
-    onCheckedChange: fn(),
-  },
+  title: 'UI/Forms/Checkbox',
 };
 
 export default meta;
@@ -145,6 +145,15 @@ export const IndeterminateCheckbox: Story = {
 };
 
 export const WithLabel: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Checkbox with associated label and description text. The label is properly connected via htmlFor/id for accessibility.',
+      },
+    },
+  },
   render: (args) => (
     <div className="items-top flex space-x-2">
       <Checkbox id="terms" {...args} />
@@ -161,18 +170,18 @@ export const WithLabel: Story = {
       </div>
     </div>
   ),
+};
+
+export const MultipleCheckboxes: Story = {
   args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Checkbox with associated label and description text. The label is properly connected via htmlFor/id for accessibility.',
+          'Multiple checkboxes in a form-like layout showing different states and proper labeling.',
       },
     },
   },
-};
-
-export const MultipleCheckboxes: Story = {
   render: (args) => (
     <div className="space-y-4">
       <div className="items-top flex space-x-2">
@@ -219,18 +228,18 @@ export const MultipleCheckboxes: Story = {
       </div>
     </div>
   ),
+};
+
+export const FormIntegration: Story = {
   args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Multiple checkboxes in a form-like layout showing different states and proper labeling.',
+          'Checkboxes integrated into a form with fieldset, legend, and proper name/value attributes for submission.',
       },
     },
   },
-};
-
-export const FormIntegration: Story = {
   render: (args) => (
     <form className="space-y-4">
       <fieldset className="space-y-3">
@@ -283,32 +292,12 @@ export const FormIntegration: Story = {
       </fieldset>
     </form>
   ),
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Checkboxes integrated into a form with fieldset, legend, and proper name/value attributes for submission.',
-      },
-    },
-  },
 };
 
 export const InteractiveCheckbox: Story = {
   args: {
     onCheckedChange: fn(),
   },
-  render: (args) => (
-    <div className="items-top flex space-x-2">
-      <Checkbox id="interactive-checkbox" {...args} />
-      <label
-        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        htmlFor="interactive-checkbox"
-      >
-        Interactive checkbox
-      </label>
-    </div>
-  ),
   parameters: {
     docs: {
       description: {
@@ -345,4 +334,15 @@ export const InteractiveCheckbox: Story = {
     expect(checkbox).toBeChecked();
     expect(args.onCheckedChange).toHaveBeenCalledWith(true);
   },
+  render: (args) => (
+    <div className="items-top flex space-x-2">
+      <Checkbox id="interactive-checkbox" {...args} />
+      <label
+        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        htmlFor="interactive-checkbox"
+      >
+        Interactive checkbox
+      </label>
+    </div>
+  ),
 };

@@ -1,13 +1,8 @@
+'use client';
+
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
-import React, {
-  createContext,
-  use,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import * as React from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -48,10 +43,10 @@ type SidebarContextProps = {
   toggleSidebar: () => void;
 };
 
-const SidebarContext = createContext<SidebarContextProps | null>(null);
+const SidebarContext = React.createContext<SidebarContextProps | null>(null);
 
 function useSidebar() {
-  const context = use(SidebarContext);
+  const context = React.use(SidebarContext);
   if (!context) {
     throw new Error('useSidebar must be used within a SidebarProvider.');
   }
@@ -73,13 +68,13 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = useState(false);
+  const [openMobile, setOpenMobile] = React.useState(false);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [openSidebar, setOpenSidebar] = useState(defaultOpen);
+  const [openSidebar, setOpenSidebar] = React.useState(defaultOpen);
   const open = openProp ?? openSidebar;
-  const setOpen = useCallback(
+  const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === 'function' ? value(open) : value;
       if (setOpenProp) {
@@ -98,12 +93,12 @@ function SidebarProvider({
   );
 
   // Helper to toggle the sidebar.
-  const toggleSidebar = useCallback(() => {
+  const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
   }, [isMobile, setOpen, setOpenMobile]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
@@ -122,7 +117,7 @@ function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? 'expanded' : 'collapsed';
 
-  const contextValue = useMemo<SidebarContextProps>(
+  const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
       isMobile,
       open,
@@ -493,20 +488,20 @@ const sidebarMenuButtonVariants = cva(
   'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
-      size: {
-        default: 'h-8 text-sm',
-        lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
-        sm: 'h-7 text-xs',
-      },
       variant: {
         default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
         outline:
           'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
       },
+      size: {
+        default: 'h-8 text-sm',
+        lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
+        sm: 'h-7 text-xs',
+      },
     },
     defaultVariants: {
-      size: 'default',
       variant: 'default',
+      size: 'default',
     },
   },
 );
@@ -529,7 +524,7 @@ function SidebarMenuButton({
 
   const button = (
     <Comp
-      className={cn(sidebarMenuButtonVariants({ size, variant }), className)}
+      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
       data-active={isActive}
       data-sidebar="menu-button"
       data-size={size}
@@ -623,7 +618,7 @@ function SidebarMenuSkeleton({
   showIcon?: boolean;
 }) {
   // Random width between 50 to 90%.
-  const width = useMemo(() => {
+  const width = React.useMemo(() => {
     return `${Math.floor(Math.random() * 40) + 50}%`;
   }, []);
 
@@ -662,6 +657,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
         className,
       )}
       data-sidebar="menu-sub"
+      data-slot="sidebar-menu-sub"
       {...props}
     />
   );

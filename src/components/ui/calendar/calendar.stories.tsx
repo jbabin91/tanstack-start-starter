@@ -3,11 +3,17 @@ import { expect, userEvent, within } from '@storybook/test';
 import { useState } from 'react';
 import { type DateRange } from 'react-day-picker';
 
-import { Calendar } from './calendar';
+import { Calendar } from '@/components/ui/calendar/calendar';
 
 const meta: Meta<typeof Calendar> = {
-  title: 'UI/Inputs/Calendar',
   component: Calendar,
+  decorators: [
+    (Story) => (
+      <div className="flex items-center justify-center p-6">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -18,21 +24,14 @@ const meta: Meta<typeof Calendar> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center p-6">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Inputs/Calendar',
 };
 
 export default meta;
-
 type Story = StoryObj<typeof Calendar>;
 
 export const Default: Story = {
-  render: () => <Calendar />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -40,9 +39,18 @@ export const Default: Story = {
       },
     },
   },
+  render: () => <Calendar />,
 };
 
 export const WithSelectedDate: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Calendar with a pre-selected date.',
+      },
+    },
+  },
   render: function WithSelectedDateStory() {
     const [selected, setSelected] = useState<Date | undefined>(
       () => new Date(),
@@ -51,16 +59,17 @@ export const WithSelectedDate: Story = {
       <Calendar mode="single" selected={selected} onSelect={setSelected} />
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Calendar with a pre-selected date.',
-      },
-    },
-  },
 };
 
 export const RangeSelection: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Calendar configured for date range selection.',
+      },
+    },
+  },
   render: function RangeSelectionStory() {
     const [range, setRange] = useState<DateRange | undefined>(() => ({
       from: new Date(2024, 0, 10),
@@ -76,16 +85,17 @@ export const RangeSelection: Story = {
       />
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Calendar configured for date range selection.',
-      },
-    },
-  },
 };
 
 export const MultipleSelection: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Calendar allowing selection of multiple dates.',
+      },
+    },
+  },
   render: function MultipleSelectionStory() {
     const [selected, setSelected] = useState<Date[]>(() => [
       new Date(2024, 0, 5),
@@ -102,17 +112,10 @@ export const MultipleSelection: Story = {
       />
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Calendar allowing selection of multiple dates.',
-      },
-    },
-  },
 };
 
 export const TwoMonths: Story = {
-  render: () => <Calendar showOutsideDays numberOfMonths={2} />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -120,10 +123,11 @@ export const TwoMonths: Story = {
       },
     },
   },
+  render: () => <Calendar showOutsideDays numberOfMonths={2} />,
 };
 
 export const WithWeekNumbers: Story = {
-  render: () => <Calendar showWeekNumber weekStartsOn={1} />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -131,9 +135,18 @@ export const WithWeekNumbers: Story = {
       },
     },
   },
+  render: () => <Calendar showWeekNumber weekStartsOn={1} />,
 };
 
 export const DisabledDates: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Calendar with disabled past dates and weekends.',
+      },
+    },
+  },
   render: () => {
     const disabledDays = [
       { before: new Date() }, // All past dates
@@ -142,16 +155,17 @@ export const DisabledDates: Story = {
 
     return <Calendar disabled={disabledDays} mode="single" />;
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Calendar with disabled past dates and weekends.',
-      },
-    },
-  },
 };
 
 export const CustomFooter: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Calendar with custom footer displaying selected date.',
+      },
+    },
+  },
   render: function CustomFooterStory() {
     const [selected, setSelected] = useState<Date | undefined>();
 
@@ -172,16 +186,18 @@ export const CustomFooter: Story = {
       />
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Calendar with custom footer displaying selected date.',
-      },
-    },
-  },
 };
 
 export const WithDropdowns: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Calendar with dropdown selectors for month and year navigation.',
+      },
+    },
+  },
   render: () => {
     const currentYear = new Date().getFullYear();
     return (
@@ -193,18 +209,10 @@ export const WithDropdowns: Story = {
       />
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Calendar with dropdown selectors for month and year navigation.',
-      },
-    },
-  },
 };
 
 export const FixedWeeks: Story = {
-  render: () => <Calendar fixedWeeks showOutsideDays />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -213,19 +221,11 @@ export const FixedWeeks: Story = {
       },
     },
   },
+  render: () => <Calendar fixedWeeks showOutsideDays />,
 };
 
 export const CustomStyling: Story = {
-  render: () => (
-    <Calendar
-      className="rounded-lg border"
-      classNames={{
-        today: 'bg-blue-100 text-blue-900 font-bold',
-        day: 'hover:bg-blue-50',
-        selected: 'bg-blue-500 text-white hover:bg-blue-600',
-      }}
-    />
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -233,24 +233,27 @@ export const CustomStyling: Story = {
       },
     },
   },
+  render: () => (
+    <Calendar
+      className="rounded-lg border"
+      classNames={{
+        day: 'hover:bg-blue-50',
+        selected: 'bg-blue-500 text-white hover:bg-blue-600',
+        today: 'bg-blue-100 text-blue-900 font-bold',
+      }}
+    />
+  ),
 };
 
 export const Interactive: Story = {
-  render: function InteractiveStory() {
-    const [selected, setSelected] = useState<Date | undefined>();
-
-    return (
-      <div className="space-y-4">
-        <Calendar mode="single" selected={selected} onSelect={setSelected} />
-        {selected && (
-          <div className="text-center">
-            <p className="text-muted-foreground text-sm">
-              Selected: {selected.toDateString()}
-            </p>
-          </div>
-        )}
-      </div>
-    );
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive calendar with date selection and navigation controls.',
+      },
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -287,12 +290,20 @@ export const Interactive: Story = {
     const grid = canvas.getByRole('grid');
     expect(grid).toBeInTheDocument();
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive calendar with date selection and navigation controls.',
-      },
-    },
+  render: function InteractiveStory() {
+    const [selected, setSelected] = useState<Date | undefined>();
+
+    return (
+      <div className="space-y-4">
+        <Calendar mode="single" selected={selected} onSelect={setSelected} />
+        {selected && (
+          <div className="text-center">
+            <p className="text-muted-foreground text-sm">
+              Selected: {selected.toDateString()}
+            </p>
+          </div>
+        )}
+      </div>
+    );
   },
 };

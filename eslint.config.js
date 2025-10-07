@@ -161,7 +161,12 @@ export default defineConfig(
     },
   },
   {
-    files: ['eslint.config.js', 'vite.config.ts'],
+    files: [
+      'eslint.config.js',
+      'vite.config.ts',
+      '**/*.stories.tsx',
+      'src/components/**/*.{ts,tsx}',
+    ],
     plugins: {
       'sort-keys-plus': sortKeysPlus,
     },

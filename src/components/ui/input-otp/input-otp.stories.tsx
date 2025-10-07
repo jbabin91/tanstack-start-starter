@@ -4,16 +4,14 @@ import * as React from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from './input-otp';
+} from '@/components/ui/input-otp/input-otp';
 
 const meta: Meta<typeof InputOTP> = {
-  title: 'UI/Inputs/Input OTP',
   component: InputOTP,
   parameters: {
     layout: 'centered',
@@ -25,12 +23,14 @@ const meta: Meta<typeof InputOTP> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Inputs/Input OTP',
 };
 
 export default meta;
 type Story = StoryObj<typeof InputOTP>;
 
 export const Default: Story = {
+  args: {},
   render: () => (
     <InputOTP maxLength={6}>
       <InputOTPGroup>
@@ -46,6 +46,7 @@ export const Default: Story = {
 };
 
 export const WithSeparator: Story = {
+  args: {},
   render: () => (
     <InputOTP maxLength={6}>
       <InputOTPGroup>
@@ -64,6 +65,7 @@ export const WithSeparator: Story = {
 };
 
 export const FourDigit: Story = {
+  args: {},
   render: () => (
     <div className="space-y-4">
       <div className="text-center">
@@ -90,6 +92,7 @@ export const FourDigit: Story = {
 };
 
 export const AuthenticationFlow: Story = {
+  args: {},
   render: () => {
     const [value, setValue] = React.useState('');
     const [isVerifying, setIsVerifying] = React.useState(false);
@@ -180,6 +183,7 @@ export const AuthenticationFlow: Story = {
 };
 
 export const LoginVerification: Story = {
+  args: {},
   render: () => {
     const [step, setStep] = React.useState<'phone' | 'code' | 'success'>(
       'phone',
@@ -345,6 +349,7 @@ export const LoginVerification: Story = {
 };
 
 export const WithValidation: Story = {
+  args: {},
   render: () => {
     const [value, setValue] = React.useState('');
     const [error, setError] = React.useState('');
@@ -433,6 +438,7 @@ export const WithValidation: Story = {
 };
 
 export const BackupCodes: Story = {
+  args: {},
   render: () => {
     const [value, setValue] = React.useState('');
     const [showBackup, setShowBackup] = React.useState(false);
@@ -530,6 +536,87 @@ export const Interactive: Story = {
     onChange: fn(),
     onComplete: fn(),
   },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify initial state - text is split across elements
+    expect(canvas.getByText('(empty)')).toBeVisible();
+    expect(canvas.getByText('Length: 0/6')).toBeVisible();
+    expect(canvas.getByText('Complete: No')).toBeVisible();
+    expect(canvas.getByText('Completion attempts: 0')).toBeVisible();
+
+    // Find the OTP input container - the actual input is hidden, so we interact with the container
+    const otpContainer = canvasElement.querySelector('[data-slot="input-otp"]');
+    if (!otpContainer) {
+      throw new TypeError('Expected to find OTP container');
+    }
+
+    // Click on container to focus it
+    await userEvent.click(otpContainer);
+
+    // Type individual digits
+    await userEvent.type(otpContainer, '1');
+
+    await waitFor(() => {
+      // Check for the digit in the slot by finding it directly in slot container
+      const firstOtpSlot = canvasElement.querySelector(
+        '[data-slot="input-otp-slot"]',
+      );
+      if (!firstOtpSlot) {
+        throw new TypeError('Expected to find first OTP slot');
+      }
+      expect(firstOtpSlot.textContent).toBe('1');
+      expect(canvas.getByText('Length: 1/6')).toBeVisible();
+    });
+
+    // Verify onChange was called
+    expect(args.onChange).toHaveBeenCalledWith('1');
+
+    // Continue typing
+    await userEvent.type(otpContainer, '23456');
+
+    await waitFor(() => {
+      // Check for the complete value in the status area to avoid multiple matches
+      const statusValue = canvas.getByText('123456', {
+        selector: '.font-mono',
+      });
+      expect(statusValue).toBeVisible();
+      expect(canvas.getByText('Length: 6/6')).toBeVisible();
+      expect(canvas.getByText('Complete: Yes')).toBeVisible();
+      expect(canvas.getByText('Completion attempts: 1')).toBeVisible();
+    });
+
+    // Verify onComplete was called
+    expect(args.onComplete).toHaveBeenCalledWith('123456');
+
+    // Test reset functionality
+    const resetButton = canvas.getByRole('button', { name: 'Reset' });
+    await userEvent.click(resetButton);
+
+    await waitFor(() => {
+      expect(canvas.getByText('(empty)')).toBeVisible();
+      expect(canvas.getByText('Length: 0/6')).toBeVisible();
+      expect(canvas.getByText('Complete: No')).toBeVisible();
+    });
+
+    // Test fill example button
+    const fillButton = canvas.getByRole('button', { name: 'Fill Example' });
+    await userEvent.click(fillButton);
+
+    await waitFor(() => {
+      const statusValue = canvas.getByText('123456', {
+        selector: '.font-mono',
+      });
+      expect(statusValue).toBeVisible();
+      expect(canvas.getByText('Length: 6/6')).toBeVisible();
+      expect(canvas.getByText('Complete: Yes')).toBeVisible();
+      expect(canvas.getByText('Completion attempts: 2')).toBeVisible();
+    });
+
+    // Verify callbacks were called again
+    expect(args.onChange).toHaveBeenCalledWith('123456');
+    expect(args.onComplete).toHaveBeenCalledWith('123456');
+  },
   render: (args) => {
     const [value, setValue] = React.useState('');
     const [isComplete, setIsComplete] = React.useState(false);
@@ -613,86 +700,5 @@ export const Interactive: Story = {
         </div>
       </div>
     );
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify initial state - text is split across elements
-    expect(canvas.getByText('(empty)')).toBeVisible();
-    expect(canvas.getByText('Length: 0/6')).toBeVisible();
-    expect(canvas.getByText('Complete: No')).toBeVisible();
-    expect(canvas.getByText('Completion attempts: 0')).toBeVisible();
-
-    // Find the OTP input container - the actual input is hidden, so we interact with the container
-    const otpContainer = canvasElement.querySelector('[data-slot="input-otp"]');
-    if (!otpContainer) {
-      throw new TypeError('Expected to find OTP container');
-    }
-
-    // Click on container to focus it
-    await userEvent.click(otpContainer);
-
-    // Type individual digits
-    await userEvent.type(otpContainer, '1');
-
-    await waitFor(() => {
-      // Check for the digit in the slot by finding it directly in slot container
-      const firstOtpSlot = canvasElement.querySelector(
-        '[data-slot="input-otp-slot"]',
-      );
-      if (!firstOtpSlot) {
-        throw new TypeError('Expected to find first OTP slot');
-      }
-      expect(firstOtpSlot.textContent).toBe('1');
-      expect(canvas.getByText('Length: 1/6')).toBeVisible();
-    });
-
-    // Verify onChange was called
-    expect(args.onChange).toHaveBeenCalledWith('1');
-
-    // Continue typing
-    await userEvent.type(otpContainer, '23456');
-
-    await waitFor(() => {
-      // Check for the complete value in the status area to avoid multiple matches
-      const statusValue = canvas.getByText('123456', {
-        selector: '.font-mono',
-      });
-      expect(statusValue).toBeVisible();
-      expect(canvas.getByText('Length: 6/6')).toBeVisible();
-      expect(canvas.getByText('Complete: Yes')).toBeVisible();
-      expect(canvas.getByText('Completion attempts: 1')).toBeVisible();
-    });
-
-    // Verify onComplete was called
-    expect(args.onComplete).toHaveBeenCalledWith('123456');
-
-    // Test reset functionality
-    const resetButton = canvas.getByRole('button', { name: 'Reset' });
-    await userEvent.click(resetButton);
-
-    await waitFor(() => {
-      expect(canvas.getByText('(empty)')).toBeVisible();
-      expect(canvas.getByText('Length: 0/6')).toBeVisible();
-      expect(canvas.getByText('Complete: No')).toBeVisible();
-    });
-
-    // Test fill example button
-    const fillButton = canvas.getByRole('button', { name: 'Fill Example' });
-    await userEvent.click(fillButton);
-
-    await waitFor(() => {
-      const statusValue = canvas.getByText('123456', {
-        selector: '.font-mono',
-      });
-      expect(statusValue).toBeVisible();
-      expect(canvas.getByText('Length: 6/6')).toBeVisible();
-      expect(canvas.getByText('Complete: Yes')).toBeVisible();
-      expect(canvas.getByText('Completion attempts: 2')).toBeVisible();
-    });
-
-    // Verify callbacks were called again
-    expect(args.onChange).toHaveBeenCalledWith('123456');
-    expect(args.onComplete).toHaveBeenCalledWith('123456');
   },
 };

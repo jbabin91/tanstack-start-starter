@@ -4,11 +4,46 @@ import { expect, userEvent, waitFor, within } from '@storybook/test';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip/tooltip';
 
 const meta: Meta<typeof Tooltip> = {
-  title: 'UI/Feedback/Tooltip',
+  argTypes: {
+    defaultOpen: {
+      control: 'boolean',
+      description:
+        'The open state of the tooltip when it is initially rendered.',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    delayDuration: {
+      control: 'number',
+      description:
+        'Override the duration before the tooltip opens in milliseconds.',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '0' },
+      },
+    },
+    onOpenChange: {
+      action: 'openChanged',
+      description: 'Event handler called when the open state changes.',
+      table: {
+        type: { summary: '(open: boolean) => void' },
+      },
+    },
+    open: {
+      control: 'boolean',
+      description: 'The controlled open state of the tooltip.',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+  },
   component: Tooltip,
   parameters: {
     layout: 'centered',
@@ -20,45 +55,21 @@ const meta: Meta<typeof Tooltip> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    open: {
-      description: 'The controlled open state of the tooltip.',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    defaultOpen: {
-      description:
-        'The open state of the tooltip when it is initially rendered.',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    onOpenChange: {
-      description: 'Event handler called when the open state changes.',
-      action: 'openChanged',
-      table: {
-        type: { summary: '(open: boolean) => void' },
-      },
-    },
-    delayDuration: {
-      description:
-        'Override the duration before the tooltip opens in milliseconds.',
-      control: 'number',
-      table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '0' },
-      },
-    },
-  },
+  title: 'UI/Feedback/Tooltip',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicTooltip: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic tooltip that appears on hover.',
+      },
+    },
+  },
   render: (args) => (
     <div className="p-8">
       <Tooltip {...args}>
@@ -71,16 +82,18 @@ export const BasicTooltip: Story = {
       </Tooltip>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic tooltip that appears on hover.',
-      },
-    },
-  },
 };
 
 export const TooltipSides: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Tooltips can be positioned on all four sides of the trigger element.',
+      },
+    },
+  },
   render: (args) => (
     <div className="grid grid-cols-3 gap-8 p-12">
       <div></div>
@@ -140,17 +153,18 @@ export const TooltipSides: Story = {
       <div></div>
     </div>
   ),
+};
+
+export const TooltipWithIcons: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Tooltips can be positioned on all four sides of the trigger element.',
+          'Tooltips are commonly used with icon buttons to provide action descriptions.',
       },
     },
   },
-};
-
-export const TooltipWithIcons: Story = {
   render: (args) => (
     <div className="flex gap-4 p-8">
       <Tooltip {...args}>
@@ -226,17 +240,18 @@ export const TooltipWithIcons: Story = {
       </Tooltip>
     </div>
   ),
+};
+
+export const FormFieldTooltips: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Tooltips are commonly used with icon buttons to provide action descriptions.',
+          'Tooltips can provide helpful context for form fields and requirements.',
       },
     },
   },
-};
-
-export const FormFieldTooltips: Story = {
   render: (args) => (
     <div className="w-[400px] space-y-4 p-8">
       <div className="space-y-2">
@@ -319,17 +334,17 @@ export const FormFieldTooltips: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Tooltips can provide helpful context for form fields and requirements.',
-      },
-    },
-  },
 };
 
 export const TooltipDelays: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tooltips can have different delay durations before appearing.',
+      },
+    },
+  },
   render: () => (
     <div className="flex gap-4 p-8">
       <Tooltip delayDuration={0}>
@@ -360,44 +375,18 @@ export const TooltipDelays: Story = {
       </Tooltip>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Tooltips can have different delay durations before appearing.',
-      },
-    },
-  },
 };
 
 export const InteractiveTooltip: Story = {
-  render: (args) => (
-    <div className="p-8">
-      <Tooltip {...args}>
-        <TooltipTrigger asChild>
-          <Button variant="outlined">Interactive Tooltip</Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div>
-            <p className="font-medium">Keyboard Shortcuts</p>
-            <div className="mt-2 space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span>Copy</span>
-                <span className="opacity-90">Ctrl+C</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Paste</span>
-                <span className="opacity-90">Ctrl+V</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Undo</span>
-                <span className="opacity-90">Ctrl+Z</span>
-              </div>
-            </div>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </div>
-  ),
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive tooltip demonstration with comprehensive hover testing.',
+      },
+    },
+  },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
     // Use semantic query - find button by its text content
@@ -432,17 +421,46 @@ export const InteractiveTooltip: Story = {
     expect(trigger).toBeInTheDocument();
     expect(trigger).toBeVisible();
   },
+  render: (args) => (
+    <div className="p-8">
+      <Tooltip {...args}>
+        <TooltipTrigger asChild>
+          <Button variant="outlined">Interactive Tooltip</Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div>
+            <p className="font-medium">Keyboard Shortcuts</p>
+            <div className="mt-2 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Copy</span>
+                <span className="opacity-90">Ctrl+C</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Paste</span>
+                <span className="opacity-90">Ctrl+V</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Undo</span>
+                <span className="opacity-90">Ctrl+Z</span>
+              </div>
+            </div>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  ),
+};
+
+export const TooltipEdgeCases: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Interactive tooltip demonstration with comprehensive hover testing.',
+          'Edge cases including long content, empty content, disabled triggers, and rich content.',
       },
     },
   },
-};
-
-export const TooltipEdgeCases: Story = {
   render: (args) => (
     <div className="space-y-8 p-8">
       {/* Very long content */}
@@ -521,12 +539,4 @@ export const TooltipEdgeCases: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Edge cases including long content, empty content, disabled triggers, and rich content.',
-      },
-    },
-  },
 };

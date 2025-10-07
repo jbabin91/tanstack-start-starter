@@ -3,9 +3,10 @@ import * as React from 'react';
 
 import { cn } from '@/utils/cn';
 
-type AvatarProps = React.ComponentProps<typeof AvatarPrimitive.Root>;
-
-function Avatar({ className, children, ...props }: AvatarProps) {
+function Avatar({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
   return (
     <AvatarPrimitive.Root
       className={cn(
@@ -14,15 +15,14 @@ function Avatar({ className, children, ...props }: AvatarProps) {
       )}
       data-slot="avatar"
       {...props}
-    >
-      {children}
-    </AvatarPrimitive.Root>
+    />
   );
 }
 
-type AvatarImageProps = React.ComponentProps<typeof AvatarPrimitive.Image>;
-
-function AvatarImage({ className, ...props }: AvatarImageProps) {
+function AvatarImage({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
       className={cn('aspect-square size-full', className)}
@@ -32,11 +32,10 @@ function AvatarImage({ className, ...props }: AvatarImageProps) {
   );
 }
 
-type AvatarFallbackProps = React.ComponentProps<
-  typeof AvatarPrimitive.Fallback
->;
-
-function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
+function AvatarFallback({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
   return (
     <AvatarPrimitive.Fallback
       className={cn(

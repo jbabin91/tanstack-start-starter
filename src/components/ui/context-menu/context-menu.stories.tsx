@@ -3,8 +3,6 @@ import { expect, userEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
-import { isElementVisible } from '@/test/utils';
-
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -20,11 +18,18 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from './context-menu';
+} from '@/components/ui/context-menu/context-menu';
+import { isElementVisible } from '@/test/utils';
 
 const meta: Meta<typeof ContextMenu> = {
-  title: 'UI/Navigation/Context Menu',
   component: ContextMenu,
+  decorators: [
+    (Story) => (
+      <div className="flex size-96 items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -35,13 +40,7 @@ const meta: Meta<typeof ContextMenu> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex size-96 items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Navigation/Context Menu',
 };
 
 export default meta;
@@ -49,6 +48,15 @@ export default meta;
 type Story = StoryObj<typeof ContextMenu>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Basic context menu triggered by right-clicking the target area.',
+      },
+    },
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger className="border-border hover:bg-muted flex size-32 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm">
@@ -71,17 +79,17 @@ export const Default: Story = {
       </ContextMenuContent>
     </ContextMenu>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Basic context menu triggered by right-clicking the target area.',
-      },
-    },
-  },
 };
 
 export const WithShortcuts: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Context menu with keyboard shortcuts and error variant item.',
+      },
+    },
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger className="border-border hover:bg-muted flex h-32 w-48 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm">
@@ -123,16 +131,18 @@ export const WithShortcuts: Story = {
       </ContextMenuContent>
     </ContextMenu>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Context menu with keyboard shortcuts and error variant item.',
-      },
-    },
-  },
 };
 
 export const WithCheckboxItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Context menu with checkbox items for toggling formatting options.',
+      },
+    },
+  },
   render: function WithCheckboxItemsStory() {
     const [checkedItems, setCheckedItems] = useState({
       bold: false,
@@ -185,17 +195,17 @@ export const WithCheckboxItems: Story = {
       </ContextMenu>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Context menu with checkbox items for toggling formatting options.',
-      },
-    },
-  },
 };
 
 export const WithRadioItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Context menu with radio items for selecting alignment options.',
+      },
+    },
+  },
   render: function WithRadioItemsStory() {
     const [alignment, setAlignment] = useState('left');
 
@@ -238,16 +248,17 @@ export const WithRadioItems: Story = {
       </ContextMenu>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Context menu with radio items for selecting alignment options.',
-      },
-    },
-  },
 };
 
 export const WithSubmenus: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Context menu with nested submenus for hierarchical actions.',
+      },
+    },
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger className="border-border hover:bg-muted flex h-32 w-48 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm">
@@ -310,24 +321,25 @@ export const WithSubmenus: Story = {
       </ContextMenuContent>
     </ContextMenu>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Context menu with nested submenus for hierarchical actions.',
-      },
-    },
-  },
 };
 
 export const FileExplorer: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'File explorer-style context menu with selection state.',
+      },
+    },
+  },
   render: function FileExplorerStory() {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
     const files = [
-      { name: 'index.html', type: 'file', icon: Icons.fileText },
-      { name: 'styles.css', type: 'file', icon: Icons.file },
-      { name: 'script.js', type: 'file', icon: Icons.fileText },
-      { name: 'images', type: 'folder', icon: Icons.folder },
+      { icon: Icons.fileText, name: 'index.html', type: 'file' },
+      { icon: Icons.file, name: 'styles.css', type: 'file' },
+      { icon: Icons.fileText, name: 'script.js', type: 'file' },
+      { icon: Icons.folder, name: 'images', type: 'folder' },
     ];
 
     return (
@@ -395,16 +407,17 @@ export const FileExplorer: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'File explorer-style context menu with selection state.',
-      },
-    },
-  },
 };
 
 export const ImageEditor: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Advanced context menu for image editing with grouped options.',
+      },
+    },
+  },
   render: function ImageEditorStory() {
     const [filters, setFilters] = useState({
       brightness: false,
@@ -499,16 +512,17 @@ export const ImageEditor: Story = {
       </ContextMenu>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Advanced context menu for image editing with grouped options.',
-      },
-    },
-  },
 };
 
 export const TableCell: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Context menu for table cells with table manipulation options.',
+      },
+    },
+  },
   render: function TableCellStory() {
     const [selectedCells, setSelectedCells] = useState<string[]>([]);
 
@@ -631,16 +645,95 @@ export const TableCell: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Context menu for table cells with table manipulation options.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive context menu with action handling, state management, and comprehensive testing.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Find the trigger area
+    const trigger = canvas.getByText(/right click me for interactive menu/i);
+    expect(trigger).toBeInTheDocument();
+
+    // Right-click to open context menu (portal content)
+    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
+
+    // Wait for context menu to appear
+    await waitFor(() => {
+      const menu = screen.getByRole('menu');
+      expect(menu).toBeVisible();
+    });
+
+    // Test basic menu item selection
+    const refreshItem = screen.getByText('Refresh');
+    expect(refreshItem).toBeInTheDocument();
+
+    await userEvent.click(refreshItem);
+
+    // Verify action was recorded
+    await waitFor(() => {
+      // Check for both parts: the label and the action value
+      expect(canvas.getByText('Last action:')).toBeVisible();
+      expect(canvas.getByText('refresh')).toBeVisible();
+    });
+
+    // Open menu again for submenu testing
+    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
+
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeVisible();
+    });
+
+    // Test submenu navigation
+    const preferencesItem = screen.getByText('Preferences');
+    await userEvent.hover(preferencesItem);
+
+    // Wait for submenu to appear
+    await waitFor(() => {
+      const notificationsItem = screen.getByText('Notifications');
+      expect(notificationsItem).toBeVisible();
+    });
+
+    // Toggle a checkbox item
+    await userEvent.click(screen.getByText('Auto Save'));
+
+    // Verify checkbox state change
+    await waitFor(() => {
+      // Check that Auto Save setting changed to Enabled
+      expect(canvas.getByText('Auto Save: Enabled')).toBeVisible();
+    });
+
+    // Verify context menu structure has proper data attributes
+    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
+
+    await waitFor(() => {
+      const contextMenu = screen
+        .getByRole('menu')
+        .closest('[data-slot="context-menu-content"]');
+      expect(contextMenu).toHaveAttribute('data-slot', 'context-menu-content');
+    });
+
+    // Close menu by clicking outside
+    await userEvent.click(canvas.getByText('refresh'));
+
+    // Verify menu is closed
+    await waitFor(() => {
+      const menu: HTMLElement | null = screen.queryByRole('menu');
+      expect(menu).toSatisfy(
+        (el: HTMLElement | null) => el === null || !isElementVisible(el),
+      );
+    });
+  },
   render: function InteractiveStory() {
     const [lastAction, setLastAction] = useState<string>('');
     const [checkedItems, setCheckedItems] = useState({
@@ -736,90 +829,5 @@ export const Interactive: Story = {
         </div>
       </div>
     );
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const screen = within(document.body);
-
-    // Find the trigger area
-    const trigger = canvas.getByText(/right click me for interactive menu/i);
-    expect(trigger).toBeInTheDocument();
-
-    // Right-click to open context menu (portal content)
-    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
-
-    // Wait for context menu to appear
-    await waitFor(() => {
-      const menu = screen.getByRole('menu');
-      expect(menu).toBeVisible();
-    });
-
-    // Test basic menu item selection
-    const refreshItem = screen.getByText('Refresh');
-    expect(refreshItem).toBeInTheDocument();
-
-    await userEvent.click(refreshItem);
-
-    // Verify action was recorded
-    await waitFor(() => {
-      // Check for both parts: the label and the action value
-      expect(canvas.getByText('Last action:')).toBeVisible();
-      expect(canvas.getByText('refresh')).toBeVisible();
-    });
-
-    // Open menu again for submenu testing
-    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
-
-    await waitFor(() => {
-      expect(screen.getByRole('menu')).toBeVisible();
-    });
-
-    // Test submenu navigation
-    const preferencesItem = screen.getByText('Preferences');
-    await userEvent.hover(preferencesItem);
-
-    // Wait for submenu to appear
-    await waitFor(() => {
-      const notificationsItem = screen.getByText('Notifications');
-      expect(notificationsItem).toBeVisible();
-    });
-
-    // Toggle a checkbox item
-    await userEvent.click(screen.getByText('Auto Save'));
-
-    // Verify checkbox state change
-    await waitFor(() => {
-      // Check that Auto Save setting changed to Enabled
-      expect(canvas.getByText('Auto Save: Enabled')).toBeVisible();
-    });
-
-    // Verify context menu structure has proper data attributes
-    await userEvent.pointer([{ target: trigger, keys: '[MouseRight]' }]);
-
-    await waitFor(() => {
-      const contextMenu = screen
-        .getByRole('menu')
-        .closest('[data-slot="context-menu-content"]');
-      expect(contextMenu).toHaveAttribute('data-slot', 'context-menu-content');
-    });
-
-    // Close menu by clicking outside
-    await userEvent.click(canvas.getByText('refresh'));
-
-    // Verify menu is closed
-    await waitFor(() => {
-      const menu: HTMLElement | null = screen.queryByRole('menu');
-      expect(menu).toSatisfy(
-        (el: HTMLElement | null) => el === null || !isElementVisible(el),
-      );
-    });
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive context menu with action handling, state management, and comprehensive testing.',
-      },
-    },
   },
 };

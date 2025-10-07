@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from '@storybook/test';
 
 import { Icons } from '@/components/icons';
-
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -11,10 +10,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from './breadcrumb';
+} from '@/components/ui/breadcrumb/breadcrumb';
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: 'UI/Navigation/Breadcrumb',
   component: Breadcrumb,
   parameters: {
     layout: 'centered',
@@ -26,13 +24,21 @@ const meta: Meta<typeof Breadcrumb> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Navigation/Breadcrumb',
 };
 
 export default meta;
-
 type Story = StoryObj<typeof Breadcrumb>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic breadcrumb with home, products, and current page.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -50,16 +56,17 @@ export const Default: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic breadcrumb with home, products, and current page.',
-      },
-    },
-  },
 };
 
 export const WithCustomSeparator: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Breadcrumb with custom chevron right separators.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -81,16 +88,18 @@ export const WithCustomSeparator: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Breadcrumb with custom chevron right separators.',
-      },
-    },
-  },
 };
 
 export const WithEllipsis: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Breadcrumb with ellipsis to indicate hidden intermediate levels.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -112,17 +121,17 @@ export const WithEllipsis: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Breadcrumb with ellipsis to indicate hidden intermediate levels.',
-      },
-    },
-  },
 };
 
 export const DeepNavigation: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Complex navigation path with multiple levels.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -154,16 +163,17 @@ export const DeepNavigation: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Complex navigation path with multiple levels.',
-      },
-    },
-  },
 };
 
 export const WithIcons: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Breadcrumb items with icons for better visual hierarchy.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -190,16 +200,18 @@ export const WithIcons: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Breadcrumb items with icons for better visual hierarchy.',
-      },
-    },
-  },
 };
 
 export const Responsive: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Responsive breadcrumb that adapts to different screen sizes using Tailwind classes.',
+      },
+    },
+  },
   render: () => (
     <div className="w-full max-w-md">
       <Breadcrumb>
@@ -226,17 +238,17 @@ export const Responsive: Story = {
       </Breadcrumb>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Responsive breadcrumb that adapts to different screen sizes using Tailwind classes.',
-      },
-    },
-  },
 };
 
 export const MinimalTwoLevel: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Simple two-level breadcrumb navigation.',
+      },
+    },
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -250,37 +262,18 @@ export const MinimalTwoLevel: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Simple two-level breadcrumb navigation.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/projects/web-app">Web App</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Settings</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  ),
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive breadcrumb with hover states and accessibility features.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -318,12 +311,25 @@ export const Interactive: Story = {
       expect(separator).toHaveAttribute('role', 'presentation');
     }
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive breadcrumb with hover states and accessibility features.',
-      },
-    },
-  },
+  render: () => (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/projects/web-app">Web App</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Settings</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  ),
 };

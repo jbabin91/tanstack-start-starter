@@ -46,19 +46,19 @@ export function SessionsManager() {
   // Calculate security statistics
   const securityStats = sessions
     ? {
-        total: sessions.length,
-        secure: sessions.filter((s) => (s.metadata?.securityScore ?? 0) >= 80)
-          .length,
+        lowSecurity: sessions.filter(
+          (s) => (s.metadata?.securityScore ?? 0) < 60,
+        ).length,
         moderate: sessions.filter((s) => {
           const score = s.metadata?.securityScore ?? 0;
           return score >= 60 && score < 80;
         }).length,
-        lowSecurity: sessions.filter(
-          (s) => (s.metadata?.securityScore ?? 0) < 60,
-        ).length,
+        secure: sessions.filter((s) => (s.metadata?.securityScore ?? 0) >= 80)
+          .length,
         suspicious: sessions.filter(
           (s) => (s.metadata?.suspiciousActivityCount ?? 0) > 0,
         ).length,
+        total: sessions.length,
         trusted: sessions.filter((s) => s.metadata?.isTrustedDevice).length,
       }
     : null;

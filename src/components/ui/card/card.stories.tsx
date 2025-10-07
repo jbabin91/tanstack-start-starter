@@ -3,8 +3,6 @@ import { expect, within } from '@storybook/test';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-
 import {
   Card,
   CardAction,
@@ -13,21 +11,23 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './card';
+} from '@/components/ui/card/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const meta = {
-  title: 'UI/Surfaces/Card',
   component: Card,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  title: 'UI/Surfaces/Card',
 } satisfies Meta<typeof Card>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>
@@ -44,6 +44,7 @@ export const Default: Story = {
 };
 
 export const WithFooter: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>
@@ -63,6 +64,7 @@ export const WithFooter: Story = {
 };
 
 export const WithAction: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>
@@ -82,6 +84,7 @@ export const WithAction: Story = {
 };
 
 export const ProfileCard: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>
@@ -116,6 +119,7 @@ export const ProfileCard: Story = {
 };
 
 export const StatsCard: Story = {
+  args: {},
   render: () => (
     <Card className="w-[200px]">
       <CardHeader>
@@ -133,6 +137,7 @@ export const StatsCard: Story = {
 };
 
 export const EmptyState: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardContent className="flex flex-col items-center justify-center py-12">
@@ -149,19 +154,7 @@ export const EmptyState: Story = {
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <Card className="w-[350px] cursor-pointer transition-all hover:shadow-md">
-      <CardHeader>
-        <CardTitle>Interactive Card</CardTitle>
-        <CardDescription>
-          This card responds to hover and click interactions.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p>Hover over this card to see the shadow effect.</p>
-      </CardContent>
-    </Card>
-  ),
+  args: {},
   play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -180,9 +173,23 @@ export const Interactive: Story = {
     // Test that card has correct styling classes
     expect(cardContainer).toHaveClass('rounded-xl', 'border', 'shadow-sm');
   },
+  render: () => (
+    <Card className="w-[350px] cursor-pointer transition-all hover:shadow-md">
+      <CardHeader>
+        <CardTitle>Interactive Card</CardTitle>
+        <CardDescription>
+          This card responds to hover and click interactions.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Hover over this card to see the shadow effect.</p>
+      </CardContent>
+    </Card>
+  ),
 };
 
 export const LoadingCard: Story = {
+  args: {},
   render: () => (
     <Card className="w-[350px]">
       <CardHeader>

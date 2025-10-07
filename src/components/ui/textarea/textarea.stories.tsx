@@ -1,10 +1,104 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { Textarea } from './textarea';
+import { Textarea } from '@/components/ui/textarea/textarea';
 
 const meta: Meta<typeof Textarea> = {
-  title: 'UI/Forms/Textarea',
+  args: {
+    onChange: fn(),
+  },
+  argTypes: {
+    cols: {
+      control: { type: 'number' },
+      description:
+        'Visible width of the text control, in average character widths.',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    defaultValue: {
+      control: { type: 'text' },
+      description: 'The default value when uncontrolled.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Whether the textarea is disabled.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    maxLength: {
+      control: { type: 'number' },
+      description: 'Maximum number of characters allowed.',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    minLength: {
+      control: { type: 'number' },
+      description: 'Minimum number of characters required.',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    name: {
+      control: { type: 'text' },
+      description: 'The name attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onChange: {
+      action: 'onChange',
+      description: 'Callback fired when the value changes.',
+      table: {
+        type: {
+          summary: '(event: React.ChangeEvent<HTMLTextAreaElement>) => void',
+        },
+      },
+    },
+    placeholder: {
+      control: { type: 'text' },
+      description: 'Placeholder text displayed when the textarea is empty.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    readOnly: {
+      control: { type: 'boolean' },
+      description: 'Whether the textarea is read-only.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    required: {
+      control: { type: 'boolean' },
+      description: 'Whether the textarea is required in a form.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    rows: {
+      control: { type: 'number' },
+      description: 'Number of visible text lines for the control.',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    value: {
+      control: { type: 'text' },
+      description: 'The controlled value of the textarea.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Textarea,
   parameters: {
     layout: 'centered',
@@ -16,101 +110,7 @@ const meta: Meta<typeof Textarea> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    placeholder: {
-      description: 'Placeholder text displayed when the textarea is empty.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    value: {
-      description: 'The controlled value of the textarea.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    defaultValue: {
-      description: 'The default value when uncontrolled.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    disabled: {
-      description: 'Whether the textarea is disabled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    readOnly: {
-      description: 'Whether the textarea is read-only.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    required: {
-      description: 'Whether the textarea is required in a form.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    rows: {
-      description: 'Number of visible text lines for the control.',
-      control: { type: 'number' },
-      table: {
-        type: { summary: 'number' },
-      },
-    },
-    cols: {
-      description:
-        'Visible width of the text control, in average character widths.',
-      control: { type: 'number' },
-      table: {
-        type: { summary: 'number' },
-      },
-    },
-    maxLength: {
-      description: 'Maximum number of characters allowed.',
-      control: { type: 'number' },
-      table: {
-        type: { summary: 'number' },
-      },
-    },
-    minLength: {
-      description: 'Minimum number of characters required.',
-      control: { type: 'number' },
-      table: {
-        type: { summary: 'number' },
-      },
-    },
-    name: {
-      description: 'The name attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    onChange: {
-      description: 'Callback fired when the value changes.',
-      action: 'onChange',
-      table: {
-        type: {
-          summary: '(event: React.ChangeEvent<HTMLTextAreaElement>) => void',
-        },
-      },
-    },
-  },
-  args: {
-    onChange: fn(),
-  },
+  title: 'UI/Forms/Textarea',
 };
 
 export default meta;
@@ -146,8 +146,8 @@ export const WithValue: Story = {
 
 export const DisabledTextarea: Story = {
   args: {
-    disabled: true,
     defaultValue: 'This textarea is disabled and cannot be edited.',
+    disabled: true,
     placeholder: 'Enter your text here...',
   },
   parameters: {
@@ -192,10 +192,10 @@ export const WithRows: Story = {
 
 export const WithMaxLength: Story = {
   args: {
-    maxLength: 100,
-    placeholder: 'Maximum 100 characters allowed...',
     defaultValue:
       'This textarea has a maximum character limit of 100 characters.',
+    maxLength: 100,
+    placeholder: 'Maximum 100 characters allowed...',
   },
   parameters: {
     docs: {
@@ -222,9 +222,17 @@ export const Required: Story = {
 
 export const ErrorState: Story = {
   args: {
-    'aria-invalid': true,
     'aria-describedby': 'error-message',
+    'aria-invalid': true,
     defaultValue: 'This content has an error',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Textarea in error state with appropriate ARIA attributes and error message.',
+      },
+    },
   },
   render: (args) => (
     <div className="space-y-2">
@@ -234,17 +242,17 @@ export const ErrorState: Story = {
       </p>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Textarea in error state with appropriate ARIA attributes and error message.',
-      },
-    },
-  },
 };
 
 export const WithLabel: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Textarea with associated label for proper accessibility.',
+      },
+    },
+  },
   render: (args) => (
     <div className="grid w-full gap-1.5">
       <label className="text-sm font-medium" htmlFor="message-textarea">
@@ -257,17 +265,18 @@ export const WithLabel: Story = {
       />
     </div>
   ),
+};
+
+export const WithLabelAndDescription: Story = {
   args: {},
   parameters: {
     docs: {
       description: {
-        story: 'Textarea with associated label for proper accessibility.',
+        story:
+          'Textarea with label and description text for additional context.',
       },
     },
   },
-};
-
-export const WithLabelAndDescription: Story = {
   render: (args) => (
     <div className="grid w-full gap-1.5">
       <label className="text-sm font-medium" htmlFor="feedback-textarea">
@@ -283,18 +292,20 @@ export const WithLabelAndDescription: Story = {
       </p>
     </div>
   ),
-  args: {},
+};
+
+export const FormExample: Story = {
+  args: {
+    minLength: 10,
+  },
   parameters: {
     docs: {
       description: {
         story:
-          'Textarea with label and description text for additional context.',
+          'Textarea components integrated into a form with proper labels and validation.',
       },
     },
   },
-};
-
-export const FormExample: Story = {
   render: (args) => (
     <form className="space-y-6">
       <div className="grid w-full gap-1.5">
@@ -326,20 +337,18 @@ export const FormExample: Story = {
       </div>
     </form>
   ),
-  args: {
-    minLength: 10,
-  },
+};
+
+export const ResizableBehavior: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Textarea components integrated into a form with proper labels and validation.',
+          'Different resize behaviors using CSS classes: resize, resize-y, and resize-none.',
       },
     },
   },
-};
-
-export const ResizableBehavior: Story = {
   render: (args) => (
     <div className="space-y-4">
       <div className="grid w-full gap-1.5">
@@ -377,15 +386,6 @@ export const ResizableBehavior: Story = {
       </div>
     </div>
   ),
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Different resize behaviors using CSS classes: resize, resize-y, and resize-none.',
-      },
-    },
-  },
 };
 
 export const InteractiveTextarea: Story = {
@@ -393,14 +393,6 @@ export const InteractiveTextarea: Story = {
     onChange: fn(),
     placeholder: 'Type here to test interactions...',
   },
-  render: (args) => (
-    <div className="grid w-full gap-1.5">
-      <label className="text-sm font-medium" htmlFor="interactive-textarea">
-        Interactive textarea
-      </label>
-      <Textarea id="interactive-textarea" {...args} />
-    </div>
-  ),
   parameters: {
     docs: {
       description: {
@@ -458,4 +450,12 @@ export const InteractiveTextarea: Story = {
     expect(textarea.value).toContain('\n');
     expect(textarea.value).toContain('Second line');
   },
+  render: (args) => (
+    <div className="grid w-full gap-1.5">
+      <label className="text-sm font-medium" htmlFor="interactive-textarea">
+        Interactive textarea
+      </label>
+      <Textarea id="interactive-textarea" {...args} />
+    </div>
+  ),
 };

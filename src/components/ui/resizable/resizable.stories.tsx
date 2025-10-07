@@ -5,11 +5,17 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from './resizable';
+} from '@/components/ui/resizable/resizable';
 
 const meta = {
-  title: 'UI/Layout/Resizable',
   component: ResizablePanelGroup,
+  decorators: [
+    (Story) => (
+      <div className="h-[400px] w-[600px] rounded-lg border">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -20,13 +26,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="h-[400px] w-[600px] rounded-lg border">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Layout/Resizable',
 } satisfies Meta<typeof ResizablePanelGroup>;
 
 export default meta;
@@ -34,6 +34,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Horizontal: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check panels are visible
+    expect(canvas.getByText('Left Panel')).toBeVisible();
+    expect(canvas.getByText('Right Panel')).toBeVisible();
+
+    // The resizable handle should be present and focusable
+    const handle = canvas.getByRole('separator');
+    expect(handle).toBeVisible();
+    expect(handle).toHaveAttribute('tabindex', '0');
+  },
   render: () => (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={30} minSize={20}>
@@ -59,22 +71,21 @@ export const Horizontal: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check panels are visible
-    expect(canvas.getByText('Left Panel')).toBeVisible();
-    expect(canvas.getByText('Right Panel')).toBeVisible();
-
-    // The resizable handle should be present and focusable
-    const handle = canvas.getByRole('separator');
-    expect(handle).toBeVisible();
-    expect(handle).toHaveAttribute('tabindex', '0');
-  },
 };
 
 export const Vertical: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check vertical layout panels
+    expect(canvas.getByText('Top Panel')).toBeVisible();
+    expect(canvas.getByText('Bottom Panel')).toBeVisible();
+
+    // Verify separator is present
+    const handle = canvas.getByRole('separator');
+    expect(handle).toBeVisible();
+  },
   render: () => (
     <ResizablePanelGroup direction="vertical">
       <ResizablePanel defaultSize={40} minSize={25}>
@@ -101,21 +112,25 @@ export const Vertical: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check vertical layout panels
-    expect(canvas.getByText('Top Panel')).toBeVisible();
-    expect(canvas.getByText('Bottom Panel')).toBeVisible();
-
-    // Verify separator is present
-    const handle = canvas.getByRole('separator');
-    expect(handle).toBeVisible();
-  },
 };
 
 export const WithHandles: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check all three panels
+    expect(canvas.getByText('Sidebar')).toBeVisible();
+    expect(canvas.getByText('Main Content')).toBeVisible();
+    expect(canvas.getByText('Inspector')).toBeVisible();
+
+    // Should have two handles with grip icons
+    const handles = canvas.getAllByRole('separator');
+    expect(handles).toHaveLength(2);
+    for (const handle of handles) {
+      expect(handle).toBeVisible();
+    }
+  },
   render: () => (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={25} minSize={15}>
@@ -146,25 +161,22 @@ export const WithHandles: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check all three panels
-    expect(canvas.getByText('Sidebar')).toBeVisible();
-    expect(canvas.getByText('Main Content')).toBeVisible();
-    expect(canvas.getByText('Inspector')).toBeVisible();
-
-    // Should have two handles with grip icons
-    const handles = canvas.getAllByRole('separator');
-    expect(handles).toHaveLength(2);
-    for (const handle of handles) {
-      expect(handle).toBeVisible();
-    }
-  },
 };
 
 export const NestedLayout: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check all nested panels
+    expect(canvas.getByText('File Explorer')).toBeVisible();
+    expect(canvas.getByText('Code Editor')).toBeVisible();
+    expect(canvas.getByText('Terminal')).toBeVisible();
+
+    // Should have handles for both horizontal and vertical splits
+    const handles = canvas.getAllByRole('separator');
+    expect(handles.length).toBeGreaterThanOrEqual(2);
+  },
   render: () => (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={30} minSize={20}>
@@ -205,22 +217,24 @@ export const NestedLayout: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check all nested panels
-    expect(canvas.getByText('File Explorer')).toBeVisible();
-    expect(canvas.getByText('Code Editor')).toBeVisible();
-    expect(canvas.getByText('Terminal')).toBeVisible();
-
-    // Should have handles for both horizontal and vertical splits
-    const handles = canvas.getAllByRole('separator');
-    expect(handles.length).toBeGreaterThanOrEqual(2);
-  },
 };
 
 export const MinMaxConstraints: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify constraint labels
+    expect(canvas.getByText('Constrained Panel')).toBeVisible();
+    expect(canvas.getByText('Flexible Panel')).toBeVisible();
+    expect(canvas.getByText('Fixed Range')).toBeVisible();
+
+    // Check constraint information is displayed
+    expect(canvas.getByText('Min: 15%')).toBeVisible();
+    expect(canvas.getByText('Max: 40%')).toBeVisible();
+    expect(canvas.getByText('Min: 20%')).toBeVisible();
+    expect(canvas.getByText('Max: 35%')).toBeVisible();
+  },
   render: () => (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20} maxSize={40} minSize={15}>
@@ -261,24 +275,29 @@ export const MinMaxConstraints: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify constraint labels
-    expect(canvas.getByText('Constrained Panel')).toBeVisible();
-    expect(canvas.getByText('Flexible Panel')).toBeVisible();
-    expect(canvas.getByText('Fixed Range')).toBeVisible();
-
-    // Check constraint information is displayed
-    expect(canvas.getByText('Min: 15%')).toBeVisible();
-    expect(canvas.getByText('Max: 40%')).toBeVisible();
-    expect(canvas.getByText('Min: 20%')).toBeVisible();
-    expect(canvas.getByText('Max: 35%')).toBeVisible();
-  },
 };
 
 export const CodeEditorLayout: Story = {
   args: { direction: 'horizontal' },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check main sections of IDE layout
+    expect(canvas.getByText('Explorer')).toBeVisible();
+    expect(canvas.getByText('App.tsx')).toBeVisible();
+    expect(canvas.getByText('Terminal')).toBeVisible();
+    expect(canvas.getByText('Properties')).toBeVisible();
+
+    // Check file tree
+    expect(canvas.getByText('📁 src/')).toBeVisible();
+    expect(canvas.getByText('📄 Button.tsx')).toBeVisible();
+
+    // Check terminal content
+    expect(canvas.getByText('$ npm run dev')).toBeVisible();
+
+    // Check properties panel
+    expect(canvas.getByText('variant: primary')).toBeVisible();
+  },
   render: () => (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={15} maxSize={25} minSize={10}>
@@ -372,23 +391,4 @@ export const CodeEditorLayout: Story = {
       </ResizablePanel>
     </ResizablePanelGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check main sections of IDE layout
-    expect(canvas.getByText('Explorer')).toBeVisible();
-    expect(canvas.getByText('App.tsx')).toBeVisible();
-    expect(canvas.getByText('Terminal')).toBeVisible();
-    expect(canvas.getByText('Properties')).toBeVisible();
-
-    // Check file tree
-    expect(canvas.getByText('📁 src/')).toBeVisible();
-    expect(canvas.getByText('📄 Button.tsx')).toBeVisible();
-
-    // Check terminal content
-    expect(canvas.getByText('$ npm run dev')).toBeVisible();
-
-    // Check properties panel
-    expect(canvas.getByText('variant: primary')).toBeVisible();
-  },
 };

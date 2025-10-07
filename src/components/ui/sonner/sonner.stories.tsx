@@ -7,12 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-import { toast, Toaster } from './sonner';
+import { toast, Toaster } from '@/components/ui/sonner/sonner';
 
 const meta = {
-  title: 'UI/Feedback/Sonner',
   component: Toaster,
+  decorators: [
+    (Story) => (
+      <div className="relative min-h-[400px] w-[600px]">
+        <Story />
+        <Toaster />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -23,20 +29,42 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="relative min-h-[400px] w-[600px]">
-        <Story />
-        <Toaster />
-      </div>
-    ),
-  ],
+  title: 'UI/Feedback/Sonner',
 } satisfies Meta<typeof Toaster>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Test default toast
+    const defaultButton = canvas.getByRole('button', { name: 'Default Toast' });
+    await userEvent.click(defaultButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Default notification')).toBeVisible();
+    });
+
+    // Test success toast
+    const successButton = canvas.getByRole('button', { name: 'Success Toast' });
+    await userEvent.click(successButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Success message!')).toBeVisible();
+    });
+
+    // Test error toast
+    const errorButton = canvas.getByRole('button', { name: 'Error Toast' });
+    await userEvent.click(errorButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Error occurred!')).toBeVisible();
+    });
+  },
   render: () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Basic Toast Notifications</h3>
@@ -84,37 +112,36 @@ export const Default: Story = {
       </div>
     </div>
   ),
+};
+
+export const WithActions: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test default toast
-    const defaultButton = canvas.getByRole('button', { name: 'Default Toast' });
-    await userEvent.click(defaultButton);
+    // Test toast with action
+    const actionButton = canvas.getByRole('button', { name: 'With Action' });
+    await userEvent.click(actionButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Default notification')).toBeVisible();
+      expect(screen.getByText('File uploaded successfully')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'View' })).toBeVisible();
     });
 
-    // Test success toast
-    const successButton = canvas.getByRole('button', { name: 'Success Toast' });
-    await userEvent.click(successButton);
+    // Test clicking the action button
+    const viewButton = screen.getByRole('button', { name: 'View' });
+    await userEvent.click(viewButton);
+
+    // Test undo functionality
+    const undoButton = canvas.getByRole('button', { name: 'With Undo' });
+    await userEvent.click(undoButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Success message!')).toBeVisible();
-    });
-
-    // Test error toast
-    const errorButton = canvas.getByRole('button', { name: 'Error Toast' });
-    await userEvent.click(errorButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Error occurred!')).toBeVisible();
+      expect(screen.getByText('Changes saved!')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Undo' })).toBeVisible();
     });
   },
-};
-
-export const WithActions: Story = {
   render: () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Toast with Actions</h3>
@@ -175,35 +202,38 @@ export const WithActions: Story = {
       </div>
     </div>
   ),
+};
+
+export const LoadingStates: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test toast with action
-    const actionButton = canvas.getByRole('button', { name: 'With Action' });
-    await userEvent.click(actionButton);
+    // Test simple loading toast
+    const loadingButton = canvas.getByRole('button', { name: 'Loading Toast' });
+    await userEvent.click(loadingButton);
 
     await waitFor(() => {
-      expect(screen.getByText('File uploaded successfully')).toBeVisible();
-      expect(screen.getByRole('button', { name: 'View' })).toBeVisible();
+      expect(screen.getByText('Loading data...')).toBeVisible();
     });
 
-    // Test clicking the action button
-    const viewButton = screen.getByRole('button', { name: 'View' });
-    await userEvent.click(viewButton);
-
-    // Test undo functionality
-    const undoButton = canvas.getByRole('button', { name: 'With Undo' });
-    await userEvent.click(undoButton);
+    // Test promise toast
+    const promiseButton = canvas.getByRole('button', { name: 'Promise Toast' });
+    await userEvent.click(promiseButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Changes saved!')).toBeVisible();
-      expect(screen.getByRole('button', { name: 'Undo' })).toBeVisible();
+      expect(screen.getByText('Uploading file...')).toBeVisible();
     });
+
+    // Wait for promise to resolve
+    await waitFor(
+      () => {
+        expect(screen.getByText('File uploaded!')).toBeVisible();
+      },
+      { timeout: 3000 },
+    );
   },
-};
-
-export const LoadingStates: Story = {
   render: () => {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -245,9 +275,9 @@ export const LoadingStates: Story = {
               });
 
               toast.promise(promise, {
+                error: 'Upload failed',
                 loading: 'Uploading file...',
                 success: 'File uploaded!',
-                error: 'Upload failed',
               });
             }}
           >
@@ -261,9 +291,9 @@ export const LoadingStates: Story = {
               });
 
               toast.promise(promise, {
+                error: (err) => `Connection failed: ${err.message}`,
                 loading: 'Connecting...',
                 success: 'Connected successfully!',
-                error: (err) => `Connection failed: ${err.message}`,
               });
             }}
           >
@@ -273,37 +303,37 @@ export const LoadingStates: Story = {
       </div>
     );
   },
+};
+
+export const CustomStyling: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test simple loading toast
-    const loadingButton = canvas.getByRole('button', { name: 'Loading Toast' });
-    await userEvent.click(loadingButton);
+    // Test rich content toast
+    const richButton = canvas.getByRole('button', { name: 'Rich Content' });
+    await userEvent.click(richButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Loading data...')).toBeVisible();
+      expect(screen.getByText('Task completed!')).toBeVisible();
+      expect(screen.getByText('Your report has been generated')).toBeVisible();
     });
 
-    // Test promise toast
-    const promiseButton = canvas.getByRole('button', { name: 'Promise Toast' });
-    await userEvent.click(promiseButton);
+    // Test persistent toast
+    const persistentButton = canvas.getByRole('button', {
+      name: 'Persistent',
+    });
+    await userEvent.click(persistentButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Uploading file...')).toBeVisible();
+      expect(screen.getByText('Critical error')).toBeVisible();
+      expect(
+        screen.getByText('This toast persists until closed'),
+      ).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Dismiss' })).toBeVisible();
     });
-
-    // Wait for promise to resolve
-    await waitFor(
-      () => {
-        expect(screen.getByText('File uploaded!')).toBeVisible();
-      },
-      { timeout: 3000 },
-    );
   },
-};
-
-export const CustomStyling: Story = {
   render: () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Custom Styling</h3>
@@ -355,12 +385,12 @@ export const CustomStyling: Story = {
           variant="outlined"
           onClick={() =>
             toast.error('Critical error', {
-              duration: Number.POSITIVE_INFINITY,
-              description: 'This toast persists until closed',
               action: {
                 label: 'Dismiss',
                 onClick: () => toast.dismiss(),
               },
+              description: 'This toast persists until closed',
+              duration: Number.POSITIVE_INFINITY,
             })
           }
         >
@@ -369,36 +399,47 @@ export const CustomStyling: Story = {
       </div>
     </div>
   ),
+};
+
+export const InteractiveForm: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test rich content toast
-    const richButton = canvas.getByRole('button', { name: 'Rich Content' });
-    await userEvent.click(richButton);
+    // Test form validation - submit empty form
+    const submitButton = canvas.getByRole('button', { name: 'Create Account' });
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Task completed!')).toBeVisible();
-      expect(screen.getByText('Your report has been generated')).toBeVisible();
+      expect(screen.getByText('Please fill in all fields')).toBeVisible();
+      expect(screen.getByText('Name and email are required')).toBeVisible();
     });
 
-    // Test persistent toast
-    const persistentButton = canvas.getByRole('button', {
-      name: 'Persistent',
-    });
-    await userEvent.click(persistentButton);
+    // Fill out form with valid data
+    const nameInput = canvas.getByLabelText('Name');
+    const emailInput = canvas.getByLabelText('Email');
+
+    await userEvent.type(nameInput, 'John Doe');
+    await userEvent.type(emailInput, 'john@example.com');
+
+    // Submit form
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Critical error')).toBeVisible();
-      expect(
-        screen.getByText('This toast persists until closed'),
-      ).toBeVisible();
-      expect(screen.getByRole('button', { name: 'Dismiss' })).toBeVisible();
+      expect(screen.getByText('Submitting form...')).toBeVisible();
     });
+
+    // Wait for success message
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Welcome John Doe! Account created successfully.'),
+        ).toBeVisible();
+      },
+      { timeout: 2500 },
+    );
   },
-};
-
-export const InteractiveForm: Story = {
   render: () => {
     const [formData, setFormData] = useState({ name: '', email: '' });
 
@@ -423,12 +464,12 @@ export const InteractiveForm: Story = {
       });
 
       toast.promise(submitPromise, {
+        error: (err) => `Submission failed: ${err.message}`,
         loading: 'Submitting form...',
         success: () => {
           setFormData({ name: '', email: '' });
           return `Welcome ${formData.name}! Account created successfully.`;
         },
-        error: (err) => `Submission failed: ${err.message}`,
       });
     };
 
@@ -470,46 +511,53 @@ export const InteractiveForm: Story = {
       </Card>
     );
   },
+};
+
+export const DismissalControls: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Test form validation - submit empty form
-    const submitButton = canvas.getByRole('button', { name: 'Create Account' });
-    await userEvent.click(submitButton);
+    // Create multiple toasts
+    const multipleButton = canvas.getByRole('button', {
+      name: 'Multiple Toasts',
+    });
+    await userEvent.click(multipleButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Please fill in all fields')).toBeVisible();
-      expect(screen.getByText('Name and email are required')).toBeVisible();
+      expect(screen.getByText('First notification')).toBeVisible();
+      expect(screen.getByText('Second notification')).toBeVisible();
+      expect(screen.getByText('Third notification')).toBeVisible();
     });
 
-    // Fill out form with valid data
-    const nameInput = canvas.getByLabelText('Name');
-    const emailInput = canvas.getByLabelText('Email');
-
-    await userEvent.type(nameInput, 'John Doe');
-    await userEvent.type(emailInput, 'john@example.com');
-
-    // Submit form
-    await userEvent.click(submitButton);
+    // Test dismiss all
+    const dismissButton = canvas.getByRole('button', { name: 'Dismiss All' });
+    await userEvent.click(dismissButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Submitting form...')).toBeVisible();
+      expect(screen.queryByText('First notification')).not.toBeVisible();
+      expect(screen.queryByText('Second notification')).not.toBeVisible();
+      expect(screen.queryByText('Third notification')).not.toBeVisible();
     });
 
-    // Wait for success message
-    await waitFor(
-      () => {
-        expect(
-          screen.getByText('Welcome John Doe! Account created successfully.'),
-        ).toBeVisible();
-      },
-      { timeout: 2500 },
-    );
+    // Test manual dismiss
+    const manualButton = canvas.getByRole('button', { name: 'Manual Dismiss' });
+    await userEvent.click(manualButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Manual dismiss')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Close' })).toBeVisible();
+    });
+
+    // Click the close button
+    const closeButton = screen.getByRole('button', { name: 'Close' });
+    await userEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Manual dismiss')).not.toBeVisible();
+    });
   },
-};
-
-export const DismissalControls: Story = {
   render: () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Toast Dismissal</h3>
@@ -562,52 +610,34 @@ export const DismissalControls: Story = {
       </div>
     </div>
   ),
+};
+
+export const Positioning: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Create multiple toasts
-    const multipleButton = canvas.getByRole('button', {
-      name: 'Multiple Toasts',
-    });
-    await userEvent.click(multipleButton);
+    // Test different position buttons
+    const topRightButton = canvas.getByRole('button', { name: 'Top Right' });
+    await userEvent.click(topRightButton);
 
     await waitFor(() => {
-      expect(screen.getByText('First notification')).toBeVisible();
-      expect(screen.getByText('Second notification')).toBeVisible();
-      expect(screen.getByText('Third notification')).toBeVisible();
+      expect(screen.getByText('Top Right (default)')).toBeVisible();
+      expect(
+        screen.getByText('This appears in the top right corner'),
+      ).toBeVisible();
     });
 
-    // Test dismiss all
-    const dismissButton = canvas.getByRole('button', { name: 'Dismiss All' });
-    await userEvent.click(dismissButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('First notification')).not.toBeVisible();
-      expect(screen.queryByText('Second notification')).not.toBeVisible();
-      expect(screen.queryByText('Third notification')).not.toBeVisible();
+    const bottomRightButton = canvas.getByRole('button', {
+      name: 'Bottom Right',
     });
-
-    // Test manual dismiss
-    const manualButton = canvas.getByRole('button', { name: 'Manual Dismiss' });
-    await userEvent.click(manualButton);
+    await userEvent.click(bottomRightButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Manual dismiss')).toBeVisible();
-      expect(screen.getByRole('button', { name: 'Close' })).toBeVisible();
-    });
-
-    // Click the close button
-    const closeButton = screen.getByRole('button', { name: 'Close' });
-    await userEvent.click(closeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Manual dismiss')).not.toBeVisible();
+      expect(screen.getByText('Bottom Right')).toBeVisible();
     });
   },
-};
-
-export const Positioning: Story = {
   render: () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Toast Positioning</h3>
@@ -665,28 +695,4 @@ export const Positioning: Story = {
       </div>
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const screen = within(document.body);
-
-    // Test different position buttons
-    const topRightButton = canvas.getByRole('button', { name: 'Top Right' });
-    await userEvent.click(topRightButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Top Right (default)')).toBeVisible();
-      expect(
-        screen.getByText('This appears in the top right corner'),
-      ).toBeVisible();
-    });
-
-    const bottomRightButton = canvas.getByRole('button', {
-      name: 'Bottom Right',
-    });
-    await userEvent.click(bottomRightButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Bottom Right')).toBeVisible();
-    });
-  },
 };

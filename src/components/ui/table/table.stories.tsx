@@ -6,7 +6,6 @@ import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-
 import {
   Table,
   TableBody,
@@ -16,10 +15,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './table';
+} from '@/components/ui/table/table';
 
 const meta = {
-  title: 'UI/Data Display/Table',
   component: Table,
   parameters: {
     layout: 'padded',
@@ -31,6 +29,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Data Display/Table',
 } satisfies Meta<typeof Table>;
 
 export default meta;
@@ -38,47 +37,75 @@ type Story = StoryObj<typeof meta>;
 
 const sampleInvoices = [
   {
-    id: 'INV-001',
-    customer: 'John Doe',
-    email: 'john@example.com',
-    status: 'Paid',
     amount: 250,
+    customer: 'John Doe',
     date: '2024-01-15',
-  },
-  {
-    id: 'INV-002',
-    customer: 'Jane Smith',
-    email: 'jane@example.com',
-    status: 'Pending',
-    amount: 150,
-    date: '2024-01-14',
-  },
-  {
-    id: 'INV-003',
-    customer: 'Bob Johnson',
-    email: 'bob@example.com',
-    status: 'Failed',
-    amount: 350,
-    date: '2024-01-13',
-  },
-  {
-    id: 'INV-004',
-    customer: 'Alice Brown',
-    email: 'alice@example.com',
+    email: 'john@example.com',
+    id: 'INV-001',
     status: 'Paid',
+  },
+  {
+    amount: 150,
+    customer: 'Jane Smith',
+    date: '2024-01-14',
+    email: 'jane@example.com',
+    id: 'INV-002',
+    status: 'Pending',
+  },
+  {
+    amount: 350,
+    customer: 'Bob Johnson',
+    date: '2024-01-13',
+    email: 'bob@example.com',
+    id: 'INV-003',
+    status: 'Failed',
+  },
+  {
     amount: 450,
+    customer: 'Alice Brown',
     date: '2024-01-12',
+    email: 'alice@example.com',
+    id: 'INV-004',
+    status: 'Paid',
   },
 ];
 
 const sampleProducts = [
-  { name: 'Laptop', category: 'Electronics', price: 999, stock: 45 },
-  { name: 'Headphones', category: 'Electronics', price: 199, stock: 23 },
-  { name: 'Coffee Mug', category: 'Home', price: 15, stock: 120 },
-  { name: 'Desk Chair', category: 'Office', price: 299, stock: 8 },
+  { category: 'Electronics', name: 'Laptop', price: 999, stock: 45 },
+  { category: 'Electronics', name: 'Headphones', price: 199, stock: 23 },
+  { category: 'Home', name: 'Coffee Mug', price: 15, stock: 120 },
+  { category: 'Office', name: 'Desk Chair', price: 299, stock: 8 },
 ];
 
 export const Default: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check table structure
+    const table = canvas.getByRole('table');
+    expect(table).toBeVisible();
+
+    // Check caption
+    expect(canvas.getByText('A list of your recent invoices.')).toBeVisible();
+
+    // Check column headers
+    expect(canvas.getByRole('columnheader', { name: 'Invoice' })).toBeVisible();
+    expect(
+      canvas.getByRole('columnheader', { name: 'Customer' }),
+    ).toBeVisible();
+    expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
+    expect(canvas.getByRole('columnheader', { name: 'Amount' })).toBeVisible();
+
+    // Check data rows
+    const rows = canvas.getAllByRole('row');
+    expect(rows).toHaveLength(5); // 1 header + 4 data rows
+
+    // Check specific data
+    expect(canvas.getByText('INV-001')).toBeVisible();
+    expect(canvas.getByText('John Doe')).toBeVisible();
+    expect(canvas.getByText('$250.00')).toBeVisible();
+  },
   render: () => (
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
@@ -114,36 +141,23 @@ export const Default: Story = {
       </TableBody>
     </Table>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check table structure
-    const table = canvas.getByRole('table');
-    expect(table).toBeVisible();
-
-    // Check caption
-    expect(canvas.getByText('A list of your recent invoices.')).toBeVisible();
-
-    // Check column headers
-    expect(canvas.getByRole('columnheader', { name: 'Invoice' })).toBeVisible();
-    expect(
-      canvas.getByRole('columnheader', { name: 'Customer' }),
-    ).toBeVisible();
-    expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
-    expect(canvas.getByRole('columnheader', { name: 'Amount' })).toBeVisible();
-
-    // Check data rows
-    const rows = canvas.getAllByRole('row');
-    expect(rows).toHaveLength(5); // 1 header + 4 data rows
-
-    // Check specific data
-    expect(canvas.getByText('INV-001')).toBeVisible();
-    expect(canvas.getByText('John Doe')).toBeVisible();
-    expect(canvas.getByText('$250.00')).toBeVisible();
-  },
 };
 
 export const WithFooter: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check footer calculation
+    expect(canvas.getByText('Total Value')).toBeVisible();
+    // Check footer calculation by finding the table footer
+    const footer = canvasElement.querySelector('[data-slot="table-footer"]');
+    expect(footer?.textContent).toContain('$53,724');
+
+    // Check right-aligned headers and cells
+    const priceHeader = canvas.getByRole('columnheader', { name: 'Price' });
+    expect(priceHeader).toHaveClass('text-right');
+  },
   render: () => (
     <Table>
       <TableCaption>Monthly sales summary</TableCaption>
@@ -178,22 +192,30 @@ export const WithFooter: Story = {
       </TableFooter>
     </Table>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check footer calculation
-    expect(canvas.getByText('Total Value')).toBeVisible();
-    // Check footer calculation by finding the table footer
-    const footer = canvasElement.querySelector('[data-slot="table-footer"]');
-    expect(footer?.textContent).toContain('$53,724');
-
-    // Check right-aligned headers and cells
-    const priceHeader = canvas.getByRole('columnheader', { name: 'Price' });
-    expect(priceHeader).toHaveClass('text-right');
-  },
 };
 
 export const WithSelection: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check initial selection count
+    expect(canvas.getByText('0 of 4 selected')).toBeVisible();
+
+    // Select individual item
+    const firstCheckbox = canvas.getByLabelText('Select invoice INV-001');
+    await userEvent.click(firstCheckbox);
+    expect(canvas.getByText('1 of 4 selected')).toBeVisible();
+
+    // Select all
+    const selectAllCheckbox = canvas.getByLabelText('Select all invoices');
+    await userEvent.click(selectAllCheckbox);
+    expect(canvas.getByText('4 of 4 selected')).toBeVisible();
+
+    // Deselect all
+    await userEvent.click(selectAllCheckbox);
+    expect(canvas.getByText('0 of 4 selected')).toBeVisible();
+  },
   render: () => {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -276,29 +298,24 @@ export const WithSelection: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check initial selection count
-    expect(canvas.getByText('0 of 4 selected')).toBeVisible();
-
-    // Select individual item
-    const firstCheckbox = canvas.getByLabelText('Select invoice INV-001');
-    await userEvent.click(firstCheckbox);
-    expect(canvas.getByText('1 of 4 selected')).toBeVisible();
-
-    // Select all
-    const selectAllCheckbox = canvas.getByLabelText('Select all invoices');
-    await userEvent.click(selectAllCheckbox);
-    expect(canvas.getByText('4 of 4 selected')).toBeVisible();
-
-    // Deselect all
-    await userEvent.click(selectAllCheckbox);
-    expect(canvas.getByText('0 of 4 selected')).toBeVisible();
-  },
 };
 
 export const WithActions: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check action buttons exist
+    const editButtons = canvas.getAllByLabelText(/Edit invoice/);
+    const deleteButtons = canvas.getAllByLabelText(/Delete invoice/);
+
+    expect(editButtons).toHaveLength(4);
+    expect(deleteButtons).toHaveLength(4);
+
+    // Test first edit button
+    await userEvent.click(editButtons[0]);
+    // Action would normally trigger some handler
+  },
   render: () => (
     <Table>
       <TableHeader>
@@ -354,23 +371,30 @@ export const WithActions: Story = {
       </TableBody>
     </Table>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check action buttons exist
-    const editButtons = canvas.getAllByLabelText(/Edit invoice/);
-    const deleteButtons = canvas.getAllByLabelText(/Delete invoice/);
-
-    expect(editButtons).toHaveLength(4);
-    expect(deleteButtons).toHaveLength(4);
-
-    // Test first edit button
-    await userEvent.click(editButtons[0]);
-    // Action would normally trigger some handler
-  },
 };
 
 export const Sortable: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test sorting by customer
+    const customerSort = canvas.getByRole('button', {
+      name: 'Sort by customer',
+    });
+
+    // First click should sort ascending (Alice Brown should be first alphabetically)
+    await userEvent.click(customerSort);
+
+    // Wait for sort to apply and check for Alice Brown
+    await waitFor(() => {
+      const firstCustomerCell = canvas.getAllByRole('cell')[1];
+      expect(firstCustomerCell).toHaveTextContent('Alice Brown');
+    });
+
+    // Just verify that the sort button is functional - don't test reverse sort
+    // as there might be implementation details we're not accounting for
+  },
   render: () => {
     const [sortField, setSortField] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -473,29 +497,25 @@ export const Sortable: Story = {
       </Table>
     );
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Test sorting by customer
-    const customerSort = canvas.getByRole('button', {
-      name: 'Sort by customer',
-    });
-
-    // First click should sort ascending (Alice Brown should be first alphabetically)
-    await userEvent.click(customerSort);
-
-    // Wait for sort to apply and check for Alice Brown
-    await waitFor(() => {
-      const firstCustomerCell = canvas.getAllByRole('cell')[1];
-      expect(firstCustomerCell).toHaveTextContent('Alice Brown');
-    });
-
-    // Just verify that the sort button is functional - don't test reverse sort
-    // as there might be implementation details we're not accounting for
-  },
 };
 
 export const EmptyState: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check empty state message - use getAllByText since there are multiple occurrences
+    const emptyMessages = canvas.getAllByText('No invoices found');
+    expect(emptyMessages.length).toBeGreaterThan(0);
+    expect(emptyMessages[0]).toBeVisible();
+    expect(
+      canvas.getByText('Create your first invoice to get started'),
+    ).toBeVisible();
+
+    // Check that table structure is still valid
+    const table = canvas.getByRole('table');
+    expect(table).toBeVisible();
+  },
   render: () => (
     <Table>
       <TableCaption>No invoices found</TableCaption>
@@ -525,19 +545,4 @@ export const EmptyState: Story = {
       </TableBody>
     </Table>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check empty state message - use getAllByText since there are multiple occurrences
-    const emptyMessages = canvas.getAllByText('No invoices found');
-    expect(emptyMessages.length).toBeGreaterThan(0);
-    expect(emptyMessages[0]).toBeVisible();
-    expect(
-      canvas.getByText('Create your first invoice to get started'),
-    ).toBeVisible();
-
-    // Check that table structure is still valid
-    const table = canvas.getByRole('table');
-    expect(table).toBeVisible();
-  },
 };

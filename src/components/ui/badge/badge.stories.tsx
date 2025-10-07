@@ -2,16 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from '@storybook/test';
 
 import { Icons } from '@/components/icons';
-
-import { Badge } from './badge';
+import { Badge } from '@/components/ui/badge/badge';
 
 const meta = {
-  title: 'UI/Data Display/Badge',
-  component: Badge,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: { type: 'select' },
@@ -29,6 +22,12 @@ const meta = {
       ],
     },
   },
+  component: Badge,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  title: 'UI/Data Display/Badge',
 } satisfies Meta<typeof Badge>;
 
 export default meta;
@@ -83,6 +82,7 @@ export const Outline: Story = {
 };
 
 export const WithIcon: Story = {
+  args: {},
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Badge>
@@ -106,6 +106,7 @@ export const WithIcon: Story = {
 };
 
 export const StatusBadges: Story = {
+  args: {},
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Badge variant="success">Active</Badge>
@@ -118,6 +119,7 @@ export const StatusBadges: Story = {
 };
 
 export const NotificationBadge: Story = {
+  args: {},
   render: () => (
     <div className="relative inline-flex">
       <Icons.bell size="xl" />
@@ -129,6 +131,7 @@ export const NotificationBadge: Story = {
 };
 
 export const CategoryBadges: Story = {
+  args: {},
   render: () => (
     <div className="space-y-4">
       <div>
@@ -153,6 +156,7 @@ export const CategoryBadges: Story = {
 };
 
 export const InteractiveBadges: Story = {
+  args: {},
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Badge asChild>
@@ -172,6 +176,7 @@ export const InteractiveBadges: Story = {
 };
 
 export const Sizes: Story = {
+  args: {},
   render: () => (
     <div className="flex items-center gap-2">
       <Badge className="px-1.5 py-0.5 text-xs">Extra Small</Badge>
@@ -182,6 +187,7 @@ export const Sizes: Story = {
 };
 
 export const WithDots: Story = {
+  args: {},
   render: () => (
     <div className="flex flex-wrap gap-2">
       <Badge variant="success">
@@ -201,6 +207,7 @@ export const WithDots: Story = {
 };
 
 export const AllVariants: Story = {
+  args: {},
   render: () => (
     <div className="grid grid-cols-3 gap-6">
       <div className="space-y-3">
@@ -233,6 +240,7 @@ export const AllVariants: Story = {
 };
 
 export const DesignComparison: Story = {
+  args: {},
   render: () => (
     <div className="space-y-6">
       <div>

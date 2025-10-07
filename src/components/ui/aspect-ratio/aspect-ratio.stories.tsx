@@ -1,10 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from '@storybook/test';
 
-import { AspectRatio } from './aspect-ratio';
+import { AspectRatio } from '@/components/ui/aspect-ratio/aspect-ratio';
 
 const meta: Meta<typeof AspectRatio> = {
-  title: 'UI/Layout/Aspect Ratio',
+  argTypes: {
+    ratio: {
+      control: { max: 5, min: 0.1, step: 0.1, type: 'number' },
+      description: 'The desired aspect ratio (width / height).',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '1' },
+      },
+    },
+    children: {
+      control: { type: 'text' },
+      description: 'Content to display within the aspect ratio container.',
+      table: {
+        type: { summary: 'React.ReactNode' },
+      },
+    },
+  },
   component: AspectRatio,
   parameters: {
     layout: 'centered',
@@ -16,23 +32,7 @@ const meta: Meta<typeof AspectRatio> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    ratio: {
-      description: 'The desired aspect ratio (width / height).',
-      control: { type: 'number', min: 0.1, max: 5, step: 0.1 },
-      table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '1' },
-      },
-    },
-    children: {
-      description: 'Content to display within the aspect ratio container.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'React.ReactNode' },
-      },
-    },
-  },
+  title: 'UI/Layout/Aspect Ratio',
 };
 
 export default meta;
@@ -41,6 +41,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     ratio: 16 / 9,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Default aspect ratio container with 16:9 ratio.',
+      },
+    },
   },
   render: (args) => (
     <div className="w-80">
@@ -53,18 +60,18 @@ export const Default: Story = {
       </AspectRatio>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Default aspect ratio container with 16:9 ratio.',
-      },
-    },
-  },
 };
 
 export const Square: Story = {
   args: {
     ratio: 1,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Square aspect ratio (1:1).',
+      },
+    },
   },
   render: (args) => (
     <div className="w-64">
@@ -75,18 +82,18 @@ export const Square: Story = {
       </AspectRatio>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Square aspect ratio (1:1).',
-      },
-    },
-  },
 };
 
 export const Portrait: Story = {
   args: {
     ratio: 3 / 4,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Portrait aspect ratio (3:4), taller than it is wide.',
+      },
+    },
   },
   render: (args) => (
     <div className="w-48">
@@ -101,18 +108,18 @@ export const Portrait: Story = {
       </AspectRatio>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Portrait aspect ratio (3:4), taller than it is wide.',
-      },
-    },
-  },
 };
 
 export const Ultrawide: Story = {
   args: {
     ratio: 21 / 9,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Ultrawide aspect ratio (21:9) for cinematic content.',
+      },
+    },
   },
   render: (args) => (
     <div className="w-96">
@@ -123,16 +130,17 @@ export const Ultrawide: Story = {
       </AspectRatio>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Ultrawide aspect ratio (21:9) for cinematic content.',
-      },
-    },
-  },
 };
 
 export const CommonRatios: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Common aspect ratios used in different media types.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-6">
       <div>
@@ -184,16 +192,17 @@ export const CommonRatios: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Common aspect ratios used in different media types.',
-      },
-    },
-  },
 };
 
 export const WithImages: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Aspect ratio containers with actual images.',
+      },
+    },
+  },
   render: () => (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div>
@@ -249,16 +258,18 @@ export const WithImages: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Aspect ratio containers with actual images.',
-      },
-    },
-  },
 };
 
 export const ResponsiveAspectRatio: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Responsive aspect ratio that scales with its container while maintaining proportions.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-4">
       <h3 className="text-sm font-medium">Responsive Container</h3>
@@ -278,17 +289,17 @@ export const ResponsiveAspectRatio: Story = {
       </p>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Responsive aspect ratio that scales with its container while maintaining proportions.',
-      },
-    },
-  },
 };
 
 export const VideoPlaceholder: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Video player placeholder using aspect ratio.',
+      },
+    },
+  },
   render: () => (
     <div className="w-full max-w-md">
       <AspectRatio ratio={16 / 9}>
@@ -302,16 +313,17 @@ export const VideoPlaceholder: Story = {
       </AspectRatio>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Video player placeholder using aspect ratio.',
-      },
-    },
-  },
 };
 
 export const CardGrid: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Grid of cards using aspect ratio for consistent image sizing.',
+      },
+    },
+  },
   render: () => (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
@@ -345,16 +357,17 @@ export const CardGrid: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Grid of cards using aspect ratio for consistent image sizing.',
-      },
-    },
-  },
 };
 
 export const CustomRatios: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Custom aspect ratios including golden ratio and paper formats.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-6">
       <div>
@@ -391,30 +404,12 @@ export const CustomRatios: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Custom aspect ratios including golden ratio and paper formats.',
-      },
-    },
-  },
 };
 
 export const InteractiveAspectRatio: Story = {
   args: {
     ratio: 16 / 9,
   },
-  render: (args) => (
-    <div className="w-80">
-      <AspectRatio {...args}>
-        <div className="flex h-full items-center justify-center rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-          <span className="text-sm font-medium">
-            Ratio: {args.ratio?.toFixed(2)}
-          </span>
-        </div>
-      </AspectRatio>
-    </div>
-  ),
   parameters: {
     docs: {
       description: {
@@ -437,9 +432,29 @@ export const InteractiveAspectRatio: Story = {
     expect(content).toBeInTheDocument();
     expect(content).toHaveTextContent('Ratio:');
   },
+  render: (args) => (
+    <div className="w-80">
+      <AspectRatio {...args}>
+        <div className="flex h-full items-center justify-center rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <span className="text-sm font-medium">
+            Ratio: {args.ratio?.toFixed(2)}
+          </span>
+        </div>
+      </AspectRatio>
+    </div>
+  ),
 };
 
 export const AccessibilityDemo: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates accessibility features and how interactive content works within aspect ratio containers.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Accessibility Features</h4>
@@ -461,12 +476,4 @@ export const AccessibilityDemo: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates accessibility features and how interactive content works within aspect ratio containers.',
-      },
-    },
-  },
 };

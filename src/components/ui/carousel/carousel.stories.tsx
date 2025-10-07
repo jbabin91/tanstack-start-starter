@@ -3,7 +3,6 @@ import { expect, userEvent, within } from '@storybook/test';
 import { useEffect, useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
-
 import {
   Carousel,
   type CarouselApi,
@@ -11,11 +10,17 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from './carousel';
+} from '@/components/ui/carousel/carousel';
 
 const meta: Meta<typeof Carousel> = {
-  title: 'UI/Surfaces/Carousel',
   component: Carousel,
+  decorators: [
+    (Story) => (
+      <div className="mx-auto w-full max-w-lg">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -26,13 +31,7 @@ const meta: Meta<typeof Carousel> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="mx-auto w-full max-w-lg">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Surfaces/Carousel',
 };
 
 export default meta;
@@ -40,6 +39,14 @@ export default meta;
 type Story = StoryObj<typeof Carousel>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic carousel with navigation arrows and numbered cards.',
+      },
+    },
+  },
   render: () => (
     <Carousel className="w-full max-w-xs">
       <CarouselContent>
@@ -59,16 +66,18 @@ export const Default: Story = {
       <CarouselNext />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic carousel with navigation arrows and numbered cards.',
-      },
-    },
-  },
 };
 
 export const MultipleItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Carousel showing multiple items at once with responsive sizing.',
+      },
+    },
+  },
   render: () => (
     <Carousel
       className="w-full max-w-sm"
@@ -95,17 +104,17 @@ export const MultipleItems: Story = {
       <CarouselNext />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Carousel showing multiple items at once with responsive sizing.',
-      },
-    },
-  },
 };
 
 export const WithImages: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Image carousel with descriptive captions.',
+      },
+    },
+  },
   render: () => (
     <Carousel className="w-full max-w-md">
       <CarouselContent>
@@ -150,16 +159,17 @@ export const WithImages: Story = {
       <CarouselNext />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Image carousel with descriptive captions.',
-      },
-    },
-  },
 };
 
 export const VerticalOrientation: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Carousel with vertical scrolling orientation.',
+      },
+    },
+  },
   render: () => (
     <Carousel className="mx-auto w-full max-w-xs" orientation="vertical">
       <CarouselContent className="-mt-1 h-[200px]">
@@ -182,16 +192,17 @@ export const VerticalOrientation: Story = {
       <CarouselNext />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Carousel with vertical scrolling orientation.',
-      },
-    },
-  },
 };
 
 export const WithLoop: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Carousel with infinite loop enabled for continuous scrolling.',
+      },
+    },
+  },
   render: () => (
     <Carousel className="w-full max-w-xs" opts={{ loop: true }}>
       <CarouselContent>
@@ -211,16 +222,17 @@ export const WithLoop: Story = {
       <CarouselNext />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Carousel with infinite loop enabled for continuous scrolling.',
-      },
-    },
-  },
 };
 
 export const CustomNavigation: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Carousel with custom positioned navigation buttons.',
+      },
+    },
+  },
   render: () => (
     <Carousel className="w-full max-w-xs">
       <CarouselContent>
@@ -240,16 +252,17 @@ export const CustomNavigation: Story = {
       <CarouselNext className="right-2" />
     </Carousel>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Carousel with custom positioned navigation buttons.',
-      },
-    },
-  },
 };
 
 export const WithIndicators: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Carousel with dot indicators and slide counter.',
+      },
+    },
+  },
   render: function WithIndicatorsStory() {
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
@@ -306,40 +319,18 @@ export const WithIndicators: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Carousel with dot indicators and slide counter.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <Carousel className="w-full max-w-xs">
-      <CarouselContent>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <CarouselItem key={`interactive-carousel-item-${index}`}>
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <div className="text-center">
-                    <span className="text-4xl font-semibold">{index + 1}</span>
-                    <p className="text-muted-foreground mt-2 text-sm">
-                      Card {index + 1}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
-  ),
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive carousel with navigation controls and keyboard support.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -371,12 +362,28 @@ export const Interactive: Story = {
       expect(slide).toHaveAttribute('aria-roledescription', 'slide');
     }
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive carousel with navigation controls and keyboard support.',
-      },
-    },
-  },
+  render: () => (
+    <Carousel className="w-full max-w-xs">
+      <CarouselContent>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CarouselItem key={`interactive-carousel-item-${index}`}>
+            <div className="p-1">
+              <Card>
+                <CardContent className="flex aspect-square items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-4xl font-semibold">{index + 1}</span>
+                    <p className="text-muted-foreground mt-2 text-sm">
+                      Card {index + 1}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  ),
 };

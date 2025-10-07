@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+'use client';
+
+import * as React from 'react';
 import {
   type DayButton,
   DayPicker,
@@ -58,7 +60,10 @@ function Calendar({
           'text-muted-foreground opacity-50',
           defaultClassNames.disabled,
         ),
-        dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
+        dropdown: cn(
+          'absolute bg-popover inset-0 opacity-0',
+          defaultClassNames.dropdown,
+        ),
         dropdown_root: cn(
           'relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md',
           defaultClassNames.dropdown_root,
@@ -124,8 +129,8 @@ function Calendar({
           };
 
           const chevronProps: ChevronIconProps = {
-            size: 'sm', // Explicit size for calendar chevrons
             className,
+            size: 'sm',
             ...iconProps,
           };
 
@@ -179,12 +184,12 @@ function CalendarDayButton({
   ...props
 }: React.ComponentProps<typeof DayButton>) {
   const defaultClassNames = getDefaultClassNames();
-  const ref = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
+
+  const ref = React.useRef<HTMLButtonElement>(null);
+  React.useEffect(() => {
     if (modifiers.focused) ref.current?.focus();
   }, [modifiers.focused]);
 
-  // Remove color from props if it exists to avoid type errors
   const { color: _color, ...rest } = props;
 
   return (

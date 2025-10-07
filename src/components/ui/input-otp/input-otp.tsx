@@ -1,5 +1,5 @@
 import { OTPInput, OTPInputContext } from 'input-otp';
-import { use } from 'react';
+import * as React from 'react';
 
 import { Icons } from '@/components/icons';
 import { cn } from '@/utils/cn';
@@ -41,7 +41,7 @@ function InputOTPSlot({
 }: React.ComponentProps<'div'> & {
   index: number;
 }) {
-  const inputOTPContext = use(OTPInputContext);
+  const inputOTPContext = React.use(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
 
   return (

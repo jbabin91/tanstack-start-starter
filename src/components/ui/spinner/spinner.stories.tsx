@@ -3,11 +3,42 @@ import { expect, within } from '@storybook/test';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { Spinner } from './spinner';
+import { Spinner } from '@/components/ui/spinner/spinner';
 
 const meta: Meta<typeof Spinner> = {
-  title: 'UI/Feedback/Spinner',
+  argTypes: {
+    children: {
+      control: { type: 'text' },
+      description: 'Optional text content to display below the spinner.',
+      table: {
+        type: { summary: 'React.ReactNode' },
+      },
+    },
+    className: {
+      control: { type: 'text' },
+      description: 'Additional CSS classes for the spinner icon.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    show: {
+      control: { type: 'boolean' },
+      description: 'Whether the spinner is visible.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    size: {
+      control: { type: 'select' },
+      description: 'The size of the spinner.',
+      options: ['small', 'medium', 'large'],
+      table: {
+        type: { summary: '"small" | "medium" | "large"' },
+        defaultValue: { summary: '"medium"' },
+      },
+    },
+  },
   component: Spinner,
   parameters: {
     layout: 'centered',
@@ -19,39 +50,7 @@ const meta: Meta<typeof Spinner> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    size: {
-      description: 'The size of the spinner.',
-      control: { type: 'select' },
-      options: ['small', 'medium', 'large'],
-      table: {
-        type: { summary: '"small" | "medium" | "large"' },
-        defaultValue: { summary: '"medium"' },
-      },
-    },
-    show: {
-      description: 'Whether the spinner is visible.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
-      },
-    },
-    children: {
-      description: 'Optional text content to display below the spinner.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'React.ReactNode' },
-      },
-    },
-    className: {
-      description: 'Additional CSS classes for the spinner icon.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Feedback/Spinner',
 };
 
 export default meta;
@@ -69,6 +68,15 @@ export const Default: Story = {
 };
 
 export const Sizes: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Different spinner sizes: small (24px), medium (32px), and large (48px).',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-8">
       <div className="text-center">
@@ -85,17 +93,18 @@ export const Sizes: Story = {
       </div>
     </div>
   ),
+};
+
+export const WithText: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Different spinner sizes: small (24px), medium (32px), and large (48px).',
+          'Spinners with descriptive text labels for better user feedback.',
       },
     },
   },
-};
-
-export const WithText: Story = {
   render: (args) => (
     <div className="space-y-6">
       <Spinner {...args}>
@@ -111,17 +120,17 @@ export const WithText: Story = {
       </Spinner>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Spinners with descriptive text labels for better user feedback.',
-      },
-    },
-  },
 };
 
 export const InButtons: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Spinners integrated into buttons for loading states.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex space-x-4">
       <Button disabled className="inline-flex items-center">
@@ -137,16 +146,17 @@ export const InButtons: Story = {
       </Button>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Spinners integrated into buttons for loading states.',
-      },
-    },
-  },
 };
 
 export const InCards: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Spinners used within card components for loading states.',
+      },
+    },
+  },
   render: (args) => (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div className="rounded-lg border p-6">
@@ -173,16 +183,18 @@ export const InCards: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Spinners used within card components for loading states.',
-      },
-    },
-  },
 };
 
 export const Overlay: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Spinner used as an overlay to indicate loading over existing content.',
+      },
+    },
+  },
   render: (args) => (
     <div className="relative">
       <div className="rounded-lg border p-8">
@@ -226,17 +238,18 @@ export const Overlay: Story = {
       </div>
     </div>
   ),
+};
+
+export const InlineSpinners: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Spinner used as an overlay to indicate loading over existing content.',
+          'Small inline spinners for indicating specific loading processes.',
       },
     },
   },
-};
-
-export const InlineSpinners: Story = {
   render: (args) => (
     <div className="space-y-4">
       <p className="flex items-center text-sm">
@@ -253,17 +266,18 @@ export const InlineSpinners: Story = {
       </p>
     </div>
   ),
+};
+
+export const ColoredSpinners: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Small inline spinners for indicating specific loading processes.',
+          'Spinners with custom colors using Tailwind CSS text color classes.',
       },
     },
   },
-};
-
-export const ColoredSpinners: Story = {
   render: (args) => (
     <div className="flex items-center space-x-8">
       <div className="text-center">
@@ -288,17 +302,18 @@ export const ColoredSpinners: Story = {
       </div>
     </div>
   ),
+};
+
+export const LoadingStates: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Spinners with custom colors using Tailwind CSS text color classes.',
+          'Multiple spinners showing different parts of an interface loading.',
       },
     },
   },
-};
-
-export const LoadingStates: Story = {
   render: (args) => (
     <div className="space-y-6">
       <div className="rounded-lg border p-6">
@@ -323,17 +338,17 @@ export const LoadingStates: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Multiple spinners showing different parts of an interface loading.',
-      },
-    },
-  },
 };
 
 export const ConditionalSpinner: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Conditional spinner visibility using the show prop.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-4">
       <div className="flex items-center space-x-4">
@@ -346,16 +361,18 @@ export const ConditionalSpinner: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Conditional spinner visibility using the show prop.',
-      },
-    },
-  },
 };
 
 export const AccessibilityDemo: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates accessibility features including proper ARIA attributes and screen reader support.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Accessibility Features</h4>
@@ -374,14 +391,6 @@ export const AccessibilityDemo: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates accessibility features including proper ARIA attributes and screen reader support.',
-      },
-    },
-  },
 };
 
 export const InteractiveSpinner: Story = {
@@ -389,11 +398,6 @@ export const InteractiveSpinner: Story = {
     size: 'medium',
     show: true,
   },
-  render: (args) => (
-    <Spinner {...args}>
-      <span className="text-muted-foreground mt-2 text-sm">Loading...</span>
-    </Spinner>
-  ),
   parameters: {
     docs: {
       description: {
@@ -429,4 +433,9 @@ export const InteractiveSpinner: Story = {
     // Verify text content
     expect(spinner).toHaveTextContent('Loading...');
   },
+  render: (args) => (
+    <Spinner {...args}>
+      <span className="text-muted-foreground mt-2 text-sm">Loading...</span>
+    </Spinner>
+  ),
 };

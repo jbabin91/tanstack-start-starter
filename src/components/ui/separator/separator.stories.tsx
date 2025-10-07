@@ -2,11 +2,36 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from '@storybook/test';
 
 import { Button } from '@/components/ui/button';
-
-import { Separator } from './separator';
+import { Separator } from '@/components/ui/separator/separator';
 
 const meta: Meta<typeof Separator> = {
-  title: 'UI/Layout/Separator',
+  argTypes: {
+    className: {
+      control: { type: 'text' },
+      description: 'Additional CSS classes for styling the separator.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    decorative: {
+      control: { type: 'boolean' },
+      description:
+        'Whether the separator is purely decorative. When true, it will have no semantic meaning and will not be focusable by assistive technologies.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    orientation: {
+      control: { type: 'select' },
+      description: 'The orientation of the separator.',
+      options: ['horizontal', 'vertical'],
+      table: {
+        type: { summary: '"horizontal" | "vertical"' },
+        defaultValue: { summary: '"horizontal"' },
+      },
+    },
+  },
   component: Separator,
   parameters: {
     layout: 'centered',
@@ -18,39 +43,23 @@ const meta: Meta<typeof Separator> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    orientation: {
-      description: 'The orientation of the separator.',
-      control: { type: 'select' },
-      options: ['horizontal', 'vertical'],
-      table: {
-        type: { summary: '"horizontal" | "vertical"' },
-        defaultValue: { summary: '"horizontal"' },
-      },
-    },
-    decorative: {
-      description:
-        'Whether the separator is purely decorative. When true, it will have no semantic meaning and will not be focusable by assistive technologies.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
-      },
-    },
-    className: {
-      description: 'Additional CSS classes for styling the separator.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Layout/Separator',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Horizontal: Story = {
+  args: {
+    orientation: 'horizontal',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Horizontal separator dividing content vertically.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full max-w-md space-y-4">
       <div className="space-y-1">
@@ -68,19 +77,19 @@ export const Horizontal: Story = {
       </div>
     </div>
   ),
+};
+
+export const Vertical: Story = {
   args: {
-    orientation: 'horizontal',
+    orientation: 'vertical',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Horizontal separator dividing content vertically.',
+        story: 'Vertical separator dividing content horizontally.',
       },
     },
   },
-};
-
-export const Vertical: Story = {
   render: (args) => (
     <div className="flex h-16 items-center space-x-4">
       <div>
@@ -96,19 +105,19 @@ export const Vertical: Story = {
       </div>
     </div>
   ),
+};
+
+export const InMenuItems: Story = {
   args: {
-    orientation: 'vertical',
+    orientation: 'horizontal',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Vertical separator dividing content horizontally.',
+        story: 'Separator used in menu items to group related actions.',
       },
     },
   },
-};
-
-export const InMenuItems: Story = {
   render: (args) => (
     <div className="w-48 space-y-1 rounded-md border p-2">
       <div className="hover:bg-accent cursor-pointer rounded-sm px-2 py-1.5 text-sm">
@@ -126,19 +135,19 @@ export const InMenuItems: Story = {
       </div>
     </div>
   ),
+};
+
+export const InCard: Story = {
   args: {
     orientation: 'horizontal',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Separator used in menu items to group related actions.',
+        story: 'Separator used in card components to separate sections.',
       },
     },
   },
-};
-
-export const InCard: Story = {
   render: (args) => (
     <div className="w-80 rounded-lg border shadow-sm">
       <div className="p-6">
@@ -167,19 +176,19 @@ export const InCard: Story = {
       </div>
     </div>
   ),
+};
+
+export const BreadcrumbSeparator: Story = {
   args: {
-    orientation: 'horizontal',
+    decorative: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Separator used in card components to separate sections.',
+        story: 'Vertical separators used in breadcrumb navigation.',
       },
     },
   },
-};
-
-export const BreadcrumbSeparator: Story = {
   render: (args) => (
     <nav className="flex items-center space-x-1 text-sm">
       <Button
@@ -201,19 +210,18 @@ export const BreadcrumbSeparator: Story = {
       <span className="text-foreground font-medium">Laptops</span>
     </nav>
   ),
-  args: {
-    decorative: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Vertical separators used in breadcrumb navigation.',
-      },
-    },
-  },
 };
 
 export const StatsGrid: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Using CSS divide utilities with separator styling for stats grids.',
+      },
+    },
+  },
   render: () => (
     <div className="grid grid-cols-3 divide-x rounded-lg border">
       <div className="p-6 text-center">
@@ -230,17 +238,19 @@ export const StatsGrid: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Using CSS divide utilities with separator styling for stats grids.',
-      },
-    },
-  },
 };
 
 export const ListSeparator: Story = {
+  args: {
+    orientation: 'horizontal',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Separator used between list items like notifications.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full max-w-sm">
       <div className="space-y-0">
@@ -276,19 +286,18 @@ export const ListSeparator: Story = {
       </div>
     </div>
   ),
-  args: {
-    orientation: 'horizontal',
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Separator used between list items like notifications.',
-      },
-    },
-  },
 };
 
 export const CustomStyling: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Various styling options for separators including dashed, dotted, thick, colored, and gradient styles.',
+      },
+    },
+  },
   render: () => (
     <div className="w-full max-w-md space-y-6">
       <div>
@@ -317,17 +326,20 @@ export const CustomStyling: Story = {
       </div>
     </div>
   ),
+};
+
+export const SemanticSeparator: Story = {
+  args: {
+    decorative: false,
+  },
   parameters: {
     docs: {
       description: {
         story:
-          'Various styling options for separators including dashed, dotted, thick, colored, and gradient styles.',
+          'Semantic separator with decorative=false for screen readers and assistive technologies.',
       },
     },
   },
-};
-
-export const SemanticSeparator: Story = {
   render: (args) => (
     <div className="w-full max-w-md">
       <article className="space-y-4">
@@ -348,20 +360,18 @@ export const SemanticSeparator: Story = {
       </article>
     </div>
   ),
-  args: {
-    decorative: false,
-  },
+};
+
+export const ResponsiveSeparator: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Semantic separator with decorative=false for screen readers and assistive technologies.',
+          'Responsive separator that changes orientation based on screen size.',
       },
     },
   },
-};
-
-export const ResponsiveSeparator: Story = {
   render: (args) => (
     <div className="w-full">
       {/* Mobile: horizontal, Desktop: vertical */}
@@ -391,34 +401,10 @@ export const ResponsiveSeparator: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Responsive separator that changes orientation based on screen size.',
-      },
-    },
-  },
 };
 
 export const InteractiveSeparator: Story = {
-  render: (args) => (
-    <div className="w-full max-w-md space-y-4">
-      <div className="space-y-1">
-        <h4 className="text-sm leading-none font-medium">Basic Content</h4>
-        <p className="text-muted-foreground text-sm">
-          Some initial content above the separator
-        </p>
-      </div>
-      <Separator {...args} />
-      <div className="space-y-1">
-        <h4 className="text-sm leading-none font-medium">More Content</h4>
-        <p className="text-muted-foreground text-sm">
-          Additional content below the separator
-        </p>
-      </div>
-    </div>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -443,4 +429,21 @@ export const InteractiveSeparator: Story = {
     expect(separator).toHaveClass('data-[orientation=horizontal]:h-px');
     expect(separator).toHaveClass('data-[orientation=horizontal]:w-full');
   },
+  render: (args) => (
+    <div className="w-full max-w-md space-y-4">
+      <div className="space-y-1">
+        <h4 className="text-sm leading-none font-medium">Basic Content</h4>
+        <p className="text-muted-foreground text-sm">
+          Some initial content above the separator
+        </p>
+      </div>
+      <Separator {...args} />
+      <div className="space-y-1">
+        <h4 className="text-sm leading-none font-medium">More Content</h4>
+        <p className="text-muted-foreground text-sm">
+          Additional content below the separator
+        </p>
+      </div>
+    </div>
+  ),
 };

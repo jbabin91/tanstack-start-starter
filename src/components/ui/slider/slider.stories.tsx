@@ -3,12 +3,80 @@ import { expect, fn, userEvent, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Label } from '@/components/ui/label';
-
-import { Slider } from './slider';
+import { Slider } from '@/components/ui/slider/slider';
 
 const meta = {
-  title: 'UI/Inputs/Slider',
+  argTypes: {
+    defaultValue: {
+      control: 'object',
+      description: 'Default value(s) of the slider',
+      table: {
+        type: { summary: 'number[]' },
+      },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disabled state',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    max: {
+      control: 'number',
+      description: 'Maximum value',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '100' },
+      },
+    },
+    min: {
+      control: 'number',
+      description: 'Minimum value',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '0' },
+      },
+    },
+    onValueChange: {
+      action: 'valueChange',
+      description: 'Callback when slider value changes',
+      table: {
+        type: { summary: '(value: number[]) => void' },
+      },
+    },
+    orientation: {
+      control: { type: 'select' },
+      description: 'Orientation of the slider',
+      options: ['horizontal', 'vertical'],
+      table: {
+        type: { summary: 'horizontal | vertical' },
+        defaultValue: { summary: 'horizontal' },
+      },
+    },
+    step: {
+      control: 'number',
+      description: 'Step increment',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '1' },
+      },
+    },
+    value: {
+      control: 'object',
+      description: 'Controlled value(s) of the slider',
+      table: {
+        type: { summary: 'number[]' },
+      },
+    },
+  },
   component: Slider,
+  decorators: [
+    (Story) => (
+      <div className="w-[400px] p-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -19,76 +87,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="w-[400px] p-4">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    defaultValue: {
-      description: 'Default value(s) of the slider',
-      control: 'object',
-      table: {
-        type: { summary: 'number[]' },
-      },
-    },
-    value: {
-      description: 'Controlled value(s) of the slider',
-      control: 'object',
-      table: {
-        type: { summary: 'number[]' },
-      },
-    },
-    min: {
-      description: 'Minimum value',
-      control: 'number',
-      table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '0' },
-      },
-    },
-    max: {
-      description: 'Maximum value',
-      control: 'number',
-      table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '100' },
-      },
-    },
-    step: {
-      description: 'Step increment',
-      control: 'number',
-      table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '1' },
-      },
-    },
-    orientation: {
-      description: 'Orientation of the slider',
-      control: { type: 'select' },
-      options: ['horizontal', 'vertical'],
-      table: {
-        type: { summary: 'horizontal | vertical' },
-        defaultValue: { summary: 'horizontal' },
-      },
-    },
-    disabled: {
-      description: 'Disabled state',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    onValueChange: {
-      description: 'Callback when slider value changes',
-      action: 'valueChange',
-      table: {
-        type: { summary: '(value: number[]) => void' },
-      },
-    },
-  },
+  title: 'UI/Inputs/Slider',
 } satisfies Meta<typeof Slider>;
 
 export default meta;
@@ -118,10 +117,10 @@ export const Default: Story = {
 export const WithCustomRange: Story = {
   args: {
     defaultValue: [20],
-    min: 10,
     max: 50,
-    step: 5,
+    min: 10,
     onValueChange: fn(),
+    step: 5,
   },
   play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -170,8 +169,8 @@ export const Disabled: Story = {
 export const Vertical: Story = {
   args: {
     defaultValue: [50],
-    orientation: 'vertical',
     onValueChange: fn(),
+    orientation: 'vertical',
   },
   decorators: [
     (Story) => (

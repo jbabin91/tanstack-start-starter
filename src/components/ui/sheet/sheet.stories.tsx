@@ -6,8 +6,6 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-
 import {
   Sheet,
   SheetClose,
@@ -17,11 +15,41 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from './sheet';
+} from '@/components/ui/sheet/sheet';
+import { Textarea } from '@/components/ui/textarea';
 
 const meta = {
-  title: 'UI/Overlays/Sheet',
+  argTypes: {
+    defaultOpen: {
+      control: 'boolean',
+      description: 'Default open state (uncontrolled)',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    onOpenChange: {
+      action: 'openChange',
+      description: 'Callback when open state changes',
+      table: {
+        type: { summary: '(open: boolean) => void' },
+      },
+    },
+    open: {
+      control: 'boolean',
+      description: 'Controlled open state',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+  },
   component: Sheet,
+  decorators: [
+    (Story) => (
+      <div className="flex items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -32,36 +60,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    open: {
-      description: 'Controlled open state',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    defaultOpen: {
-      description: 'Default open state (uncontrolled)',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    onOpenChange: {
-      description: 'Callback when open state changes',
-      action: 'openChange',
-      table: {
-        type: { summary: '(open: boolean) => void' },
-      },
-    },
-  },
+  title: 'UI/Overlays/Sheet',
 } satisfies Meta<typeof Sheet>;
 
 export default meta;
@@ -71,48 +70,6 @@ export const Default: Story = {
   args: {
     onOpenChange: fn(),
   },
-  render: (args) => (
-    <Sheet {...args}>
-      <SheetTrigger asChild>
-        <Button variant="ghost">Open Sheet</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Edit Profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right" htmlFor="name">
-              Name
-            </Label>
-            <Input
-              className="col-span-3"
-              defaultValue="Pedro Duarte"
-              id="name"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right" htmlFor="username">
-              Username
-            </Label>
-            <Input
-              className="col-span-3"
-              defaultValue="@peduarte"
-              id="username"
-            />
-          </div>
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button>Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
-  ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -158,11 +115,69 @@ export const Default: Story = {
       expect(args.onOpenChange).toHaveBeenCalledWith(false);
     });
   },
+  render: (args) => (
+    <Sheet {...args}>
+      <SheetTrigger asChild>
+        <Button variant="ghost">Open Sheet</Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Edit Profile</SheetTitle>
+          <SheetDescription>
+            Make changes to your profile here. Click save when you&apos;re done.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right" htmlFor="name">
+              Name
+            </Label>
+            <Input
+              className="col-span-3"
+              defaultValue="Pedro Duarte"
+              id="name"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right" htmlFor="username">
+              Username
+            </Label>
+            <Input
+              className="col-span-3"
+              defaultValue="@peduarte"
+              id="username"
+            />
+          </div>
+        </div>
+        <SheetFooter>
+          <SheetClose asChild>
+            <Button>Save changes</Button>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  ),
 };
 
 export const FromLeft: Story = {
   args: {
     onOpenChange: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    const trigger = canvas.getByRole('button', { name: 'Left Sheet' });
+    await userEvent.click(trigger);
+
+    await waitFor(() => {
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toBeVisible();
+      expect(within(dialog).getByText('Navigation Menu')).toBeVisible();
+      expect(
+        within(dialog).getByRole('button', { name: 'Dashboard' }),
+      ).toBeVisible();
+    });
   },
   render: (args) => (
     <Sheet {...args}>
@@ -202,25 +217,24 @@ export const FromLeft: Story = {
       </SheetContent>
     </Sheet>
   ),
+};
+
+export const FromTop: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    const trigger = canvas.getByRole('button', { name: 'Left Sheet' });
+    const trigger = canvas.getByRole('button', { name: 'Top Sheet' });
     await userEvent.click(trigger);
 
     await waitFor(() => {
       const dialog = screen.getByRole('dialog');
       expect(dialog).toBeVisible();
-      expect(within(dialog).getByText('Navigation Menu')).toBeVisible();
-      expect(
-        within(dialog).getByRole('button', { name: 'Dashboard' }),
-      ).toBeVisible();
+      expect(within(dialog).getByText('Notifications')).toBeVisible();
+      expect(within(dialog).getByText('New message received')).toBeVisible();
     });
   },
-};
-
-export const FromTop: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -239,18 +253,18 @@ export const FromTop: Story = {
         <div className="space-y-3 py-4">
           {[
             {
-              title: 'New message received',
               time: '2 minutes ago',
+              title: 'New message received',
               type: 'message',
             },
             {
-              title: 'Project updated',
               time: '1 hour ago',
+              title: 'Project updated',
               type: 'update',
             },
             {
-              title: 'Meeting reminder',
               time: '3 hours ago',
+              title: 'Meeting reminder',
               type: 'calendar',
             },
           ].map((notification, index) => (
@@ -277,23 +291,26 @@ export const FromTop: Story = {
       </SheetContent>
     </Sheet>
   ),
+};
+
+export const FromBottom: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    const trigger = canvas.getByRole('button', { name: 'Top Sheet' });
+    const trigger = canvas.getByRole('button', { name: 'Bottom Sheet' });
     await userEvent.click(trigger);
 
     await waitFor(() => {
       const dialog = screen.getByRole('dialog');
       expect(dialog).toBeVisible();
-      expect(within(dialog).getByText('Notifications')).toBeVisible();
-      expect(within(dialog).getByText('New message received')).toBeVisible();
+      expect(within(dialog).getByText('Quick Actions')).toBeVisible();
+      expect(
+        within(dialog).getByRole('button', { name: 'Create Post' }),
+      ).toBeVisible();
     });
   },
-};
-
-export const FromBottom: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -329,25 +346,37 @@ export const FromBottom: Story = {
       </SheetContent>
     </Sheet>
   ),
+};
+
+export const Controlled: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    const trigger = canvas.getByRole('button', { name: 'Bottom Sheet' });
-    await userEvent.click(trigger);
+    // Check initial state
+    expect(canvas.getByText('Sheet is closed')).toBeVisible();
+
+    // Open via external button
+    const externalButton = canvas.getByRole('button', { name: 'Open Sheet' });
+    await userEvent.click(externalButton);
+
+    expect(canvas.getByText('Sheet is open')).toBeVisible();
 
     await waitFor(() => {
       const dialog = screen.getByRole('dialog');
       expect(dialog).toBeVisible();
-      expect(within(dialog).getByText('Quick Actions')).toBeVisible();
-      expect(
-        within(dialog).getByRole('button', { name: 'Create Post' }),
-      ).toBeVisible();
     });
-  },
-};
 
-export const Controlled: Story = {
+    // Close from inside
+    const dialog = screen.getByRole('dialog');
+    const closeButton = within(dialog).getByRole('button', {
+      name: 'Close from Inside',
+    });
+    await userEvent.click(closeButton);
+
+    expect(canvas.getByText('Sheet is closed')).toBeVisible();
+  },
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -386,36 +415,42 @@ export const Controlled: Story = {
       </div>
     );
   },
+};
+
+export const WithForm: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    // Check initial state
-    expect(canvas.getByText('Sheet is closed')).toBeVisible();
-
-    // Open via external button
-    const externalButton = canvas.getByRole('button', { name: 'Open Sheet' });
-    await userEvent.click(externalButton);
-
-    expect(canvas.getByText('Sheet is open')).toBeVisible();
+    const trigger = canvas.getByRole('button', { name: 'Contact Form' });
+    await userEvent.click(trigger);
 
     await waitFor(() => {
       const dialog = screen.getByRole('dialog');
       expect(dialog).toBeVisible();
     });
 
-    // Close from inside
     const dialog = screen.getByRole('dialog');
-    const closeButton = within(dialog).getByRole('button', {
-      name: 'Close from Inside',
-    });
-    await userEvent.click(closeButton);
 
-    expect(canvas.getByText('Sheet is closed')).toBeVisible();
+    // Check form elements
+    const emailInput = within(dialog).getByLabelText('Email');
+    const subjectInput = within(dialog).getByLabelText('Subject');
+    const messageTextarea = within(dialog).getByLabelText('Message');
+
+    expect(emailInput).toBeVisible();
+    expect(subjectInput).toBeVisible();
+    expect(messageTextarea).toBeVisible();
+
+    // Test form interaction
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(subjectInput, 'Test Subject');
+    await userEvent.type(messageTextarea, 'This is a test message');
+
+    expect(emailInput).toHaveValue('test@example.com');
+    expect(subjectInput).toHaveValue('Test Subject');
+    expect(messageTextarea).toHaveValue('This is a test message');
   },
-};
-
-export const WithForm: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -462,11 +497,15 @@ export const WithForm: Story = {
       </SheetContent>
     </Sheet>
   ),
+};
+
+export const WithScrollableContent: Story = {
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
 
-    const trigger = canvas.getByRole('button', { name: 'Contact Form' });
+    const trigger = canvas.getByRole('button', { name: 'Terms & Conditions' });
     await userEvent.click(trigger);
 
     await waitFor(() => {
@@ -475,28 +514,22 @@ export const WithForm: Story = {
     });
 
     const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Terms and Conditions')).toBeVisible();
+    expect(within(dialog).getByText('Section 1')).toBeVisible();
+    expect(within(dialog).getByText('Section 2')).toBeVisible();
 
-    // Check form elements
-    const emailInput = within(dialog).getByLabelText('Email');
-    const subjectInput = within(dialog).getByLabelText('Subject');
-    const messageTextarea = within(dialog).getByLabelText('Message');
+    // Check checkbox and accept button
+    const checkbox = within(dialog).getByLabelText(
+      'I agree to the terms and conditions',
+    );
+    const acceptButton = within(dialog).getByRole('button', { name: 'Accept' });
 
-    expect(emailInput).toBeVisible();
-    expect(subjectInput).toBeVisible();
-    expect(messageTextarea).toBeVisible();
+    expect(checkbox).toBeVisible();
+    expect(acceptButton).toBeVisible();
 
-    // Test form interaction
-    await userEvent.type(emailInput, 'test@example.com');
-    await userEvent.type(subjectInput, 'Test Subject');
-    await userEvent.type(messageTextarea, 'This is a test message');
-
-    expect(emailInput).toHaveValue('test@example.com');
-    expect(subjectInput).toHaveValue('Test Subject');
-    expect(messageTextarea).toHaveValue('This is a test message');
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
   },
-};
-
-export const WithScrollableContent: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -541,33 +574,4 @@ export const WithScrollableContent: Story = {
       </SheetContent>
     </Sheet>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const screen = within(document.body);
-
-    const trigger = canvas.getByRole('button', { name: 'Terms & Conditions' });
-    await userEvent.click(trigger);
-
-    await waitFor(() => {
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toBeVisible();
-    });
-
-    const dialog = screen.getByRole('dialog');
-    expect(within(dialog).getByText('Terms and Conditions')).toBeVisible();
-    expect(within(dialog).getByText('Section 1')).toBeVisible();
-    expect(within(dialog).getByText('Section 2')).toBeVisible();
-
-    // Check checkbox and accept button
-    const checkbox = within(dialog).getByLabelText(
-      'I agree to the terms and conditions',
-    );
-    const acceptButton = within(dialog).getByRole('button', { name: 'Accept' });
-
-    expect(checkbox).toBeVisible();
-    expect(acceptButton).toBeVisible();
-
-    await userEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-  },
 };

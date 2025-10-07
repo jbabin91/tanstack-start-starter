@@ -3,12 +3,70 @@ import { expect, fn, userEvent, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
-
-import { ToggleGroup, ToggleGroupItem } from './toggle-group';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@/components/ui/toggle-group/toggle-group';
 
 const meta = {
-  title: 'UI/Inputs/Toggle Group',
+  argTypes: {
+    defaultValue: {
+      control: 'text',
+      description: 'Default value for single selection (uncontrolled)',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onValueChange: {
+      action: 'singleValueChange',
+      description: 'Callback when single selection changes',
+      table: {
+        type: { summary: '(value: string) => void' },
+      },
+    },
+    size: {
+      control: { type: 'select' },
+      description: 'Size of toggle items',
+      options: ['default', 'sm', 'lg'],
+      table: {
+        type: { summary: 'default | sm | lg' },
+        defaultValue: { summary: 'default' },
+      },
+    },
+    type: {
+      control: { type: 'select' },
+      description: 'Selection mode',
+      options: ['single', 'multiple'],
+      table: {
+        type: { summary: 'single | multiple' },
+        defaultValue: { summary: 'single' },
+      },
+    },
+    value: {
+      control: 'text',
+      description: 'Controlled value for single selection',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    variant: {
+      control: { type: 'select' },
+      description: 'Visual style variant',
+      options: ['default', 'outline'],
+      table: {
+        type: { summary: 'default | outline' },
+        defaultValue: { summary: 'default' },
+      },
+    },
+  },
   component: ToggleGroup,
+  decorators: [
+    (Story) => (
+      <div className="flex items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -19,63 +77,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    type: {
-      description: 'Selection mode',
-      control: { type: 'select' },
-      options: ['single', 'multiple'],
-      table: {
-        type: { summary: 'single | multiple' },
-        defaultValue: { summary: 'single' },
-      },
-    },
-    size: {
-      description: 'Size of toggle items',
-      control: { type: 'select' },
-      options: ['default', 'sm', 'lg'],
-      table: {
-        type: { summary: 'default | sm | lg' },
-        defaultValue: { summary: 'default' },
-      },
-    },
-    variant: {
-      description: 'Visual style variant',
-      control: { type: 'select' },
-      options: ['default', 'outline'],
-      table: {
-        type: { summary: 'default | outline' },
-        defaultValue: { summary: 'default' },
-      },
-    },
-    value: {
-      description: 'Controlled value for single selection',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    defaultValue: {
-      description: 'Default value for single selection (uncontrolled)',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    onValueChange: {
-      description: 'Callback when single selection changes',
-      action: 'singleValueChange',
-      table: {
-        type: { summary: '(value: string) => void' },
-      },
-    },
-  },
+  title: 'UI/Inputs/Toggle Group',
 } satisfies Meta<typeof ToggleGroup>;
 
 export default meta;
@@ -86,13 +88,6 @@ export const Single: Story = {
     type: 'single',
     onValueChange: fn(),
   },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value="left">Left</ToggleGroupItem>
-      <ToggleGroupItem value="center">Center</ToggleGroupItem>
-      <ToggleGroupItem value="right">Right</ToggleGroupItem>
-    </ToggleGroup>
-  ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -113,6 +108,13 @@ export const Single: Story = {
     await userEvent.click(centerBtn);
     expect(args.onValueChange).toHaveBeenCalledWith('center');
   },
+  render: (args) => (
+    <ToggleGroup {...args}>
+      <ToggleGroupItem value="left">Left</ToggleGroupItem>
+      <ToggleGroupItem value="center">Center</ToggleGroupItem>
+      <ToggleGroupItem value="right">Right</ToggleGroupItem>
+    </ToggleGroup>
+  ),
 };
 
 export const Multiple: Story = {
@@ -120,13 +122,6 @@ export const Multiple: Story = {
     type: 'multiple',
     onValueChange: fn(),
   },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
-      <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
-      <ToggleGroupItem value="underline">Underline</ToggleGroupItem>
-    </ToggleGroup>
-  ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -144,12 +139,27 @@ export const Multiple: Story = {
     await userEvent.click(boldBtn);
     expect(args.onValueChange).toHaveBeenCalledWith(['italic']);
   },
+  render: (args) => (
+    <ToggleGroup {...args}>
+      <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
+      <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
+      <ToggleGroupItem value="underline">Underline</ToggleGroupItem>
+    </ToggleGroup>
+  ),
 };
 
 export const WithIcons: Story = {
   args: {
     type: 'single',
     onValueChange: fn(),
+  },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check radio buttons with aria-labels (single type uses radio role)
+    expect(canvas.getByRole('radio', { name: 'Align left' })).toBeVisible();
+    expect(canvas.getByRole('radio', { name: 'Align center' })).toBeVisible();
+    expect(canvas.getByRole('radio', { name: 'Align right' })).toBeVisible();
   },
   render: (args) => (
     <ToggleGroup {...args}>
@@ -164,14 +174,6 @@ export const WithIcons: Story = {
       </ToggleGroupItem>
     </ToggleGroup>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check radio buttons with aria-labels (single type uses radio role)
-    expect(canvas.getByRole('radio', { name: 'Align left' })).toBeVisible();
-    expect(canvas.getByRole('radio', { name: 'Align center' })).toBeVisible();
-    expect(canvas.getByRole('radio', { name: 'Align right' })).toBeVisible();
-  },
 };
 
 export const WithIconsAndText: Story = {
@@ -199,6 +201,18 @@ export const WithIconsAndText: Story = {
 
 export const Sizes: Story = {
   args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check all three size groups exist
+    const smallButtons = canvas.getAllByText('A');
+    expect(smallButtons).toHaveLength(3);
+
+    // Check labels exist
+    expect(canvas.getByText('Small')).toBeVisible();
+    expect(canvas.getByText('Default')).toBeVisible();
+    expect(canvas.getByText('Large')).toBeVisible();
+  },
   render: () => (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -227,22 +241,21 @@ export const Sizes: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check all three size groups exist
-    const smallButtons = canvas.getAllByText('A');
-    expect(smallButtons).toHaveLength(3);
-
-    // Check labels exist
-    expect(canvas.getByText('Small')).toBeVisible();
-    expect(canvas.getByText('Default')).toBeVisible();
-    expect(canvas.getByText('Large')).toBeVisible();
-  },
 };
 
 export const Variants: Story = {
   args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check variant labels exist
+    expect(canvas.getByText('Default')).toBeVisible();
+    expect(canvas.getByText('Outline')).toBeVisible();
+
+    // Check buttons exist in both variants
+    const leftButtons = canvas.getAllByText('Left');
+    expect(leftButtons).toHaveLength(2);
+  },
   render: () => (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -263,21 +276,26 @@ export const Variants: Story = {
       </div>
     </div>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check variant labels exist
-    expect(canvas.getByText('Default')).toBeVisible();
-    expect(canvas.getByText('Outline')).toBeVisible();
-
-    // Check buttons exist in both variants
-    const leftButtons = canvas.getAllByText('Left');
-    expect(leftButtons).toHaveLength(2);
-  },
 };
 
 export const ControlledSingle: Story = {
   args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check initial state
+    expect(canvas.getByText('Current alignment: center')).toBeVisible();
+
+    // Click left alignment
+    const leftBtn = canvas.getByRole('radio', { name: 'Align left' });
+    await userEvent.click(leftBtn);
+    expect(canvas.getByText('Current alignment: left')).toBeVisible();
+
+    // Click center again
+    const centerBtn = canvas.getByRole('radio', { name: 'Align center' });
+    await userEvent.click(centerBtn);
+    expect(canvas.getByText('Current alignment: center')).toBeVisible();
+  },
   render: () => {
     const [alignment, setAlignment] = useState<string>('center');
 
@@ -302,26 +320,38 @@ export const ControlledSingle: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check initial state
-    expect(canvas.getByText('Current alignment: center')).toBeVisible();
-
-    // Click left alignment
-    const leftBtn = canvas.getByRole('radio', { name: 'Align left' });
-    await userEvent.click(leftBtn);
-    expect(canvas.getByText('Current alignment: left')).toBeVisible();
-
-    // Click center again
-    const centerBtn = canvas.getByRole('radio', { name: 'Align center' });
-    await userEvent.click(centerBtn);
-    expect(canvas.getByText('Current alignment: center')).toBeVisible();
-  },
 };
 
 export const ControlledMultiple: Story = {
   args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check initial state
+    expect(canvas.getByText('Active formatting: bold')).toBeVisible();
+
+    // Add italic
+    const italicBtn = canvas.getByRole('button', { name: 'Italic' });
+    await userEvent.click(italicBtn);
+    expect(canvas.getByText('Active formatting: bold, italic')).toBeVisible();
+
+    // Remove bold
+    const boldBtn = canvas.getByRole('button', { name: 'Bold' });
+    await userEvent.click(boldBtn);
+    expect(canvas.getByText('Active formatting: italic')).toBeVisible();
+
+    // Add underline
+    const underlineBtn = canvas.getByRole('button', { name: 'Underline' });
+    await userEvent.click(underlineBtn);
+    expect(
+      canvas.getByText('Active formatting: italic, underline'),
+    ).toBeVisible();
+
+    // Remove all
+    await userEvent.click(italicBtn);
+    await userEvent.click(underlineBtn);
+    expect(canvas.getByText('Active formatting: none')).toBeVisible();
+  },
   render: () => {
     const [formatting, setFormatting] = useState<string[]>(['bold']);
 
@@ -352,38 +382,26 @@ export const ControlledMultiple: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check initial state
-    expect(canvas.getByText('Active formatting: bold')).toBeVisible();
-
-    // Add italic
-    const italicBtn = canvas.getByRole('button', { name: 'Italic' });
-    await userEvent.click(italicBtn);
-    expect(canvas.getByText('Active formatting: bold, italic')).toBeVisible();
-
-    // Remove bold
-    const boldBtn = canvas.getByRole('button', { name: 'Bold' });
-    await userEvent.click(boldBtn);
-    expect(canvas.getByText('Active formatting: italic')).toBeVisible();
-
-    // Add underline
-    const underlineBtn = canvas.getByRole('button', { name: 'Underline' });
-    await userEvent.click(underlineBtn);
-    expect(
-      canvas.getByText('Active formatting: italic, underline'),
-    ).toBeVisible();
-
-    // Remove all
-    await userEvent.click(italicBtn);
-    await userEvent.click(underlineBtn);
-    expect(canvas.getByText('Active formatting: none')).toBeVisible();
-  },
 };
 
 export const ViewModeSelector: Story = {
   args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check initial state
+    expect(canvas.getByText('Current view: grid')).toBeVisible();
+
+    // Switch to list view
+    const listBtn = canvas.getByRole('radio', { name: 'List view' });
+    await userEvent.click(listBtn);
+    expect(canvas.getByText('Current view: list')).toBeVisible();
+
+    // Switch to card view
+    const cardBtn = canvas.getByRole('radio', { name: 'Card view' });
+    await userEvent.click(cardBtn);
+    expect(canvas.getByText('Current view: card')).toBeVisible();
+  },
   render: () => {
     const [viewMode, setViewMode] = useState<string>('grid');
 
@@ -408,21 +426,5 @@ export const ViewModeSelector: Story = {
         </ToggleGroup>
       </div>
     );
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check initial state
-    expect(canvas.getByText('Current view: grid')).toBeVisible();
-
-    // Switch to list view
-    const listBtn = canvas.getByRole('radio', { name: 'List view' });
-    await userEvent.click(listBtn);
-    expect(canvas.getByText('Current view: list')).toBeVisible();
-
-    // Switch to card view
-    const cardBtn = canvas.getByRole('radio', { name: 'Card view' });
-    await userEvent.click(cardBtn);
-    expect(canvas.getByText('Current view: card')).toBeVisible();
   },
 };

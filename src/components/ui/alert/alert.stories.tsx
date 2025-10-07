@@ -2,29 +2,33 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from '@storybook/test';
 
 import { Icons } from '@/components/icons';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert/alert';
 import { Button } from '@/components/ui/button';
 
-import { Alert, AlertDescription, AlertTitle } from './alert';
-
 const meta = {
-  title: 'UI/Feedback/Alert',
-  component: Alert,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: { type: 'select' },
       options: ['default', 'error', 'info', 'success', 'warning'],
     },
   },
+  component: Alert,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  title: 'UI/Feedback/Alert',
 } satisfies Meta<typeof Alert>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md">
       <Icons.info />
@@ -37,6 +41,7 @@ export const Default: Story = {
 };
 
 export const Error: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="error">
       <Icons.alertCircle />
@@ -49,6 +54,7 @@ export const Error: Story = {
 };
 
 export const Info: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="info">
       <Icons.info />
@@ -61,6 +67,7 @@ export const Info: Story = {
 };
 
 export const Success: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="success">
       <Icons.check />
@@ -73,6 +80,7 @@ export const Success: Story = {
 };
 
 export const Warning: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="warning">
       <Icons.alertTriangle />
@@ -85,6 +93,7 @@ export const Warning: Story = {
 };
 
 export const WithoutIcon: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md">
       <AlertTitle>Simple Alert</AlertTitle>
@@ -96,6 +105,7 @@ export const WithoutIcon: Story = {
 };
 
 export const TitleOnly: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="info">
       <Icons.info />
@@ -105,6 +115,7 @@ export const TitleOnly: Story = {
 };
 
 export const WithActions: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="warning">
       <Icons.alertTriangle />
@@ -128,6 +139,7 @@ export const WithActions: Story = {
 };
 
 export const LongContent: Story = {
+  args: {},
   render: () => (
     <Alert className="max-w-md" variant="info">
       <Icons.info />
@@ -147,6 +159,7 @@ export const LongContent: Story = {
 };
 
 export const SystemAlerts: Story = {
+  args: {},
   render: () => (
     <div className="max-w-md space-y-4">
       <Alert variant="info">
@@ -177,6 +190,7 @@ export const SystemAlerts: Story = {
 };
 
 export const FormValidation: Story = {
+  args: {},
   render: () => (
     <div className="max-w-md space-y-4">
       <Alert variant="error">
@@ -196,6 +210,7 @@ export const FormValidation: Story = {
 };
 
 export const AllVariants: Story = {
+  args: {},
   render: () => (
     <div className="max-w-md space-y-4">
       <Alert>
@@ -232,15 +247,7 @@ export const AllVariants: Story = {
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <Alert className="max-w-md" variant="info">
-      <Icons.info />
-      <AlertTitle>Interactive Alert</AlertTitle>
-      <AlertDescription>
-        This alert demonstrates the accessible structure and ARIA roles.
-      </AlertDescription>
-    </Alert>
-  ),
+  args: {},
   play: ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const alert = canvas.getByRole('alert');
@@ -266,4 +273,13 @@ export const Interactive: Story = {
     // Test accessibility
     expect(alert).toHaveClass('relative', 'w-full', 'rounded-lg', 'border');
   },
+  render: () => (
+    <Alert className="max-w-md" variant="info">
+      <Icons.info />
+      <AlertTitle>Interactive Alert</AlertTitle>
+      <AlertDescription>
+        This alert demonstrates the accessible structure and ARIA roles.
+      </AlertDescription>
+    </Alert>
+  ),
 };

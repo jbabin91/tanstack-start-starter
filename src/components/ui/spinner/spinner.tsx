@@ -35,12 +35,7 @@ type SpinnerContentProps = {
 } & VariantProps<typeof spinnerVariants> &
   VariantProps<typeof loaderVariants>;
 
-export function Spinner({
-  size,
-  show,
-  children,
-  className,
-}: SpinnerContentProps) {
+function Spinner({ size, show, children, className }: SpinnerContentProps) {
   return (
     <span
       aria-live="polite"
@@ -52,3 +47,5 @@ export function Spinner({
     </span>
   );
 }
+
+export { Spinner };

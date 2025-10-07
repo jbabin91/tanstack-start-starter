@@ -37,9 +37,9 @@ const debugIPHeaders = createServerFn({ method: 'GET' }).handler(async () => {
   const { ipAddress, source } = await resolveLocationAndIP(null, request);
 
   return {
-    headers,
-    extraction: { ipAddress, source },
     allHeaderCount: [...request.headers.keys()].length,
+    extraction: { ipAddress, source },
+    headers,
   };
 });
 

@@ -11,11 +11,64 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs/tabs';
 
 const meta: Meta<typeof Tabs> = {
-  title: 'UI/Navigation/Tabs',
+  argTypes: {
+    activationMode: {
+      control: 'select',
+      description: 'Whether a tab is activated automatically or manually.',
+      options: ['automatic', 'manual'],
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'automatic' },
+      },
+    },
+    defaultValue: {
+      control: 'text',
+      description:
+        'The value of the tab that should be active when initially rendered.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    dir: {
+      control: 'select',
+      description: 'The reading direction of the tabs.',
+      options: ['ltr', 'rtl'],
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onValueChange: {
+      action: 'valueChanged',
+      description: 'Event handler called when the value changes.',
+      table: {
+        type: { summary: '(value: string) => void' },
+      },
+    },
+    orientation: {
+      control: 'select',
+      description: 'The orientation of the component.',
+      options: ['horizontal', 'vertical'],
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'horizontal' },
+      },
+    },
+    value: {
+      control: 'text',
+      description: 'The controlled value of the tab to activate.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Tabs,
   parameters: {
     layout: 'centered',
@@ -27,56 +80,7 @@ const meta: Meta<typeof Tabs> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    defaultValue: {
-      description:
-        'The value of the tab that should be active when initially rendered.',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    value: {
-      description: 'The controlled value of the tab to activate.',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    onValueChange: {
-      description: 'Event handler called when the value changes.',
-      action: 'valueChanged',
-      table: {
-        type: { summary: '(value: string) => void' },
-      },
-    },
-    orientation: {
-      description: 'The orientation of the component.',
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'horizontal' },
-      },
-    },
-    dir: {
-      description: 'The reading direction of the tabs.',
-      control: 'select',
-      options: ['ltr', 'rtl'],
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    activationMode: {
-      description: 'Whether a tab is activated automatically or manually.',
-      control: 'select',
-      options: ['automatic', 'manual'],
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'automatic' },
-      },
-    },
-  },
+  title: 'UI/Navigation/Tabs',
 };
 
 export default meta;
@@ -142,6 +146,13 @@ export const ThreeTabs: Story = {
   args: {
     defaultValue: 'overview',
   },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Example with three tabs showing different content types.',
+      },
+    },
+  },
   render: (args) => (
     <Tabs className="w-[500px]" {...args}>
       <TabsList className="grid w-full grid-cols-3">
@@ -204,19 +215,19 @@ export const ThreeTabs: Story = {
       </TabsContent>
     </Tabs>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Example with three tabs showing different content types.',
-      },
-    },
-  },
 };
 
 export const VerticalTabs: Story = {
   args: {
     defaultValue: 'profile',
     orientation: 'vertical',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Vertical orientation tabs for sidebar-style navigation.',
+      },
+    },
   },
   render: (args) => (
     <div className="w-[600px]">
@@ -321,52 +332,20 @@ export const VerticalTabs: Story = {
       </Tabs>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Vertical orientation tabs for sidebar-style navigation.',
-      },
-    },
-  },
 };
 
 export const InteractiveTabs: Story = {
   args: {
     defaultValue: 'tab1',
   },
-  render: (args) => (
-    <Tabs className="w-[400px]" {...args}>
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-        <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-        <TabsTrigger value="tab3">Tab 3</TabsTrigger>
-      </TabsList>
-      <TabsContent value="tab1">
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">First Tab Content</h3>
-          <p className="text-muted-foreground mt-2">
-            This is the content of the first tab.
-          </p>
-        </div>
-      </TabsContent>
-      <TabsContent value="tab2">
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">Second Tab Content</h3>
-          <p className="text-muted-foreground mt-2">
-            This is the content of the second tab.
-          </p>
-        </div>
-      </TabsContent>
-      <TabsContent value="tab3">
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">Third Tab Content</h3>
-          <p className="text-muted-foreground mt-2">
-            This is the content of the third tab.
-          </p>
-        </div>
-      </TabsContent>
-    </Tabs>
-  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive tabs example with comprehensive testing of tab switching behavior.',
+      },
+    },
+  },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
 
@@ -421,19 +400,53 @@ export const InteractiveTabs: Story = {
       expect(newThirdContent).toBeVisible();
     });
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive tabs example with comprehensive testing of tab switching behavior.',
-      },
-    },
-  },
+  render: (args) => (
+    <Tabs className="w-[400px]" {...args}>
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+        <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+        <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+      </TabsList>
+      <TabsContent value="tab1">
+        <div className="rounded-lg border p-4">
+          <h3 className="font-medium">First Tab Content</h3>
+          <p className="text-muted-foreground mt-2">
+            This is the content of the first tab.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="tab2">
+        <div className="rounded-lg border p-4">
+          <h3 className="font-medium">Second Tab Content</h3>
+          <p className="text-muted-foreground mt-2">
+            This is the content of the second tab.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="tab3">
+        <div className="rounded-lg border p-4">
+          <h3 className="font-medium">Third Tab Content</h3>
+          <p className="text-muted-foreground mt-2">
+            This is the content of the third tab.
+          </p>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
 };
 
 export const SettingsForm: Story = {
   args: {
     defaultValue: 'general',
+  },
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        story:
+          'Real-world example of tabs used in a settings form with multiple sections.',
+      },
+    },
   },
   render: (args) => (
     <div className="w-[600px]">
@@ -539,13 +552,4 @@ export const SettingsForm: Story = {
       </Tabs>
     </div>
   ),
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        story:
-          'Real-world example of tabs used in a settings form with multiple sections.',
-      },
-    },
-  },
 };

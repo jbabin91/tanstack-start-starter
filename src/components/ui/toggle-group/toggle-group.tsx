@@ -1,11 +1,13 @@
 import { type VariantProps } from 'class-variance-authority';
 import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui';
-import { createContext, use, useMemo } from 'react';
+import * as React from 'react';
 
 import { toggleVariants } from '@/components/ui/toggle';
 import { cn } from '@/utils/cn';
 
-const ToggleGroupContext = createContext<VariantProps<typeof toggleVariants>>({
+const ToggleGroupContext = React.createContext<
+  VariantProps<typeof toggleVariants>
+>({
   size: 'default',
   variant: 'default',
 });
@@ -18,7 +20,10 @@ function ToggleGroup({
   ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
   VariantProps<typeof toggleVariants>) {
-  const contextValue = useMemo(() => ({ size, variant }), [size, variant]);
+  const contextValue = React.useMemo(
+    () => ({ size, variant }),
+    [size, variant],
+  );
   return (
     <ToggleGroupPrimitive.Root
       className={cn(
@@ -45,14 +50,14 @@ function ToggleGroupItem({
   ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
   VariantProps<typeof toggleVariants>) {
-  const context = use(ToggleGroupContext);
+  const context = React.use(ToggleGroupContext);
 
   return (
     <ToggleGroupPrimitive.Item
       className={cn(
         toggleVariants({
-          size: context.size ?? size,
           variant: context.variant ?? variant,
+          size: context.size ?? size,
         }),
         'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l',
         className,

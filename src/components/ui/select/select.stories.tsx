@@ -3,7 +3,6 @@ import { expect, userEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
-
 import {
   Select,
   SelectContent,
@@ -13,11 +12,56 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from './select';
+} from '@/components/ui/select/select';
 
 const meta = {
-  title: 'UI/Inputs/Select',
+  argTypes: {
+    defaultValue: {
+      control: 'text',
+      description: 'The default selected value',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the select is disabled',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    onValueChange: {
+      action: 'changed',
+      description: 'Callback when the value changes',
+      table: {
+        type: { summary: '(value: string) => void' },
+      },
+    },
+    required: {
+      control: 'boolean',
+      description: 'Whether the select is required',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    value: {
+      control: 'text',
+      description: 'The controlled selected value',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Select,
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-[350px] items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -28,52 +72,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex min-h-[350px] items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    defaultValue: {
-      description: 'The default selected value',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    value: {
-      description: 'The controlled selected value',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    disabled: {
-      description: 'Whether the select is disabled',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    required: {
-      description: 'Whether the select is required',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    onValueChange: {
-      description: 'Callback when the value changes',
-      action: 'changed',
-      table: {
-        type: { summary: '(value: string) => void' },
-      },
-    },
-  },
+  title: 'UI/Inputs/Select',
 } satisfies Meta<typeof Select>;
 
 export default meta;
@@ -111,6 +110,7 @@ export const Default: Story = {
 
 // With placeholder
 export const WithPlaceholder: Story = {
+  args: {},
   render: () => {
     const items = [
       { value: 'option1', label: 'Option 1' },
@@ -137,6 +137,7 @@ export const WithPlaceholder: Story = {
 
 // With groups and labels
 export const WithGroups: Story = {
+  args: {},
   render: () => {
     const timezoneGroups = [
       {
@@ -196,6 +197,7 @@ export const WithGroups: Story = {
 
 // Different sizes
 export const Sizes: Story = {
+  args: {},
   render: () => {
     const smallItems = [
       { value: 'small', label: 'Small Size' },
@@ -249,12 +251,13 @@ export const Sizes: Story = {
 
 // Disabled state
 export const Disabled: Story = {
+  args: {},
   render: () => {
     const disabledItems = [{ value: 'disabled', label: 'Disabled Select' }];
     const mixedItems = [
-      { value: 'active', label: 'Active Item', disabled: false },
-      { value: 'disabled', label: 'Disabled Item', disabled: true },
-      { value: 'another', label: 'Another Item', disabled: false },
+      { disabled: false, label: 'Active Item', value: 'active' },
+      { disabled: true, label: 'Disabled Item', value: 'disabled' },
+      { disabled: false, label: 'Another Item', value: 'another' },
     ];
 
     return (
@@ -336,36 +339,38 @@ function ControlledSelect() {
 
 // Controlled component
 export const Controlled: Story = {
+  args: {},
   render: () => <ControlledSelect />,
 };
 
 // With icons
 export const WithIcons: Story = {
+  args: {},
   render: () => {
     const statusItems = [
       {
-        value: 'pending',
-        label: 'Pending',
-        icon: 'clock' as const,
         className: 'text-warning',
+        icon: 'clock' as const,
+        label: 'Pending',
+        value: 'pending',
       },
       {
-        value: 'processing',
-        label: 'Processing',
-        icon: 'loader' as const,
         className: 'text-info animate-spin',
+        icon: 'loader' as const,
+        label: 'Processing',
+        value: 'processing',
       },
       {
-        value: 'success',
-        label: 'Success',
-        icon: 'checkCircle' as const,
         className: 'text-success',
+        icon: 'checkCircle' as const,
+        label: 'Success',
+        value: 'success',
       },
       {
-        value: 'failed',
-        label: 'Failed',
-        icon: 'xCircle' as const,
         className: 'text-error',
+        icon: 'xCircle' as const,
+        label: 'Failed',
+        value: 'failed',
       },
     ];
 
@@ -392,6 +397,7 @@ export const WithIcons: Story = {
 
 // Long list with scroll
 export const LongList: Story = {
+  args: {},
   render: () => {
     const countries = [
       { value: 'us', label: 'United States' },
@@ -440,6 +446,7 @@ export const LongList: Story = {
 
 // Form example
 export const InForm: Story = {
+  args: {},
   render: () => {
     const formCountries = [
       { value: 'us', label: 'United States' },
@@ -488,28 +495,7 @@ export const InForm: Story = {
 
 // Interactive test
 export const Interactive: Story = {
-  render: () => {
-    const interactiveItems = [
-      { value: 'first', label: 'First Option' },
-      { value: 'second', label: 'Second Option' },
-      { value: 'third', label: 'Third Option' },
-    ];
-
-    return (
-      <Select items={interactiveItems}>
-        <SelectTrigger aria-label="Interactive select" className="w-[200px]">
-          <SelectValue placeholder="Click to open..." />
-        </SelectTrigger>
-        <SelectContent>
-          {interactiveItems.map((item) => (
-            <SelectItem key={item.value} value={item.value}>
-              {item.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  },
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -535,10 +521,33 @@ export const Interactive: Story = {
       expect(trigger).toHaveTextContent('Second Option');
     });
   },
+  render: () => {
+    const interactiveItems = [
+      { value: 'first', label: 'First Option' },
+      { value: 'second', label: 'Second Option' },
+      { value: 'third', label: 'Third Option' },
+    ];
+
+    return (
+      <Select items={interactiveItems}>
+        <SelectTrigger aria-label="Interactive select" className="w-[200px]">
+          <SelectValue placeholder="Click to open..." />
+        </SelectTrigger>
+        <SelectContent>
+          {interactiveItems.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  },
 };
 
 // Custom styling
 export const CustomStyling: Story = {
+  args: {},
   render: () => {
     const styledItems = [
       { value: 'option1', label: 'Primary Option' },
@@ -578,6 +587,7 @@ export const CustomStyling: Story = {
 
 // Error state example
 export const ErrorState: Story = {
+  args: {},
   render: () => {
     const errorItems = [
       { value: 'option1', label: 'Option 1' },

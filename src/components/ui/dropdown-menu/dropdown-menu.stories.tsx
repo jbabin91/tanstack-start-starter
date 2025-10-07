@@ -5,8 +5,6 @@ import * as React from 'react';
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { isElementVisible } from '@/test/utils';
-
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -22,10 +20,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './dropdown-menu';
+} from '@/components/ui/dropdown-menu/dropdown-menu';
+import { isElementVisible } from '@/test/utils';
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: 'UI/Navigation/Dropdown Menu',
   component: DropdownMenu,
   parameters: {
     layout: 'centered',
@@ -37,12 +35,14 @@ const meta: Meta<typeof DropdownMenu> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Navigation/Dropdown Menu',
 };
 
 export default meta;
 type Story = StoryObj<typeof DropdownMenu>;
 
 export const Default: Story = {
+  args: {},
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -79,6 +79,7 @@ export const Default: Story = {
 };
 
 export const WithCheckboxItems: Story = {
+  args: {},
   render: () => {
     const [showStatusBar, setShowStatusBar] = React.useState(true);
     const [showActivityBar, setShowActivityBar] = React.useState(false);
@@ -117,6 +118,7 @@ export const WithCheckboxItems: Story = {
 };
 
 export const WithRadioGroup: Story = {
+  args: {},
   render: () => {
     const [position, setPosition] = React.useState('bottom');
 
@@ -140,6 +142,7 @@ export const WithRadioGroup: Story = {
 };
 
 export const WithGroups: Story = {
+  args: {},
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -184,6 +187,7 @@ export const WithGroups: Story = {
 };
 
 export const WithSubmenus: Story = {
+  args: {},
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -241,6 +245,55 @@ export const WithSubmenus: Story = {
 };
 
 export const UserProfileMenu: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const screen = within(document.body);
+
+    // Find the user profile button
+    const profileButton = canvas.getByRole('button');
+    expect(profileButton).toBeVisible();
+
+    // Click to open the dropdown
+    await userEvent.click(profileButton);
+
+    // Wait for dropdown to appear in portal
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeVisible();
+    });
+
+    // Check user info is visible
+    expect(screen.getByText('John Doe')).toBeVisible();
+    expect(screen.getByText('john.doe@example.com')).toBeVisible();
+
+    // Check menu items
+    expect(screen.getByRole('menuitem', { name: /profile/i })).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /settings/i })).toBeVisible();
+    expect(
+      screen.getByRole('menuitem', { name: /notifications/i }),
+    ).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /team/i })).toBeVisible();
+    expect(
+      screen.getByRole('menuitem', { name: /invite users/i }),
+    ).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: /log out/i })).toBeVisible();
+
+    // Check keyboard shortcuts are displayed
+    expect(screen.getByText('⇧⌘P')).toBeVisible();
+    expect(screen.getByText('⌘,')).toBeVisible();
+    expect(screen.getByText('⇧⌘Q')).toBeVisible();
+
+    // Click on profile item
+    await userEvent.click(screen.getByRole('menuitem', { name: /profile/i }));
+
+    // Menu should close after clicking
+    await waitFor(() => {
+      const menu = screen.queryByRole('menu');
+      expect(menu).toSatisfy(
+        (el: HTMLElement | null) => el === null || !isElementVisible(el),
+      );
+    });
+  },
   render: () => (
     <div className="flex justify-end">
       <DropdownMenu>
@@ -297,57 +350,10 @@ export const UserProfileMenu: Story = {
       </DropdownMenu>
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const screen = within(document.body);
-
-    // Find the user profile button
-    const profileButton = canvas.getByRole('button');
-    expect(profileButton).toBeVisible();
-
-    // Click to open the dropdown
-    await userEvent.click(profileButton);
-
-    // Wait for dropdown to appear in portal
-    await waitFor(() => {
-      expect(screen.getByRole('menu')).toBeVisible();
-    });
-
-    // Check user info is visible
-    expect(screen.getByText('John Doe')).toBeVisible();
-    expect(screen.getByText('john.doe@example.com')).toBeVisible();
-
-    // Check menu items
-    expect(screen.getByRole('menuitem', { name: /profile/i })).toBeVisible();
-    expect(screen.getByRole('menuitem', { name: /settings/i })).toBeVisible();
-    expect(
-      screen.getByRole('menuitem', { name: /notifications/i }),
-    ).toBeVisible();
-    expect(screen.getByRole('menuitem', { name: /team/i })).toBeVisible();
-    expect(
-      screen.getByRole('menuitem', { name: /invite users/i }),
-    ).toBeVisible();
-    expect(screen.getByRole('menuitem', { name: /log out/i })).toBeVisible();
-
-    // Check keyboard shortcuts are displayed
-    expect(screen.getByText('⇧⌘P')).toBeVisible();
-    expect(screen.getByText('⌘,')).toBeVisible();
-    expect(screen.getByText('⇧⌘Q')).toBeVisible();
-
-    // Click on profile item
-    await userEvent.click(screen.getByRole('menuitem', { name: /profile/i }));
-
-    // Menu should close after clicking
-    await waitFor(() => {
-      const menu = screen.queryByRole('menu');
-      expect(menu).toSatisfy(
-        (el: HTMLElement | null) => el === null || !isElementVisible(el),
-      );
-    });
-  },
 };
 
 export const ActionMenu: Story = {
+  args: {},
   render: () => (
     <div className="flex items-center space-x-2">
       <span className="text-sm">Project: React Dashboard</span>
@@ -391,6 +397,7 @@ export const ActionMenu: Story = {
 };
 
 export const TableRowActions: Story = {
+  args: {},
   render: () => (
     <div className="w-full">
       <div className="flex items-center justify-between rounded-md border p-4">
@@ -449,78 +456,7 @@ export const TableRowActions: Story = {
 };
 
 export const Interactive: Story = {
-  render: () => {
-    const [showStatusBar, setShowStatusBar] = React.useState(true);
-    const [showActivityBar, setShowActivityBar] = React.useState(false);
-    const [theme, setTheme] = React.useState('light');
-
-    return (
-      <div className="space-y-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outlined">Interactive Menu</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuCheckboxItem
-                checked={showStatusBar}
-                onCheckedChange={(checked) => setShowStatusBar(checked)}
-              >
-                Status Bar
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={showActivityBar}
-                onCheckedChange={(checked) => setShowActivityBar(checked)}
-              >
-                Activity Bar
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Theme</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-              <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="system">
-                System
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Icons.settings className="mr-2" />
-                More Tools
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>
-                  <Icons.palette className="mr-2" />
-                  Color Picker
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <Icons.zap className="mr-2" />
-                  Extensions (Coming Soon)
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Icons.bell className="mr-2" />
-              Preferences
-              <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <div className="text-muted-foreground space-y-1 text-sm">
-          <div>Status Bar: {showStatusBar ? 'Visible' : 'Hidden'}</div>
-          <div>Activity Bar: {showActivityBar ? 'Visible' : 'Hidden'}</div>
-          <div>Theme: {theme}</div>
-        </div>
-      </div>
-    );
-  },
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -593,5 +529,77 @@ export const Interactive: Story = {
     });
 
     // Menu interaction complete
+  },
+  render: () => {
+    const [showStatusBar, setShowStatusBar] = React.useState(true);
+    const [showActivityBar, setShowActivityBar] = React.useState(false);
+    const [theme, setTheme] = React.useState('light');
+
+    return (
+      <div className="space-y-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outlined">Interactive Menu</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuCheckboxItem
+                checked={showStatusBar}
+                onCheckedChange={(checked) => setShowStatusBar(checked)}
+              >
+                Status Bar
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={showActivityBar}
+                onCheckedChange={(checked) => setShowActivityBar(checked)}
+              >
+                Activity Bar
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Theme</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+              <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="system">
+                System
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Icons.settings className="mr-2" />
+                More Tools
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>
+                  <Icons.palette className="mr-2" />
+                  Color Picker
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled>
+                  <Icons.zap className="mr-2" />
+                  Extensions (Coming Soon)
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Icons.bell className="mr-2" />
+              Preferences
+              <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="text-muted-foreground space-y-1 text-sm">
+          <div>Status Bar: {showStatusBar ? 'Visible' : 'Hidden'}</div>
+          <div>Activity Bar: {showActivityBar ? 'Visible' : 'Hidden'}</div>
+          <div>Theme: {theme}</div>
+        </div>
+      </div>
+    );
   },
 };

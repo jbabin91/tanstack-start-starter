@@ -1,10 +1,67 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { Switch } from './switch';
+import { Switch } from '@/components/ui/switch/switch';
 
 const meta: Meta<typeof Switch> = {
-  title: 'UI/Forms/Switch',
+  args: {
+    onCheckedChange: fn(),
+  },
+  argTypes: {
+    checked: {
+      control: { type: 'boolean' },
+      description: 'The controlled checked state of the switch.',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+    defaultChecked: {
+      control: { type: 'boolean' },
+      description: 'The default checked state when uncontrolled.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Whether the switch is disabled.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    name: {
+      control: { type: 'text' },
+      description: 'The name attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    onCheckedChange: {
+      action: 'onCheckedChange',
+      description: 'Callback fired when the checked state changes.',
+      table: {
+        type: { summary: '(checked: boolean) => void' },
+      },
+    },
+    required: {
+      control: { type: 'boolean' },
+      description: 'Whether the switch is required in a form.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    value: {
+      control: { type: 'text' },
+      description: 'The value attribute for form submission.',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: '"on"' },
+      },
+    },
+  },
   component: Switch,
   parameters: {
     layout: 'centered',
@@ -16,64 +73,7 @@ const meta: Meta<typeof Switch> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    checked: {
-      description: 'The controlled checked state of the switch.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    defaultChecked: {
-      description: 'The default checked state when uncontrolled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    disabled: {
-      description: 'Whether the switch is disabled.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    required: {
-      description: 'Whether the switch is required in a form.',
-      control: { type: 'boolean' },
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    name: {
-      description: 'The name attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-    value: {
-      description: 'The value attribute for form submission.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: '"on"' },
-      },
-    },
-    onCheckedChange: {
-      description: 'Callback fired when the checked state changes.',
-      action: 'onCheckedChange',
-      table: {
-        type: { summary: '(checked: boolean) => void' },
-      },
-    },
-  },
-  args: {
-    onCheckedChange: fn(),
-  },
+  title: 'UI/Forms/Switch',
 };
 
 export default meta;
@@ -131,6 +131,15 @@ export const DisabledCheckedSwitch: Story = {
 };
 
 export const WithLabel: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Switch with associated label. The label is properly connected via htmlFor/id for accessibility.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center space-x-2">
       <Switch id="notifications-switch" {...args} />
@@ -142,18 +151,20 @@ export const WithLabel: Story = {
       </label>
     </div>
   ),
-  args: {},
+};
+
+export const WithDescription: Story = {
+  args: {
+    defaultChecked: true,
+  },
   parameters: {
     docs: {
       description: {
         story:
-          'Switch with associated label. The label is properly connected via htmlFor/id for accessibility.',
+          'Switch with label and description text for providing additional context.',
       },
     },
   },
-};
-
-export const WithDescription: Story = {
   render: (args) => (
     <div className="flex items-start space-x-3">
       <Switch className="mt-1" id="marketing-switch" {...args} />
@@ -170,20 +181,18 @@ export const WithDescription: Story = {
       </div>
     </div>
   ),
-  args: {
-    defaultChecked: true,
-  },
+};
+
+export const SettingsGroup: Story = {
+  args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Switch with label and description text for providing additional context.',
+          'Multiple switches in a settings group showing different states and contexts.',
       },
     },
   },
-};
-
-export const SettingsGroup: Story = {
   render: (args) => (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Privacy Settings</h3>
@@ -245,18 +254,18 @@ export const SettingsGroup: Story = {
       </div>
     </div>
   ),
+};
+
+export const FormIntegration: Story = {
   args: {},
   parameters: {
     docs: {
       description: {
         story:
-          'Multiple switches in a settings group showing different states and contexts.',
+          'Switches integrated into a form with fieldset, legend, and proper name/value attributes for submission.',
       },
     },
   },
-};
-
-export const FormIntegration: Story = {
   render: (args) => (
     <form className="space-y-6">
       <fieldset className="space-y-4">
@@ -309,18 +318,20 @@ export const FormIntegration: Story = {
       </fieldset>
     </form>
   ),
-  args: {},
+};
+
+export const SizeVariations: Story = {
+  args: {
+    defaultChecked: true,
+  },
   parameters: {
     docs: {
       description: {
         story:
-          'Switches integrated into a form with fieldset, legend, and proper name/value attributes for submission.',
+          'Different size variations of the switch using CSS scale transforms.',
       },
     },
   },
-};
-
-export const SizeVariations: Story = {
   render: (args) => (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center space-x-4">
@@ -337,34 +348,12 @@ export const SizeVariations: Story = {
       </div>
     </div>
   ),
-  args: {
-    defaultChecked: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Different size variations of the switch using CSS scale transforms.',
-      },
-    },
-  },
 };
 
 export const InteractiveSwitch: Story = {
   args: {
     onCheckedChange: fn(),
   },
-  render: (args) => (
-    <div className="flex items-center space-x-2">
-      <Switch id="interactive-switch" {...args} />
-      <label
-        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        htmlFor="interactive-switch"
-      >
-        Interactive switch
-      </label>
-    </div>
-  ),
   parameters: {
     docs: {
       description: {
@@ -411,9 +400,29 @@ export const InteractiveSwitch: Story = {
     expect(switchElement).toHaveAttribute('aria-checked', 'false');
     expect(args.onCheckedChange).toHaveBeenCalledWith(false);
   },
+  render: (args) => (
+    <div className="flex items-center space-x-2">
+      <Switch id="interactive-switch" {...args} />
+      <label
+        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        htmlFor="interactive-switch"
+      >
+        Interactive switch
+      </label>
+    </div>
+  ),
 };
 
 export const AccessibilityDemo: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates accessibility features including ARIA attributes, keyboard navigation, and screen reader support.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Accessibility Features</h4>
@@ -444,13 +453,4 @@ export const AccessibilityDemo: Story = {
       </p>
     </div>
   ),
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates accessibility features including ARIA attributes, keyboard navigation, and screen reader support.',
-      },
-    },
-  },
 };

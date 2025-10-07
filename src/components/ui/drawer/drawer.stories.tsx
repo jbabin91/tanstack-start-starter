@@ -4,10 +4,6 @@ import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { isElementVisible } from '@/test/utils';
-
 import {
   Drawer,
   DrawerClose,
@@ -17,11 +13,20 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from './drawer';
+} from '@/components/ui/drawer/drawer';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { isElementVisible } from '@/test/utils';
 
 const meta: Meta<typeof Drawer> = {
-  title: 'UI/Navigation/Drawer',
   component: Drawer,
+  decorators: [
+    (Story) => (
+      <div className="flex size-96 items-center justify-center">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -32,13 +37,7 @@ const meta: Meta<typeof Drawer> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="flex size-96 items-center justify-center">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Navigation/Drawer',
 };
 
 export default meta;
@@ -46,6 +45,14 @@ export default meta;
 type Story = StoryObj<typeof Drawer>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic drawer that slides up from the bottom of the screen.',
+      },
+    },
+  },
   render: () => (
     <Drawer>
       <DrawerTrigger asChild>
@@ -72,21 +79,22 @@ export const Default: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic drawer that slides up from the bottom of the screen.',
-      },
-    },
-  },
 };
 
 export const WithForm: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer containing a form for user input with validation.',
+      },
+    },
+  },
   render: function WithFormStory() {
     const [formData, setFormData] = useState({
-      name: '',
       email: '',
       message: '',
+      name: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -159,16 +167,17 @@ export const WithForm: Story = {
       </Drawer>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer containing a form for user input with validation.',
-      },
-    },
-  },
 };
 
 export const FromTop: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer that slides down from the top of the screen.',
+      },
+    },
+  },
   render: () => (
     <Drawer direction="top">
       <DrawerTrigger asChild>
@@ -211,16 +220,17 @@ export const FromTop: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer that slides down from the top of the screen.',
-      },
-    },
-  },
 };
 
 export const FromLeft: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer that slides in from the left as a navigation sidebar.',
+      },
+    },
+  },
   render: () => (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -281,16 +291,17 @@ export const FromLeft: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer that slides in from the left as a navigation sidebar.',
-      },
-    },
-  },
 };
 
 export const FromRight: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer that slides in from the right as a settings panel.',
+      },
+    },
+  },
   render: () => (
     <Drawer direction="right">
       <DrawerTrigger asChild>
@@ -351,26 +362,27 @@ export const FromRight: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer that slides in from the right as a settings panel.',
-      },
-    },
-  },
 };
 
 export const WithActions: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer with a list of actionable items.',
+      },
+    },
+  },
   render: function WithActionsStory() {
     const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
     const actions = [
-      { id: 'edit', label: 'Edit Document', icon: Icons.edit },
-      { id: 'share', label: 'Share', icon: Icons.share },
-      { id: 'download', label: 'Download', icon: Icons.download },
-      { id: 'duplicate', label: 'Duplicate', icon: Icons.copy },
-      { id: 'archive', label: 'Archive', icon: Icons.archive },
-      { id: 'delete', label: 'Delete', icon: Icons.trash },
+      { icon: Icons.edit, id: 'edit', label: 'Edit Document' },
+      { icon: Icons.share, id: 'share', label: 'Share' },
+      { icon: Icons.download, id: 'download', label: 'Download' },
+      { icon: Icons.copy, id: 'duplicate', label: 'Duplicate' },
+      { icon: Icons.archive, id: 'archive', label: 'Archive' },
+      { icon: Icons.trash, id: 'delete', label: 'Delete' },
     ];
 
     return (
@@ -422,16 +434,17 @@ export const WithActions: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer with a list of actionable items.',
-      },
-    },
-  },
 };
 
 export const NestedContent: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer with complex nested content including images and lists.',
+      },
+    },
+  },
   render: () => (
     <Drawer>
       <DrawerTrigger asChild>
@@ -497,16 +510,17 @@ export const NestedContent: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer with complex nested content including images and lists.',
-      },
-    },
-  },
 };
 
 export const Scrollable: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Drawer with scrollable content area for long text.',
+      },
+    },
+  },
   render: () => (
     <Drawer>
       <DrawerTrigger asChild>
@@ -543,87 +557,17 @@ export const Scrollable: Story = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Drawer with scrollable content area for long text.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
-  render: function InteractiveStory() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [formData, setFormData] = useState({
-      name: '',
-      email: '',
-    });
-
-    const handleSubmit = () => {
-      console.log('Form submitted:', formData);
-      setIsOpen(false);
-      setFormData({ name: '', email: '' });
-    };
-
-    return (
-      <div className="space-y-4">
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerTrigger asChild>
-            <Button>Open Interactive Drawer</Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>Contact Information</DrawerTitle>
-              <DrawerDescription>
-                Please provide your contact details.
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="space-y-4 p-4">
-              <div className="space-y-2">
-                <Label htmlFor="drawer-name">Name</Label>
-                <Input
-                  id="drawer-name"
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="drawer-email">Email</Label>
-                <Input
-                  id="drawer-email"
-                  placeholder="Enter your email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, email: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-            <DrawerFooter>
-              <Button
-                disabled={!formData.name || !formData.email}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-              <DrawerClose asChild>
-                <Button variant="outlined">Cancel</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-
-        <div className="border-border bg-muted/30 rounded-sm border p-3">
-          <p className="text-sm">Drawer state: {isOpen ? 'Open' : 'Closed'}</p>
-          <p className="text-sm">Form data: {JSON.stringify(formData)}</p>
-        </div>
-      </div>
-    );
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive drawer with form handling, controlled state, and comprehensive testing.',
+      },
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -701,12 +645,76 @@ export const Interactive: Story = {
       );
     });
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive drawer with form handling, controlled state, and comprehensive testing.',
-      },
-    },
+  render: function InteractiveStory() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [formData, setFormData] = useState({
+      name: '',
+      email: '',
+    });
+
+    const handleSubmit = () => {
+      console.log('Form submitted:', formData);
+      setIsOpen(false);
+      setFormData({ name: '', email: '' });
+    };
+
+    return (
+      <div className="space-y-4">
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerTrigger asChild>
+            <Button>Open Interactive Drawer</Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Contact Information</DrawerTitle>
+              <DrawerDescription>
+                Please provide your contact details.
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="space-y-4 p-4">
+              <div className="space-y-2">
+                <Label htmlFor="drawer-name">Name</Label>
+                <Input
+                  id="drawer-name"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="drawer-email">Email</Label>
+                <Input
+                  id="drawer-email"
+                  placeholder="Enter your email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <DrawerFooter>
+              <Button
+                disabled={!formData.name || !formData.email}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+              <DrawerClose asChild>
+                <Button variant="outlined">Cancel</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <div className="border-border bg-muted/30 rounded-sm border p-3">
+          <p className="text-sm">Drawer state: {isOpen ? 'Open' : 'Closed'}</p>
+          <p className="text-sm">Form data: {JSON.stringify(formData)}</p>
+        </div>
+      </div>
+    );
   },
 };

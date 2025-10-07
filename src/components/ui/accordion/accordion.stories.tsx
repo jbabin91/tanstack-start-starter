@@ -6,10 +6,51 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from './accordion';
+} from '@/components/ui/accordion/accordion';
 
 const meta = {
-  title: 'UI/Surfaces/Accordion',
+  argTypes: {
+    className: {
+      control: 'text',
+      description: 'Additional CSS classes',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+    collapsible: {
+      control: 'boolean',
+      description:
+        'When type is "single", allows closing all items (only applies to single type)',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    defaultValue: {
+      control: 'text',
+      description: 'The default expanded item(s)',
+      table: {
+        type: { summary: 'string | string[]' },
+      },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the accordion is disabled',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    type: {
+      control: 'select',
+      description: 'The accordion behavior type',
+      options: ['single', 'multiple'],
+      table: {
+        type: { summary: '"single" | "multiple"' },
+        defaultValue: { summary: 'single' },
+      },
+    },
+  },
   component: Accordion,
   parameters: {
     layout: 'centered',
@@ -21,48 +62,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    type: {
-      description: 'The accordion behavior type',
-      control: 'select',
-      options: ['single', 'multiple'],
-      table: {
-        type: { summary: '"single" | "multiple"' },
-        defaultValue: { summary: 'single' },
-      },
-    },
-    collapsible: {
-      description:
-        'When type is "single", allows closing all items (only applies to single type)',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
-      },
-    },
-    defaultValue: {
-      description: 'The default expanded item(s)',
-      control: 'text',
-      table: {
-        type: { summary: 'string | string[]' },
-      },
-    },
-    disabled: {
-      description: 'Whether the accordion is disabled',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    className: {
-      description: 'Additional CSS classes',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Surfaces/Accordion',
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
@@ -71,9 +71,9 @@ type Story = StoryObj<typeof meta>;
 // Default single accordion
 export const Default: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[450px]',
+    collapsible: true,
+    type: 'single',
   },
   render: (args) => (
     <Accordion {...args}>
@@ -105,9 +105,9 @@ export const Default: Story = {
 // Multiple items can be expanded
 export const Multiple: Story = {
   args: {
-    type: 'multiple',
-    defaultValue: ['item-1', 'item-3'],
     className: 'w-[450px]',
+    defaultValue: ['item-1', 'item-3'],
+    type: 'multiple',
   },
   render: (args) => (
     <Accordion {...args}>
@@ -139,10 +139,10 @@ export const Multiple: Story = {
 // Single mode with collapsible disabled
 export const AlwaysOpen: Story = {
   args: {
-    type: 'single',
+    className: 'w-[450px]',
     collapsible: false,
     defaultValue: 'item-1',
-    className: 'w-[450px]',
+    type: 'single',
   },
   render: (args) => (
     <Accordion {...args}>
@@ -174,9 +174,9 @@ export const AlwaysOpen: Story = {
 // FAQ Example
 export const FAQ: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[500px]',
+    collapsible: true,
+    type: 'single',
   },
   render: (args) => (
     <div>
@@ -234,9 +234,9 @@ export const FAQ: Story = {
 // With Long Content
 export const LongContent: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[600px]',
+    collapsible: true,
+    type: 'single',
   },
   render: (args) => (
     <Accordion {...args}>
@@ -302,34 +302,10 @@ export const LongContent: Story = {
 // Interactive Test
 export const Interactive: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[450px]',
+    collapsible: true,
+    type: 'single',
   },
-  render: (args) => (
-    <Accordion {...args}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Click me to expand</AccordionTrigger>
-        <AccordionContent>
-          Great! You&apos;ve expanded the first item. Try clicking it again to
-          collapse.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Now try this one</AccordionTrigger>
-        <AccordionContent>
-          Perfect! Notice how the previous item collapsed automatically in
-          single mode.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Keyboard navigation works too</AccordionTrigger>
-        <AccordionContent>
-          Try using Arrow keys to navigate and Space or Enter to toggle items!
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -378,14 +354,38 @@ export const Interactive: Story = {
       }
     });
   },
+  render: (args) => (
+    <Accordion {...args}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Click me to expand</AccordionTrigger>
+        <AccordionContent>
+          Great! You&apos;ve expanded the first item. Try clicking it again to
+          collapse.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Now try this one</AccordionTrigger>
+        <AccordionContent>
+          Perfect! Notice how the previous item collapsed automatically in
+          single mode.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Keyboard navigation works too</AccordionTrigger>
+        <AccordionContent>
+          Try using Arrow keys to navigate and Space or Enter to toggle items!
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
 };
 
 // Nested Accordions
 export const Nested: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[500px]',
+    collapsible: true,
+    type: 'single',
   },
   render: (args) => (
     <Accordion {...args}>
@@ -428,9 +428,9 @@ export const Nested: Story = {
 // With Custom Styling
 export const CustomStyling: Story = {
   args: {
-    type: 'single',
-    collapsible: true,
     className: 'w-[500px] rounded-lg border-2 border-primary bg-primary/5 p-2',
+    collapsible: true,
+    type: 'single',
   },
   render: (args) => (
     <Accordion {...args}>

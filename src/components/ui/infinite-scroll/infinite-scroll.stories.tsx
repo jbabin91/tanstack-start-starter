@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { InfiniteScroll } from './infinite-scroll';
 
 const meta: Meta<typeof InfiniteScroll> = {
-  title: 'UI/Layout/Infinite Scroll',
   component: InfiniteScroll,
   parameters: {
     layout: 'centered',
@@ -21,6 +20,7 @@ const meta: Meta<typeof InfiniteScroll> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Layout/Infinite Scroll',
 };
 
 export default meta;
@@ -29,19 +29,20 @@ type Story = StoryObj<typeof InfiniteScroll>;
 // Mock data generator
 const generateItems = (start: number, count: number) => {
   return Array.from({ length: count }, (_, i) => ({
-    id: start + i,
-    title: `Item ${start + i}`,
-    description: `This is the description for item ${start + i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
     category: ['Work', 'Personal', 'Important', 'Archive'][
       Math.floor(Math.random() * 4)
     ],
+    description: `This is the description for item ${start + i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+    id: start + i,
     timestamp: new Date(
       Date.now() - Math.random() * (1000 * 60 * 60 * 24 * 115), // ~115 days ago max
     ).toLocaleDateString(),
+    title: `Item ${start + i}`,
   }));
 };
 
 export const Default: Story = {
+  args: {},
   render: () => {
     const [items, setItems] = React.useState(() => generateItems(1, 20));
     const [isLoading, setIsLoading] = React.useState(false);
@@ -109,32 +110,33 @@ export const Default: Story = {
 };
 
 export const MessageList: Story = {
+  args: {},
   render: () => {
     const [messages, setMessages] = React.useState(() => [
-      { id: 1, user: 'Alice', content: 'Hey everyone!', timestamp: '2:30 PM' },
+      { content: 'Hey everyone!', id: 1, timestamp: '2:30 PM', user: 'Alice' },
       {
-        id: 2,
-        user: 'Bob',
         content: 'How&apos;s the project going?',
+        id: 2,
         timestamp: '2:32 PM',
+        user: 'Bob',
       },
       {
-        id: 3,
-        user: 'Charlie',
         content: 'Almost ready for review',
+        id: 3,
         timestamp: '2:35 PM',
+        user: 'Charlie',
       },
       {
-        id: 4,
-        user: 'Diana',
         content: 'Great work team! 🎉',
+        id: 4,
         timestamp: '2:38 PM',
+        user: 'Diana',
       },
       {
-        id: 5,
-        user: 'Eve',
         content: 'When is the next standup?',
+        id: 5,
         timestamp: '2:40 PM',
+        user: 'Eve',
       },
     ]);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -154,10 +156,10 @@ export const MessageList: Story = {
       ];
 
       const newMessages = Array.from({ length: 3 }, (_, i) => ({
-        id: messages.length + i + 1,
-        user: users[Math.floor(Math.random() * users.length)],
         content: contents[Math.floor(Math.random() * contents.length)],
+        id: messages.length + i + 1,
         timestamp: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'PM' : 'AM'}`,
+        user: users[Math.floor(Math.random() * users.length)],
       }));
 
       setMessages((prev) => [...prev, ...newMessages]);
@@ -225,14 +227,15 @@ export const MessageList: Story = {
 };
 
 export const ProductGrid: Story = {
+  args: {},
   render: () => {
     const [products, setProducts] = React.useState(() => [
-      { id: 1, name: 'Wireless Headphones', price: 129.99, image: '🎧' },
-      { id: 2, name: 'Smart Watch', price: 299.99, image: '⌚' },
-      { id: 3, name: 'Laptop Stand', price: 49.99, image: '💻' },
-      { id: 4, name: 'Bluetooth Speaker', price: 79.99, image: '🔊' },
-      { id: 5, name: 'USB-C Hub', price: 39.99, image: '🔌' },
-      { id: 6, name: 'Wireless Mouse', price: 29.99, image: '🖱️' },
+      { id: 1, image: '🎧', name: 'Wireless Headphones', price: 129.99 },
+      { id: 2, image: '⌚', name: 'Smart Watch', price: 299.99 },
+      { id: 3, image: '💻', name: 'Laptop Stand', price: 49.99 },
+      { id: 4, image: '🔊', name: 'Bluetooth Speaker', price: 79.99 },
+      { id: 5, image: '🔌', name: 'USB-C Hub', price: 39.99 },
+      { id: 6, image: '🖱️', name: 'Wireless Mouse', price: 29.99 },
     ]);
     const [isLoading, setIsLoading] = React.useState(false);
     const [hasMore, setHasMore] = React.useState(true);
@@ -272,9 +275,9 @@ export const ProductGrid: Story = {
 
       const newProducts = Array.from({ length: 4 }, (_, i) => ({
         id: products.length + i + 1,
+        image: emojis[Math.floor(Math.random() * emojis.length)],
         name: productNames[Math.floor(Math.random() * productNames.length)],
         price: Math.floor(Math.random() * 200) + 20 + 0.99,
-        image: emojis[Math.floor(Math.random() * emojis.length)],
       }));
 
       setProducts((prev) => [...prev, ...newProducts]);
@@ -330,37 +333,38 @@ export const ProductGrid: Story = {
 };
 
 export const ReverseChronological: Story = {
+  args: {},
   render: () => {
     const [posts, setPosts] = React.useState(() => [
       {
-        id: 5,
-        title: 'Latest Update',
         content: 'This is the most recent post',
+        id: 5,
         time: '5 minutes ago',
+        title: 'Latest Update',
       },
       {
-        id: 4,
-        title: 'Project Milestone',
         content: 'We reached an important milestone',
+        id: 4,
         time: '2 hours ago',
+        title: 'Project Milestone',
       },
       {
-        id: 3,
-        title: 'Team Meeting',
         content: 'Weekly team sync notes',
+        id: 3,
         time: '1 day ago',
+        title: 'Team Meeting',
       },
       {
-        id: 2,
-        title: 'Code Review',
         content: 'Feedback on the latest PR',
+        id: 2,
         time: '3 days ago',
+        title: 'Code Review',
       },
       {
-        id: 1,
-        title: 'Welcome Post',
         content: 'Welcome to our development blog!',
+        id: 1,
         time: '1 week ago',
+        title: 'Welcome Post',
       },
     ]);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -381,11 +385,11 @@ export const ReverseChronological: Story = {
 
       const baseId = Math.min(...posts.map((p) => p.id));
       const olderPosts = Array.from({ length: 3 }, (_, i) => ({
-        id: baseId - i - 1,
-        title: titles[Math.floor(Math.random() * titles.length)],
         content:
           'This is an older post with some historical context and information.',
+        id: baseId - i - 1,
         time: `${Math.floor(Math.random() * 4) + 2} weeks ago`,
+        title: titles[Math.floor(Math.random() * titles.length)],
       }));
 
       setPosts((prev) => [...olderPosts, ...prev]);
@@ -446,6 +450,7 @@ export const ReverseChronological: Story = {
 };
 
 export const WithCustomSentinel: Story = {
+  args: {},
   render: () => {
     const [items, setItems] = React.useState(() => generateItems(1, 15));
     const [isLoading, setIsLoading] = React.useState(false);
@@ -516,6 +521,30 @@ export const WithCustomSentinel: Story = {
 export const Interactive: Story = {
   args: {
     next: fn(),
+  },
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify initial state
+    expect(canvas.getByText('Items loaded: 10')).toBeVisible();
+    expect(canvas.getByText('Load count: 0')).toBeVisible();
+    expect(canvas.getByText('Status: Ready')).toBeVisible();
+
+    // Find the scroll container exists
+    const scrollContainer = canvasElement.querySelector(
+      '[data-radix-scroll-area-viewport]',
+    );
+    if (!scrollContainer) {
+      throw new TypeError('Expected to find scroll container');
+    }
+
+    // Verify scroll container is rendered and functional
+    expect(scrollContainer).toBeInTheDocument();
+    expect(scrollContainer.scrollHeight).toBeGreaterThan(0);
+
+    // Note: Intersection Observer tests are skipped as they don't work reliably
+    // in the Vitest browser environment. The component functionality is verified
+    // through visual testing and manual testing in Storybook.
   },
   render: (args) => {
     const [items, setItems] = React.useState(() => generateItems(1, 10));
@@ -603,29 +632,5 @@ export const Interactive: Story = {
         </div>
       </div>
     );
-  },
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Verify initial state
-    expect(canvas.getByText('Items loaded: 10')).toBeVisible();
-    expect(canvas.getByText('Load count: 0')).toBeVisible();
-    expect(canvas.getByText('Status: Ready')).toBeVisible();
-
-    // Find the scroll container exists
-    const scrollContainer = canvasElement.querySelector(
-      '[data-radix-scroll-area-viewport]',
-    );
-    if (!scrollContainer) {
-      throw new TypeError('Expected to find scroll container');
-    }
-
-    // Verify scroll container is rendered and functional
-    expect(scrollContainer).toBeInTheDocument();
-    expect(scrollContainer.scrollHeight).toBeGreaterThan(0);
-
-    // Note: Intersection Observer tests are skipped as they don't work reliably
-    // in the Vitest browser environment. The component functionality is verified
-    // through visual testing and manual testing in Storybook.
   },
 };

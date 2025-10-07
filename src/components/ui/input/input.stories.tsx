@@ -4,18 +4,17 @@ import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input/input';
 import { Label } from '@/components/ui/label';
 
-import { Input } from './input';
-
 const meta = {
-  title: 'UI/Inputs/Input',
-  component: Input,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
   argTypes: {
+    disabled: {
+      control: { type: 'boolean' },
+    },
+    placeholder: {
+      control: { type: 'text' },
+    },
     type: {
       control: { type: 'select' },
       options: [
@@ -31,13 +30,13 @@ const meta = {
         'file',
       ],
     },
-    disabled: {
-      control: { type: 'boolean' },
-    },
-    placeholder: {
-      control: { type: 'text' },
-    },
   },
+  component: Input,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  title: 'UI/Inputs/Input',
 } satisfies Meta<typeof Input>;
 
 export default meta;
@@ -50,6 +49,7 @@ export const Default: Story = {
 };
 
 export const WithLabel: Story = {
+  args: {},
   render: () => (
     <div className="space-y-2">
       <Label htmlFor="email">Email</Label>
@@ -59,6 +59,7 @@ export const WithLabel: Story = {
 };
 
 export const Password: Story = {
+  args: {},
   render: () => (
     <div className="space-y-2">
       <Label htmlFor="password">Password</Label>
@@ -69,14 +70,15 @@ export const Password: Story = {
 
 export const Number: Story = {
   args: {
-    type: 'number',
-    placeholder: 'Enter a number',
-    min: 0,
     max: 100,
+    min: 0,
+    placeholder: 'Enter a number',
+    type: 'number',
   },
 };
 
 export const Search: Story = {
+  args: {},
   render: () => (
     <div className="relative">
       <Icons.search className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
@@ -86,6 +88,7 @@ export const Search: Story = {
 };
 
 export const WithIcon: Story = {
+  args: {},
   render: () => (
     <div className="relative">
       <Icons.mail className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
@@ -95,6 +98,7 @@ export const WithIcon: Story = {
 };
 
 export const WithButton: Story = {
+  args: {},
   render: () => (
     <div className="flex w-full max-w-sm items-center space-x-2">
       <Input placeholder="Enter your email" type="email" />
@@ -112,6 +116,7 @@ export const Disabled: Story = {
 };
 
 export const Invalid: Story = {
+  args: {},
   render: () => (
     <div className="space-y-2">
       <Label htmlFor="invalid-email">Email</Label>
@@ -130,6 +135,7 @@ export const Invalid: Story = {
 };
 
 export const File: Story = {
+  args: {},
   render: () => (
     <div className="space-y-2">
       <Label htmlFor="file-upload">Upload File</Label>
@@ -142,6 +148,7 @@ export const File: Story = {
 };
 
 export const Date: Story = {
+  args: {},
   render: () => (
     <div className="space-y-2">
       <Label htmlFor="date">Select Date</Label>
@@ -151,6 +158,7 @@ export const Date: Story = {
 };
 
 export const Sizes: Story = {
+  args: {},
   render: () => (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -170,6 +178,7 @@ export const Sizes: Story = {
 };
 
 export const Controlled: Story = {
+  args: {},
   render: function ControlledStory() {
     const [value, setValue] = useState('');
 
@@ -196,12 +205,7 @@ export const Controlled: Story = {
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <div className="space-y-2">
-      <Label htmlFor="interactive-input">Interactive Input</Label>
-      <Input id="interactive-input" placeholder="Click to focus and type" />
-    </div>
-  ),
+  args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Interactive Input');
@@ -226,4 +230,10 @@ export const Interactive: Story = {
     // Test attributes
     expect(input).toHaveAttribute('data-slot', 'input');
   },
+  render: () => (
+    <div className="space-y-2">
+      <Label htmlFor="interactive-input">Interactive Input</Label>
+      <Input id="interactive-input" placeholder="Click to focus and type" />
+    </div>
+  ),
 };

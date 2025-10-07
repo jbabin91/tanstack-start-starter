@@ -3,9 +3,6 @@ import { expect, userEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
 import {
   Dialog,
   DialogClose,
@@ -15,10 +12,43 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './dialog';
+} from '@/components/ui/dialog/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const meta = {
-  title: 'UI/Overlays/Dialog',
+  argTypes: {
+    defaultOpen: {
+      control: 'boolean',
+      description: 'Whether the dialog is open by default (uncontrolled)',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
+    modal: {
+      control: 'boolean',
+      description: 'Whether the dialog is modal',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    onOpenChange: {
+      action: 'openChanged',
+      description: 'Callback when open state changes',
+      table: {
+        type: { summary: '(open: boolean) => void' },
+      },
+    },
+    open: {
+      control: 'boolean',
+      description: 'Whether the dialog is open (controlled)',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+  },
   component: Dialog,
   parameters: {
     layout: 'centered',
@@ -30,38 +60,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    open: {
-      description: 'Whether the dialog is open (controlled)',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    defaultOpen: {
-      description: 'Whether the dialog is open by default (uncontrolled)',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
-      },
-    },
-    modal: {
-      description: 'Whether the dialog is modal',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
-      },
-    },
-    onOpenChange: {
-      description: 'Callback when open state changes',
-      action: 'openChanged',
-      table: {
-        type: { summary: '(open: boolean) => void' },
-      },
-    },
-  },
+  title: 'UI/Overlays/Dialog',
 } satisfies Meta<typeof Dialog>;
 
 export default meta;
@@ -69,6 +68,7 @@ type Story = StoryObj<typeof meta>;
 
 // Basic dialog
 export const Default: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>
@@ -116,6 +116,7 @@ export const Default: Story = {
 
 // Confirmation dialog
 export const Confirmation: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>
@@ -148,6 +149,7 @@ export const Confirmation: Story = {
 
 // Without close button
 export const WithoutCloseButton: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>
@@ -173,6 +175,7 @@ export const WithoutCloseButton: Story = {
 
 // Information dialog
 export const Information: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>
@@ -218,9 +221,9 @@ export const Information: Story = {
 function FormDialogExample() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
+    confirmPassword: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -231,7 +234,7 @@ function FormDialogExample() {
     }
     alert(`Account created for: ${formData.email}`);
     setOpen(false);
-    setFormData({ email: '', password: '', confirmPassword: '' });
+    setFormData({ confirmPassword: '', email: '', password: '' });
   };
 
   return (
@@ -311,6 +314,7 @@ function FormDialogExample() {
 
 // Form dialog
 export const FormDialog: Story = {
+  args: {},
   render: () => <FormDialogExample />,
 };
 
@@ -369,11 +373,13 @@ function ControlledDialogExample() {
 
 // Controlled dialog
 export const Controlled: Story = {
+  args: {},
   render: () => <ControlledDialogExample />,
 };
 
 // Large content dialog
 export const LargeContent: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>
@@ -455,29 +461,7 @@ export const LargeContent: Story = {
 
 // Interactive test
 export const Interactive: Story = {
-  render: () => (
-    <Dialog>
-      <DialogTrigger>
-        <Button variant="contained">Test Dialog</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Test Dialog</DialogTitle>
-          <DialogDescription>
-            This dialog is used for interactive testing.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4">
-          <p>Use ESC key or click outside to close.</p>
-        </div>
-        <DialogFooter>
-          <DialogClose>
-            <Button variant="contained">Close</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  ),
+  args: {},
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -587,10 +571,34 @@ export const Interactive: Story = {
       }
     });
   },
+  render: () => (
+    <Dialog>
+      <DialogTrigger>
+        <Button variant="contained">Test Dialog</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Test Dialog</DialogTitle>
+          <DialogDescription>
+            This dialog is used for interactive testing.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          <p>Use ESC key or click outside to close.</p>
+        </div>
+        <DialogFooter>
+          <DialogClose>
+            <Button variant="contained">Close</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
 };
 
 // Custom styling
 export const CustomStyling: Story = {
+  args: {},
   render: () => (
     <Dialog>
       <DialogTrigger>

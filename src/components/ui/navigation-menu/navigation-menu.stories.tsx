@@ -15,7 +15,6 @@ import {
 import { cn } from '@/utils/cn';
 
 const meta = {
-  title: 'UI/Navigation/Navigation Menu',
   component: NavigationMenu,
   parameters: {
     layout: 'centered',
@@ -27,12 +26,14 @@ const meta = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Navigation/Navigation Menu',
 } satisfies Meta<typeof NavigationMenu>;
 
 export default meta;
 type Story = StoryObj<typeof NavigationMenu>;
 
 export const Default: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -109,6 +110,7 @@ export const Default: Story = {
 };
 
 export const WithoutViewport: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args} viewport={false}>
       <NavigationMenuList>
@@ -155,6 +157,7 @@ export const WithoutViewport: Story = {
 };
 
 export const WithIcons: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -218,6 +221,7 @@ export const WithIcons: Story = {
 };
 
 export const SimpleNavigation: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -247,6 +251,7 @@ export const SimpleNavigation: Story = {
 };
 
 export const WithIndicator: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -302,6 +307,7 @@ export const WithIndicator: Story = {
 };
 
 export const EcommerceNavigation: Story = {
+  args: {},
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -378,70 +384,6 @@ export const Interactive: Story = {
   args: {
     onValueChange: fn(),
   },
-  render: (args) => (
-    <NavigationMenu {...args}>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:grid-cols-2">
-              <ListItem href="/web" title="Web App">
-                Modern web application framework.
-              </ListItem>
-              <ListItem href="/mobile" title="Mobile App">
-                Cross-platform mobile development.
-              </ListItem>
-              <ListItem href="/desktop" title="Desktop App">
-                Native desktop applications.
-              </ListItem>
-              <ListItem href="/api" title="API Platform">
-                RESTful API development tools.
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Services</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-[300px] p-4">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Consulting</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Expert guidance for your projects.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Support</h4>
-                  <p className="text-muted-foreground text-sm">
-                    24/7 technical assistance.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink
-            className={navigationMenuTriggerStyle()}
-            href="/about"
-            onSelect={fn()}
-          >
-            About
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink
-            className={navigationMenuTriggerStyle()}
-            href="/contact"
-            onSelect={fn()}
-          >
-            Contact
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const screen = within(document.body);
@@ -509,10 +451,74 @@ export const Interactive: Story = {
     const secondTrigger = canvas.getByRole('button', { name: /Services/ });
     expect(secondTrigger).toHaveFocus();
   },
+  render: (args) => (
+    <NavigationMenu {...args}>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-4 md:grid-cols-2">
+              <ListItem href="/web" title="Web App">
+                Modern web application framework.
+              </ListItem>
+              <ListItem href="/mobile" title="Mobile App">
+                Cross-platform mobile development.
+              </ListItem>
+              <ListItem href="/desktop" title="Desktop App">
+                Native desktop applications.
+              </ListItem>
+              <ListItem href="/api" title="API Platform">
+                RESTful API development tools.
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Services</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="w-[300px] p-4">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Consulting</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Expert guidance for your projects.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Support</h4>
+                  <p className="text-muted-foreground text-sm">
+                    24/7 technical assistance.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink
+            className={navigationMenuTriggerStyle()}
+            href="/about"
+            onSelect={fn()}
+          >
+            About
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink
+            className={navigationMenuTriggerStyle()}
+            href="/contact"
+            onSelect={fn()}
+          >
+            Contact
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  ),
 };
 
 // Helper component for consistent list items
-const ListItem = ({
+function ListItem({
   ref,
   className,
   title,
@@ -520,7 +526,7 @@ const ListItem = ({
   ...props
 }: React.ComponentPropsWithoutRef<'a'> & {
   title: string;
-} & { ref?: React.RefObject<React.ElementRef<'a'> | null> }) => {
+} & { ref?: React.RefObject<React.ComponentRef<'a'> | null> }) {
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -540,5 +546,4 @@ const ListItem = ({
       </NavigationMenuLink>
     </li>
   );
-};
-ListItem.displayName = 'ListItem';
+}

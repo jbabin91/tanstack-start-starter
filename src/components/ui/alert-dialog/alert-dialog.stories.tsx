@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
 
-import { Button } from '@/components/ui/button';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,10 +11,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './alert-dialog';
+} from '@/components/ui/alert-dialog/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 const meta: Meta<typeof AlertDialog> = {
-  title: 'UI/Overlays/Alert Dialog',
   component: AlertDialog,
   parameters: {
     layout: 'centered',
@@ -28,12 +26,21 @@ const meta: Meta<typeof AlertDialog> = {
     },
   },
   tags: ['autodocs'],
+  title: 'UI/Overlays/Alert Dialog',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Default alert dialog with title, description, and actions.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -54,16 +61,17 @@ export const Default: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Default alert dialog with title, description, and actions.',
-      },
-    },
-  },
 };
 
 export const DestructiveAction: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Alert dialog for destructive actions like account deletion.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -86,16 +94,17 @@ export const DestructiveAction: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Alert dialog for destructive actions like account deletion.',
-      },
-    },
-  },
 };
 
 export const CustomStyling: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Alert dialog with custom styling and centered content.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -118,16 +127,17 @@ export const CustomStyling: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Alert dialog with custom styling and centered content.',
-      },
-    },
-  },
 };
 
 export const ConfirmationDialog: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Confirmation dialog for saving changes.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -148,16 +158,17 @@ export const ConfirmationDialog: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Confirmation dialog for saving changes.',
-      },
-    },
-  },
 };
 
 export const LongContent: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Alert dialog with scrollable content for lengthy text.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -202,16 +213,17 @@ export const LongContent: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Alert dialog with scrollable content for lengthy text.',
-      },
-    },
-  },
 };
 
 export const SingleAction: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Alert dialog with only one action button.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -231,16 +243,17 @@ export const SingleAction: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Alert dialog with only one action button.',
-      },
-    },
-  },
 };
 
 export const MultipleTriggers: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Multiple alert dialogs with different triggers and content.',
+      },
+    },
+  },
   render: () => (
     <div className="flex space-x-4">
       <AlertDialog>
@@ -283,16 +296,17 @@ export const MultipleTriggers: Story = {
       </AlertDialog>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Multiple alert dialogs with different triggers and content.',
-      },
-    },
-  },
 };
 
 export const WithIcons: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Alert dialog with icon and centered content.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -318,16 +332,18 @@ export const WithIcons: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Alert dialog with icon and centered content.',
-      },
-    },
-  },
 };
 
 export const ResponsiveDialog: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Alert dialog with responsive design that adapts to different screen sizes.',
+      },
+    },
+  },
   render: () => (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -354,39 +370,12 @@ export const ResponsiveDialog: Story = {
       </AlertDialogContent>
     </AlertDialog>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Alert dialog with responsive design that adapts to different screen sizes.',
-      },
-    },
-  },
 };
 
 export const InteractiveDialog: Story = {
   args: {
     onOpenChange: fn(),
   },
-  render: (args) => (
-    <AlertDialog {...args}>
-      <AlertDialogTrigger>
-        <Button>Test Interactions</Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Interactive Test</AlertDialogTitle>
-          <AlertDialogDescription>
-            This dialog tests user interactions and callbacks.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Confirm</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  ),
   parameters: {
     docs: {
       description: {
@@ -448,9 +437,37 @@ export const InteractiveDialog: Story = {
     // Verify onOpenChange was called
     expect(args.onOpenChange).toHaveBeenCalled();
   },
+  render: (args) => (
+    <AlertDialog {...args}>
+      <AlertDialogTrigger>
+        <Button>Test Interactions</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Interactive Test</AlertDialogTitle>
+          <AlertDialogDescription>
+            This dialog tests user interactions and callbacks.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Confirm</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ),
 };
 
 export const AccessibilityDemo: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates accessibility features including keyboard navigation, focus management, and screen reader support.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Accessibility Features</h4>
@@ -483,12 +500,4 @@ export const AccessibilityDemo: Story = {
       </AlertDialog>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Demonstrates accessibility features including keyboard navigation, focus management, and screen reader support.',
-      },
-    },
-  },
 };

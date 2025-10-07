@@ -5,18 +5,23 @@ import { useState } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { isElementVisible } from '@/test/utils';
-
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from './collapsible';
+} from '@/components/ui/collapsible/collapsible';
+import { Label } from '@/components/ui/label';
+import { isElementVisible } from '@/test/utils';
 
 const meta: Meta<typeof Collapsible> = {
-  title: 'UI/Surfaces/Collapsible',
   component: Collapsible,
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-lg">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -27,13 +32,7 @@ const meta: Meta<typeof Collapsible> = {
     },
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-lg">
-        <Story />
-      </div>
-    ),
-  ],
+  title: 'UI/Surfaces/Collapsible',
 };
 
 export default meta;
@@ -41,6 +40,14 @@ export default meta;
 type Story = StoryObj<typeof Collapsible>;
 
 export const Default: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Basic collapsible with a trigger button and content area.',
+      },
+    },
+  },
   render: () => (
     <Collapsible>
       <CollapsibleTrigger asChild>
@@ -58,16 +65,17 @@ export const Default: Story = {
       </CollapsibleContent>
     </Collapsible>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Basic collapsible with a trigger button and content area.',
-      },
-    },
-  },
 };
 
 export const WithCard: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Collapsible integrated within a card component.',
+      },
+    },
+  },
   render: () => (
     <Card>
       <Collapsible>
@@ -102,16 +110,17 @@ export const WithCard: Story = {
       </Collapsible>
     </Card>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Collapsible integrated within a card component.',
-      },
-    },
-  },
 };
 
 export const MultipleItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Multiple collapsible items in a FAQ-style layout.',
+      },
+    },
+  },
   render: () => {
     const faqs = [
       {
@@ -155,16 +164,17 @@ export const MultipleItems: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Multiple collapsible items in a FAQ-style layout.',
-      },
-    },
-  },
 };
 
 export const ControlledState: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Collapsible with controlled state and external controls.',
+      },
+    },
+  },
   render: function ControlledStateStory() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -225,16 +235,17 @@ export const ControlledState: Story = {
       </div>
     );
   },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Collapsible with controlled state and external controls.',
-      },
-    },
-  },
 };
 
 export const WithCustomAnimation: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Collapsible with custom animations and enhanced styling.',
+      },
+    },
+  },
   render: () => (
     <Card>
       <Collapsible>
@@ -278,16 +289,17 @@ export const WithCustomAnimation: Story = {
       </Collapsible>
     </Card>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Collapsible with custom animations and enhanced styling.',
-      },
-    },
-  },
 };
 
 export const NestedCollapsible: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Nested collapsible components for hierarchical content.',
+      },
+    },
+  },
   render: () => (
     <Card>
       <Collapsible>
@@ -353,35 +365,36 @@ export const NestedCollapsible: Story = {
       </Collapsible>
     </Card>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Nested collapsible components for hierarchical content.',
-      },
-    },
-  },
 };
 
 export const WithIcons: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Collapsible items with icons for better visual hierarchy.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-2">
       {[
         {
-          icon: Icons.user,
-          title: 'User Management',
           content:
             'Manage user accounts, permissions, and authentication settings.',
+          icon: Icons.user,
+          title: 'User Management',
         },
         {
-          icon: Icons.settings,
-          title: 'System Configuration',
           content:
             'Configure system-wide settings, integrations, and preferences.',
+          icon: Icons.settings,
+          title: 'System Configuration',
         },
         {
+          content: 'Manage security policies, API keys, and access controls.',
           icon: Icons.shield,
           title: 'Security Settings',
-          content: 'Manage security policies, API keys, and access controls.',
         },
       ].map((item, index) => (
         <Card key={`icon-item-${index}`}>
@@ -409,16 +422,17 @@ export const WithIcons: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Collapsible items with icons for better visual hierarchy.',
-      },
-    },
-  },
 };
 
 export const MinimalText: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Minimal text-based collapsible components.',
+      },
+    },
+  },
   render: () => (
     <div className="space-y-4">
       <Collapsible>
@@ -455,82 +469,17 @@ export const MinimalText: Story = {
       </Collapsible>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Minimal text-based collapsible components.',
-      },
-    },
-  },
 };
 
 export const Interactive: Story = {
-  render: function InteractiveStory() {
-    const [openItems, setOpenItems] = useState<number[]>([]);
-
-    const toggleItem = (index: number) => {
-      setOpenItems((prev) =>
-        prev.includes(index)
-          ? prev.filter((i) => i !== index)
-          : [...prev, index],
-      );
-    };
-
-    const items = [
-      'Getting Started',
-      'Installation Guide',
-      'Advanced Configuration',
-    ];
-
-    return (
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outlined"
-            onClick={() =>
-              setOpenItems(Array.from({ length: items.length }, (_, i) => i))
-            }
-          >
-            Expand All
-          </Button>
-          <Button size="sm" variant="outlined" onClick={() => setOpenItems([])}>
-            Collapse All
-          </Button>
-        </div>
-        <div className="space-y-2">
-          {items.map((item, index) => (
-            <Card key={`interactive-item-${index}`}>
-              <Collapsible
-                open={openItems.includes(index)}
-                onOpenChange={() => toggleItem(index)}
-              >
-                <CollapsibleTrigger asChild>
-                  <CardHeader className="hover:bg-muted/50 cursor-pointer">
-                    <CardTitle className="flex items-center justify-between text-base">
-                      {item}
-                      <Icons.chevronDown
-                        className={`transition-transform duration-200 ${
-                          openItems.includes(index) ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </CardTitle>
-                  </CardHeader>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <CardContent className="pt-0">
-                    <p className="text-muted-foreground text-sm">
-                      Content for {item.toLowerCase()}. This section contains
-                      detailed information about the selected topic.
-                    </p>
-                  </CardContent>
-                </CollapsibleContent>
-              </Collapsible>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive collapsible with expand/collapse all controls and state management.',
+      },
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -617,12 +566,71 @@ export const Interactive: Story = {
       expect(collapsible).toHaveAttribute('data-slot', 'collapsible');
     }
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive collapsible with expand/collapse all controls and state management.',
-      },
-    },
+  render: function InteractiveStory() {
+    const [openItems, setOpenItems] = useState<number[]>([]);
+
+    const toggleItem = (index: number) => {
+      setOpenItems((prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index)
+          : [...prev, index],
+      );
+    };
+
+    const items = [
+      'Getting Started',
+      'Installation Guide',
+      'Advanced Configuration',
+    ];
+
+    return (
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outlined"
+            onClick={() =>
+              setOpenItems(Array.from({ length: items.length }, (_, i) => i))
+            }
+          >
+            Expand All
+          </Button>
+          <Button size="sm" variant="outlined" onClick={() => setOpenItems([])}>
+            Collapse All
+          </Button>
+        </div>
+        <div className="space-y-2">
+          {items.map((item, index) => (
+            <Card key={`interactive-item-${index}`}>
+              <Collapsible
+                open={openItems.includes(index)}
+                onOpenChange={() => toggleItem(index)}
+              >
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="hover:bg-muted/50 cursor-pointer">
+                    <CardTitle className="flex items-center justify-between text-base">
+                      {item}
+                      <Icons.chevronDown
+                        className={`transition-transform duration-200 ${
+                          openItems.includes(index) ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </CardTitle>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <p className="text-muted-foreground text-sm">
+                      Content for {item.toLowerCase()}. This section contains
+                      detailed information about the selected topic.
+                    </p>
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   },
 };

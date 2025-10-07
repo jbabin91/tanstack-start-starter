@@ -19,8 +19,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-
 import {
   Sidebar,
   SidebarContent,
@@ -45,10 +43,34 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-} from './sidebar';
+} from '@/components/ui/sidebar/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const meta = {
-  title: 'UI/Layout/Sidebar',
+  argTypes: {
+    defaultOpen: {
+      control: 'boolean',
+      description: 'Default open state',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    onOpenChange: {
+      action: 'openChange',
+      description: 'Callback when open state changes',
+      table: {
+        type: { summary: '(open: boolean) => void' },
+      },
+    },
+    open: {
+      control: 'boolean',
+      description: 'Controlled open state',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
+  },
   component: SidebarProvider,
   parameters: {
     layout: 'fullscreen',
@@ -60,53 +82,52 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    defaultOpen: {
-      description: 'Default open state',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
-      },
-    },
-    open: {
-      description: 'Controlled open state',
-      control: 'boolean',
-      table: {
-        type: { summary: 'boolean' },
-      },
-    },
-    onOpenChange: {
-      description: 'Callback when open state changes',
-      action: 'openChange',
-      table: {
-        type: { summary: '(open: boolean) => void' },
-      },
-    },
-  },
+  title: 'UI/Layout/Sidebar',
 } satisfies Meta<typeof SidebarProvider>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultNavItems = [
-  { title: 'Home', icon: Icons.home, url: '#' },
-  { title: 'Inbox', icon: Icons.inbox, url: '#', badge: '12' },
-  { title: 'Calendar', icon: Icons.calendar, url: '#' },
-  { title: 'Search', icon: Icons.search, url: '#' },
-  { title: 'Settings', icon: Icons.settings, url: '#' },
+  { icon: Icons.home, title: 'Home', url: '#' },
+  { badge: '12', icon: Icons.inbox, title: 'Inbox', url: '#' },
+  { icon: Icons.calendar, title: 'Calendar', url: '#' },
+  { icon: Icons.search, title: 'Search', url: '#' },
+  { icon: Icons.settings, title: 'Settings', url: '#' },
 ];
 
 const projectItems = [
-  { title: 'Design System', icon: Icons.folder, url: '#' },
-  { title: 'Website Redesign', icon: Icons.folder, url: '#' },
-  { title: 'Mobile App', icon: Icons.folder, url: '#' },
+  { icon: Icons.folder, title: 'Design System', url: '#' },
+  { icon: Icons.folder, title: 'Website Redesign', url: '#' },
+  { icon: Icons.folder, title: 'Mobile App', url: '#' },
 ];
 
 export const Default: Story = {
   args: {
     defaultOpen: true,
     onOpenChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check basic navigation items
+    expect(canvas.getByText('Acme Inc')).toBeVisible();
+    expect(canvas.getByText('Navigation')).toBeVisible();
+    expect(canvas.getByText('Home')).toBeVisible();
+    expect(canvas.getByText('Inbox')).toBeVisible();
+    expect(canvas.getByText('12')).toBeVisible(); // Badge
+
+    // Check main content
+    expect(canvas.getByText('Dashboard')).toBeVisible();
+
+    // Test sidebar toggle - use specific trigger button
+    const triggerButton = canvasElement.querySelector(
+      '[data-sidebar="trigger"]',
+    );
+    expect(triggerButton).toBeVisible();
+
+    await userEvent.click(triggerButton!);
+    expect(args.onOpenChange).toHaveBeenCalledWith(false);
   },
   render: (args) => (
     <SidebarProvider {...args}>
@@ -164,31 +185,38 @@ export const Default: Story = {
       </div>
     </SidebarProvider>
   ),
-  play: async ({ args, canvasElement }) => {
+};
+
+export const CollapsibleExample: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Check basic navigation items
+    // Check that tooltips are configured for collapsible state
     expect(canvas.getByText('Acme Inc')).toBeVisible();
-    expect(canvas.getByText('Navigation')).toBeVisible();
-    expect(canvas.getByText('Home')).toBeVisible();
-    expect(canvas.getByText('Inbox')).toBeVisible();
-    expect(canvas.getByText('12')).toBeVisible(); // Badge
+    expect(canvas.getByText('Platform')).toBeVisible();
+    expect(canvas.getByText('Projects')).toBeVisible();
 
-    // Check main content
-    expect(canvas.getByText('Dashboard')).toBeVisible();
+    // Check user menu
+    expect(canvas.getByText('shadcn')).toBeVisible();
+    expect(canvas.getByText('m@example.com')).toBeVisible();
 
-    // Test sidebar toggle - use specific trigger button
+    // Test toggle functionality - use specific trigger button
     const triggerButton = canvasElement.querySelector(
       '[data-sidebar="trigger"]',
     );
     expect(triggerButton).toBeVisible();
 
     await userEvent.click(triggerButton!);
-    expect(args.onOpenChange).toHaveBeenCalledWith(false);
-  },
-};
 
-export const CollapsibleExample: Story = {
+    // After collapse, the trigger should still be visible
+    await waitFor(() => {
+      const toggledButton = canvasElement.querySelector(
+        '[data-sidebar="trigger"]',
+      );
+      expect(toggledButton).toBeVisible();
+    });
+  },
   render: () => (
     <SidebarProvider>
       <div className="flex h-screen w-full">
@@ -346,37 +374,36 @@ export const CollapsibleExample: Story = {
       </div>
     </SidebarProvider>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check that tooltips are configured for collapsible state
-    expect(canvas.getByText('Acme Inc')).toBeVisible();
-    expect(canvas.getByText('Platform')).toBeVisible();
-    expect(canvas.getByText('Projects')).toBeVisible();
-
-    // Check user menu
-    expect(canvas.getByText('shadcn')).toBeVisible();
-    expect(canvas.getByText('m@example.com')).toBeVisible();
-
-    // Test toggle functionality - use specific trigger button
-    const triggerButton = canvasElement.querySelector(
-      '[data-sidebar="trigger"]',
-    );
-    expect(triggerButton).toBeVisible();
-
-    await userEvent.click(triggerButton!);
-
-    // After collapse, the trigger should still be visible
-    await waitFor(() => {
-      const toggledButton = canvasElement.querySelector(
-        '[data-sidebar="trigger"]',
-      );
-      expect(toggledButton).toBeVisible();
-    });
-  },
 };
 
 export const WithNestedMenus: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check main navigation - use getAllByText since there are multiple Dashboard elements
+    const dashboardElements = canvas.getAllByText('Dashboard');
+    expect(dashboardElements.length).toBeGreaterThan(0);
+    expect(dashboardElements[0]).toBeVisible();
+    expect(canvas.getByText('Users')).toBeVisible();
+    expect(canvas.getByText('Content')).toBeVisible();
+    expect(canvas.getByText('Settings')).toBeVisible();
+
+    // Check nested menu (Users is expanded by default)
+    expect(canvas.getByText('All Users')).toBeVisible();
+    expect(canvas.getByText('Active Users')).toBeVisible();
+    expect(canvas.getByText('User Roles')).toBeVisible();
+
+    // Test collapsing the Content menu
+    const contentButton = canvas.getByRole('button', { name: /Content/ });
+    await userEvent.click(contentButton);
+
+    await waitFor(() => {
+      expect(canvas.getByText('Posts')).toBeVisible();
+      expect(canvas.getByText('Pages')).toBeVisible();
+      expect(canvas.getByText('Media Library')).toBeVisible();
+    });
+  },
   render: () => (
     <SidebarProvider>
       <div className="flex h-screen w-full">
@@ -497,35 +524,25 @@ export const WithNestedMenus: Story = {
       </div>
     </SidebarProvider>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check main navigation - use getAllByText since there are multiple Dashboard elements
-    const dashboardElements = canvas.getAllByText('Dashboard');
-    expect(dashboardElements.length).toBeGreaterThan(0);
-    expect(dashboardElements[0]).toBeVisible();
-    expect(canvas.getByText('Users')).toBeVisible();
-    expect(canvas.getByText('Content')).toBeVisible();
-    expect(canvas.getByText('Settings')).toBeVisible();
-
-    // Check nested menu (Users is expanded by default)
-    expect(canvas.getByText('All Users')).toBeVisible();
-    expect(canvas.getByText('Active Users')).toBeVisible();
-    expect(canvas.getByText('User Roles')).toBeVisible();
-
-    // Test collapsing the Content menu
-    const contentButton = canvas.getByRole('button', { name: /Content/ });
-    await userEvent.click(contentButton);
-
-    await waitFor(() => {
-      expect(canvas.getByText('Posts')).toBeVisible();
-      expect(canvas.getByText('Pages')).toBeVisible();
-      expect(canvas.getByText('Media Library')).toBeVisible();
-    });
-  },
 };
 
 export const WithSearch: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check search input
+    const searchInput = canvas.getByPlaceholderText('Search...');
+    expect(searchInput).toBeVisible();
+
+    // Test search input interaction
+    await userEvent.type(searchInput, 'test query');
+    expect(searchInput).toHaveValue('test query');
+
+    // Check navigation items
+    expect(canvas.getByText('Navigation')).toBeVisible();
+    expect(canvas.getByText('Home')).toBeVisible();
+  },
   render: () => (
     <SidebarProvider>
       <div className="flex h-screen w-full">
@@ -592,24 +609,21 @@ export const WithSearch: Story = {
       </div>
     </SidebarProvider>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check search input
-    const searchInput = canvas.getByPlaceholderText('Search...');
-    expect(searchInput).toBeVisible();
-
-    // Test search input interaction
-    await userEvent.type(searchInput, 'test query');
-    expect(searchInput).toHaveValue('test query');
-
-    // Check navigation items
-    expect(canvas.getByText('Navigation')).toBeVisible();
-    expect(canvas.getByText('Home')).toBeVisible();
-  },
 };
 
 export const LoadingState: Story = {
+  args: {},
+  play: ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check loading state elements
+    expect(canvas.getByText('Loading...')).toBeVisible();
+    expect(canvas.getByText('More Items')).toBeVisible();
+    expect(canvas.getByText('Loading State')).toBeVisible();
+
+    // Check that loading content is present
+    expect(canvas.getByText('Loading Skeleton')).toBeVisible();
+  },
   render: () => (
     <SidebarProvider>
       <div className="flex h-screen w-full">
@@ -666,20 +680,26 @@ export const LoadingState: Story = {
       </div>
     </SidebarProvider>
   ),
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check loading state elements
-    expect(canvas.getByText('Loading...')).toBeVisible();
-    expect(canvas.getByText('More Items')).toBeVisible();
-    expect(canvas.getByText('Loading State')).toBeVisible();
-
-    // Check that loading content is present
-    expect(canvas.getByText('Loading Skeleton')).toBeVisible();
-  },
 };
 
 export const Controlled: Story = {
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Check initial state
+    expect(canvas.getByText('Sidebar is open')).toBeVisible();
+    expect(canvas.getByText('Controlled')).toBeVisible();
+
+    // Test external control
+    const toggleButton = canvas.getByRole('button', {
+      name: 'Close Sidebar',
+    });
+    await userEvent.click(toggleButton);
+
+    expect(canvas.getByText('Sidebar is closed')).toBeVisible();
+    expect(canvas.getByRole('button', { name: 'Open Sidebar' })).toBeVisible();
+  },
   render: () => {
     const [isOpen, setIsOpen] = useState(true);
 
@@ -745,21 +765,5 @@ export const Controlled: Story = {
         </SidebarProvider>
       </div>
     );
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Check initial state
-    expect(canvas.getByText('Sidebar is open')).toBeVisible();
-    expect(canvas.getByText('Controlled')).toBeVisible();
-
-    // Test external control
-    const toggleButton = canvas.getByRole('button', {
-      name: 'Close Sidebar',
-    });
-    await userEvent.click(toggleButton);
-
-    expect(canvas.getByText('Sidebar is closed')).toBeVisible();
-    expect(canvas.getByRole('button', { name: 'Open Sidebar' })).toBeVisible();
   },
 };

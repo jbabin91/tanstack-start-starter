@@ -12,6 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -23,18 +32,10 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form';
-
 const meta: Meta<typeof Form> = {
-  title: 'UI/Inputs/Form',
+  argTypes: {
+    // Form is a wrapper around FormProvider, so no direct props to control
+  },
   component: Form,
   parameters: {
     layout: 'centered',
@@ -46,9 +47,7 @@ const meta: Meta<typeof Form> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    // Form is a wrapper around FormProvider, so no direct props to control
-  },
+  title: 'UI/Inputs/Form',
 };
 
 export default meta;
@@ -56,24 +55,24 @@ type Story = StoryObj<typeof meta>;
 
 // Schema for validation examples
 const basicFormSchema = type({
-  name: 'string>=2',
   email: 'string.email>=1',
   message: 'string>=10',
+  name: 'string>=2',
 });
 
 const profileFormSchema = type({
+  'bio?': 'string<=160',
+  email: 'string.email>=1',
   firstName: 'string>=2',
   lastName: 'string>=2',
-  email: 'string.email>=1',
-  'bio?': 'string<=160',
   notifications: 'boolean',
   role: "'user'|'admin'|'moderator'",
 });
 
 const settingsFormSchema = type({
+  confirmPassword: 'string',
   currentPassword: 'string>=1',
   newPassword: 'string>=8',
-  confirmPassword: 'string',
   twoFactor: 'boolean',
 });
 
@@ -82,9 +81,9 @@ function BasicContactForm() {
   const form = useForm<typeof basicFormSchema.infer>({
     resolver: arktypeResolver(basicFormSchema),
     defaultValues: {
-      name: '',
       email: '',
       message: '',
+      name: '',
     },
   });
 
@@ -182,10 +181,10 @@ function ProfileSettingsForm() {
   const form = useForm<typeof profileFormSchema.infer>({
     resolver: arktypeResolver(profileFormSchema),
     defaultValues: {
+      bio: '',
+      email: '',
       firstName: '',
       lastName: '',
-      email: '',
-      bio: '',
       notifications: true,
       role: 'user',
     },
@@ -360,9 +359,9 @@ function SecuritySettingsForm() {
   const form = useForm<typeof settingsFormSchema.infer>({
     resolver: arktypeResolver(settingsFormSchema),
     defaultValues: {
+      confirmPassword: '',
       currentPassword: '',
       newPassword: '',
-      confirmPassword: '',
       twoFactor: false,
     },
   });
@@ -490,7 +489,7 @@ function SecuritySettingsForm() {
 }
 
 export const BasicForm: Story = {
-  render: () => <BasicContactForm />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -499,10 +498,11 @@ export const BasicForm: Story = {
       },
     },
   },
+  render: () => <BasicContactForm />,
 };
 
 export const ProfileForm: Story = {
-  render: () => <ProfileSettingsForm />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -511,10 +511,11 @@ export const ProfileForm: Story = {
       },
     },
   },
+  render: () => <ProfileSettingsForm />,
 };
 
 export const SecurityForm: Story = {
-  render: () => <SecuritySettingsForm />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -523,10 +524,19 @@ export const SecurityForm: Story = {
       },
     },
   },
+  render: () => <SecuritySettingsForm />,
 };
 
 export const ValidationDemo: Story = {
-  render: () => <BasicContactForm />,
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive demonstration of form validation with real-time error handling.',
+      },
+    },
+  },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
 
@@ -587,23 +597,16 @@ export const ValidationDemo: Story = {
       );
     });
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Interactive demonstration of form validation with real-time error handling.',
-      },
-    },
-  },
+  render: () => <BasicContactForm />,
 };
 
 function FormStatesComponent() {
   const form = useForm({
     mode: 'onChange',
     defaultValues: {
-      validField: 'Valid input',
-      invalidField: '',
       disabledField: 'Cannot edit',
+      invalidField: '',
+      validField: 'Valid input',
     },
   });
 

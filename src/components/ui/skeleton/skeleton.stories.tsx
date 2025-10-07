@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from '@storybook/test';
 
-import { Skeleton } from './skeleton';
+import { Skeleton } from '@/components/ui/skeleton/skeleton';
 
 const meta: Meta<typeof Skeleton> = {
-  title: 'UI/Feedback/Skeleton',
+  argTypes: {
+    className: {
+      control: { type: 'text' },
+      description: 'Additional CSS classes for styling the skeleton.',
+      table: {
+        type: { summary: 'string' },
+      },
+    },
+  },
   component: Skeleton,
   parameters: {
     layout: 'centered',
@@ -16,22 +24,14 @@ const meta: Meta<typeof Skeleton> = {
     },
   },
   tags: ['autodocs'],
-  argTypes: {
-    className: {
-      description: 'Additional CSS classes for styling the skeleton.',
-      control: { type: 'text' },
-      table: {
-        type: { summary: 'string' },
-      },
-    },
-  },
+  title: 'UI/Feedback/Skeleton',
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => <Skeleton className="h-4 w-32" {...args} />,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -39,9 +39,18 @@ export const Default: Story = {
       },
     },
   },
+  render: (args) => <Skeleton className="h-4 w-32" {...args} />,
 };
 
 export const Sizes: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Different skeleton sizes for various text and content types.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-3">
       <Skeleton className="h-3 w-24" {...args} />
@@ -51,24 +60,10 @@ export const Sizes: Story = {
       <Skeleton className="h-8 w-56" {...args} />
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Different skeleton sizes for various text and content types.',
-      },
-    },
-  },
 };
 
 export const Shapes: Story = {
-  render: (args) => (
-    <div className="flex items-center space-x-4">
-      <Skeleton className="size-12 rounded-full" {...args} />
-      <Skeleton className="h-12 w-32 rounded-lg" {...args} />
-      <Skeleton className="h-12 w-24 rounded-none" {...args} />
-      <Skeleton className="h-12 w-16 rounded-sm" {...args} />
-    </div>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -77,9 +72,26 @@ export const Shapes: Story = {
       },
     },
   },
+  render: (args) => (
+    <div className="flex items-center space-x-4">
+      <Skeleton className="size-12 rounded-full" {...args} />
+      <Skeleton className="h-12 w-32 rounded-lg" {...args} />
+      <Skeleton className="h-12 w-24 rounded-none" {...args} />
+      <Skeleton className="h-12 w-16 rounded-sm" {...args} />
+    </div>
+  ),
 };
 
 export const TextPlaceholders: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Text placeholders simulating paragraph content with varying line lengths.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full max-w-sm space-y-2">
       <Skeleton className="h-6 w-3/4" {...args} />
@@ -89,17 +101,17 @@ export const TextPlaceholders: Story = {
       <Skeleton className="h-4 w-2/3" {...args} />
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Text placeholders simulating paragraph content with varying line lengths.',
-      },
-    },
-  },
 };
 
 export const CardLayout: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Card layout with avatar, text content, and action buttons.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-80 space-y-4 rounded-lg border p-6">
       <div className="flex items-center space-x-4">
@@ -120,16 +132,17 @@ export const CardLayout: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Card layout with avatar, text content, and action buttons.',
-      },
-    },
-  },
 };
 
 export const ListItems: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'List of items with avatars and text content.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full max-w-sm space-y-3">
       {Array.from({ length: 4 }).map((_, i) => (
@@ -146,16 +159,17 @@ export const ListItems: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'List of items with avatars and text content.',
-      },
-    },
-  },
 };
 
 export const TableLayout: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Table layout with header and multiple data rows.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full space-y-3">
       {/* Table Header */}
@@ -176,16 +190,17 @@ export const TableLayout: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Table layout with header and multiple data rows.',
-      },
-    },
-  },
 };
 
 export const ImagePlaceholder: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Image placeholders for different aspect ratios and layouts.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -199,16 +214,17 @@ export const ImagePlaceholder: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Image placeholders for different aspect ratios and layouts.',
-      },
-    },
-  },
 };
 
 export const FormLayout: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Form layout with labels, inputs, textarea, and buttons.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-full max-w-md space-y-4">
       <div className="space-y-2">
@@ -235,16 +251,17 @@ export const FormLayout: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Form layout with labels, inputs, textarea, and buttons.',
-      },
-    },
-  },
 };
 
 export const DashboardCards: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dashboard metric cards with titles, values, and indicators.',
+      },
+    },
+  },
   render: (args) => (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
@@ -265,16 +282,17 @@ export const DashboardCards: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Dashboard metric cards with titles, values, and indicators.',
-      },
-    },
-  },
 };
 
 export const NavigationMenu: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Navigation menu with icons, labels, and separator.',
+      },
+    },
+  },
   render: (args) => (
     <div className="w-64 space-y-1">
       {Array.from({ length: 6 }).map((_, i) => (
@@ -300,16 +318,17 @@ export const NavigationMenu: Story = {
       ))}
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Navigation menu with icons, labels, and separator.',
-      },
-    },
-  },
 };
 
 export const ProfileHeader: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'Profile header with avatar, name, bio, actions, and stats.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-col items-center space-y-4">
       <Skeleton className="size-24 rounded-full" {...args} />
@@ -337,16 +356,18 @@ export const ProfileHeader: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Profile header with avatar, name, bio, actions, and stats.',
-      },
-    },
-  },
 };
 
 export const CustomStyling: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Custom styling options including different animations, colors, and effects.',
+      },
+    },
+  },
   render: (args) => (
     <div className="space-y-4">
       <div>
@@ -369,29 +390,10 @@ export const CustomStyling: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Custom styling options including different animations, colors, and effects.',
-      },
-    },
-  },
 };
 
 export const InteractiveSkeleton: Story = {
-  render: (args) => (
-    <div className="w-full max-w-sm space-y-3">
-      <div className="flex items-center space-x-3">
-        <Skeleton className="size-10 rounded-full" {...args} />
-        <div className="flex-1 space-y-1">
-          <Skeleton className="h-4 w-3/4" {...args} />
-          <Skeleton className="h-3 w-1/2" {...args} />
-        </div>
-      </div>
-      <Skeleton className="h-20 w-full rounded-lg" {...args} />
-    </div>
-  ),
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -421,4 +423,16 @@ export const InteractiveSkeleton: Story = {
     expect(contentSkeleton).toHaveClass('w-full');
     expect(contentSkeleton).toHaveClass('rounded-lg');
   },
+  render: (args) => (
+    <div className="w-full max-w-sm space-y-3">
+      <div className="flex items-center space-x-3">
+        <Skeleton className="size-10 rounded-full" {...args} />
+        <div className="flex-1 space-y-1">
+          <Skeleton className="h-4 w-3/4" {...args} />
+          <Skeleton className="h-3 w-1/2" {...args} />
+        </div>
+      </div>
+      <Skeleton className="h-20 w-full rounded-lg" {...args} />
+    </div>
+  ),
 };
