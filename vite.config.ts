@@ -35,6 +35,10 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  ssr: {
+    noExternal: ['drizzle-orm'],
+    external: ['pg'],
+  },
   test: {
     coverage: {
       exclude: [
