@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
-import * as React from 'react';
 
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -466,7 +465,7 @@ export const Interactive: Story = {
     onOpenChange: fn(),
   },
   render: (args) => {
-    const [userData] = React.useState({
+    const userData = {
       name: 'Alice Johnson',
       handle: '@alice_codes',
       bio: 'Full-stack developer passionate about React, TypeScript, and accessible design.',
@@ -475,7 +474,7 @@ export const Interactive: Story = {
       joinDate: 'March 2020',
       location: 'San Francisco, CA',
       website: 'alice-codes.dev',
-    });
+    };
 
     return (
       <div className="space-y-6">

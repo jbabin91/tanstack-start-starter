@@ -205,7 +205,8 @@ function Button({
   );
 
   return useRender({
-    render: render ?? <button type={type} />,
+    defaultTagName: 'button',
+    render,
     props: {
       'data-slot': 'button',
       'aria-busy': loading ?? undefined,

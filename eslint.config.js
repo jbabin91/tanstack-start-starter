@@ -109,7 +109,10 @@ export default defineConfig(
     },
   },
   {
-    extends: [pluginReact.configs['recommended-type-checked']],
+    extends: [
+      pluginReact.configs['recommended-type-checked'],
+      'react-hooks/recommended',
+    ],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {
       parserOptions: {
@@ -124,7 +127,6 @@ export default defineConfig(
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
-      ...reactHooks.configs.recommended.rules,
       ...jsxA11y.flatConfigs.recommended.rules,
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       '@eslint-react/no-context-provider': 'off',
