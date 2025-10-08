@@ -45,7 +45,7 @@ importers:
         version: 2.1.22
       better-auth:
         specifier: ^1.3.27
-        version: 1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.9)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -195,8 +195,8 @@ importers:
         specifier: ^5.90.2
         version: 5.90.2(@tanstack/react-query@5.90.2(react@19.2.0))(react@19.2.0)
       '@tanstack/react-router-devtools':
-        specifier: ^1.132.47
-        version: 1.132.47(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)
+        specifier: ^1.132.50
+        version: 1.132.50(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.9)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -309,8 +309,8 @@ importers:
         specifier: ^0.6.14
         version: 0.6.14(prettier@3.6.2)
       srvx:
-        specifier: ^0.8.13
-        version: 0.8.13
+        specifier: ^0.8.14
+        version: 0.8.14
       storybook:
         specifier: ^9.1.10
         version: 9.1.10(@testing-library/dom@10.4.1)(prettier@3.6.2)(rolldown-vite@7.1.16(@types/node@24.7.0)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -2788,8 +2788,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-router-devtools@1.132.47':
-    resolution: {integrity: sha512-U6W0KB7ksnxUhuVEEhwEBFgcEuZ2VQlJp2Xf/r7x6RyzK8mG0GjJ6xAQP+rWkMzAe3zEWvaB3iXEJQOLqF+R4w==}
+  '@tanstack/react-router-devtools@1.132.50':
+    resolution: {integrity: sha512-OMtjhVvoTPliBIPLoiGdiJKgX/D5rt65xC9+yvI3Y0z6007SzDEbKLBt1Fke630bygcZlOfOjcprruqjJ1FojQ==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/react-router': ^1.132.47
@@ -2845,12 +2845,13 @@ packages:
     resolution: {integrity: sha512-8YKFHmG6VUqXaWAJzEqjyW6w31dARS2USd2mtI5ZeZcihqMbskK28N4iotBXNn+sSKJnPRjc7A4jTnnEf8Mn8Q==}
     engines: {node: '>=12'}
 
-  '@tanstack/router-devtools-core@1.132.47':
-    resolution: {integrity: sha512-wdYqztGGK5X8YJWhFUTw3vCdKqNRgK6hvfcDNXbGgzVs7TgtIDnX1tfCvPDzfgORbE4CnAEUDPHVVrWcGlJGYw==}
+  '@tanstack/router-devtools-core@1.132.50':
+    resolution: {integrity: sha512-6oMevkpk06Ia3AaUHs02UQulQz8PZyYcs/U0BinVF42B8JTFlRp++HXRX4hgBnVlv81bylUnMbJ6sYASeQySUQ==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/router-core': ^1.132.47
       csstype: ^3.0.10
+      solid-js: '>=1.9.5'
       tiny-invariant: ^1.3.3
     peerDependenciesMeta:
       csstype:
@@ -4159,8 +4160,8 @@ packages:
     resolution: {integrity: sha512-r6kEJXDKecVOCj2nLMuXK/FCPeurW33+3JRpfXVbjLja3XUYFfD9I/JBreH6sUyzcm3G/YQboBjMla6poKeSdA==}
     engines: {bun: '>=1', deno: '>=2', node: '>=16'}
 
-  electron-to-chromium@1.5.232:
-    resolution: {integrity: sha512-ENirSe7wf8WzyPCibqKUG1Cg43cPaxH4wRR7AJsX7MCABCHBIOFqvaYODSLKUuZdraxUTHRE/0A2Aq8BYKEHOg==}
+  electron-to-chromium@1.5.233:
+    resolution: {integrity: sha512-iUdTQSf7EFXsDdQsp8MwJz5SVk4APEFqXU/S47OtQ0YLqacSwPXdZ5vRlMX3neb07Cy2vgioNuRnWUXFwuslkg==}
 
   embla-carousel-react@8.6.0:
     resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
@@ -6581,6 +6582,9 @@ packages:
   slow-redact@0.3.1:
     resolution: {integrity: sha512-NvFvl1GuLZNW4U046Tfi8b26zXo8aBzgCAS2f7yVJR/fArN93mOqSA99cB9uITm92ajSz01bsu1K7SCVVjIMpQ==}
 
+  solid-js@1.9.9:
+    resolution: {integrity: sha512-A0ZBPJQldAeGCTW0YRYJmt7RCeh5rbFfPZ2aOttgYnctHE7HgKeHCBB/PVc2P7eOfmNXqMFFFoYYdm3S4dcbkA==}
+
   sonic-boom@4.2.0:
     resolution: {integrity: sha512-INb7TM37/mAcsGmc9hyyI6+QR3rR1zVRu36B0NeGXKnOOLiZOfER5SA+N7X7k3yUYRzLWafduTDvJAfDswwEww==}
 
@@ -6620,8 +6624,8 @@ packages:
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
-  srvx@0.8.13:
-    resolution: {integrity: sha512-ny3X0dm5GsLeeUOsLwfY3mLu/UhM8QkCrc5/rWKt75mx74udHUDlTsUxC5YRArgiMX/knsbRSwJcNo2aPUeN5A==}
+  srvx@0.8.14:
+    resolution: {integrity: sha512-DYI9dUn3UDV0KgL6IAIeIJCljrgfimSeDsEfUq1XcD5DLAvCC2ujzpLi5zGKZTxOs/gNfpgiiI/R3+8PUY2WQw==}
     engines: {node: '>=20.16.0'}
     hasBin: true
 
@@ -10275,10 +10279,10 @@ snapshots:
       '@tanstack/query-core': 5.90.2
       react: 19.2.0
 
-  '@tanstack/react-router-devtools@1.132.47(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)':
+  '@tanstack/react-router-devtools@1.132.50(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.9)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)':
     dependencies:
       '@tanstack/react-router': 1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@tanstack/router-devtools-core': 1.132.47(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)
+      '@tanstack/router-devtools-core': 1.132.50(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(solid-js@1.9.9)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
       vite: rolldown-vite@7.1.16(@types/node@24.7.0)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -10291,6 +10295,7 @@ snapshots:
       - less
       - sass
       - sass-embedded
+      - solid-js
       - stylus
       - sugarss
       - terser
@@ -10379,11 +10384,12 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  '@tanstack/router-devtools-core@1.132.47(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)':
+  '@tanstack/router-devtools-core@1.132.50(@tanstack/router-core@1.132.47)(@types/node@24.7.0)(csstype@3.1.3)(esbuild@0.25.10)(jiti@2.6.1)(solid-js@1.9.9)(terser@5.44.0)(tiny-invariant@1.3.3)(tsx@4.20.6)(yaml@2.8.1)':
     dependencies:
       '@tanstack/router-core': 1.132.47
       clsx: 2.1.1
       goober: 2.1.18(csstype@3.1.3)
+      solid-js: 1.9.9
       tiny-invariant: 1.3.3
       vite: rolldown-vite@7.1.16(@types/node@24.7.0)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
     optionalDependencies:
@@ -10494,7 +10500,7 @@ snapshots:
       cheerio: 1.1.2
       exsolve: 1.0.7
       pathe: 2.0.3
-      srvx: 0.8.13
+      srvx: 0.8.14
       tinyglobby: 0.2.15
       ufo: 1.6.1
       vite: rolldown-vite@7.1.16(@types/node@24.7.0)(esbuild@0.25.10)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -11160,7 +11166,7 @@ snapshots:
 
   baseline-browser-mapping@2.8.13: {}
 
-  better-auth@1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  better-auth@1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.9):
     dependencies:
       '@better-auth/core': 1.3.27
       '@better-auth/utils': 0.3.0
@@ -11178,6 +11184,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
+      solid-js: 1.9.9
 
   better-call@1.0.19:
     dependencies:
@@ -11226,7 +11233,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.8.13
       caniuse-lite: 1.0.30001748
-      electron-to-chromium: 1.5.232
+      electron-to-chromium: 1.5.233
       node-releases: 2.0.23
       update-browserslist-db: 1.1.3(browserslist@4.26.3)
 
@@ -11768,7 +11775,7 @@ snapshots:
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
 
-  electron-to-chromium@1.5.232: {}
+  electron-to-chromium@1.5.233: {}
 
   embla-carousel-react@8.6.0(react@19.2.0):
     dependencies:
@@ -12613,7 +12620,7 @@ snapshots:
       cookie-es: 2.0.0
       fetchdts: 0.1.7
       rou3: 0.7.7
-      srvx: 0.8.13
+      srvx: 0.8.14
 
   has-bigints@1.1.0: {}
 
@@ -14500,6 +14507,12 @@ snapshots:
 
   slow-redact@0.3.1: {}
 
+  solid-js@1.9.9:
+    dependencies:
+      csstype: 3.1.3
+      seroval: 1.3.2
+      seroval-plugins: 1.3.3(seroval@1.3.2)
+
   sonic-boom@4.2.0:
     dependencies:
       atomic-sleep: 1.0.0
@@ -14536,7 +14549,7 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  srvx@0.8.13:
+  srvx@0.8.14:
     dependencies:
       cookie-es: 2.0.0
 
