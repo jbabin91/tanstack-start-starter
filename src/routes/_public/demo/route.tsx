@@ -51,22 +51,25 @@ function RouteComponent() {
             <SidebarGroupLabel>Demo Pages</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {demoLinks.map((link) => (
-                  <SidebarMenuItem key={link.to}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        {...link}
-                        activeProps={{ className: 'font-bold' }}
-                        className="flex items-center"
-                      >
-                        <link.icon className="mr-2" />
-                        <span className="sidebar-label group-data-[collapsible=icon]:hidden">
-                          {link.label}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {demoLinks.map((link) => {
+                  const { icon: Icon, label, ...linkProps } = link;
+                  return (
+                    <SidebarMenuItem key={link.to}>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          {...linkProps}
+                          activeProps={{ className: 'font-bold' }}
+                          className="flex items-center"
+                        >
+                          <Icon className="mr-2" />
+                          <span className="sidebar-label group-data-[collapsible=icon]:hidden">
+                            {label}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

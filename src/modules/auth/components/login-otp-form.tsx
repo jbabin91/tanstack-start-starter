@@ -1,7 +1,7 @@
 import { arktypeResolver } from '@hookform/resolvers/arktype';
 import { type } from 'arktype';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -43,6 +43,12 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
       email: '',
     },
     resolver: arktypeResolver(loginOTPFormSchema),
+  });
+
+  // Watch email field for button state
+  const emailValue = useWatch({
+    control: form.control,
+    name: 'email',
   });
 
   const onSubmitEmail = (data: LoginOTPFormData) => {
@@ -160,7 +166,7 @@ export function LoginOTPForm({ onSuccess, className }: LoginOTPFormProps) {
             />
             <Button
               className="w-full"
-              disabled={!form.watch('email') || sendOTPMutation.isPending}
+              disabled={!emailValue || sendOTPMutation.isPending}
               loading={sendOTPMutation.isPending}
               loadingText="Sending code..."
               type="submit"

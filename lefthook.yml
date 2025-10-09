@@ -6,22 +6,22 @@ output:
 pre-commit:
   parallel: true
   commands:
-    typecheck:
-      glob: '*.{ts,tsx}'
-      run: node scripts/check-types.cjs {staged_files}
+    format:
+      glob: '*.{ts,tsx,js,jsx,cjs,mjs,json,md,mdx}'
+      run: pnpm prettier -uwl {staged_files}
+      stage_fixed: true # Auto-stage Prettier fixes!
     lint:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
       exclude:
         - '**/*.gen.ts'
       run: pnpm eslint {staged_files} --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache
       stage_fixed: true # Auto-stage ESLint fixes!
+    typecheck:
+      glob: '*.{ts,tsx}'
+      run: pnpm tsc-files {staged_files}
     lint-md:
       glob: '*.{md,mdx}'
       run: pnpm lint:md {staged_files}
-    format:
-      glob: '*.{ts,tsx,js,jsx,cjs,mjs,json,md,mdx}'
-      run: pnpm prettier -uwl {staged_files}
-      stage_fixed: true # Auto-stage Prettier fixes!
 
 commit-msg:
   commands:

@@ -111,7 +111,7 @@ export default defineConfig(
   {
     extends: [
       pluginReact.configs['recommended-type-checked'],
-      'react-hooks/recommended',
+      reactHooks.configs.flat.recommended,
     ],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {

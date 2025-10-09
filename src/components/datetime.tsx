@@ -1,7 +1,17 @@
 import { formatDistanceToNow } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { formatInUserTimezone, getUserTimezone } from '@/utils/datetime';
+
+// External store that tracks client-side mounting
+const emptySubscribe = () => {
+  // No-op unsubscribe function
+  return () => {
+    // No cleanup needed
+  };
+};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 type RelativeTimeProps = {
   date: Date;
@@ -37,19 +47,18 @@ export function AbsoluteTime({
   fallback = '---',
   className,
 }: AbsoluteTimeProps) {
-  const [hasMounted, setHasMounted] = useState(false);
-  const [clientFormattedDate, setClientFormattedDate] = useState<string | null>(
-    null,
+  const hasMounted = useSyncExternalStore(
+    emptySubscribe,
+    getSnapshot,
+    getServerSnapshot,
   );
 
-  // Server-side and first client render: show fallback
-  // Second client render: show properly formatted date
-  useEffect(() => {
-    setHasMounted(true);
+  // Compute formatted date on client side
+  const clientFormattedDate = useMemo(() => {
+    if (!hasMounted) return null;
     const userTimezone = getUserTimezone(timezone);
-    const formatted = formatInUserTimezone(date, pattern, userTimezone);
-    setClientFormattedDate(formatted);
-  }, [date, pattern, timezone]);
+    return formatInUserTimezone(date, pattern, userTimezone);
+  }, [hasMounted, date, pattern, timezone]);
 
   const displayText =
     hasMounted && clientFormattedDate ? clientFormattedDate : fallback;

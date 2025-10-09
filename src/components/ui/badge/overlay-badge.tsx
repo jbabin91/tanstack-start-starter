@@ -76,9 +76,12 @@ function useOverlayBadge({
     ? prevProps.current
     : { badgeContent, max };
 
-  if (!invisible) {
-    prevProps.current = { badgeContent, max };
-  }
+  // Update ref in effect to avoid updating during render
+  React.useEffect(() => {
+    if (!invisible) {
+      prevProps.current = { badgeContent, max };
+    }
+  }, [invisible, badgeContent, max]);
 
   const displayValue: React.ReactNode =
     currentContent && Number(currentContent) > currentMax

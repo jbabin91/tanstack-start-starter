@@ -1,7 +1,7 @@
 import { arktypeResolver } from '@hookform/resolvers/arktype';
 import { type } from 'arktype';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -115,12 +115,16 @@ export function OTPVerificationForm({
   );
 
   // Watch for OTP changes and trigger auto-submit
-  const watchedOTP = form.watch('otp');
+  const otpValue = useWatch({
+    control: form.control,
+    name: 'otp',
+  });
+
   useEffect(() => {
-    if (watchedOTP) {
-      handleAutoSubmit(watchedOTP);
+    if (otpValue) {
+      handleAutoSubmit(otpValue);
     }
-  }, [watchedOTP, handleAutoSubmit]);
+  }, [otpValue, handleAutoSubmit]);
 
   const startCountdown = useCallback(() => {
     setCanResend(false);
@@ -205,7 +209,7 @@ export function OTPVerificationForm({
           />
           <Button
             className="w-full"
-            disabled={!form.watch('otp') || form.watch('otp').length !== 6}
+            disabled={!otpValue || otpValue.length !== 6}
             loading={signInWithOTPMutation.isPending}
             loadingText="Verifying..."
             type="submit"
