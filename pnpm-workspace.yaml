@@ -3,6 +3,7 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild
   - lefthook
+  - rolldown
   - unrs-resolver
 
 overrides:
