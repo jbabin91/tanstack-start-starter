@@ -1,6 +1,5 @@
 [phases.setup]
-# Force Node.js 22.12+ which Vite 7 requires
-nixPkgs = ["nodejs-22_x", "pnpm-9_x"]
+nixPkgs = ["nodejs_22", "pnpm-9_x"]
 
 [phases.install]
 cmds = [
