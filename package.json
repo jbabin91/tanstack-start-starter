@@ -138,7 +138,7 @@
     "eslint-plugin-unicorn": "^61.0.2",
     "globals": "^16.4.0",
     "jsdom": "^27.0.0",
-    "lefthook": "^1.13.6",
+    "lefthook": "^2.0.2",
     "markdownlint-cli2": "^0.18.1",
     "playwright": "^1.56.0",
     "prettier": "^3.6.2",
