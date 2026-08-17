@@ -25,7 +25,6 @@
     "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache",
     "lint:md": "markdownlint-cli2",
     "lint:md:fix": "markdownlint-cli2 --fix",
-    "prepare": "lefthook install",
     "start": "pnpm with-env pnpm srvx --prod -s ../client dist/server/server.js",
     "storybook": "storybook dev -p 6006",
     "test": "pnpm with-env vitest --project=unit run",
