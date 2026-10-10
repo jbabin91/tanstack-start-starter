@@ -6,5 +6,5 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
-  esbuild@<=0.24.2: '>=0.25.0'
+  esbuild@<=0.24.2: '>=0.28.2'
   tmp@<=0.2.3: '>=0.2.4'
